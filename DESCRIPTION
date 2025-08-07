@@ -1,0 +1,40 @@
+Package: cqtkit
+Title: A package to aid in C-QT analyses
+Version: 0.1.5
+Authors@R: c(
+    person("Matt", "Smith", , "matthews@a2-ai.com", role = c("aut", "cre")),
+    person("Devin", "Pastoor", , "devin@a2-ai.com", role = c("aut")),
+    person("Mutaz", "Jaber", , "Mutaz.Jaber@gilead.com", role = c("ctb")),
+    person("Ana", "Ruiz", , "Ana.Ruiz5@gilead.com", role = c("rev"))
+    )
+Description: Creates tables, figures, models, and predictions needed for standard C-QT analyses.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Imports: 
+    checkmate,
+    contrast,
+    dplyr,
+    forcats,
+    ggplot2 (>= 3.5),
+    ggpubr,
+    gt,
+    gtools,
+    magrittr,
+    MASS,
+    nlme,
+    purrr,
+    rlang,
+    scales,
+    stats,
+    tibble,
+    utils
+Suggests: 
+    testthat (>= 3.0.0),
+    pak,
+Config/testthat/edition: 3
+Depends: 
+    R (>= 3.5.0)
+LazyData: true
+URL: https://a2-ai.github.io/cqtkit-docs

@@ -1,0 +1,351 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# `cqtkit` <img src='man/figures/logo.png' align="right" height="138" />
+
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/a2-ai-gilead-collab/qtpie/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/a2-ai-gilead-collab/qtpie/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
+
+The goal of `cqtkit` is to help streamline C-QT analyses from exploratory data analysis through model validation and prediction.
+
+## Installation
+
+You can install the development version of `cqtkit` from [GitHub](https://github.com) with:
+
+```{r installing cqtkit, eval=FALSE}
+#pak::pkg_install("a2-ai/cqtkit")
+```
+
+```{r loading-cqtkit, results='hide', message=FALSE, warning=FALSE}
+library(cqtkit)
+library(dplyr)
+library(gt)
+```
+
+## Preprocessing of C-QT datasets
+`cqtkit` has some simple preprocessing functions to compute baseline corrected ECG 
+parameter values as well as mean baseline values. The `preprocess` function 
+uses the following column names as defaults:
+
+- QT
+- QTBL
+- RR
+- RRBL
+- HR
+- HRBL
+
+`preprocess` will compute QTcB, QTcF, deltaQTcF, deltaQTcB, deltaHR, deltaQTcB Baseline Mean,
+deltaQTcF Baseline Mean, deltaHR Baseline Mean (if not already present in the dataset)
+
+```{r data}
+glimpse(data)
+```
+```{r data-preprocessing}
+data_proc <- data %>% preprocess()
+glimpse(data_proc)
+```
+
+## Exploratory Data Analysis with cqtkit
+`cqtkit` has several functions allowing for extensive EDA for a C-QT dataset and for validating the assumptions used by the [Scientific white paper on concentration-QTc modeling](https://pubmed.ncbi.nlm.nih.gov/29209907/)
+
+### Drug Effect on Heart Rate 
+```{r drug-effect-on-HR}
+eda_mean_dv_over_time(
+  data = data_proc, 
+  dv_col = deltaHR, 
+  ntime_col = NTLD, 
+  dosef_col = DOSEF, 
+  reference_dose = "0 mg", 
+  reference_threshold = c(-10, 10),
+  secondary_data_col = CONC,
+  group_col = TRTG,
+  conf_int = 0.9,
+  style = set_style(
+    ylabel = bquote(Delta ~ Delta ~"HR (bpm)"),
+    legend = "Verapamil 120 mg Dose",
+    labels = c(
+      "120 mg Verapamil HCL deltaHR" = "ddHR",
+      "120 mg Verapamil HCL CONC" = "Concentration",
+      "Reference -10" = "+/- 10 bpm ddHR",
+      "Reference 10" = NA
+    ),
+    legend.position = "top",
+    legend_nrow = 2
+  )
+)
+```
+
+### QTc Correction
+```{r qtc-comparison}
+eda_qtc_comparison_plot(
+  data = bl,
+  rr_col = RR,
+  qt_col = QT,
+  qtcb_col = QTCB,
+  qtcf_col = QTCF,
+  style = set_style(
+    caption_hjust = "left"
+  )
+)
+```
+
+### Hysteresis
+
+```{r hysteresis}
+ eda_hysteresis_loop_plot(
+  data_proc,
+  NTLD,
+  deltaQTCF,
+  CONC,
+  DOSEF,
+  reference_dose = "0 mg",
+  style = set_style(
+    ylabel = bquote(Delta~Delta~"QTcF (ms)"),
+    xlabel = "Verapamil Plasma Concentration (ng/mL)",
+    legend.position = "none"
+  )
+) 
+```
+
+### Linearity of Concentration-QTc Relationship
+
+```{r Linearity}
+eda_scatter_with_regressions(
+  data_proc,
+  ydata_col = deltaQTCF,
+  xdata_col = CONC,
+  loess_line = TRUE,
+  linear_line = TRUE,
+  span = 0.90,
+  trt_col = TRTG,
+  style = set_style(
+    ylabel = bquote(Delta ~ "QTcF (ms)"),
+    xlabel = "Verapamil Concentration (ng/mL)",
+    labels = c(
+      "Verapamil HCL" = "Verapamil"
+    ),
+    legend.position = "top",
+    legend_nrow = 2
+  )
+) 
+```
+
+## Modeling
+`cqtkit` can fit the pre-specified model from the White paper using the `nlme` package
+
+```{r model-fitting}
+dqtc_model <- fit_prespecified_model(
+  data_proc,
+  dv_col = deltaQTCF,
+  id_col = ID,
+  conc_col = CONC,
+  delta_bl_col = deltaQTCFBL,
+  trt_col = TRTG,
+  tafd_col = TAFD,
+  remove_conc_iiv = FALSE
+)
+
+tabulate_model_fit_parameters(
+  dqtc_model, 
+  trt_col_name = "TRTG", 
+  tafd_col_name = "TAFD", 
+  conf_int = 0.9,
+  decimals = 2 ,
+  title = "Fixed-Effect Estimates for &Delta;QTcF Model"
+) %>% 
+tab_source_note(
+  source_note = "Additive Residual error model with IIV on intercept and slope"
+) %>% 
+  as_raw_html()
+```
+
+### Model Adequacy
+`cqtkit` has several Goodness-of-Fit functions for validating fitted models
+
+```{r gof-summary}
+gof_plots(
+  data = data_proc,
+  fit = dqtc_model,
+  dv_col = deltaQTCF,
+  conc_col = CONC,
+  ntime_col = NTLD,
+  trt_col = TRTG,
+  conc_xlabel = "Verapamil Concentration (ng/mL)",
+  legend_location = "top",
+  style = set_style(
+    labels = c(
+      "Verapamil HCL" = "Verapamil"
+    )
+  )
+)
+```
+```{r concordance}
+gof_concordance_plots(  
+  data = data_proc,
+  fit = dqtc_model,
+  dv_col = deltaQTCF,
+  conc_col = CONC,
+  ntime_col = NTLD,
+  trt_col = TRTG,
+  dv_label = "QTcF (ms)",
+  legend_location = "top",
+  style = set_style(
+    labels = c(
+      "Verapamil HCL" = "Verapamil",
+      "Placebo" = "Placebo",
+      "Reference 2" = "+/- 2 Residual",
+      "Reference -2" = NA
+    )
+  )
+)
+```
+
+```{r residuals}
+gof_residuals_plots(  
+  data = data_proc,
+  fit = dqtc_model,
+  dv_col = deltaQTCF,
+  conc_col = CONC,
+  ntime_col = NTLD,
+  trt_col = TRTG,
+  dv_label = "QTcF (ms)",
+  conc_xlabel = "Verapamil Concentration (ng/mL)",
+  legend_location = "top",
+  style = set_style(
+    labels = c(
+      "Verapamil HCL" = "Verapamil",
+      "Placebo" = "Placebo",
+      "Reference 2" = "+/- 2 Residual",
+      "Reference -2" = NA
+    )
+  )
+)
+```
+```{r VPC}
+gof_vpc_plot(
+  data_proc,
+  dqtc_model,
+  CONC,
+  deltaQTCF,
+  style = set_style(
+    xlabel = "Verapamil Concentration (ng/mL)"
+  )
+)
+```
+
+## Exposure Predictions
+
+`cqtkit` can use a fitted model and make predictions of $\Delta \Delta$QTc at relevant exposures
+```{r relevant exposure cmax}
+conc_for_10_ms <- compute_conc_for_upper_pred(
+  data_proc,
+  dqtc_model,
+  "CONC",
+  "TRTG",
+  "Verapamil HCL"
+)$lower_conc
+
+
+stpx_cmax <- max(compute_pk_parameters(
+  data_proc %>% dplyr::filter(TRTG != "Placebo"),
+  ID,
+  DOSE,
+  CONC,
+  NTLD,
+  TRTG
+)[, "Cmax_gm"])
+
+```
+
+```{r Exposure-prediction-plot}
+predict_with_exposure_plot(
+  data_proc,
+  dqtc_model,
+  CONC,
+  treatment_predictors = list(
+    TRTG = "Verapamil HCL",
+    TAFD = "1 HR",
+    deltaQTCFBL = 0
+  ),
+  control_predictors = list(
+    TRTG = "Placebo",
+    TAFD = "1 HR",
+    CONC = 0,
+    deltaQTCFBL = 0
+  ),
+  conf_int = 0.9,
+  cmaxes = c(2 * stpx_cmax, stpx_cmax, conc_for_10_ms),
+  reference_threshold = 10,
+  style = set_style(
+    xlabel = "Verapamil Plasma Concentration (ng/mL)",
+    ylabel = bquote(Delta~Delta~"QTcF (ms)"),
+    colors = c(
+      "Cmax_228.46" = "red",
+      "Cmax_151.75" = "brown",
+      "Cmax_114.23" = "skyblue"
+    ),
+    labels = c(
+      "Cmax_228.46" = "2 x Supratherapeutic dose exposure",
+      "Cmax_114.23" = "Supratherapeutic dose exposure",
+      "Cmax_151.75" = "Exposure for predicted 10 ms",
+      "Reference 10" = "10 ms ddQTcF",
+      "90% CI" = "Model derived 90% CI"
+    ),
+    fill_legend = ""
+  )
+)
+```
+```{r Exposure-prediction-table}
+tabulate_exposure_predictions(
+  data_proc,
+  dqtc_model,
+  CONC,
+  treatment_predictors = list(
+    TRTG = "Verapamil HCL",
+    TAFD = "1 HR",
+    deltaQTCFBL = 0
+  ),
+  control_predictors = list(
+    TRTG = "Placebo",
+    TAFD = "1 HR",
+    deltaQTCFBL = 0,
+    CONC = 0
+  ),
+  conf_int = 0.9,
+  doses = c(120, "*"),
+  cmaxes = c(stpx_cmax, conc_for_10_ms),
+  conc_units = "ng/mL",
+  scientific = FALSE,
+  title = "&Delta;&Delta;QTcF Predictions"
+) %>% 
+  tab_source_note(
+    source_note = gt::md("\\* Computed C~max~ for upper 90% CI to reach 10 ms")
+  ) %>% 
+  as_raw_html()
+```
+
+## References
+Scientific white paper on concentration-QTc modeling
+
+> Garnett C, Bonate PL, Dang Q, Ferber G, Huang D, Liu J, Mehrotra D, Riley S, Sager P, Tornoe C, Wang Y. Scientific white paper on concentration-QTc modeling. J Pharmacokinet Pharmacodyn. 2018 Jun;45(3):383-397. doi: 10.1007/s10928-017-9558-5. Epub 2017 Dec 5. Erratum in: J Pharmacokinet Pharmacodyn. 2018 Jun;45(3):399. doi: 10.1007/s10928-017-9565-6. PMID: 29209907.
+
+Data was originally made available [in the following publication](https://ascpt.onlinelibrary.wiley.com/doi/10.1038/clpt.2014.155)
+
+> Johannesen L, Vicente J, Mason JW, Sanabria C, Waite-Labott K, Hong M, Guo P, Lin J, Sørensen JS, Galeotti L, Florian J, Ugander M, Stockbridge N, Strauss DG. Differentiating Drug-Induced Multichannel Block on the Electrocardiogram: Randomized Study of Dofetilide, Quinidine, Ranolazine, and Verapamil. Clin Pharmacol Ther. 2014 Jul 23. doi: 10.1038/clpt.2014.155.
+
+and obtained from [Physionet](https://physionet.org/content/ecgrdvq/1.0.0/#files-panel)
+
+> Goldberger, A., Amaral, L., Glass, L., Hausdorff, J., Ivanov, P. C., Mark, R., ... & Stanley, H. E. (2000). PhysioBank, PhysioToolkit, and PhysioNet: Components of a new research resource for complex physiologic signals. Circulation [Online]. 101 (23), pp. e215–e220. RRID:SCR_007345.
