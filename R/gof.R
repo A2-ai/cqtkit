@@ -751,9 +751,9 @@ gof_residuals_trt_boxplots <- function(
     .rbpt <- add_horizontal_references(.rbpt, residual_references)
 
     this_style <- style
-    this_style$xlabel <- this_style$xlabel %||% "Treatment"
+    this_style$xlabel <- this_style$xlabel %||% "Treatment Group"
     this_style$ylabel <- this_style$ylabel %||% ydata[[i]]
-    this_style$fill_legend <- this_style$fill_legend %||% "Treatment"
+    this_style$fill_legend <- this_style$fill_legend %||% "Treatment Group"
     this_style$legend <- this_style$legend %||% ""
     this_style$color_order <- this_style$color_order %||% 2
     this_style$fill_order <- this_style$fill_order %||% 1
