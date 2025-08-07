@@ -6,5 +6,7 @@ test_that('compute_deltas works when all columns present', {
 })
 
 test_that('compute_deltas warns for missing columns', {
-  expect_error(compute_deltas(cqtkit_data_verapamil))
+  data <- cqtkit_data_verapamil %>%
+    dplyr::select(-QTCB, -QTCF)
+  expect_error(compute_deltas(data))
 })

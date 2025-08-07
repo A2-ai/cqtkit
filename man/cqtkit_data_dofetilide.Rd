@@ -18,11 +18,21 @@ A tibble: 643 × 15:
 \item{CONC}{Drug concentration}
 \item{CONCU}{Drug concentration unit}
 \item{RR}{RR after dose (ms)}
+\item{RRBL}{Baseline RR beore dose (ms)}
 \item{HR}{HR after dose (bpm)}
+\item{HRBL}{Baseline HR beore dose (ms)}
+\item{HRBLM}{Mean baseline HR across subjects (ms)}
+\item{deltaHRBL}{Difference between baseline HR and mean baseline HR across subjects (ms)}
 \item{QT}{QT after dose (ms)}
-\item{RRBL}{Baseline RR (ms)}
-\item{HRBL}{Baseline HR (bpm)}
-\item{QTBL}{Baseline QT (ms)}
+\item{QTBL}{Baseline QT before dose (ms)}
+\item{QTCB}{Bazett's corrected QT after dose (ms)}
+\item{QTCBBL}{Baseline Bazett's corrected QT before dose (ms)}
+\item{QTCBBLM}{Mean baseline QTCB across subjects (ms)}
+\item{deltaQTCBBL}{Difference between baseline QTCB and mean baseline QTCB across subjects (ms)}
+\item{QTCF}{Fridericia's corrected QT after dose (ms)}
+\item{QTCFBL}{Baseline Fridericia's corrected QT before dose(ms)}
+\item{QTCFBLM}{Mean baseline QTCF across subjects (ms)}
+\item{deltaQTCFBL}{Difference between baseline QTCF and mean baseline QTCF across subjects (ms)}
 }
 }
 }
