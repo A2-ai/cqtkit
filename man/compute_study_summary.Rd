@@ -7,13 +7,13 @@
 compute_study_summary(data, trt_col, id_col, group_col = NULL)
 }
 \arguments{
-\item{data}{cqt-dataset}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{trt_col}{column name of treatement group}
+\item{trt_col}{Column name of treatment group}
 
-\item{id_col}{column name of ID}
+\item{id_col}{Column name of ID}
 
-\item{group_col}{optional additional grouping column}
+\item{group_col}{Optional additional grouping column}
 }
 \value{
 a tibble of number of subjects in trt_col (or trt_col + group_col) along with total id_col
@@ -22,7 +22,7 @@ a tibble of number of subjects in trt_col (or trt_col + group_col) along with to
 Creates a dataframe summarizing number of subjects in each trtreatment group
 }
 \examples{
-data_proc <- preprocess(data)
+data_proc <- preprocess(cqtkit_data_verapamil)
 
 compute_study_summary(data_proc, TRTG, ID)
 }

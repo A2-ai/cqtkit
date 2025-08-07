@@ -17,23 +17,23 @@ tabulate_pk_parameters(
 )
 }
 \arguments{
-\item{data}{a dataframe of QTc dataset}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{id_col}{an unquoted column name of ID}
+\item{id_col}{An unquoted column name for subject ID}
 
-\item{dose_col}{an unquoted column name of Dose}
+\item{dose_col}{An unquoted column name for dose measurements}
 
-\item{conc_col}{an unquoted column name of Concentration measurments}
+\item{conc_col}{An unquoted column name for drug concentration measurements}
 
-\item{ntime_col}{an unquoted column name of nominal times}
+\item{ntime_col}{An unquoted column name for nominal time since dose}
 
-\item{group_col}{an unquoted column name of additional grouping column}
+\item{group_col}{An unquoted column name for additional grouping column}
 
-\item{decimals}{number of decimals to fmt the table to default is 2, format for N is 0 decimals}
+\item{decimals}{Number of decimals to format the table to (default: 2, format for N is 0 decimals)}
 
-\item{title}{optional title for the table, it will be wrapped in gt::md()}
+\item{title}{Optional title for the table, it will be wrapped in gt::md()}
 
-\item{...}{optional additional arguments to gt::tab_options}
+\item{...}{Optional additional arguments to gt::tab_options}
 }
 \value{
 a gt table
@@ -42,7 +42,7 @@ a gt table
 Converts pk_parameters df into gt table for printing
 }
 \examples{
-data_proc <- preprocess(data)
+data_proc <- preprocess(cqtkit_data_verapamil)
 
 tabulate_pk_parameters(data_proc \%>\% dplyr::filter(DOSE != 0), ID, DOSE, CONC, NTLD)
 }

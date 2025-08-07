@@ -21,31 +21,31 @@ predict_with_observations_plot(
 )
 }
 \arguments{
-\item{data}{a dataframe of QTc dataset}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{fit}{the lme model to make predictions with}
+\item{fit}{An nlme::lme model object from model fitting}
 
-\item{conc_col}{an unquoted column name of drug concentration measurements}
+\item{conc_col}{An unquoted column name for drug concentration measurements}
 
-\item{dv_col}{an unquoted column name of dQTC measurements}
+\item{dv_col}{An unquoted column name for dependent variable measurements}
 
-\item{id_col}{an unquoted column name of ID data, used when control predictors is provided to compute delta delta dv}
+\item{id_col}{An unquoted column name for subject ID}
 
-\item{ntime_col}{an unquoted column name of Nominal time data, used when control predictors is provided to compute delta delta dv}
+\item{ntime_col}{An unquoted column name for nominal time since dose}
 
-\item{trt_col}{an unquoted column name of Treatment group data, used when control predictors is provided to compute delta delta dv}
+\item{trt_col}{An unquoted column name for treatment group}
 
-\item{treatment_predictors}{a list for predictions with model. Should contain a value for each predictor in the model.}
+\item{treatment_predictors}{A list for predictions with model. Should contain a value for each predictor in the model.}
 
-\item{control_predictors}{an optional list for contrast predictions}
+\item{control_predictors}{An optional list for contrast predictions}
 
-\item{reference_threshold}{optional vector of numbers to add as horizontal dashed lines}
+\item{reference_threshold}{Optional vector of numbers to add as horizontal dashed lines}
 
-\item{conf_int}{a float for the fractional confidence interval. default = 0.9}
+\item{conf_int}{Numeric confidence interval level (default: 0.9)}
 
-\item{contrast_method}{a string specifying contrast method when using control_predictors: "matched" for individual ID+time matching (crossover studies), "group" for group-wise subtraction (parallel studies)}
+\item{contrast_method}{A string specifying contrast method when using control_predictors: "matched" for individual ID+time matching (crossover studies), "group" for group-wise subtraction (parallel studies)}
 
-\item{style}{a named list of any argument that can be passed to style_plot}
+\item{style}{A named list of arguments passed to style_plot()}
 }
 \value{
 a plot
@@ -54,9 +54,9 @@ a plot
 Plots predictions of the model with observed values
 }
 \examples{
-data <- preprocess(data)
+data_proc <- preprocess(cqtkit_data_verapamil)
 fit <- fit_prespecified_model(
-  data,
+  data_proc,
   deltaQTCF,
   ID,
   CONC,
@@ -67,7 +67,7 @@ fit <- fit_prespecified_model(
   TRUE
 )
 predict_with_observations_plot(
-  data,
+  data_proc,
   fit,
   CONC,
   deltaQTCF,

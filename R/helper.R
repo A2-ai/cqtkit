@@ -1,6 +1,6 @@
 #' Internal function for helping dealing with enquos. returns the quo_name if quo is not null
 #'
-#' @param quo an rlang::enquo variable.
+#' @param quo An rlang::enquo variable
 #'
 #' @return an rlang::quo_name if quo is not null.
 #'
@@ -20,9 +20,9 @@ name_quo_if_not_null <- function(quo) {
 
 #' Simple quadratic formula solver
 #'
-#' @param a x^2 coefficient
-#' @param b x coefficient
-#' @param c x^0 coefficient
+#' @param a X^2 coefficient
+#' @param b X coefficient
+#' @param c X^0 coefficient
 #'
 #' @returns list of lower, upper x solutions
 #' @keywords internal
@@ -43,7 +43,7 @@ quad_form <- function(a, b, c) {
 
 #' Generates a suffix depending on the last number in n.
 #'
-#' @param n an integer
+#' @param n An integer
 #'
 #' @return a string of a number and the appropriate suffix
 #' @keywords internal

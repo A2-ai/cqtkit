@@ -12,6 +12,5 @@ dependencies = [
     "devtools",
     {name = "cqtkit", path = ".", dependencies_only = true, install_suggestions = true},
     "covr",
-    "pkgpub",
 ]
 

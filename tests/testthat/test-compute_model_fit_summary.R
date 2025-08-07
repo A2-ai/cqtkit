@@ -1,10 +1,10 @@
 test_that("compute_model_fit_parameters errors when fit is not lme class", {
-  expect_error(compute_model_fit_parameters(data))
+  expect_error(compute_model_fit_parameters(cqtkit_data_verapamil))
 })
 
 test_that('compute_model_fit_paramters works for different conf_int', {
   mod <- fit_prespecified_model(
-    data %>% preprocess(),
+    cqtkit_data_verapamil %>% preprocess(),
     deltaQTCF,
     ID,
     CONC,
@@ -19,7 +19,7 @@ test_that('compute_model_fit_paramters works for different conf_int', {
 
 test_that('compute_model_fit_pararmeter errors for conf_int> 1', {
   mod <- fit_prespecified_model(
-    data %>% preprocess(),
+    cqtkit_data_verapamil %>% preprocess(),
     deltaQTCF,
     ID,
     CONC,

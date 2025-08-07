@@ -32,53 +32,53 @@ style_plot(
 )
 }
 \arguments{
-\item{p}{a ggplot2 object to update colors/legend labels}
+\item{p}{A ggplot2 object to update colors/legend labels}
 
-\item{title}{a string for a plot title}
+\item{title}{A string for a plot title}
 
-\item{xlabel}{a string for x-axis label}
+\item{xlabel}{A string for x-axis label}
 
-\item{ylabel}{a string for y-axis label}
+\item{ylabel}{A string for y-axis label}
 
-\item{xlims}{a tuple of numbers specifying limits for x-axis}
+\item{xlims}{A tuple of numbers specifying limits for x-axis}
 
-\item{ylims}{a tuple of numbers specifying limits for y-axis}
+\item{ylims}{A tuple of numbers specifying limits for y-axis}
 
-\item{colors}{a named character vector for setting colors}
+\item{colors}{A named character vector for setting colors}
 
-\item{labels}{a named character vector for setting legend labels}
+\item{labels}{A named character vector for setting legend labels}
 
-\item{shapes}{a named character vector for setting geom_point shapes}
+\item{shapes}{A named character vector for setting geom_point shapes}
 
-\item{legend}{a string for setting color legend title}
+\item{legend}{A string for setting color legend title}
 
-\item{shape_legend}{a string for setting shape legend title}
+\item{shape_legend}{A string for setting shape legend title}
 
-\item{color_order}{a numeric for setting color legend order}
+\item{color_order}{A numeric for setting color legend order}
 
-\item{shape_order}{a numeric for setting shape legend order}
+\item{shape_order}{A numeric for setting shape legend order}
 
-\item{linetype_order}{a numeric for setting linetype legend order}
+\item{linetype_order}{A numeric for setting linetype legend order}
 
-\item{legend.position}{a string for legend position}
+\item{legend.position}{A string for legend position}
 
-\item{legend.title.position}{a string for legend title position ("top", "left", "bottom", "right")}
+\item{legend.title.position}{A string for legend title position ("top", "left", "bottom", "right")}
 
-\item{legend.title.hjust}{a string or numeric for legend title horizontal justification ("left"/0, "center"/0.5, "right"/1)}
+\item{legend.title.hjust}{A string or numeric for legend title horizontal justification ("left"/0, "center"/0.5, "right"/1)}
 
-\item{logx}{a boolean for setting x-axis to log scale}
+\item{logx}{A boolean for setting x-axis to log scale}
 
-\item{logy}{a boolean for setting y-axis to log scale}
+\item{logy}{A boolean for setting y-axis to log scale}
 
-\item{fill_alpha}{a numeric for controlling alpha of fill colors}
+\item{fill_alpha}{A numeric for controlling alpha of fill colors}
 
-\item{fill_legend}{a string to replace fill legend title}
+\item{fill_legend}{A string to replace fill legend title}
 
-\item{fill_order}{a numeric for setting fill legend order}
+\item{fill_order}{A numeric for setting fill legend order}
 
-\item{caption_hjust}{a string or numeric for caption horizontal justification ("left"/0, "center"/0.5, "right"/1)}
+\item{caption_hjust}{A string or numeric for caption horizontal justification ("left"/0, "center"/0.5, "right"/1)}
 
-\item{legend_nrow}{a numeric for number of rows in legend}
+\item{legend_nrow}{A numeric for number of rows in legend}
 }
 \value{
 an updated ggplot2 object
@@ -87,7 +87,7 @@ an updated ggplot2 object
 Styles a plot with provided colors and labels
 }
 \examples{
-data_proc <- data |> preprocess()
+data_proc <- cqtkit_data_verapamil |> preprocess()
 .p <- eda_mean_dv_over_time(
   data_proc,
   deltaQTCF,

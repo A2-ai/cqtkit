@@ -19,27 +19,27 @@ eda_qt_rr_plot(
 )
 }
 \arguments{
-\item{data}{dataframe containing QT dataset}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{rr_col}{an unquoted column name of RR data}
+\item{rr_col}{An unquoted column name for RR measurements}
 
-\item{qt_col}{an unquoted column name of QT data}
+\item{qt_col}{An unquoted column name for QT measurements}
 
-\item{id_col}{an unquoted column name of ID data}
+\item{id_col}{An unquoted column name for subject ID}
 
-\item{trt_col}{an unquoted column name of Treatment group data}
+\item{trt_col}{An unquoted column name for treatment group}
 
-\item{conf_int}{confidence interval for lm regression coefficients, default 0.90}
+\item{conf_int}{Numeric confidence interval level (default: 0.9)}
 
-\item{model_type}{lm or lme, which model to fit for showing on plot}
+\item{model_type}{Lm or lme, which model to fit for showing on plot}
 
-\item{show_model_results}{a bool for showing regression slope on plot.}
+\item{show_model_results}{A bool for showing regression slope on plot.}
 
-\item{method}{method for nlme::lme fitting}
+\item{method}{Method for nlme::lme fitting (ML or REML)}
 
-\item{remove_rr_iiv}{a boolean for removing IIV on RR slope}
+\item{remove_rr_iiv}{A boolean for removing IIV on RR slope}
 
-\item{style}{a named list of any argument that can be passed to style_plot}
+\item{style}{A named list of arguments passed to style_plot()}
 }
 \value{
 a plot of the input QT against RR
@@ -48,7 +48,7 @@ a plot of the input QT against RR
 Plot QT against RR
 }
 \examples{
-data <- preprocess(data)
+data_proc <- preprocess(cqtkit_data_verapamil)
 
-eda_qt_rr_plot(data, RR, QT, ID, model_type = "lme")
+eda_qt_rr_plot(data_proc, RR, QT, ID, model_type = "lme")
 }

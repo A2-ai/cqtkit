@@ -17,23 +17,23 @@ eda_hysteresis_loop_plot(
 )
 }
 \arguments{
-\item{data}{a dataframe of QTc dataset}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{ntime_col}{an unquoted column name of nominal time points}
+\item{ntime_col}{An unquoted column name for nominal time points}
 
-\item{deltaqtc_col}{an unquoted column name of dQTC measurements at the time points in NTLD}
+\item{deltaqtc_col}{An unquoted column name for dQTC measurements at the time points in NTLD}
 
-\item{conc_col}{an unquoted column name of drug concentrations at each NTLD}
+\item{conc_col}{An unquoted column name for drug concentrations at each NTLD}
 
-\item{dosef_col}{an unquoted column name of DOSE factors.}
+\item{dosef_col}{An unquoted column name for DOSE factors.}
 
-\item{group_col}{an unquoted column name of additional grouping column}
+\item{group_col}{An unquoted column name for additional grouping column}
 
-\item{reference_dose}{Optional - DOSE of reference (i.e. placebo, DOSE == 0) measurements}
+\item{reference_dose}{Reference dose value for comparison calculations}
 
-\item{show_hysteresis_warning}{boolean, if TRUE adds Hysteresis Detected to facet wrap label for groups with hysteresis detected}
+\item{show_hysteresis_warning}{Boolean, if TRUE adds Hysteresis Detected to facet wrap label for groups with hysteresis detected}
 
-\item{style}{a named list of any argument that can be passed to style_plot}
+\item{style}{A named list of arguments passed to style_plot()}
 }
 \value{
 a plot
@@ -42,10 +42,10 @@ a plot
 Hysteresis loop plot to visually inspect hysteresis
 }
 \examples{
-data <- preprocess(data)
+data_proc <- preprocess(cqtkit_data_verapamil)
 
 eda_hysteresis_loop_plot(
-  data,
+  data_proc,
   NTLD,
   deltaQTCF,
   CONC,

@@ -7,13 +7,13 @@
 compute_delta_hrblm(data, id_col = ID, hrbl_col = HRBL, deduplicate = TRUE)
 }
 \arguments{
-\item{data}{input dataset for qtc analysis}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{id_col}{an unquoted column name of ID data}
+\item{id_col}{An unquoted column name for subject ID}
 
-\item{hrbl_col}{an unquoted column name of baseline HR measurements, default is HRBL}
+\item{hrbl_col}{An unquoted column name for baseline HR measurements, default is HRBL}
 
-\item{deduplicate}{boolean, whether baseline values are duplicated over rows. If true duplicates will be removed from average}
+\item{deduplicate}{Boolean, whether baseline values are duplicated over rows. If true duplicates will be removed from average}
 }
 \value{
 data frame with deltaHRBL
@@ -22,5 +22,5 @@ data frame with deltaHRBL
 computes delta HR BL Mean
 }
 \examples{
-compute_delta_hrblm(data)
+compute_delta_hrblm(cqtkit_data_verapamil)
 }

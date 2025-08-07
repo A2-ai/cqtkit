@@ -7,9 +7,9 @@
 add_horizontal_references(p, reference_threshold)
 }
 \arguments{
-\item{p}{ggplot object}
+\item{p}{A ggplot object}
 
-\item{reference_threshold}{numeric/vector of numerics for horizontal lines}
+\item{reference_threshold}{Numeric/vector of numerics for horizontal lines}
 }
 \value{
 a ggplot object with refence horizontal lines
@@ -18,7 +18,7 @@ a ggplot object with refence horizontal lines
 adds horizontal reference lines to plot
 }
 \examples{
-data_proc <- data |> preprocess()
+data_proc <- cqtkit_data_verapamil |> preprocess()
 eda_mean_dv_over_time(
   data_proc,
   deltaQTCF,

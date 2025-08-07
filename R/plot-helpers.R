@@ -1,10 +1,10 @@
 #' adds errorbars to a plot
 #'
-#' @param data dataframe from compute_grouped_mean_sd
-#' @param p ggplot object to add error bars to
-#' @param reference_dose reference dose value
-#' @param error_bars type of errorbars to use, ci, se, sd, null
-#' @param conf_int confidence interval for ci
+#' @param data A dataframe from compute_grouped_mean_sd
+#' @param p A ggplot object to add error bars to
+#' @param reference_dose Reference dose value for comparison calculations
+#' @param error_bars Type of errorbars to use (ci, se, sd, null)
+#' @param conf_int Numeric confidence interval level (default: 0.9)
 #'
 #' @returns ggplot2 with errorbars
 add_error_bars_to_plot <- function(
@@ -96,8 +96,8 @@ add_error_bars_to_plot <- function(
 
 #' adds horizontal reference lines to plot
 #'
-#' @param p ggplot object
-#' @param reference_threshold numeric/vector of numerics for horizontal lines
+#' @param p A ggplot object
+#' @param reference_threshold Numeric/vector of numerics for horizontal lines
 #'
 #' @returns a ggplot object with refence horizontal lines
 #' @importFrom rlang .data
@@ -105,7 +105,7 @@ add_error_bars_to_plot <- function(
 #' @export
 #'
 #' @examples
-#' data_proc <- data |> preprocess()
+#' data_proc <- cqtkit_data_verapamil |> preprocess()
 #' eda_mean_dv_over_time(
 #'   data_proc,
 #'   deltaQTCF,
@@ -161,16 +161,16 @@ add_horizontal_references <- function(p, reference_threshold) {
 
 #' adds secondary data to a plot
 #'
-#' @param primary_data dataframe of primary data plotted
-#' @param secondary_data dataframe containing data you'd like to add to plot
-#' @param reference_threshold reference threshold values
-#' @param p a ggplot2 object to add data to
-#' @param y_data string of column name in secondary data to use for plotting
-#' @param group groupping column
-#' @param scale multiplicative scaling factor
-#' @param shift additive shifting factor
-#' @param sec_ylabel secondary y axis label
-#' @param ylabel primary y axis label
+#' @param primary_data Dataframe of primary data plotted
+#' @param secondary_data Dataframe containing data you'd like to add to plot
+#' @param reference_threshold Reference threshold values
+#' @param p A ggplot2 object to add data to
+#' @param y_data String of column name in secondary data to use for plotting
+#' @param group Grouping column
+#' @param scale Multiplicative scaling factor
+#' @param shift Additive shifting factor
+#' @param sec_ylabel Secondary y axis label
+#' @param ylabel Primary y axis label
 #'
 #' @importFrom rlang .data
 #'
@@ -227,8 +227,8 @@ add_secondary_data <- function(
       ggplot2::aes(
         x = .data$time,
         y = inv_scale_function(.data[[y_data]], scale, shift),
-        group = .data$groupping,
-        color = .data$groupping,
+        group = .data$grouping,
+        color = .data$grouping,
       )
     ) +
     ggplot2::geom_point(
@@ -236,13 +236,13 @@ add_secondary_data <- function(
       ggplot2::aes(
         x = .data$time,
         y = inv_scale_function(.data[[y_data]], scale, shift),
-        group = .data$groupping,
-        color = .data$groupping,
-        shape = .data$groupping
+        group = .data$grouping,
+        color = .data$grouping,
+        shape = .data$grouping
       )
     )
 
-  secondary_groups <- unique(secondary_data$groupping)
+  secondary_groups <- unique(secondary_data$grouping)
   attr(p, "secondary_shapes") <- stats::setNames(
     rep(1, length(secondary_groups)),
     secondary_groups

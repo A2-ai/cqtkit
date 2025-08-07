@@ -7,11 +7,11 @@
 compute_lme_slope_df(lme_mod, xdata_col, conf_int = 0.95)
 }
 \arguments{
-\item{lme_mod}{fit nlme::lme model you"d like to extract slope from}
+\item{lme_mod}{An nlme::lme model object from model fitting}
 
-\item{xdata_col}{unquoted name of column used as independent data in LME}
+\item{xdata_col}{An unquoted name of column used as independent data in LME}
 
-\item{conf_int}{confidence interval for slope parameter}
+\item{conf_int}{Numeric confidence interval level (default: 0.9)}
 }
 \value{
 tibble of slope, lower_ci, upper_ci
@@ -20,7 +20,7 @@ tibble of slope, lower_ci, upper_ci
 Takes the slope from a lme model and its confidence interval
 }
 \examples{
-df <- data \%>\% preprocess()
+df <- cqtkit_data_verapamil \%>\% preprocess()
 
 lme_mod <- df \%>\%
   fit_qtc_linear_model(

@@ -1,5 +1,5 @@
 test_that("compute_fit_results works", {
-  data_proc <- data %>% preprocess()
+  data_proc <- cqtkit_data_verapamil %>% preprocess()
   mod <- fit_prespecified_model(
     data_proc,
     deltaQTCF,

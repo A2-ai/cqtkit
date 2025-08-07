@@ -13,15 +13,15 @@ compute_qtcb_qtcf(
 )
 }
 \arguments{
-\item{data}{a dataframe containing QT, RR, QTBL, RRBL}
+\item{data}{A data frame containing QT, RR, QTBL, RRBL}
 
-\item{qt_col}{an unquoted column name of QT measurements, QT by default}
+\item{qt_col}{An unquoted column name for QT measurements}
 
-\item{qtbl_col}{an unquoted column name of baseline QT measurements, QTBL by default}
+\item{qtbl_col}{An unquoted column name for baseline QT measurements}
 
-\item{rr_col}{an unquoted column name of RR measurements, RR by default}
+\item{rr_col}{An unquoted column name for RR measurements}
 
-\item{rrbl_col}{an unquoted column name of baseline RR measurements, RRBL by default}
+\item{rrbl_col}{An unquoted column name for baseline RR measurements}
 }
 \value{
 data with QTCF, QTCB, QTCFBL, and QTCBBL columns
@@ -30,5 +30,5 @@ data with QTCF, QTCB, QTCFBL, and QTCBBL columns
 Computes QTCF and QTCB from qt_col and rr_col and QTCFBL and QTCBBL from qtbl_col and rrbl_col
 }
 \examples{
-compute_qtcb_qtcf(data)
+compute_qtcb_qtcf(cqtkit_data_verapamil)
 }

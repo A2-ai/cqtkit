@@ -7,13 +7,13 @@
 compute_lm_fit_df(data, xdata_col, ydata_col, conf_int = 0.95)
 }
 \arguments{
-\item{data}{QTc dataset}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{xdata_col}{an unquoted column name of x data}
+\item{xdata_col}{An unquoted column name for independent variable measurements}
 
-\item{ydata_col}{an unquoted column name of y data}
+\item{ydata_col}{An unquoted column name for dependent variable measurements}
 
-\item{conf_int}{confidence interval}
+\item{conf_int}{Numeric confidence interval level (default: 0.9)}
 }
 \value{
 the fitted parameters of a lm of y ~ x
@@ -22,7 +22,7 @@ the fitted parameters of a lm of y ~ x
 Fits a linear model of input dataframe
 }
 \examples{
-data <- preprocess(data)
+data_proc <- preprocess(cqtkit_data_verapamil)
 
-compute_lm_fit_df(data, RR, QT)
+compute_lm_fit_df(data_proc, RR, QT)
 }

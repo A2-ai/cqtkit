@@ -13,15 +13,15 @@ compute_potential_hysteresis(
 )
 }
 \arguments{
-\item{data}{a dataframe of QTc dataset}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{ntime_col}{an unquoted column name for nominal timepoints}
+\item{ntime_col}{An unquoted column name for nominal timepoints}
 
-\item{deltaqtc_col}{an unquoted column name of dQTC measurements}
+\item{deltaqtc_col}{An unquoted column name for dQTC measurements}
 
-\item{conc_col}{an unquoted column name of concentration measurements}
+\item{conc_col}{An unquoted column name for concentration measurements}
 
-\item{group_col}{an unquoted column name of grouping column - usually DOSEF}
+\item{group_col}{An unquoted column name for grouping column - usually DOSEF}
 }
 \value{
 a bool of TRUE if hysteresis detected else FALSE
@@ -30,11 +30,11 @@ a bool of TRUE if hysteresis detected else FALSE
 Detects the pressence of hysteresis
 }
 \examples{
-data <- preprocess(data)
-data <- dplyr::filter(data, DOSE == 120)
+data_proc <- preprocess(cqtkit_data_verapamil)
+data_proc <- dplyr::filter(data_proc, DOSE == 120)
 
 compute_potential_hysteresis(
-  data,
+  data_proc,
   NTLD,
   deltaQTCF,
   CONC,

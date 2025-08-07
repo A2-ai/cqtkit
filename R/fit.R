@@ -1,17 +1,19 @@
 #' Fits QT(c) data to linear mixed effects model with fixed effects of intercept and
 #' RR slope, with random effects on intercept and slope.
 #'
-#' @param data QTc dataset
-#' @param qt_col unquoted column name of QT(c) data
-#' @param rr_col unquoted column name of RR data
-#' @param id_col unquoted column name of ID data
-#' @param method method for fitting (ML or REML)
-#' @param remove_rr_iiv boolean for removing IIV on slope
+#' @param data A data frame containing C-QT analysis dataset
+#' @param qt_col An unquoted column name for QT measurements
+#' @param rr_col An unquoted column name for RR measurements
+#' @param id_col An unquoted column name for subject ID
+#' @param method Method for nlme::lme fitting (ML or REML)
+#' @param remove_rr_iiv Boolean for removing IIV on slope
 #'
 #' @return nlme::lme model
 #' @export
 #'
 #' @examples
+#' bl <- compute_qtcb_qtcf(cqtkit_data_bl_verapamil, qtbl_col = NULL, rrbl_col = NULL)
+#'
 #' qt_mod <- fit_qtc_linear_model(bl, QT, RR, ID)
 #' qtcb_mod <- fit_qtc_linear_model(bl, QTCB, RR, ID)
 #' qtcf_mod <- fit_qtc_linear_model(bl, QTCF, RR, ID)
@@ -86,23 +88,23 @@ fit_qtc_linear_model <- function(
 
 #' generates nlme::lme model either prespecified or without TRT and TIME.
 #'
-#' @param data a dataframe of the QTc datset
-#' @param dv_col an unquoted column name of dependent variable data
-#' @param id_col an unquoted column name of ID data
-#' @param conc_col an unquoted column name of CONC data
-#' @param delta_bl_col an unquoted column name of delta_bl values, e.g. deltaQTCFBL, deltaHRBL
-#' @param trt_col Optional - an unquoted column name of TRT data
-#' @param tafd_col Optional - an unquoted column name of TAFD data
-#' @param method method for nlme::lme fitting
-#' @param remove_conc_iiv boolean for removing IIV on concentration slope parameter
+#' @param data A data frame containing C-QT analysis dataset
+#' @param dv_col An unquoted column name for dependent variable measurements
+#' @param id_col An unquoted column name for ID data
+#' @param conc_col An unquoted column name for drug concentration measurements
+#' @param delta_bl_col An unquoted column name for delta_bl values, e.g. deltaQTCFBL, deltaHRBL
+#' @param trt_col An unquoted column name for treatment group
+#' @param tafd_col An unquoted column name for time measurements
+#' @param method Method for nlme::lme fitting (ML or REML)
+#' @param remove_conc_iiv Boolean for removing IIV on concentration slope parameter
 #'
 #' @return an nlme::lme model fit to the data
 #' @export
 #'
 #' @examples
-#' data <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
-#' fit_prespecified_model(data, deltaQTCF, ID, CONC, deltaQTCFBL, TRTG, TAFD)
+#' fit_prespecified_model(data_proc, deltaQTCF, ID, CONC, deltaQTCFBL, TRTG, TAFD)
 fit_prespecified_model <- function(
   data,
   dv_col,
@@ -197,20 +199,20 @@ fit_prespecified_model <- function(
 
 #' Converts tTable of summary(model_fit) to tibble and adds CIs.
 #'
-#' @param fit a model fit
-#' @param trt_col_name string of column name of trt used in model fitting
-#' @param tafd_col_name string of column name of tafd used in model fitting
-#' @param id_col_name string of column name of the id used in model fitting for random effects
-#' @param conf_int confidence interval, default = 0.95
+#' @param fit An nlme::lme model object from model fitting
+#' @param trt_col_name String of column name of trt used in model fitting
+#' @param tafd_col_name String of column name of tafd used in model fitting
+#' @param id_col_name String of column name of the id used in model fitting for random effects
+#' @param conf_int Numeric confidence interval level (default: 0.9)
 #'
 #' @return a tibble of model_fit parameters
 #' @export
 #'
 #' @examples
-#' data <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
 #' fit <- fit_prespecified_model(
-#'   data,
+#'   data_proc,
 #'   deltaQTCF,
 #'   ID,
 #'   CONC,
@@ -313,12 +315,12 @@ compute_model_fit_parameters <- function(
 
 #' computes all fitted results and residuals for GOF plots
 #'
-#' @param data A dataframe of QTc dataset
-#' @param fit model fit
-#' @param dv_col an unquoted column name of observed model dependent variable
-#' @param conc_col an unquoted column name of observed Concentration measurements
-#' @param ntime_col an unquoted column name of time points for measurements
-#' @param trt_col an unquoted column name of treatment group, default NULL
+#' @param data A data frame containing C-QT analysis dataset
+#' @param fit An nlme::lme model object from model fitting
+#' @param dv_col An unquoted column name for observed model dependent variable
+#' @param conc_col An unquoted column name for observed Concentration measurements
+#' @param ntime_col An unquoted column name for time points for measurements
+#' @param trt_col An unquoted column name for treatment group, default NULL
 #'
 #' @importFrom nlme lme
 #'
@@ -326,10 +328,10 @@ compute_model_fit_parameters <- function(
 #' @export
 #'
 #' @examples
-#' data <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
 #' fit <- fit_prespecified_model(
-#'   data,
+#'   data_proc,
 #'   deltaQTCF,
 #'   ID,
 #'   CONC,
@@ -340,7 +342,7 @@ compute_model_fit_parameters <- function(
 #'   TRUE
 #' )
 #'
-#' compute_fit_results(data, fit, deltaQTCF, CONC, NTLD)
+#' compute_fit_results(data_proc, fit, deltaQTCF, CONC, NTLD)
 compute_fit_results <- function(
   data,
   fit,

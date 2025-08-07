@@ -1,5 +1,5 @@
 test_that('compute_lm_fit_df does not run for vector inputs, rather than column names', {
-  data <- data %>% preprocess()
+  data <- cqtkit_data_verapamil %>% preprocess()
 
   expect_error(
     compute_lm_fit_df(
@@ -12,7 +12,7 @@ test_that('compute_lm_fit_df does not run for vector inputs, rather than column 
 
 #This doesn't fail because of quoted vs unquoted and rlang::enquo, but rather formula is messed up...
 test_that('compute_lm_fit_df does not run string column names', {
-  data <- data %>% preprocess()
+  data <- cqtkit_data_verapamil %>% preprocess()
 
   expect_error(
     compute_lm_fit_df(
@@ -24,7 +24,7 @@ test_that('compute_lm_fit_df does not run string column names', {
 })
 
 test_that('compute_lm_fit_df works with non standard evaluation', {
-  data <- data %>% preprocess()
+  data <- cqtkit_data_verapamil %>% preprocess()
 
   expect_no_condition(
     compute_lm_fit_df(

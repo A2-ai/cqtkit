@@ -9,13 +9,13 @@ of C-QT data}
 compute_loess_linear_r_squared(data, deltaqtc_col, conc_col, span = 0.99)
 }
 \arguments{
-\item{data}{a dataframe of QT dataset}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{deltaqtc_col}{an unquoted column name of dQTCF measurements}
+\item{deltaqtc_col}{An unquoted column name for dQTCF measurements}
 
-\item{conc_col}{an unquoted column name of drug concentration measurements}
+\item{conc_col}{An unquoted column name for drug concentration measurements}
 
-\item{span}{a fractional value for LOESS span parameter in geom_smooth if LOESS is used, default 0.99}
+\item{span}{A fractional value for LOESS span parameter in geom_smooth if LOESS is used, default 0.99}
 }
 \value{
 a tibble of R_squared and adjusted R_squared
@@ -26,5 +26,5 @@ compared to linear regression. Used for determining linearity
 of C-QT data
 }
 \examples{
-compute_loess_linear_r_squared(data \%>\% preprocess(), deltaQTCF, CONC)
+compute_loess_linear_r_squared(cqtkit_data_verapamil \%>\% preprocess(), deltaQTCF, CONC)
 }

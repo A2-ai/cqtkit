@@ -14,17 +14,17 @@ compute_hysteresis_labeller(
 )
 }
 \arguments{
-\item{data}{a dataframe of QTc data}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{ntime_col}{an unquoted column name of Nominal time since last dose (h)}
+\item{ntime_col}{An unquoted column name for Nominal time since last dose (h)}
 
-\item{deltaqtc_col}{an unquoted column name of dQTC measurements (ms)}
+\item{deltaqtc_col}{An unquoted column name for dQTC measurements (ms)}
 
-\item{conc_col}{an unquoted column name of CONC measurements (units)}
+\item{conc_col}{An unquoted column name for CONC measurements (units)}
 
-\item{dosef_col}{an unquoted column name of doses as factor}
+\item{dosef_col}{An unquoted column name for doses as factor}
 
-\item{group_col}{an unquoted column name of additional grouping column.}
+\item{group_col}{An unquoted column name for additional grouping variable.}
 }
 \value{
 list with compute_potential_hysteresis results for each dose.
@@ -33,11 +33,11 @@ list with compute_potential_hysteresis results for each dose.
 Gets labeller for hysteresis_loop_plot. Should most likely not be used by user
 }
 \examples{
-data <- preprocess(data)
-data <- dplyr::mutate(data, DOSEF = as.factor(DOSEF))
+data_proc <- preprocess(cqtkit_data_verapamil)
+data_proc <- dplyr::mutate(data_proc, DOSEF = as.factor(DOSEF))
 
 compute_hysteresis_labeller(
-  data,
+  data_proc,
   NTLD,
   deltaQTCF,
   CONC,

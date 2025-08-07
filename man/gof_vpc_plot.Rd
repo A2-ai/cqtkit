@@ -17,23 +17,23 @@ gof_vpc_plot(
 )
 }
 \arguments{
-\item{data}{a dataframe containing the QTc data}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{fit}{the model fit object}
+\item{fit}{An nlme::lme model object from model fitting}
 
-\item{xdata_col}{an unquoted column name for independent variable}
+\item{xdata_col}{An unquoted column name for independent variable}
 
-\item{dv_col}{an unquoted column name for dependent variable}
+\item{dv_col}{An unquoted column name for dependent variable}
 
-\item{conf_int}{a fractional numeric for confidence interval (quantiles of 5/95th quantiles), default = 0.9}
+\item{conf_int}{Numeric confidence interval level (default: 0.9)}
 
-\item{nruns}{integer number of simulations to run}
+\item{nruns}{Integer number of simulations to run}
 
-\item{nbins}{integer number of bins to break independent variable into - OR - a user specified vector for non-uniform binning}
+\item{nbins}{Integer number of bins to break independent variable into - OR - a user specified vector for non-uniform binning}
 
-\item{type}{integer for type parameter of stats::quantile}
+\item{type}{Integer for type parameter of stats::quantile}
 
-\item{style}{a named list of any argument that can be passed to style_plot}
+\item{style}{A named list of arguments passed to style_plot()}
 }
 \value{
 a plot of the VPC results
@@ -42,7 +42,7 @@ a plot of the VPC results
 Performs a visual predictive check and plots the results
 }
 \examples{
-data_proc <- preprocess(data)
+data_proc <- preprocess(cqtkit_data_verapamil)
 fit <- fit_prespecified_model(
   data_proc,
   deltaQTCF,

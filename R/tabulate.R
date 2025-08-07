@@ -1,21 +1,21 @@
 #' Creates a gt table of study summary for number of subjects in each grouping
 #'
-#' @param data c-qt dataset
-#' @param trt_col treatment column name
-#' @param id_col subject id column name
-#' @param group_col optional additional grouping column
-#' @param protocol_number string of protocol number
-#' @param title string for table title
-#' @param study_status string for study status
-#' @param grouping_col_name string for naming grouping column, default = "Dose Regimen"
-#' @param n_sub_col_name string for n_sub column, default = "N"
-#' @param ... optional additional args to gt::tab_options
+#' @param data A data frame containing C-QT analysis dataset
+#' @param trt_col An unquoted column name for treatment group
+#' @param id_col An unquoted column name for subject ID
+#' @param group_col An unquoted column name for additional grouping variable
+#' @param protocol_number A string of protocol number
+#' @param title A string for table title
+#' @param study_status A string for study status
+#' @param grouping_col_name A string for naming grouping column (default: "Dose Regimen")
+#' @param n_sub_col_name A string for n_sub column (default: "N")
+#' @param ... Optional additional args to gt::tab_options
 #'
 #' @return a gt table
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
 #' tabulate_study_summary(data_proc, TRTG, ID,
 #' protocol_number = "A2AI201",
@@ -68,15 +68,15 @@ tabulate_study_summary <- function(
 
 #' Converts pk_parameters df into gt table for printing
 #'
-#' @param data a dataframe of QTc dataset
-#' @param id_col an unquoted column name of ID
-#' @param dose_col an unquoted column name of Dose
-#' @param conc_col an unquoted column name of Concentration measurments
-#' @param ntime_col an unquoted column name of nominal times
-#' @param group_col an unquoted column name of additional grouping column
-#' @param decimals number of decimals to fmt the table to default is 2, format for N is 0 decimals
-#' @param title optional title for the table, it will be wrapped in gt::md()
-#' @param ... optional additional arguments to gt::tab_options
+#' @param data A data frame containing C-QT analysis dataset
+#' @param id_col An unquoted column name for subject ID
+#' @param dose_col An unquoted column name for dose measurements
+#' @param conc_col An unquoted column name for drug concentration measurements
+#' @param ntime_col An unquoted column name for nominal time since dose
+#' @param group_col An unquoted column name for additional grouping column
+#' @param decimals Number of decimals to format the table to (default: 2, format for N is 0 decimals)
+#' @param title Optional title for the table, it will be wrapped in gt::md()
+#' @param ... Optional additional arguments to gt::tab_options
 #'
 #' @importFrom rlang .data
 #'
@@ -84,7 +84,7 @@ tabulate_study_summary <- function(
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
 #' tabulate_pk_parameters(data_proc %>% dplyr::filter(DOSE != 0), ID, DOSE, CONC, NTLD)
 tabulate_pk_parameters <- function(
@@ -159,16 +159,16 @@ tabulate_pk_parameters <- function(
 
 #' Generates table of model parameter esitmates and statistics
 #'
-#' @param fit fitted model
-#' @param trt_col_name string of column name of trt used in model fitting
-#' @param tafd_col_name string of column name of tafd used in model fitting
-#' @param id_col_name string of column name of id used in model fitting for random effects
-#' @param conf_int confidence interval, default = 0.95
-#' @param decimals number of decimals to format table to, default is 2
-#' @param show_standard_error boolean, displays standard error of fixed effects estimates in table
-#' @param scientific boolean for converting numbers to scientific notation if less than decimals
-#' @param title optional string for adding tab_header. It will be wrapped in gt::md()
-#' @param ... optional additional arguments for gt::tab_options
+#' @param fit An nlme::lme model object from model fitting
+#' @param trt_col_name A string of column name of trt used in model fitting
+#' @param tafd_col_name A string of column name of tafd used in model fitting
+#' @param id_col_name A string of column name of id used in model fitting for random effects
+#' @param conf_int Numeric confidence interval level (default: 0.9)
+#' @param decimals Number of decimals to format table to, default is 2
+#' @param show_standard_error Boolean that displays standard error of fixed effects estimates in table
+#' @param scientific Boolean for converting numbers to scientific notation if less than decimals
+#' @param title Optional string for adding tab_header. It will be wrapped in gt::md()
+#' @param ... Optional additional arguments for gt::tab_options
 #'
 #' @importFrom rlang .data
 #'
@@ -176,7 +176,7 @@ tabulate_pk_parameters <- function(
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #' fit <- fit_prespecified_model(
 #'   data_proc,
 #'   deltaQTCF,
@@ -264,27 +264,27 @@ tabulate_model_fit_parameters <- function(
 
 #' Generates a gt table of summary of QTc, dQTc and ddQTc over time stratified by dose
 #'
-#' @param data a dataframe containing QTc dataset
-#' @param ntime_col an unquoted column name for nominal time data
-#' @param dose_col an unquoted column name for dose data
-#' @param ecg_param_col an unquoted column name for QTc measurements
-#' @param delta_ecg_param_col an unquoted column name for deltaQTc measurements
-#' @param ecg_param_name a string of the ecg parameter being summarized, e.g. QTc or HR
-#' @param unit a string of the unit for ecg_parameter
-#' @param group_col an unquoted column name of additional grouping column
-#' @param reference_dose an optional argument for specifying reference dose for delta delta QTc computation
-#' @param ecg_param_conf_int confidence interval for QTc summary stats default 95%
-#' @param delta_ecg_param_conf_int confidence interval for dQTc summary stats default 90%
-#' @param decimals number of decimals to fmt the table to default is 2, N column is 0
-#' @param row_group_label optional label for the dose/dose + group column
-#' @param title optional title for the table, it will be wrapped in gt::md()
-#' @param ... optional arguments for gt::tab_options
+#' @param data A data frame containing C-QT analysis dataset
+#' @param ntime_col An unquoted column name for nominal time data
+#' @param dose_col An unquoted column name for dose data
+#' @param ecg_param_col An unquoted column name for QTc measurements
+#' @param delta_ecg_param_col An unquoted column name for deltaQTc measurements
+#' @param ecg_param_name A string of the ecg parameter being summarized, e.g. QTc or HR
+#' @param unit A string of the unit for ecg_parameter
+#' @param group_col An unquoted column name for additional grouping column
+#' @param reference_dose A reference dose value for comparison calculations
+#' @param ecg_param_conf_int Confidence interval for QTc summary stats default 95%
+#' @param delta_ecg_param_conf_int Confidence interval for dQTc summary stats default 90%
+#' @param decimals Number of decimals to fmt the table to default is 2, N column is 0
+#' @param row_group_label Optional label for the dose/dose + group column
+#' @param title Optional title for the table, it will be wrapped in gt::md()
+#' @param ... Optional arguments for gt::tab_options
 #'
 #' @return a gt table of the QTc/deltaQTc/delta delta QTc summary
 #' @export
 #'
 #' @examples
-#' data_proc <- data %>% preprocess()
+#' data_proc <- cqtkit_data_verapamil %>% preprocess()
 #' tabulate_ecg_param_summary(
 #'  data_proc,
 #'  NTLD,
@@ -473,19 +473,19 @@ tabulate_ecg_param_summary <- function(
 
 #' Tabulates number of high QTc/deltaQTc observations.
 #'
-#' @param data a dataframe of QTc dataset
-#' @param qtc_col an unquoted column name of QTc data
-#' @param deltaqtc_col an unquoted column name of deltaQTC data
-#' @param group_col an optional unquoted column name of grouping column
-#' @param group_label an optional label to use for group column
-#' @param title optional string to give the table a title, wrapped in gt::md()
-#' @param ... optional additional args to gt::tab_options
+#' @param data A data frame containing C-QT analysis dataset
+#' @param qtc_col An unquoted column name for QTc data
+#' @param deltaqtc_col An unquoted column name for deltaQTC data
+#' @param group_col An optional unquoted column name of grouping column
+#' @param group_label An optional label to use for group column
+#' @param title Optional string to give the table a title, wrapped in gt::md()
+#' @param ... Optional additional args to gt::tab_options
 #'
 #' @return a gt table
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
 #' tabulate_high_qtc_sub(data_proc, QTCF, deltaQTCF)
 tabulate_high_qtc_sub <- function(
@@ -547,20 +547,20 @@ tabulate_high_qtc_sub <- function(
 
 #' Tablulates exposure predictions at therapeutic and supratherapuetic Cmax.
 #'
-#' @param data a dataframe of QTc dataset
-#' @param fit the lme model to use for predictions
-#' @param conc_col an unquoted column name of concentration measurements used to fit the model
-#' @param treatment_predictors list of a values for contrast. conc will update
-#' @param control_predictors list of b values for contrast
-#' @param doses vector of Doses to show prediction at
-#' @param cmaxes vector of Cmax for each dose
-#' @param qtc_label label for QTc column name, default QTc (ms)
+#' @param data A data frame containing C-QT analysis dataset
+#' @param fit An nlme::lme model object from model fitting
+#' @param conc_col An unquoted column name for concentration measurements used to fit the model
+#' @param treatment_predictors A list of a values for contrast. conc will update
+#' @param control_predictors A list of b values for contrast
+#' @param doses A vector of doses to show prediction at
+#' @param cmaxes A vector of Cmax for each dose
+#' @param qtc_label A label for QTc column name, default QTc (ms)
 #' @param conc_units Units for concentration default ng/mL
-#' @param conf_int confidence interval for predictions. Default 90%
-#' @param decimals number of decimals to format numbers to. default is 2
-#' @param scientific boolean for converting to scientific notation
-#' @param title optional string for table title. Wrapped in gt::md()
-#' @param ... optional additional args to gt::tab_options
+#' @param conf_int Numeric confidence interval level (default: 0.9)
+#' @param decimals Number of decimals to format numbers to. default is 2
+#' @param scientific Boolean for converting to scientific notation
+#' @param title Optional string for table title. Wrapped in gt::md()
+#' @param ... Optional additional args to gt::tab_options
 #'
 #' @importFrom rlang .data
 #'
@@ -569,7 +569,7 @@ tabulate_high_qtc_sub <- function(
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
 #' fit <- fit_prespecified_model(
 #'   data_proc,
