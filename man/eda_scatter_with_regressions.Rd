@@ -18,25 +18,25 @@ eda_scatter_with_regressions(
 )
 }
 \arguments{
-\item{data}{a dataframe of QT dataset}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{ydata_col}{an unquoted column name of dependent variable measurements}
+\item{ydata_col}{An unquoted column name for dependent variable measurements}
 
-\item{xdata_col}{an unquoted column name of independent variable measurements}
+\item{xdata_col}{An unquoted column name for independent variable measurements}
 
-\item{trt_col}{Optional - an unquoted column name of treatment group}
+\item{trt_col}{An unquoted column name for treatment group}
 
-\item{reference_threshold}{optional vector of numbers to add as horizontal dashed lines}
+\item{reference_threshold}{Optional vector of numbers to add as horizontal dashed lines}
 
-\item{loess_line}{a bool to add LOESS regression line}
+\item{loess_line}{A bool to add LOESS regression line}
 
-\item{linear_line}{a bool to add a linear regression line}
+\item{linear_line}{A bool to add a linear regression line}
 
-\item{span}{a fractional value for LOESS span parameter in geom_smooth if LOESS is used, default 0.99}
+\item{span}{A fractional value for LOESS span parameter in geom_smooth if LOESS is used, default 0.99}
 
-\item{conf_int}{a fractional numeric for setting confidence interval, default = 9}
+\item{conf_int}{Numeric confidence interval level (default: 0.9)}
 
-\item{style}{a named list of any argument that can be passed to style_plot. Shapes are mapped to treatment groups and can be controlled via the shapes parameter in style}
+\item{style}{A named list of arguments passed to style_plot(). Shapes are mapped to treatment groups and can be controlled via the shapes parameter in style}
 }
 \value{
 a plot
@@ -45,10 +45,10 @@ a plot
 plots scatter plot with with linear and loess regressions. Can be used to check for linearity.
 }
 \examples{
-data <- preprocess(data)
+data_proc <- preprocess(cqtkit_data_verapamil)
 
 eda_scatter_with_regressions(
-  data,
+  data_proc,
   deltaQTCF,
   CONC,
   TRTG,

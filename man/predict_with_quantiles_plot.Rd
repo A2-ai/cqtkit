@@ -23,35 +23,35 @@ predict_with_quantiles_plot(
 )
 }
 \arguments{
-\item{data}{A dataframe of QTc dataset}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{fit}{a lme model to make predictions with}
+\item{fit}{An nlme::lme model object from model fitting}
 
-\item{conc_col}{an unquoted column name of concentration measurements}
+\item{conc_col}{An unquoted column name for concentration measurements}
 
-\item{dv_col}{an unquoted column name of dQTC measurements}
+\item{dv_col}{An unquoted column name for dependent variable measurements}
 
-\item{id_col}{an unquoted column name of ID data, used when control predictors is provided to compute delta delta dv}
+\item{id_col}{An unquoted column name for subject ID}
 
-\item{ntime_col}{an unquoted column name of Nominal time data, used when control predictors is provided to compute delta delta dv}
+\item{ntime_col}{An unquoted column name for nominal time since dose}
 
-\item{trt_col}{an unquoted column name of Treatment group data, used when control predictors is provided to compute delta delta dv}
+\item{trt_col}{An unquoted column name for treatment group}
 
-\item{treatment_predictors}{list of a values for contrast. CONC will update}
+\item{treatment_predictors}{List of a values for contrast. CONC will update}
 
-\item{control_predictors}{list of b values for contrast}
+\item{control_predictors}{List of b values for contrast}
 
-\item{reference_threshold}{optional vector of numbers to add as horizontal dashed lines}
+\item{reference_threshold}{Optional vector of numbers to add as horizontal dashed lines}
 
-\item{conf_int}{confidence interval fraction, default = 0.9}
+\item{conf_int}{Numeric confidence interval level (default: 0.9)}
 
-\item{nbins}{number of bins for quantiles, or vector of cut points for computing average}
+\item{nbins}{Number of bins for quantiles, or vector of cut points for computing average}
 
-\item{error_bars}{a string to denote which errorbars to show, CI, SE, SD or none.}
+\item{error_bars}{A string to denote which errorbars to show, CI, SE, SD or none.}
 
-\item{contrast_method}{a string specifying contrast method when using control_predictors: "matched" for individual ID+time matching (crossover studies), "group" for group-wise subtraction (parallel studies)}
+\item{contrast_method}{A string specifying contrast method when using control_predictors: "matched" for individual ID+time matching (crossover studies), "group" for group-wise subtraction (parallel studies)}
 
-\item{style}{a named list of any argument that can be passed to style_plot}
+\item{style}{A named list of arguments passed to style_plot()}
 }
 \value{
 a plot
@@ -60,9 +60,9 @@ a plot
 Plots predictions and 90\% CI
 }
 \examples{
-data <- preprocess(data)
+data_proc <- preprocess(cqtkit_data_verapamil)
 fit <- fit_prespecified_model(
-  data,
+  data_proc,
   deltaQTCF,
   ID,
   CONC,
@@ -73,7 +73,7 @@ fit <- fit_prespecified_model(
   TRUE
 )
 predict_with_quantiles_plot(
-  data,
+  data_proc,
   fit,
   CONC,
   deltaQTCF,

@@ -18,25 +18,25 @@ gof_plots(
 )
 }
 \arguments{
-\item{data}{A dataframe of QTc dataset}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{fit}{a deltaQTCF model fit}
+\item{fit}{An nlme::lme model object from model fitting}
 
-\item{dv_col}{an unquoted column name of deltaQTC/Dependent variable measurements}
+\item{dv_col}{An unquoted column name for dependent variable measurements}
 
-\item{conc_col}{an unquoted column name of concentration measurements}
+\item{conc_col}{An unquoted column name for drug concentration measurements}
 
-\item{ntime_col}{an unquoted column name of nominal times}
+\item{ntime_col}{An unquoted column name for nominal time since dose}
 
-\item{trt_col}{an unquoted column name of treatment group, default NULL}
+\item{trt_col}{An unquoted column name for treatment group"}
 
-\item{conc_xlabel}{a string for concentration plot xlabel}
+\item{conc_xlabel}{A string for concentration plot xlabel}
 
-\item{dv_label}{a string of dv label default bquote(Delta ~ 'QTc (ms)')}
+\item{dv_label}{A string of dv label (default: bquote(Delta ~ 'QTc (ms)'))}
 
-\item{legend_location}{string for moving legend position.}
+\item{legend_location}{String for legend position (top, bottom, left, right)}
 
-\item{style}{a named list of any argument that can be passed to style_plot}
+\item{style}{A named list of arguments passed to style_plot()}
 }
 \value{
 a 2x2 grid of plots
@@ -45,7 +45,7 @@ a 2x2 grid of plots
 Makes goodness of fit plots
 }
 \examples{
-data_proc <- preprocess(data)
+data_proc <- preprocess(cqtkit_data_verapamil)
 fit <- fit_prespecified_model(
   data_proc,
   deltaQTCF,

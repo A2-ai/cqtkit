@@ -7,13 +7,13 @@
 compute_dataset_simulation(data, fit, xdata_col, sim_num = 0)
 }
 \arguments{
-\item{data}{a dataframe conatining QTc dataset}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{fit}{an lme fit model}
+\item{fit}{An nlme::lme model object from model fitting}
 
-\item{xdata_col}{an unqoted column name for xdata}
+\item{xdata_col}{An unquoted column name for xdata}
 
-\item{sim_num}{an optional simulation number}
+\item{sim_num}{An optional simulation number}
 }
 \value{
 a dataframe of simulation results
@@ -22,12 +22,12 @@ a dataframe of simulation results
 Simulates a dataset used to fit the model.
 }
 \examples{
-data <- preprocess(data)
+data_proc <- preprocess(cqtkit_data_verapamil)
 fit <- nlme::lme(
   fixed = deltaQTCF ~ 1 + CONC,
   random = ~ 1 | ID,
-  data = data
+  data = data_proc
 )
 
-compute_dataset_simulation(data, fit, CONC)
+compute_dataset_simulation(data_proc, fit, CONC)
 }

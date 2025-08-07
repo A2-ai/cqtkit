@@ -15,19 +15,19 @@ compute_summary_statistics_of_simulations(
 )
 }
 \arguments{
-\item{data}{a dataframe conatining QTc dataset}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{fit}{an lme fit model}
+\item{fit}{An nlme::lme model object from model fitting}
 
-\item{xdata_col}{an unqoted column name for xdata}
+\item{xdata_col}{An unquoted column name for xdata}
 
-\item{conf_int}{a fractional numeric for confidence interval (quantiles of 5/95th quantiles), default = 0.9}
+\item{conf_int}{Numeric confidence interval level (default: 0.9)}
 
-\item{nruns}{integer number of simulations to run}
+\item{nruns}{Integer number of simulations to run}
 
-\item{nbins}{integer number of bins to break independent variable into - OR - a user specified vector for non-uniform binning}
+\item{nbins}{Integer number of bins to break independent variable into - OR - a user specified vector for non-uniform binning}
 
-\item{type}{algorithm for quantile. Default (2), is SAS quantile algorithm}
+\item{type}{Algorithm for quantile. Default (2), is SAS quantile algorithm}
 }
 \value{
 a tibble of summary statistics of nruns worth of dataset simulations for a VPC.
@@ -36,7 +36,7 @@ a tibble of summary statistics of nruns worth of dataset simulations for a VPC.
 Wrapper for calling compute_dataset_simulation nruns time and computing summary statsitics of the simulations
 }
 \examples{
-data_proc <- preprocess(data)
+data_proc <- preprocess(cqtkit_data_verapamil)
 
 fit <- nlme::lme(
   fixed = deltaQTCF ~ 1 + CONC,

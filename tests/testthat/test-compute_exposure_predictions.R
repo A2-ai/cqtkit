@@ -1,5 +1,5 @@
 test_that('compute_exposure_predictions runs fine for good model and full data', {
-  data_proc <- preprocess(data)
+  data_proc <- preprocess(cqtkit_data_verapamil)
   mod <- fit_prespecified_model(
     data_proc,
     deltaQTCF,

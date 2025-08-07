@@ -1,26 +1,26 @@
 #' Plots predictions of the model with observed values
 #'
-#' @param data a dataframe of QTc dataset
-#' @param fit the lme model to make predictions with
-#' @param conc_col an unquoted column name of drug concentration measurements
-#' @param dv_col an unquoted column name of dQTC measurements
-#' @param id_col an unquoted column name of ID data, used when control predictors is provided to compute delta delta dv
-#' @param ntime_col an unquoted column name of Nominal time data, used when control predictors is provided to compute delta delta dv
-#' @param trt_col an unquoted column name of Treatment group data, used when control predictors is provided to compute delta delta dv
-#' @param treatment_predictors a list for predictions with model. Should contain a value for each predictor in the model.
-#' @param control_predictors an optional list for contrast predictions
-#' @param reference_threshold optional vector of numbers to add as horizontal dashed lines
-#' @param conf_int a float for the fractional confidence interval. default = 0.9
-#' @param contrast_method a string specifying contrast method when using control_predictors: "matched" for individual ID+time matching (crossover studies), "group" for group-wise subtraction (parallel studies)
-#' @param style a named list of any argument that can be passed to style_plot
+#' @param data A data frame containing C-QT analysis dataset
+#' @param fit An nlme::lme model object from model fitting
+#' @param conc_col An unquoted column name for drug concentration measurements
+#' @param dv_col An unquoted column name for dependent variable measurements
+#' @param id_col An unquoted column name for subject ID
+#' @param ntime_col An unquoted column name for nominal time since dose
+#' @param trt_col An unquoted column name for treatment group
+#' @param treatment_predictors A list for predictions with model. Should contain a value for each predictor in the model.
+#' @param control_predictors An optional list for contrast predictions
+#' @param reference_threshold Optional vector of numbers to add as horizontal dashed lines
+#' @param conf_int Numeric confidence interval level (default: 0.9)
+#' @param contrast_method A string specifying contrast method when using control_predictors: "matched" for individual ID+time matching (crossover studies), "group" for group-wise subtraction (parallel studies)
+#' @param style A named list of arguments passed to style_plot()
 #'
 #' @return a plot
 #' @export
 #'
 #' @examples
-#' data <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #' fit <- fit_prespecified_model(
-#'   data,
+#'   data_proc,
 #'   deltaQTCF,
 #'   ID,
 #'   CONC,
@@ -31,7 +31,7 @@
 #'   TRUE
 #' )
 #' predict_with_observations_plot(
-#'   data,
+#'   data_proc,
 #'   fit,
 #'   CONC,
 #'   deltaQTCF,
@@ -194,21 +194,21 @@ predict_with_observations_plot <- function(
 
 #' Plots predictions and 90% CI
 #'
-#' @param data A dataframe of QTc dataset
-#' @param fit a lme model to make predictions with
-#' @param conc_col an unquoted column name of concentration measurements
-#' @param dv_col an unquoted column name of dQTC measurements
-#' @param id_col an unquoted column name of ID data, used when control predictors is provided to compute delta delta dv
-#' @param ntime_col an unquoted column name of Nominal time data, used when control predictors is provided to compute delta delta dv
-#' @param trt_col an unquoted column name of Treatment group data, used when control predictors is provided to compute delta delta dv
-#' @param treatment_predictors list of a values for contrast. CONC will update
-#' @param control_predictors list of b values for contrast
-#' @param reference_threshold optional vector of numbers to add as horizontal dashed lines
-#' @param conf_int confidence interval fraction, default = 0.9
-#' @param nbins number of bins for quantiles, or vector of cut points for computing average
-#' @param error_bars a string to denote which errorbars to show, CI, SE, SD or none.
-#' @param contrast_method a string specifying contrast method when using control_predictors: "matched" for individual ID+time matching (crossover studies), "group" for group-wise subtraction (parallel studies)
-#' @param style a named list of any argument that can be passed to style_plot
+#' @param data A data frame containing C-QT analysis dataset
+#' @param fit An nlme::lme model object from model fitting
+#' @param conc_col An unquoted column name for concentration measurements
+#' @param dv_col An unquoted column name for dependent variable measurements
+#' @param id_col An unquoted column name for subject ID
+#' @param ntime_col An unquoted column name for nominal time since dose
+#' @param trt_col An unquoted column name for treatment group
+#' @param treatment_predictors List of a values for contrast. CONC will update
+#' @param control_predictors List of b values for contrast
+#' @param reference_threshold Optional vector of numbers to add as horizontal dashed lines
+#' @param conf_int Numeric confidence interval level (default: 0.9)
+#' @param nbins Number of bins for quantiles, or vector of cut points for computing average
+#' @param error_bars A string to denote which errorbars to show, CI, SE, SD or none.
+#' @param contrast_method A string specifying contrast method when using control_predictors: "matched" for individual ID+time matching (crossover studies), "group" for group-wise subtraction (parallel studies)
+#' @param style A named list of arguments passed to style_plot()
 #'
 #' @return a plot
 #' @export
@@ -216,9 +216,9 @@ predict_with_observations_plot <- function(
 #' @importFrom rlang :=
 #'
 #' @examples
-#' data <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #' fit <- fit_prespecified_model(
-#'   data,
+#'   data_proc,
 #'   deltaQTCF,
 #'   ID,
 #'   CONC,
@@ -229,7 +229,7 @@ predict_with_observations_plot <- function(
 #'   TRUE
 #' )
 #' predict_with_quantiles_plot(
-#'   data,
+#'   data_proc,
 #'   fit,
 #'   CONC,
 #'   deltaQTCF,
@@ -401,23 +401,23 @@ predict_with_quantiles_plot <- function(
 
 #' Plots model predictions with therapeutic and supra therapeutic Cmax
 #'
-#' @param data a dataframe of QTc dataset
-#' @param fit the lme model to make predictions with
-#' @param conc_col an unquoted column name of drug concentration measurements
-#' @param treatment_predictors list of a values for contrast. CONC will update
-#' @param control_predictors list of b values for contrast
-#' @param reference_threshold optional vector of numbers to add as horizontal dashed lines
+#' @param data A data frame containing C-QT analysis dataset
+#' @param fit An nlme::lme model object from model fitting
+#' @param conc_col An unquoted column name for drug concentration measurements
+#' @param treatment_predictors List of a values for contrast. CONC will update
+#' @param control_predictors List of b values for contrast
+#' @param reference_threshold Optional vector of numbers to add as horizontal dashed lines
 #' @param cmaxes Optional - numeric vector of Cmax values to add as reference lines
-#' @param conf_int confidence interval fraction, default = 0.9
-#' @param style a named list of any argument that can be passed to style_plot
+#' @param conf_int Numeric confidence interval level (default: 0.9)
+#' @param style A named list of arguments passed to style_plot()
 #'
 #' @return a plot
 #' @export
 #'
 #' @examples
-#' data <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #' fit <- fit_prespecified_model(
-#'   data,
+#'   data_proc,
 #'   deltaQTCF,
 #'   ID,
 #'   CONC,
@@ -428,10 +428,10 @@ predict_with_quantiles_plot <- function(
 #'   TRUE
 #' )
 #' pk_df <- compute_pk_parameters(
-#'   data %>% dplyr::filter(DOSE != 0), ID, DOSEF, CONC, NTLD)
+#'   data_proc %>% dplyr::filter(DOSE != 0), ID, DOSEF, CONC, NTLD)
 #'
 #' predict_with_exposure_plot(
-#'   data,
+#'   data_proc,
 #'   fit,
 #'   CONC,
 #'   treatment_predictors = list(

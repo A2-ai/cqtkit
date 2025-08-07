@@ -5,7 +5,7 @@
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/a2-ai-gilead-collab/qtpie/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/a2-ai-gilead-collab/qtpie/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/a2-ai-gilead-collab/cqtkit/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/a2-ai-gilead-collab/cqtkit/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of `cqtkit` is to help streamline C-QT analyses from
@@ -44,7 +44,7 @@ deltaQTcB Baseline Mean, deltaQTcF Baseline Mean, deltaHR Baseline Mean
 (if not already present in the dataset)
 
 ``` r
-glimpse(data)
+glimpse(cqtkit_data_verapamil)
 #> Rows: 643
 #> Columns: 15
 #> $ ID    <dbl> 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010, 1011…
@@ -65,7 +65,7 @@ glimpse(data)
 ```
 
 ``` r
-data_proc <- data %>% preprocess()
+data_proc <- cqtkit_data_verapamil %>% preprocess()
 glimpse(data_proc)
 #> Rows: 643
 #> Columns: 30
@@ -141,6 +141,7 @@ eda_mean_dv_over_time(
 ### QTc Correction
 
 ``` r
+bl <- cqtkit_data_bl_verapamil %>% compute_qtcb_qtcf(qtbl_col = NULL, rrbl_col = NULL)
 eda_qtc_comparison_plot(
   data = bl,
   rr_col = RR,
@@ -231,7 +232,7 @@ tab_source_note(
   as_raw_html()
 ```
 
-<div id="fhqrordoap" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="aiujpxzqzn" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   &#10;  <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF">
   <thead style="border-style: none;">
     <tr class="gt_heading" style="border-style: none; background-color: #FFFFFF; text-align: center; border-bottom-color: #FFFFFF; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;" bgcolor="#FFFFFF" align="center">
@@ -499,7 +500,7 @@ tabulate_exposure_predictions(
   as_raw_html()
 ```
 
-<div id="ythppxghxx" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="lrsaihnixd" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   &#10;  <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF">
   <thead style="border-style: none;">
     <tr class="gt_heading" style="border-style: none; background-color: #FFFFFF; text-align: center; border-bottom-color: #FFFFFF; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;" bgcolor="#FFFFFF" align="center">

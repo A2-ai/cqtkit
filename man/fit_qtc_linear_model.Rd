@@ -15,17 +15,17 @@ fit_qtc_linear_model(
 )
 }
 \arguments{
-\item{data}{QTc dataset}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{qt_col}{unquoted column name of QT(c) data}
+\item{qt_col}{An unquoted column name for QT measurements}
 
-\item{rr_col}{unquoted column name of RR data}
+\item{rr_col}{An unquoted column name for RR measurements}
 
-\item{id_col}{unquoted column name of ID data}
+\item{id_col}{An unquoted column name for subject ID}
 
-\item{method}{method for fitting (ML or REML)}
+\item{method}{Method for nlme::lme fitting (ML or REML)}
 
-\item{remove_rr_iiv}{boolean for removing IIV on slope}
+\item{remove_rr_iiv}{Boolean for removing IIV on slope}
 }
 \value{
 nlme::lme model
@@ -35,6 +35,8 @@ Fits QT(c) data to linear mixed effects model with fixed effects of intercept an
 RR slope, with random effects on intercept and slope.
 }
 \examples{
+bl <- compute_qtcb_qtcf(cqtkit_data_bl_verapamil, qtbl_col = NULL, rrbl_col = NULL)
+
 qt_mod <- fit_qtc_linear_model(bl, QT, RR, ID)
 qtcb_mod <- fit_qtc_linear_model(bl, QTCB, RR, ID)
 qtcf_mod <- fit_qtc_linear_model(bl, QTCF, RR, ID)

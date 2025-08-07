@@ -17,23 +17,23 @@ compute_contrast_observations(
 )
 }
 \arguments{
-\item{data}{a dataframe of QTc dataset}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{conc_col}{an unquoted column name of drug concentration measurements}
+\item{conc_col}{An unquoted column name for drug concentration measurements}
 
-\item{dv_col}{an unquoted column name of dQTC measurements}
+\item{dv_col}{An unquoted column name for dQTC measurements}
 
-\item{id_col}{an unquoted column name of ID data, used when control predictors is provided to compute delta delta dv}
+\item{id_col}{An unquoted column name for subject ID, used when control predictors is provided to compute delta delta dv}
 
-\item{ntime_col}{an unquoted column name of Nominal time data, used when control predictors is provided to compute delta delta dv}
+\item{ntime_col}{An unquoted column name for Nominal time data, used when control predictors is provided to compute delta delta dv}
 
-\item{trt_col}{an unquoted column name of Treatment group data, used when control predictors is provided to compute delta delta dv}
+\item{trt_col}{An unquoted column name for Treatment group data, used when control predictors is provided to compute delta delta dv}
 
-\item{treatment_predictors}{a list for predictions with model. Should contain a value for each predictor in the model.}
+\item{treatment_predictors}{A list for predictions with model. Should contain a value for each predictor in the model.}
 
-\item{control_predictors}{an optional list for contrast predictions}
+\item{control_predictors}{An optional list for contrast predictions}
 
-\item{contrast_method}{a string specifying contrast method: "matched" for individual ID+time matching (crossover studies), "group" for group-wise subtraction (parallel studies)}
+\item{contrast_method}{A string specifying contrast method: "matched" for individual ID+time matching (crossover studies), "group" for group-wise subtraction (parallel studies)}
 }
 \value{
 a tibble with columns: group, conc, dv
@@ -42,11 +42,11 @@ a tibble with columns: group, conc, dv
 Compute contrast observations for prediction plots
 }
 \examples{
-data <- preprocess(data)
+data_proc <- preprocess(cqtkit_data_verapamil)
 
 # Simple case: no control group
 obs_data <- compute_contrast_observations(
-  data,
+  data_proc,
   CONC,
   deltaQTCF,
   treatment_predictors = list(TRTG = "Verapamil HCL")
@@ -55,7 +55,7 @@ obs_data
 
 # Matched contrast (crossover study)
 contrast_data <- compute_contrast_observations(
-  data,
+  data_proc,
   CONC,
   deltaQTCF,
   ID,

@@ -1,35 +1,35 @@
 #' Creates a style list for eda graphing functions
 #'
-#' @param style an optional style list to update
-#' @param title a string for a plot title
-#' @param xlabel a string for x-axis label
-#' @param ylabel a string for y-axis label
-#' @param xlims a tuple of numbers specifying limits for x-axis
-#' @param ylims a tuple of numbers specifying limits for y-axis
-#' @param colors a named character vector for setting colors
-#' @param labels a named character vector for setting legend labels
-#' @param shapes a named character vector for setting geom_point shapes
-#' @param legend a string for setting color legend title
-#' @param shape_legend a string for setting shape legend title
-#' @param color_order a numeric for setting color legend order
-#' @param shape_order a numeric for setting shape legend order
-#' @param linetype_order a numeric for setting linetype legend order
-#' @param legend.position a string for legend position
-#' @param logx a boolean for setting x-axis to log scale
-#' @param logy a boolean for setting y-axis to log scale
-#' @param fill_alpha a numeric for controlling alpha of fill colors
-#' @param fill_legend a string to replace fill legend title
-#' @param fill_order a numeric for setting fill legend order
-#' @param legend.title.position a string for legend title position ("top", "left", "bottom", "right")
-#' @param legend.title.hjust a string or numeric for legend title horizontal justification ("left"/0, "center"/0.5, "right"/1)
-#' @param caption_hjust a string or numeric for caption horizontal justification ("left"/0, "center"/0.5, "right"/1)
-#' @param legend_nrow a numeric for number of rows in legend
+#' @param style An optional named list of style arguments to update
+#' @param title A string for a plot title
+#' @param xlabel A string for x-axis label
+#' @param ylabel A string for y-axis label
+#' @param xlims A tuple of numbers specifying limits for x-axis
+#' @param ylims A tuple of numbers specifying limits for y-axis
+#' @param colors A named character vector for setting colors
+#' @param labels A named character vector for setting legend labels
+#' @param shapes A named character vector for setting geom_point shapes
+#' @param legend A string for setting color legend title
+#' @param shape_legend A string for setting shape legend title
+#' @param color_order A numeric for setting color legend order
+#' @param shape_order A numeric for setting shape legend order
+#' @param linetype_order A numeric for setting linetype legend order
+#' @param legend.position A string for legend position
+#' @param logx A boolean for setting x-axis to log scale
+#' @param logy A boolean for setting y-axis to log scale
+#' @param fill_alpha A numeric for controlling alpha of fill colors
+#' @param fill_legend A string to replace fill legend title
+#' @param fill_order A numeric for setting fill legend order
+#' @param legend.title.position A string for legend title position ("top", "left", "bottom", "right")
+#' @param legend.title.hjust A string or numeric for legend title horizontal justification ("left"/0, "center"/0.5, "right"/1)
+#' @param caption_hjust A string or numeric for caption horizontal justification ("left"/0, "center"/0.5, "right"/1)
+#' @param legend_nrow A numeric for number of rows in legend
 #'
 #' @returns a named list for using with style_plot
 #' @export
 #'
 #' @examples
-#' data_proc <- data |> preprocess()
+#' data_proc <- cqtkit_data_verapamil |> preprocess()
 #' style = set_style(
 #'   colors = c(
 #'     "0 mg Placebo" = "grey"
@@ -272,36 +272,36 @@ is_plot_label <- function(x) {
 
 #' Styles a plot with provided colors and labels
 #'
-#' @param p a ggplot2 object to update colors/legend labels
-#' @param title a string for a plot title
-#' @param xlabel a string for x-axis label
-#' @param ylabel a string for y-axis label
-#' @param xlims a tuple of numbers specifying limits for x-axis
-#' @param ylims a tuple of numbers specifying limits for y-axis
-#' @param colors a named character vector for setting colors
-#' @param labels a named character vector for setting legend labels
-#' @param shapes a named character vector for setting geom_point shapes
-#' @param legend a string for setting color legend title
-#' @param shape_legend a string for setting shape legend title
-#' @param color_order a numeric for setting color legend order
-#' @param shape_order a numeric for setting shape legend order
-#' @param linetype_order a numeric for setting linetype legend order
-#' @param legend.position a string for legend position
-#' @param legend.title.position a string for legend title position ("top", "left", "bottom", "right")
-#' @param legend.title.hjust a string or numeric for legend title horizontal justification ("left"/0, "center"/0.5, "right"/1)
-#' @param logx a boolean for setting x-axis to log scale
-#' @param logy a boolean for setting y-axis to log scale
-#' @param fill_alpha a numeric for controlling alpha of fill colors
-#' @param fill_legend a string to replace fill legend title
-#' @param fill_order a numeric for setting fill legend order
-#' @param caption_hjust a string or numeric for caption horizontal justification ("left"/0, "center"/0.5, "right"/1)
-#' @param legend_nrow a numeric for number of rows in legend
+#' @param p A ggplot2 object to update colors/legend labels
+#' @param title A string for a plot title
+#' @param xlabel A string for x-axis label
+#' @param ylabel A string for y-axis label
+#' @param xlims A tuple of numbers specifying limits for x-axis
+#' @param ylims A tuple of numbers specifying limits for y-axis
+#' @param colors A named character vector for setting colors
+#' @param labels A named character vector for setting legend labels
+#' @param shapes A named character vector for setting geom_point shapes
+#' @param legend A string for setting color legend title
+#' @param shape_legend A string for setting shape legend title
+#' @param color_order A numeric for setting color legend order
+#' @param shape_order A numeric for setting shape legend order
+#' @param linetype_order A numeric for setting linetype legend order
+#' @param legend.position A string for legend position
+#' @param legend.title.position A string for legend title position ("top", "left", "bottom", "right")
+#' @param legend.title.hjust A string or numeric for legend title horizontal justification ("left"/0, "center"/0.5, "right"/1)
+#' @param logx A boolean for setting x-axis to log scale
+#' @param logy A boolean for setting y-axis to log scale
+#' @param fill_alpha A numeric for controlling alpha of fill colors
+#' @param fill_legend A string to replace fill legend title
+#' @param fill_order A numeric for setting fill legend order
+#' @param caption_hjust A string or numeric for caption horizontal justification ("left"/0, "center"/0.5, "right"/1)
+#' @param legend_nrow A numeric for number of rows in legend
 #'
 #' @returns an updated ggplot2 object
 #' @export
 #'
 #' @examples
-#' data_proc <- data |> preprocess()
+#' data_proc <- cqtkit_data_verapamil |> preprocess()
 #' .p <- eda_mean_dv_over_time(
 #'   data_proc,
 #'   deltaQTCF,

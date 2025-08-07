@@ -17,23 +17,23 @@ gof_residuals_time_boxplots(
 )
 }
 \arguments{
-\item{data}{A dataframe of QTc dataset}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{fit}{a deltaQTCF model fit}
+\item{fit}{An nlme::lme model object from model fitting}
 
-\item{dv_col}{an unquoted column name of deltaQTC/Dependent variable measurements}
+\item{dv_col}{An unquoted column name for dependent variable measurements}
 
-\item{conc_col}{an unquoted column name of concentration measurements}
+\item{conc_col}{An unquoted column name for drug concentration measurements}
 
-\item{ntime_col}{an unquoted column name of nominal times}
+\item{ntime_col}{An unquoted column name for nominal time since dose}
 
-\item{trt_col}{an unquoted column name of treatment group, default NULL will use for filling boxplots}
+\item{trt_col}{An unquoted column name for treatment group" will use for filling boxplots}
 
-\item{residual_references}{numeric vector of reference residual lines to add, default -2 and 2}
+\item{residual_references}{Numeric vector of reference residual lines to add, default -2 and 2}
 
-\item{legend_location}{location of legend ggpubr::ggarrange argument}
+\item{legend_location}{String for legend position (top, bottom, left, right)}
 
-\item{style}{a named list of any argument that can be passed to style_plot}
+\item{style}{A named list of arguments passed to style_plot()}
 }
 \value{
 a plot
@@ -42,7 +42,7 @@ a plot
 plots boxplots of residuals over Nominal Times
 }
 \examples{
-data_proc <- preprocess(data)
+data_proc <- preprocess(cqtkit_data_verapamil)
 fit <- fit_prespecified_model(
   data_proc,
   deltaQTCF,

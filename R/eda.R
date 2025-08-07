@@ -1,24 +1,24 @@
 #' Plot QT against RR
 #'
-#' @param data dataframe containing QT dataset
-#' @param rr_col an unquoted column name of RR data
-#' @param qt_col an unquoted column name of QT data
-#' @param id_col an unquoted column name of ID data
-#' @param trt_col an unquoted column name of Treatment group data
-#' @param conf_int confidence interval for lm regression coefficients, default 0.90
-#' @param model_type lm or lme, which model to fit for showing on plot
-#' @param show_model_results a bool for showing regression slope on plot.
-#' @param method method for nlme::lme fitting
-#' @param remove_rr_iiv a boolean for removing IIV on RR slope
-#' @param style a named list of any argument that can be passed to style_plot
+#' @param data A data frame containing C-QT analysis dataset
+#' @param rr_col An unquoted column name for RR measurements
+#' @param qt_col An unquoted column name for QT measurements
+#' @param id_col An unquoted column name for subject ID
+#' @param trt_col An unquoted column name for treatment group
+#' @param conf_int Numeric confidence interval level (default: 0.9)
+#' @param model_type Lm or lme, which model to fit for showing on plot
+#' @param show_model_results A bool for showing regression slope on plot.
+#' @param method Method for nlme::lme fitting (ML or REML)
+#' @param remove_rr_iiv A boolean for removing IIV on RR slope
+#' @param style A named list of arguments passed to style_plot()
 #'
 #' @return a plot of the input QT against RR
 #' @export
 #'
 #' @examples
-#' data <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
-#' eda_qt_rr_plot(data, RR, QT, ID, model_type = "lme")
+#' eda_qt_rr_plot(data_proc, RR, QT, ID, model_type = "lme")
 eda_qt_rr_plot <- function(
   data,
   rr_col,
@@ -163,30 +163,30 @@ eda_qt_rr_plot <- function(
 
 #' plots different corrections of QT against RR to compare which to use.
 #'
-#' @param data dataframe containing QTc data
-#' @param rr_col an unquoted column name of RR data
-#' @param qt_col an unquoted column name of QT data
-#' @param qtcb_col an unquoted column name of Bazett corrected QT data
-#' @param qtcf_col an unquoted column name of Fridericia corrected QT data
-#' @param qtcp_col Optional - an unquoted column name of Population corrected QT data
-#' @param id_col an unquoted column name of ID data
-#' @param trt_col Optional - an unquoted column name of treatment group data
-#' @param legend_location string for legend location, top,bottom,left,right
-#' @param model_type lm or lme, which model to fit for showing on plot
-#' @param show_model_results a bool for showing regression slope on plot.
-#' @param method method for nlme::lme fitting
-#' @param remove_rr_iiv a boolean for removing IIV on RR slope
-#' @param conf_int confidence interval for lm results default 0.90
-#' @param style named list of any argument that can be passed to style_plots
+#' @param data A data frame containing C-QT analysis dataset
+#' @param rr_col An unquoted column name for RR measurements
+#' @param qt_col An unquoted column name for QT measurements
+#' @param qtcb_col An unquoted column name for Bazett corrected QT data
+#' @param qtcf_col An unquoted column name for Fridericia corrected QT data
+#' @param qtcp_col An unquoted column name for QTc measurements
+#' @param id_col An unquoted column name for subject ID
+#' @param trt_col An unquoted column name for treatment group data
+#' @param legend_location String for legend position (top, bottom, left, right)
+#' @param model_type Lm or lme, which model to fit for showing on plot
+#' @param show_model_results A bool for showing regression slope on plot.
+#' @param method Method for nlme::lme fitting (ML or REML)
+#' @param remove_rr_iiv A boolean for removing IIV on RR slope
+#' @param conf_int Numeric confidence interval level (default: 0.9)
+#' @param style A named list of arguments passed to style_plot()
 #'
 #' @return a plot
 #' @export
 #'
 #' @examples
-#' data <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
 #' eda_qtc_comparison_plot(
-#'   data,
+#'   data_proc,
 #'   RR,
 #'   QT,
 #'   QTCB,
@@ -279,23 +279,23 @@ eda_qtc_comparison_plot <- function(
 
 #' plots the observed decile-decile scatter plot of x-data vs y-data with linear regression.
 #'
-#' @param data a dataframe of QTc dataset
-#' @param xdata_col an unquoted column name of x data
-#' @param ydata_col an unquoted column name of y data
-#' @param trt_col an unquoted column name of treatment column to stratify the data by
-#' @param conf_int a fractional value to set confidence interval, default = 0.9
-#' @param error_bars a string for setting which errorbars are shown, CI, SE, SD
-#' @param style a named list of any argument that can be passed to style_plot
+#' @param data A data frame containing C-QT analysis dataset
+#' @param xdata_col An unquoted column name for x data
+#' @param ydata_col An unquoted column name for y data
+#' @param trt_col An unquoted column name for treatment column to stratify the data by
+#' @param conf_int Numeric confidence interval level (default: 0.9)
+#' @param error_bars A string for setting which errorbars are shown, CI, SE, SD
+#' @param style A named list of arguments passed to style_plot()
 #'
 #' @return a plot
 #'
 #' @export
 #'
 #' @examples
-#' data <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
 #' eda_quantiles_plot(
-#'   data,
+#'   data_proc,
 #'   RR,
 #'   QTCF,
 #'   trt_col = TRTG,
@@ -379,25 +379,25 @@ eda_quantiles_plot <- function(
 
 #' plots scatter plot with with linear and loess regressions. Can be used to check for linearity.
 #'
-#' @param data a dataframe of QT dataset
-#' @param ydata_col an unquoted column name of dependent variable measurements
-#' @param xdata_col an unquoted column name of independent variable measurements
-#' @param trt_col Optional - an unquoted column name of treatment group
-#' @param reference_threshold optional vector of numbers to add as horizontal dashed lines
-#' @param loess_line a bool to add LOESS regression line
-#' @param linear_line a bool to add a linear regression line
-#' @param span a fractional value for LOESS span parameter in geom_smooth if LOESS is used, default 0.99
-#' @param conf_int a fractional numeric for setting confidence interval, default = 9
-#' @param style a named list of any argument that can be passed to style_plot. Shapes are mapped to treatment groups and can be controlled via the shapes parameter in style
+#' @param data A data frame containing C-QT analysis dataset
+#' @param ydata_col An unquoted column name for dependent variable measurements
+#' @param xdata_col An unquoted column name for independent variable measurements
+#' @param trt_col An unquoted column name for treatment group
+#' @param reference_threshold Optional vector of numbers to add as horizontal dashed lines
+#' @param loess_line A bool to add LOESS regression line
+#' @param linear_line A bool to add a linear regression line
+#' @param span A fractional value for LOESS span parameter in geom_smooth if LOESS is used, default 0.99
+#' @param conf_int Numeric confidence interval level (default: 0.9)
+#' @param style A named list of arguments passed to style_plot(). Shapes are mapped to treatment groups and can be controlled via the shapes parameter in style
 #'
 #' @return a plot
 #' @export
 #'
 #' @examples
-#' data <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
 #' eda_scatter_with_regressions(
-#'   data,
+#'   data_proc,
 #'   deltaQTCF,
 #'   CONC,
 #'   TRTG,
@@ -511,24 +511,24 @@ eda_scatter_with_regressions <- function(
 }
 
 #' Hysteresis loop plot to visually inspect hysteresis
-#' @param data a dataframe of QTc dataset
-#' @param ntime_col an unquoted column name of nominal time points
-#' @param deltaqtc_col an unquoted column name of dQTC measurements at the time points in NTLD
-#' @param conc_col an unquoted column name of drug concentrations at each NTLD
-#' @param dosef_col an unquoted column name of DOSE factors.
-#' @param group_col an unquoted column name of additional grouping column
-#' @param reference_dose Optional - DOSE of reference (i.e. placebo, DOSE == 0) measurements
-#' @param show_hysteresis_warning boolean, if TRUE adds Hysteresis Detected to facet wrap label for groups with hysteresis detected
-#' @param style a named list of any argument that can be passed to style_plot
+#' @param data A data frame containing C-QT analysis dataset
+#' @param ntime_col An unquoted column name for nominal time points
+#' @param deltaqtc_col An unquoted column name for dQTC measurements at the time points in NTLD
+#' @param conc_col An unquoted column name for drug concentrations at each NTLD
+#' @param dosef_col An unquoted column name for DOSE factors.
+#' @param group_col An unquoted column name for additional grouping column
+#' @param reference_dose Reference dose value for comparison calculations
+#' @param show_hysteresis_warning Boolean, if TRUE adds Hysteresis Detected to facet wrap label for groups with hysteresis detected
+#' @param style A named list of arguments passed to style_plot()
 #'
 #' @return a plot
 #' @export
 #'
 #' @examples
-#' data <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
 #' eda_hysteresis_loop_plot(
-#'   data,
+#'   data_proc,
 #'   NTLD,
 #'   deltaQTCF,
 #'   CONC,
@@ -701,29 +701,29 @@ eda_hysteresis_loop_plot <- function(
 
 #' Plots mean dependent variable over time
 #'
-#' @param data dataframe containing QTc dataset
-#' @param dv_col an unquoted column name of dependent variable
-#' @param ntime_col an unquoted column name of nominal Time grouping
-#' @param dosef_col an unquoted column name of Dose grouping
-#' @param secondary_data_col optional unquoted column name to overlay on secondary y-axis
-#' @param group_col an unquoted column name of additional grouping column
-#' @param reference_dose Optional - DOSE of reference (i.e. placebo, DOSE == 0) measurements
+#' @param data A data frame containing C-QT analysis dataset
+#' @param dv_col An unquoted column name for dependent variable
+#' @param ntime_col An unquoted column name for nominal Time grouping
+#' @param dosef_col An unquoted column name for Dose grouping
+#' @param secondary_data_col Optional unquoted column name to overlay on secondary y-axis
+#' @param group_col An unquoted column name for additional grouping column
+#' @param reference_dose Reference dose value for comparison calculations
 #' @param reference_threshold Optional - a numeric or vector of numerics to add dashed lines to plot
-#' @param conf_int fractional confidence interval, default = 0.9
-#' @param scale_factor optional scale factor for scaling secondary_data_col
-#' @param shift_factor optional additive factory for shifting secondary data
-#' @param error_bars a string for setting which errorbars are shown, CI, SE, SD
-#' @param sec_ylabel a string for secondary ylabel, default is Concentration (ng/mL)
-#' @param style a named list of any argument that can be passed to style_plots. Shapes are mapped to grouping variables and can be controlled via the shapes parameter in style
+#' @param conf_int Numeric confidence interval level (default: 0.9)
+#' @param scale_factor Optional scale factor for scaling secondary_data_col
+#' @param shift_factor Optional additive factor for shifting secondary data
+#' @param error_bars A string for setting which errorbars are shown, CI, SE, SD
+#' @param sec_ylabel A string for secondary ylabel, default is Concentration (ng/mL)
+#' @param style A named list of arguments passed to style_plot(). Shapes are mapped to grouping variables and can be controlled via the shapes parameter in style
 #'
 #' @return a plot
 #' @export
 #'
 #' @examples
-#' data <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
 #' eda_mean_dv_over_time(
-#'   data,
+#'   data_proc,
 #'   deltaQTCF,
 #'   NTLD,
 #'   DOSEF,
@@ -809,40 +809,40 @@ eda_mean_dv_over_time <- function(
     if (!rlang::quo_is_null(sec_dv)) {
       # Include DV names when sec_dv is provided
       dv_time_df <- dv_time_df %>%
-        dplyr::mutate(groupping = paste(.data$dose, rlang::quo_name(dv)))
+        dplyr::mutate(grouping = paste(.data$dose, rlang::quo_name(dv)))
 
       sec_dv_time_df <- sec_dv_time_df %>%
-        dplyr::mutate(groupping = paste(.data$dose, rlang::quo_name(sec_dv)))
+        dplyr::mutate(grouping = paste(.data$dose, rlang::quo_name(sec_dv)))
     } else {
       # Just use dose without DV name when sec_dv is NULL
       dv_time_df <- dv_time_df %>%
-        dplyr::mutate(groupping = as.character(.data$dose))
+        dplyr::mutate(grouping = as.character(.data$dose))
     }
   } else {
     if (!rlang::quo_is_null(sec_dv)) {
       # Include DV names when sec_dv is provided
       dv_time_df <- dv_time_df %>%
         dplyr::mutate(
-          groupping = as.factor(paste(.data$group, rlang::quo_name(dv)))
+          grouping = as.factor(paste(.data$group, rlang::quo_name(dv)))
         )
 
       sec_dv_time_df <- sec_dv_time_df %>%
         dplyr::mutate(
-          groupping = as.factor(paste(.data$group, rlang::quo_name(sec_dv)))
+          grouping = as.factor(paste(.data$group, rlang::quo_name(sec_dv)))
         )
     } else {
       # Just use group without DV name when sec_dv is NULL
       dv_time_df <- dv_time_df %>%
-        dplyr::mutate(groupping = as.factor(.data$group))
+        dplyr::mutate(grouping = as.factor(.data$group))
     }
   }
   p <- dv_time_df %>%
     ggplot2::ggplot(ggplot2::aes(
       x = .data$time,
       y = .data[[y_data]],
-      color = .data$groupping,
-      shape = .data$groupping,
-      group = .data$groupping
+      color = .data$grouping,
+      shape = .data$grouping,
+      group = .data$grouping
     ))
 
   p <- add_horizontal_references(p, reference_threshold)

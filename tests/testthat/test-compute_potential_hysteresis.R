@@ -1,5 +1,5 @@
 test_that('compute_potential_hysteresis dose not work for multi-dose inputs', {
-  .test_data <- dplyr::filter(data %>% preprocess())
+  .test_data <- dplyr::filter(cqtkit_data_verapamil %>% preprocess())
   expect_error(
     compute_potential_hysteresis(.test_data, NTLD, deltaQTCF, CONC, DOSEF),
   )
@@ -7,7 +7,7 @@ test_that('compute_potential_hysteresis dose not work for multi-dose inputs', {
 
 test_that('compute_potential_hysteresis dose not work for only two time points', {
   .test_data <- dplyr::filter(
-    data %>% preprocess(),
+    cqtkit_data_verapamil %>% preprocess(),
     DOSE == 250,
     NTLD %in% c(0.5, 1)
   )

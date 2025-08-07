@@ -18,25 +18,25 @@ add_secondary_data(
 )
 }
 \arguments{
-\item{primary_data}{dataframe of primary data plotted}
+\item{primary_data}{Dataframe of primary data plotted}
 
-\item{secondary_data}{dataframe containing data you'd like to add to plot}
+\item{secondary_data}{Dataframe containing data you'd like to add to plot}
 
-\item{reference_threshold}{reference threshold values}
+\item{reference_threshold}{Reference threshold values}
 
-\item{p}{a ggplot2 object to add data to}
+\item{p}{A ggplot2 object to add data to}
 
-\item{y_data}{string of column name in secondary data to use for plotting}
+\item{y_data}{String of column name in secondary data to use for plotting}
 
-\item{group}{groupping column}
+\item{group}{Grouping column}
 
-\item{scale}{multiplicative scaling factor}
+\item{scale}{Multiplicative scaling factor}
 
-\item{shift}{additive shifting factor}
+\item{shift}{Additive shifting factor}
 
-\item{sec_ylabel}{secondary y axis label}
+\item{sec_ylabel}{Secondary y axis label}
 
-\item{ylabel}{primary y axis label}
+\item{ylabel}{Primary y axis label}
 }
 \value{
 a ggplot2 object with additional data

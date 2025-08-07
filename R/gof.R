@@ -1,15 +1,15 @@
 #' Makes goodness of fit plots
 #'
-#' @param data A dataframe of QTc dataset
-#' @param fit a deltaQTCF model fit
-#' @param dv_col an unquoted column name of deltaQTC/Dependent variable measurements
-#' @param conc_col an unquoted column name of concentration measurements
-#' @param ntime_col an unquoted column name of nominal times
-#' @param trt_col an unquoted column name of treatment group, default NULL
-#' @param conc_xlabel a string for concentration plot xlabel
-#' @param dv_label a string of dv label default bquote(Delta ~ 'QTc (ms)')
-#' @param legend_location string for moving legend position.
-#' @param style a named list of any argument that can be passed to style_plot
+#' @param data A data frame containing C-QT analysis dataset
+#' @param fit An nlme::lme model object from model fitting
+#' @param dv_col An unquoted column name for dependent variable measurements
+#' @param conc_col An unquoted column name for drug concentration measurements
+#' @param ntime_col An unquoted column name for nominal time since dose
+#' @param trt_col An unquoted column name for treatment group"
+#' @param conc_xlabel A string for concentration plot xlabel
+#' @param dv_label A string of dv label (default: bquote(Delta ~ 'QTc (ms)'))
+#' @param legend_location String for legend position (top, bottom, left, right)
+#' @param style A named list of arguments passed to style_plot()
 #'
 #' @return a 2x2 grid of plots
 #' @export
@@ -17,7 +17,7 @@
 #' @importFrom stats density
 #'
 #' @examples
-#' data_proc <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #' fit <- fit_prespecified_model(
 #'   data_proc,
 #'   deltaQTCF,
@@ -194,15 +194,15 @@ gof_plots <- function(
 
 #' Concordance plots between population and individual predictions
 #'
-#' @param data A dataframe of QTc dataset
-#' @param fit a deltaQTCF model fit
-#' @param dv_col an unquoted column name of deltaQTC/Dependent variable measurements
-#' @param conc_col an unquoted column name of concentration measurements
-#' @param ntime_col an unquoted column name of nominal times
-#' @param trt_col an unquoted column name of treatment group, default NULL
-#' @param dv_label a string of dv label default bquote(Delta ~ 'QTc (ms)')
-#' @param legend_location string for moving legend position.
-#' @param style a named list of any argument that can be passed to style_plot
+#' @param data A data frame containing C-QT analysis dataset
+#' @param fit An nlme::lme model object from model fitting
+#' @param dv_col An unquoted column name for dependent variable measurements
+#' @param conc_col An unquoted column name for drug concentration measurements
+#' @param ntime_col An unquoted column name for nominal time since dose
+#' @param trt_col An unquoted column name for treatment group"
+#' @param dv_label A string of dv label (default: bquote(Delta ~ 'QTc (ms)'))
+#' @param legend_location String for legend position (top, bottom, left, right)
+#' @param style A named list of arguments passed to style_plot()
 #'
 #' @return a plot
 #' @export
@@ -210,7 +210,7 @@ gof_plots <- function(
 #' @importFrom rlang .data
 #'
 #' @examples
-#' data_proc <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #' fit <- fit_prespecified_model(
 #'   data_proc,
 #'   deltaQTCF,
@@ -313,23 +313,23 @@ gof_concordance_plots <- function(
 
 #' Plots residuals vs predicted dQTCF and concentration
 #'
-#' @param data A dataframe of QTc dataset
-#' @param fit a deltaQTCF model fit
-#' @param dv_col an unquoted column name of deltaQTC/Dependent variable measurements
-#' @param conc_col an unquoted column name of concentration measurements
-#' @param ntime_col an unquoted column name of nominal times
-#' @param trt_col an unquoted column name of treatment group, default NULL
-#' @param conc_xlabel a string of concentration xlabel
-#' @param dv_label a string of dv label default bquote(Delta ~ 'QTc (ms)')
-#' @param residual_references numeric vector of reference residual lines to add, default -2 and 2
-#' @param legend_location string for moving legend position.
-#' @param style a named list of any argument that can be passed to style_plot
+#' @param data A data frame containing C-QT analysis dataset
+#' @param fit An nlme::lme model object from model fitting
+#' @param dv_col An unquoted column name for dependent variable measurements
+#' @param conc_col An unquoted column name for drug concentration measurements
+#' @param ntime_col An unquoted column name for nominal time since dose
+#' @param trt_col An unquoted column name for treatment group"
+#' @param conc_xlabel A string of concentration xlabel
+#' @param dv_label A string of dv label (default: bquote(Delta ~ 'QTc (ms)'))
+#' @param residual_references Numeric vector of reference residual lines to add, default -2 and 2
+#' @param legend_location String for legend position (top, bottom, left, right)
+#' @param style A named list of arguments passed to style_plot()
 #'
 #' @return a plot
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #' fit <- fit_prespecified_model(
 #'   data_proc,
 #'   deltaQTCF,
@@ -441,20 +441,20 @@ gof_residuals_plots <- function(
 
 #' Plots QQ plot of WRES and IWRES
 #'
-#' @param data A dataframe of QTc dataset
-#' @param fit a deltaQTCF model fit
-#' @param dv_col an unquoted column name of deltaQTC/Dependent variable measurements
-#' @param conc_col an unquoted column name of concentration measurements
-#' @param ntime_col an unquoted column name of nominal times
-#' @param trt_col an unquoted column name of treatment group, default NULL
-#' @param legend_location location of legend ggpubr::ggarrange argument
-#' @param style a named list of any argument that can be passed to style_plot
+#' @param data A data frame containing C-QT analysis dataset
+#' @param fit An nlme::lme model object from model fitting
+#' @param dv_col An unquoted column name for dependent variable measurements
+#' @param conc_col An unquoted column name for drug concentration measurements
+#' @param ntime_col An unquoted column name for nominal time since dose
+#' @param trt_col An unquoted column name for treatment group"
+#' @param legend_location String for legend position (top, bottom, left, right)
+#' @param style A named list of arguments passed to style_plot()
 #'
 #' @return a plot
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #' fit <- fit_prespecified_model(
 #'   data_proc,
 #'   deltaQTCF,
@@ -552,21 +552,21 @@ gof_qq_plots <- function(
 
 #' plots boxplots of residuals over Nominal Times
 #'
-#' @param data A dataframe of QTc dataset
-#' @param fit a deltaQTCF model fit
-#' @param dv_col an unquoted column name of deltaQTC/Dependent variable measurements
-#' @param conc_col an unquoted column name of concentration measurements
-#' @param ntime_col an unquoted column name of nominal times
-#' @param trt_col an unquoted column name of treatment group, default NULL will use for filling boxplots
-#' @param residual_references numeric vector of reference residual lines to add, default -2 and 2
-#' @param legend_location location of legend ggpubr::ggarrange argument
-#' @param style a named list of any argument that can be passed to style_plot
+#' @param data A data frame containing C-QT analysis dataset
+#' @param fit An nlme::lme model object from model fitting
+#' @param dv_col An unquoted column name for dependent variable measurements
+#' @param conc_col An unquoted column name for drug concentration measurements
+#' @param ntime_col An unquoted column name for nominal time since dose
+#' @param trt_col An unquoted column name for treatment group" will use for filling boxplots
+#' @param residual_references Numeric vector of reference residual lines to add, default -2 and 2
+#' @param legend_location String for legend position (top, bottom, left, right)
+#' @param style A named list of arguments passed to style_plot()
 #'
 #' @return a plot
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #' fit <- fit_prespecified_model(
 #'   data_proc,
 #'   deltaQTCF,
@@ -677,20 +677,20 @@ gof_residuals_time_boxplots <- function(
 
 #' generates boxplots for treatment group
 #'
-#' @param data A dataframe of QTc dataset
-#' @param fit a deltaQTCF model fit
-#' @param dv_col an unquoted column name of deltaQTC/Dependent variable measurements
-#' @param conc_col an unquoted column name of concentration measurements
-#' @param ntime_col an unquoted column name of nominal times
-#' @param trt_col an unquoted column name of treatment group, default NULL
-#' @param residual_references numeric vector of reference residual lines to add, default -2 and 2
-#' @param style a named list of any argument that can be passed to style_plot
+#' @param data A data frame containing C-QT analysis dataset
+#' @param fit An nlme::lme model object from model fitting
+#' @param dv_col An unquoted column name for dependent variable measurements
+#' @param conc_col An unquoted column name for drug concentration measurements
+#' @param ntime_col An unquoted column name for nominal time since dose
+#' @param trt_col An unquoted column name for treatment group"
+#' @param residual_references Numeric vector of reference residual lines to add, default -2 and 2
+#' @param style A named list of arguments passed to style_plot()
 #'
 #' @return a ggarrange plot
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #' fit <- fit_prespecified_model(
 #'   data_proc,
 #'   deltaQTCF,
@@ -776,21 +776,21 @@ gof_residuals_trt_boxplots <- function(
 
 #' Performs a visual predictive check and plots the results
 #'
-#' @param data a dataframe containing the QTc data
-#' @param fit the model fit object
-#' @param xdata_col an unquoted column name for independent variable
-#' @param dv_col an unquoted column name for dependent variable
-#' @param conf_int a fractional numeric for confidence interval (quantiles of 5/95th quantiles), default = 0.9
-#' @param nruns integer number of simulations to run
-#' @param nbins integer number of bins to break independent variable into - OR - a user specified vector for non-uniform binning
-#' @param type integer for type parameter of stats::quantile
-#' @param style a named list of any argument that can be passed to style_plot
+#' @param data A data frame containing C-QT analysis dataset
+#' @param fit An nlme::lme model object from model fitting
+#' @param xdata_col An unquoted column name for independent variable
+#' @param dv_col An unquoted column name for dependent variable
+#' @param conf_int Numeric confidence interval level (default: 0.9)
+#' @param nruns Integer number of simulations to run
+#' @param nbins Integer number of bins to break independent variable into - OR - a user specified vector for non-uniform binning
+#' @param type Integer for type parameter of stats::quantile
+#' @param style A named list of arguments passed to style_plot()
 #'
 #' @return a plot of the VPC results
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #' fit <- fit_prespecified_model(
 #'   data_proc,
 #'   deltaQTCF,

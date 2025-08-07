@@ -7,13 +7,13 @@
 compute_high_qtc_sub(data, qtc_col, deltaqtc_col, group_col = NULL)
 }
 \arguments{
-\item{data}{a dataframe with QTc dataset}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{qtc_col}{an unquoted column name containing QTc data}
+\item{qtc_col}{An unquoted column name for containing QTc data}
 
-\item{deltaqtc_col}{an unquoted column name containing deltaQTc data}
+\item{deltaqtc_col}{An unquoted column name for containing deltaQTc data}
 
-\item{group_col}{an optional column name for grouping data}
+\item{group_col}{An optional column name for grouping data}
 }
 \value{
 a tibble containing the number of subjects with high QTc values
@@ -22,7 +22,7 @@ a tibble containing the number of subjects with high QTc values
 Computes the number of subjects with QTc > 450, 500 as well as deltaQTc > 30, 60
 }
 \examples{
-data_proc <- preprocess(data)
+data_proc <- preprocess(cqtkit_data_verapamil)
 
 compute_high_qtc_sub(data_proc, QTCF, deltaQTCF)
 }

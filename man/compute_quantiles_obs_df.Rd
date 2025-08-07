@@ -14,17 +14,17 @@ compute_quantiles_obs_df(
 )
 }
 \arguments{
-\item{data}{a dataframe of QTc Dataset}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{xdata_col}{an unquoted column name of concentration measurements}
+\item{xdata_col}{An unquoted column name for concentration measurements}
 
-\item{ydata_col}{an unquoted column name of deltaQTc measurements}
+\item{ydata_col}{An unquoted column name for deltaQTc measurements}
 
-\item{conf_int}{confidence level, default = 0.9}
+\item{conf_int}{Numeric confidence interval level (default: 0.9)}
 
-\item{nbins}{integer number of bins to break independent variable into - OR - a user specified vector for non-uniform binning}
+\item{nbins}{Integer number of bins to break independent variable into - OR - a user specified vector for non-uniform binning}
 
-\item{type}{algorithm for quantile. Default (2), is SAS quantile algorithm}
+\item{type}{Algorithm for quantile. Default (2), is SAS quantile algorithm}
 }
 \value{
 a tibble of conc, deltaQTC quantiles
@@ -33,7 +33,7 @@ a tibble of conc, deltaQTC quantiles
 returns a dataframe of quantiles of concentrations and deltaQTcs
 }
 \examples{
-data <- preprocess(data)
+data_proc <- preprocess(cqtkit_data_verapamil)
 
-compute_quantiles_obs_df(data, CONC, deltaQTCF)
+compute_quantiles_obs_df(data_proc, CONC, deltaQTCF)
 }

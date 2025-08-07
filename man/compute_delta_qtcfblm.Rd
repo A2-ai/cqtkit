@@ -12,13 +12,13 @@ compute_delta_qtcfblm(
 )
 }
 \arguments{
-\item{data}{dataframe of input data}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{id_col}{an unquoted column name of ID data}
+\item{id_col}{An unquoted column name for subject ID}
 
-\item{qtcfbl_col}{an unquoted column name of baseline QTCB measurements, default is QTCBBL}
+\item{qtcfbl_col}{An unquoted column name for baseline QTCB measurements, default is QTCBBL}
 
-\item{deduplicate}{boolean, whether baseline values are duplicated over rows. If true duplicates will be removed from average}
+\item{deduplicate}{Boolean, whether baseline values are duplicated over rows. If true duplicates will be removed from average}
 }
 \value{
 a dataframe with deltaQTCFBL column
@@ -27,5 +27,5 @@ a dataframe with deltaQTCFBL column
 Computes Baseline Mean QTCF
 }
 \examples{
-compute_delta_qtcfblm(compute_qtcb_qtcf(data))
+compute_delta_qtcfblm(compute_qtcb_qtcf(cqtkit_data_verapamil))
 }

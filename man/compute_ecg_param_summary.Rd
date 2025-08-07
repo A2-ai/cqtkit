@@ -16,21 +16,21 @@ compute_ecg_param_summary(
 )
 }
 \arguments{
-\item{data}{a dataframe containing QTc dataset}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{ntime_col}{an unquoted column name for nominal time data}
+\item{ntime_col}{An unquoted column name for nominal time data}
 
-\item{dose_col}{an unquoted column name for dose data}
+\item{dose_col}{An unquoted column name for dose data}
 
-\item{ecg_param_col}{an unquoted column name for QTc measurements}
+\item{ecg_param_col}{An unquoted column name for QTc measurements}
 
-\item{deltaecg_param_col}{an unquoted column name for deltaQTc measurements}
+\item{deltaecg_param_col}{An unquoted column name for deltaQTc measurements}
 
-\item{group_col}{an unquoted column name for additional grouping column}
+\item{group_col}{An unquoted column name for additional grouping column}
 
-\item{reference_dose}{an optional argument for specifying reference dose for delta delta QTc computation}
+\item{reference_dose}{Reference dose value for comparison calculations}
 
-\item{conf_int}{an optional argument for setting confidence interval. default 0.95}
+\item{conf_int}{Numeric confidence interval level (default: 0.9)}
 }
 \value{
 a tibble of QTc/deltaQTc/delta delta QTc summary over dose and time.
@@ -39,7 +39,7 @@ a tibble of QTc/deltaQTc/delta delta QTc summary over dose and time.
 Generates a tibble of summary of QTc, dQTc and ddQTc over time stratified by dose
 }
 \examples{
-data <- data \%>\% preprocess()
+data_proc <- cqtkit_data_verapamil \%>\% preprocess()
 
-compute_ecg_param_summary(data, NTLD, DOSEF, QTCF, deltaQTCF)
+compute_ecg_param_summary(data_proc, NTLD, DOSEF, QTCF, deltaQTCF)
 }

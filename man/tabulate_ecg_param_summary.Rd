@@ -23,35 +23,35 @@ tabulate_ecg_param_summary(
 )
 }
 \arguments{
-\item{data}{a dataframe containing QTc dataset}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{ntime_col}{an unquoted column name for nominal time data}
+\item{ntime_col}{An unquoted column name for nominal time data}
 
-\item{dose_col}{an unquoted column name for dose data}
+\item{dose_col}{An unquoted column name for dose data}
 
-\item{ecg_param_col}{an unquoted column name for QTc measurements}
+\item{ecg_param_col}{An unquoted column name for QTc measurements}
 
-\item{delta_ecg_param_col}{an unquoted column name for deltaQTc measurements}
+\item{delta_ecg_param_col}{An unquoted column name for deltaQTc measurements}
 
-\item{ecg_param_name}{a string of the ecg parameter being summarized, e.g. QTc or HR}
+\item{ecg_param_name}{A string of the ecg parameter being summarized, e.g. QTc or HR}
 
-\item{unit}{a string of the unit for ecg_parameter}
+\item{unit}{A string of the unit for ecg_parameter}
 
-\item{group_col}{an unquoted column name of additional grouping column}
+\item{group_col}{An unquoted column name for additional grouping column}
 
-\item{reference_dose}{an optional argument for specifying reference dose for delta delta QTc computation}
+\item{reference_dose}{A reference dose value for comparison calculations}
 
-\item{ecg_param_conf_int}{confidence interval for QTc summary stats default 95\%}
+\item{ecg_param_conf_int}{Confidence interval for QTc summary stats default 95\%}
 
-\item{delta_ecg_param_conf_int}{confidence interval for dQTc summary stats default 90\%}
+\item{delta_ecg_param_conf_int}{Confidence interval for dQTc summary stats default 90\%}
 
-\item{decimals}{number of decimals to fmt the table to default is 2, N column is 0}
+\item{decimals}{Number of decimals to fmt the table to default is 2, N column is 0}
 
-\item{row_group_label}{optional label for the dose/dose + group column}
+\item{row_group_label}{Optional label for the dose/dose + group column}
 
-\item{title}{optional title for the table, it will be wrapped in gt::md()}
+\item{title}{Optional title for the table, it will be wrapped in gt::md()}
 
-\item{...}{optional arguments for gt::tab_options}
+\item{...}{Optional arguments for gt::tab_options}
 }
 \value{
 a gt table of the QTc/deltaQTc/delta delta QTc summary
@@ -60,7 +60,7 @@ a gt table of the QTc/deltaQTc/delta delta QTc summary
 Generates a gt table of summary of QTc, dQTc and ddQTc over time stratified by dose
 }
 \examples{
-data_proc <- data \%>\% preprocess()
+data_proc <- cqtkit_data_verapamil \%>\% preprocess()
 tabulate_ecg_param_summary(
  data_proc,
  NTLD,

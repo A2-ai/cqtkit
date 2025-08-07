@@ -2,18 +2,18 @@
 
 #' Fits a linear model of input dataframe
 #'
-#' @param data QTc dataset
-#' @param xdata_col an unquoted column name of x data
-#' @param ydata_col an unquoted column name of y data
-#' @param conf_int confidence interval
+#' @param data A data frame containing C-QT analysis dataset
+#' @param xdata_col An unquoted column name for independent variable measurements
+#' @param ydata_col An unquoted column name for dependent variable measurements
+#' @param conf_int Numeric confidence interval level (default: 0.9)
 #'
 #' @return the fitted parameters of a lm of y ~ x
 #' @export
 #'
 #' @examples
-#' data <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
-#' compute_lm_fit_df(data, RR, QT)
+#' compute_lm_fit_df(data_proc, RR, QT)
 compute_lm_fit_df <- function(data, xdata_col, ydata_col, conf_int = 0.95) {
   checkmate::assertDataFrame(data)
 
@@ -58,15 +58,15 @@ compute_lm_fit_df <- function(data, xdata_col, ydata_col, conf_int = 0.95) {
 
 #' Takes the slope from a lme model and its confidence interval
 #'
-#' @param lme_mod fit nlme::lme model you"d like to extract slope from
-#' @param xdata_col unquoted name of column used as independent data in LME
-#' @param conf_int confidence interval for slope parameter
+#' @param lme_mod An nlme::lme model object from model fitting
+#' @param xdata_col An unquoted name of column used as independent data in LME
+#' @param conf_int Numeric confidence interval level (default: 0.9)
 #'
 #' @return tibble of slope, lower_ci, upper_ci
 #' @export
 #'
 #' @examples
-#' df <- data %>% preprocess()
+#' df <- cqtkit_data_verapamil %>% preprocess()
 #'
 #' lme_mod <- df %>%
 #'   fit_qtc_linear_model(
@@ -111,12 +111,12 @@ compute_lme_slope_df <- function(lme_mod, xdata_col, conf_int = 0.95) {
 
 #' Generates pk parameters Cmax and Tmax for exporsure predictions.
 #'
-#' @param data a dataframe of QTc dataset
-#' @param id_col an unquoted column name of ID
-#' @param dose_col an unquoted column name of Dose
-#' @param conc_col an unquoted column name of Concentration measurements
-#' @param ntime_col an unquoted column name nominal times
-#' @param group_col an unquoted column name of additional grouping column
+#' @param data A data frame containing C-QT analysis dataset
+#' @param id_col An unquoted column name for subject ID
+#' @param dose_col An unquoted column name for dose measurements
+#' @param conc_col An unquoted column name for drug concentration measurements
+#' @param ntime_col An unquoted column name for nominal times
+#' @param group_col An unquoted column name for additional grouping variable
 #'
 #' @importFrom rlang .data
 #'
@@ -125,7 +125,7 @@ compute_lme_slope_df <- function(lme_mod, xdata_col, conf_int = 0.95) {
 #'
 #' @examples
 #' compute_pk_parameters(
-#'   preprocess(data) %>% dplyr::filter(DOSE != 0),
+#'   preprocess(cqtkit_data_verapamil) %>% dplyr::filter(DOSE != 0),
 #'   ID,
 #'   DOSE,
 #'   CONC,
@@ -211,16 +211,16 @@ compute_pk_parameters <- function(
 
 #' Computes the number of subjects with QTc > 450, 500 as well as deltaQTc > 30, 60
 #'
-#' @param data a dataframe with QTc dataset
-#' @param qtc_col an unquoted column name containing QTc data
-#' @param deltaqtc_col an unquoted column name containing deltaQTc data
-#' @param group_col an optional column name for grouping data
+#' @param data A data frame containing C-QT analysis dataset
+#' @param qtc_col An unquoted column name for containing QTc data
+#' @param deltaqtc_col An unquoted column name for containing deltaQTc data
+#' @param group_col An optional column name for grouping data
 #'
 #' @return a tibble containing the number of subjects with high QTc values
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
 #' compute_high_qtc_sub(data_proc, QTCF, deltaQTCF)
 compute_high_qtc_sub <- function(
@@ -270,16 +270,16 @@ compute_high_qtc_sub <- function(
 
 #' Creates a dataframe summarizing number of subjects in each trtreatment group
 #'
-#' @param data cqt-dataset
-#' @param trt_col column name of treatement group
-#' @param id_col column name of ID
-#' @param group_col optional additional grouping column
+#' @param data A data frame containing C-QT analysis dataset
+#' @param trt_col Column name of treatment group
+#' @param id_col Column name of ID
+#' @param group_col Optional additional grouping column
 #'
 #' @return a tibble of number of subjects in trt_col (or trt_col + group_col) along with total id_col
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
 #' compute_study_summary(data_proc, TRTG, ID)
 compute_study_summary <- function(data, trt_col, id_col, group_col = NULL) {
@@ -326,22 +326,22 @@ compute_study_summary <- function(data, trt_col, id_col, group_col = NULL) {
 
 #' Generates a tibble of summary of QTc, dQTc and ddQTc over time stratified by dose
 #'
-#' @param data a dataframe containing QTc dataset
-#' @param ntime_col an unquoted column name for nominal time data
-#' @param dose_col an unquoted column name for dose data
-#' @param ecg_param_col an unquoted column name for QTc measurements
-#' @param deltaecg_param_col an unquoted column name for deltaQTc measurements
-#' @param group_col an unquoted column name for additional grouping column
-#' @param reference_dose an optional argument for specifying reference dose for delta delta QTc computation
-#' @param conf_int an optional argument for setting confidence interval. default 0.95
+#' @param data A data frame containing C-QT analysis dataset
+#' @param ntime_col An unquoted column name for nominal time data
+#' @param dose_col An unquoted column name for dose data
+#' @param ecg_param_col An unquoted column name for QTc measurements
+#' @param deltaecg_param_col An unquoted column name for deltaQTc measurements
+#' @param group_col An unquoted column name for additional grouping column
+#' @param reference_dose Reference dose value for comparison calculations
+#' @param conf_int Numeric confidence interval level (default: 0.9)
 #'
 #' @return a tibble of QTc/deltaQTc/delta delta QTc summary over dose and time.
 #' @export
 #'
 #' @examples
-#' data <- data %>% preprocess()
+#' data_proc <- cqtkit_data_verapamil %>% preprocess()
 #'
-#' compute_ecg_param_summary(data, NTLD, DOSEF, QTCF, deltaQTCF)
+#' compute_ecg_param_summary(data_proc, NTLD, DOSEF, QTCF, deltaQTCF)
 compute_ecg_param_summary <- function(
   data,
   ntime_col,
@@ -432,23 +432,23 @@ compute_ecg_param_summary <- function(
 #' in DV_col grouped by time and dose.
 #'
 #'
-#' @param data a dataframe containing QT dataset
-#' @param dv_col an unquoted column name of dependent variable
-#' @param ntime_col an unquoted column name of the Time group
-#' @param dose_col an unquoted column name dose group
-#' @param group_col an unquoted column of optional grouping column
-#' @param reference_dose an optional DOSE of reference measurements
-#' @param conf_int confidence interval default 0.95
+#' @param data A data frame containing C-QT analysis dataset
+#' @param dv_col An unquoted column name for dependent variable
+#' @param ntime_col An unquoted column name for the Time group
+#' @param dose_col An unquoted column name for dose group
+#' @param group_col An unquoted column of optional grouping column
+#' @param reference_dose Reference dose value for comparison calculations
+#' @param conf_int Numeric confidence interval level (default: 0.9)
 #'
 #' @return a dataframe of the dv averaged over the grouped time and dose
 #' @export
 #' @importFrom rlang .data
 #' @examples
-#' data <- preprocess(data)
-#' data <- dplyr::mutate(data, DOSEF = as.factor(DOSEF))
+#' data_proc <- preprocess(cqtkit_data_verapamil)
+#' data_proc <- dplyr::mutate(data_proc, DOSEF = as.factor(DOSEF))
 #'
 #' compute_grouped_mean_sd(
-#'   data, deltaQTCF, NTLD, DOSE, reference_dose = 0
+#'   data_proc, deltaQTCF, NTLD, DOSE, reference_dose = 0
 #' )
 compute_grouped_mean_sd <- function(
   data,
@@ -621,16 +621,16 @@ compute_grouped_mean_sd <- function(
 #' compared to linear regression. Used for determining linearity
 #' of C-QT data
 #'
-#' @param data a dataframe of QT dataset
-#' @param deltaqtc_col an unquoted column name of dQTCF measurements
-#' @param conc_col an unquoted column name of drug concentration measurements
-#' @param span a fractional value for LOESS span parameter in geom_smooth if LOESS is used, default 0.99
+#' @param data A data frame containing C-QT analysis dataset
+#' @param deltaqtc_col An unquoted column name for dQTCF measurements
+#' @param conc_col An unquoted column name for drug concentration measurements
+#' @param span A fractional value for LOESS span parameter in geom_smooth if LOESS is used, default 0.99
 #'
 #' @return a tibble of R_squared and adjusted R_squared
 #' @export
 #'
 #' @examples
-#' compute_loess_linear_r_squared(data %>% preprocess(), deltaQTCF, CONC)
+#' compute_loess_linear_r_squared(cqtkit_data_verapamil %>% preprocess(), deltaQTCF, CONC)
 compute_loess_linear_r_squared <- function(
   data,
   deltaqtc_col,
@@ -681,21 +681,21 @@ compute_loess_linear_r_squared <- function(
 
 #' Detects the pressence of hysteresis
 #'
-#' @param data a dataframe of QTc dataset
-#' @param ntime_col an unquoted column name for nominal timepoints
-#' @param deltaqtc_col an unquoted column name of dQTC measurements
-#' @param conc_col an unquoted column name of concentration measurements
-#' @param group_col an unquoted column name of grouping column - usually DOSEF
+#' @param data A data frame containing C-QT analysis dataset
+#' @param ntime_col An unquoted column name for nominal timepoints
+#' @param deltaqtc_col An unquoted column name for dQTC measurements
+#' @param conc_col An unquoted column name for concentration measurements
+#' @param group_col An unquoted column name for grouping column - usually DOSEF
 #'
 #' @return a bool of TRUE if hysteresis detected else FALSE
 #' @export
 #'
 #' @examples
-#' data <- preprocess(data)
-#' data <- dplyr::filter(data, DOSE == 120)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
+#' data_proc <- dplyr::filter(data_proc, DOSE == 120)
 #'
 #' compute_potential_hysteresis(
-#'   data,
+#'   data_proc,
 #'   NTLD,
 #'   deltaQTCF,
 #'   CONC,
@@ -793,22 +793,22 @@ compute_potential_hysteresis <- function(
 
 #' Gets labeller for hysteresis_loop_plot. Should most likely not be used by user
 #'
-#' @param data a dataframe of QTc data
-#' @param ntime_col an unquoted column name of Nominal time since last dose (h)
-#' @param deltaqtc_col an unquoted column name of dQTC measurements (ms)
-#' @param conc_col an unquoted column name of CONC measurements (units)
-#' @param dosef_col an unquoted column name of doses as factor
-#' @param group_col an unquoted column name of additional grouping column.
+#' @param data A data frame containing C-QT analysis dataset
+#' @param ntime_col An unquoted column name for Nominal time since last dose (h)
+#' @param deltaqtc_col An unquoted column name for dQTC measurements (ms)
+#' @param conc_col An unquoted column name for CONC measurements (units)
+#' @param dosef_col An unquoted column name for doses as factor
+#' @param group_col An unquoted column name for additional grouping variable.
 #'
 #' @return list with compute_potential_hysteresis results for each dose.
 #' @export
 #'
 #' @examples
-#' data <- preprocess(data)
-#' data <- dplyr::mutate(data, DOSEF = as.factor(DOSEF))
+#' data_proc <- preprocess(cqtkit_data_verapamil)
+#' data_proc <- dplyr::mutate(data_proc, DOSEF = as.factor(DOSEF))
 #'
 #' compute_hysteresis_labeller(
-#'   data,
+#'   data_proc,
 #'   NTLD,
 #'   deltaQTCF,
 #'   CONC,
@@ -893,15 +893,15 @@ compute_hysteresis_labeller <- function(
 
 #' Exposure Normalized GRI computation
 #'
-#' @param data a dataframe of QTc dataset
+#' @param data A data frame containing C-QT analysis dataset
 #' @param conc_gm_col CONC geometric mean column name
-#' @param ddqtc_col delta delta QTc column name
+#' @param ddqtc_col Delta delta QTc column name
 #'
 #' @return a numeric (ms) of enGRI score
 #' @export
 #'
 #' @examples
-#' compute_enGRI(preprocess(data), CONC, deltaQTCF)
+#' compute_enGRI(preprocess(cqtkit_data_verapamil), CONC, deltaQTCF)
 compute_enGRI <- function(data, conc_gm_col, ddqtc_col) {
   #calculate the exposure normalised Glomb-Ring Index
   checkmate::assertDataFrame(data)
@@ -935,20 +935,20 @@ compute_enGRI <- function(data, conc_gm_col, ddqtc_col) {
 
 #' returns a dataframe of quantiles of concentrations and deltaQTcs
 #'
-#' @param data a dataframe of QTc Dataset
-#' @param xdata_col an unquoted column name of concentration measurements
-#' @param ydata_col an unquoted column name of deltaQTc measurements
-#' @param conf_int confidence level, default = 0.9
-#' @param nbins integer number of bins to break independent variable into - OR - a user specified vector for non-uniform binning
-#' @param type algorithm for quantile. Default (2), is SAS quantile algorithm
+#' @param data A data frame containing C-QT analysis dataset
+#' @param xdata_col An unquoted column name for concentration measurements
+#' @param ydata_col An unquoted column name for deltaQTc measurements
+#' @param conf_int Numeric confidence interval level (default: 0.9)
+#' @param nbins Integer number of bins to break independent variable into - OR - a user specified vector for non-uniform binning
+#' @param type Algorithm for quantile. Default (2), is SAS quantile algorithm
 #'
 #' @return a tibble of conc, deltaQTC quantiles
 #' @export
 #'
 #' @examples
-#' data <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
-#' compute_quantiles_obs_df(data, CONC, deltaQTCF)
+#' compute_quantiles_obs_df(data_proc, CONC, deltaQTCF)
 compute_quantiles_obs_df <- function(
   data,
   xdata_col,
@@ -1055,23 +1055,23 @@ compute_quantiles_obs_df <- function(
 
 #' Simulates a dataset used to fit the model.
 #'
-#' @param data a dataframe conatining QTc dataset
-#' @param fit an lme fit model
-#' @param xdata_col an unqoted column name for xdata
-#' @param sim_num an optional simulation number
+#' @param data A data frame containing C-QT analysis dataset
+#' @param fit An nlme::lme model object from model fitting
+#' @param xdata_col An unquoted column name for xdata
+#' @param sim_num An optional simulation number
 #'
 #' @return a dataframe of simulation results
 #' @export
 #'
 #' @examples
-#' data <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #' fit <- nlme::lme(
 #'   fixed = deltaQTCF ~ 1 + CONC,
 #'   random = ~ 1 | ID,
-#'   data = data
+#'   data = data_proc
 #' )
 #'
-#' compute_dataset_simulation(data, fit, CONC)
+#' compute_dataset_simulation(data_proc, fit, CONC)
 compute_dataset_simulation <- function(data, fit, xdata_col, sim_num = 0) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme")) #not sure how i feel about requiring LME, maybe could add in lmer from lme4 package
@@ -1107,19 +1107,19 @@ compute_dataset_simulation <- function(data, fit, xdata_col, sim_num = 0) {
 
 #' Wrapper for calling compute_dataset_simulation nruns time and computing summary statsitics of the simulations
 #'
-#' @param data a dataframe conatining QTc dataset
-#' @param fit an lme fit model
-#' @param xdata_col an unqoted column name for xdata
-#' @param conf_int a fractional numeric for confidence interval (quantiles of 5/95th quantiles), default = 0.9
-#' @param nruns integer number of simulations to run
-#' @param nbins integer number of bins to break independent variable into - OR - a user specified vector for non-uniform binning
-#' @param type algorithm for quantile. Default (2), is SAS quantile algorithm
+#' @param data A data frame containing C-QT analysis dataset
+#' @param fit An nlme::lme model object from model fitting
+#' @param xdata_col An unquoted column name for xdata
+#' @param conf_int Numeric confidence interval level (default: 0.9)
+#' @param nruns Integer number of simulations to run
+#' @param nbins Integer number of bins to break independent variable into - OR - a user specified vector for non-uniform binning
+#' @param type Algorithm for quantile. Default (2), is SAS quantile algorithm
 #'
 #' @return a tibble of summary statistics of nruns worth of dataset simulations for a VPC.
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
 #' fit <- nlme::lme(
 #'   fixed = deltaQTCF ~ 1 + CONC,
@@ -1233,20 +1233,20 @@ compute_summary_statistics_of_simulations <- function(
 #' Computes the concentration needed for a upper conf_int prediction
 #' of the threshold value.
 #'
-#' @param data dataset of QTc analysis data
-#' @param fit an nlme::lme fitted model
-#' @param conc_col_name string of concentration (independent variable) column name
-#' @param trt_col_name string of treatment group column name
-#' @param treatment_group string of treatment group to make prediciton for
-#' @param threshold value used as upper CI prediction, default = 10
-#' @param conf_int confidence interval, default = 0.9
+#' @param data A data frame containing C-QT analysis dataset
+#' @param fit An nlme::lme model object from model fitting
+#' @param conc_col_name String of concentration (independent variable) column name
+#' @param trt_col_name String of treatment group column name
+#' @param treatment_group String of treatment group to make prediction for
+#' @param threshold Value used as upper CI prediction, default = 10
+#' @param conf_int Numeric confidence interval level (default: 0.9)
 #'
 #' @returns list of the two potential solutions.
 #' @export
 #'
 #' @examples
 #' mod <- fit_prespecified_model(
-#'   data %>% preprocess(),
+#'   cqtkit_data_verapamil %>% preprocess(),
 #'   deltaQTCF,
 #'   ID,
 #'   CONC,
@@ -1257,7 +1257,7 @@ compute_summary_statistics_of_simulations <- function(
 #'   remove_conc_iiv = TRUE
 #' )
 #' compute_conc_for_upper_pred(
-#'   data %>% preprocess(),
+#'   cqtkit_data_verapamil %>% preprocess(),
 #'   mod,
 #'   "CONC",
 #'   "TRTG",
@@ -1308,13 +1308,13 @@ compute_conc_for_upper_pred <- function(
 #' To help keep the predictions quick, the concentration values to predict at are
 #' done at on order of magnitude of concentration values, if max(conc) = 7340, then by = 100
 #'
-#' @param data a dataframe of QTc dataset
-#' @param fit the lme model to use for predictions
-#' @param conc_col an unquoted column name of concentration measurements used to fit the model
-#' @param treatment_predictors list of a values for contrast. conc will update
-#' @param control_predictors list of b values for contrast
-#' @param cmaxes vector of Cmax for each dose
-#' @param conf_int confidence interval for predictions. Default 90%
+#' @param data A data frame containing C-QT analysis dataset
+#' @param fit An nlme::lme model object from model fitting
+#' @param conc_col An unquoted column name for concentration measurements used to fit the model
+#' @param treatment_predictors List of a values for contrast. conc will update
+#' @param control_predictors List of b values for contrast
+#' @param cmaxes Vector of Cmax for each dose
+#' @param conf_int Numeric confidence interval level (default: 0.9)
 #'
 #' @return A data frame that contains median concentration,
 #'  lower and upper bounds CI.
@@ -1323,17 +1323,21 @@ compute_conc_for_upper_pred <- function(
 #' @importFrom rlang .data
 #'
 #' @examples
-#' data <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
 #' fit <- nlme::lme(
 #'    fixed = deltaQTCF ~ 1 + CONC,
 #'    random = ~ 1 | ID,
 #'    method = "REML",
-#'    data = data
+#'    data = data_proc
 #' )
 #'
 #' compute_exposure_predictions(
-#'   data, fit, CONC, list(CONC = 10))
+#'   data_proc,
+#'   fit,
+#'   CONC,
+#'   list(CONC = 10)
+#' )
 compute_exposure_predictions <- function(
   data,
   fit,
@@ -1421,25 +1425,25 @@ compute_exposure_predictions <- function(
 
 #' Compute contrast observations for prediction plots
 #'
-#' @param data a dataframe of QTc dataset
-#' @param conc_col an unquoted column name of drug concentration measurements
-#' @param dv_col an unquoted column name of dQTC measurements
-#' @param id_col an unquoted column name of ID data, used when control predictors is provided to compute delta delta dv
-#' @param ntime_col an unquoted column name of Nominal time data, used when control predictors is provided to compute delta delta dv
-#' @param trt_col an unquoted column name of Treatment group data, used when control predictors is provided to compute delta delta dv
-#' @param treatment_predictors a list for predictions with model. Should contain a value for each predictor in the model.
-#' @param control_predictors an optional list for contrast predictions
-#' @param contrast_method a string specifying contrast method: "matched" for individual ID+time matching (crossover studies), "group" for group-wise subtraction (parallel studies)
+#' @param data A data frame containing C-QT analysis dataset
+#' @param conc_col An unquoted column name for drug concentration measurements
+#' @param dv_col An unquoted column name for dQTC measurements
+#' @param id_col An unquoted column name for subject ID, used when control predictors is provided to compute delta delta dv
+#' @param ntime_col An unquoted column name for Nominal time data, used when control predictors is provided to compute delta delta dv
+#' @param trt_col An unquoted column name for Treatment group data, used when control predictors is provided to compute delta delta dv
+#' @param treatment_predictors A list for predictions with model. Should contain a value for each predictor in the model.
+#' @param control_predictors An optional list for contrast predictions
+#' @param contrast_method A string specifying contrast method: "matched" for individual ID+time matching (crossover studies), "group" for group-wise subtraction (parallel studies)
 #'
 #' @return a tibble with columns: group, conc, dv
 #' @export
 #'
 #' @examples
-#' data <- preprocess(data)
+#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
 #' # Simple case: no control group
 #' obs_data <- compute_contrast_observations(
-#'   data,
+#'   data_proc,
 #'   CONC,
 #'   deltaQTCF,
 #'   treatment_predictors = list(TRTG = "Verapamil HCL")
@@ -1448,7 +1452,7 @@ compute_exposure_predictions <- function(
 #'
 #' # Matched contrast (crossover study)
 #' contrast_data <- compute_contrast_observations(
-#'   data,
+#'   data_proc,
 #'   CONC,
 #'   deltaQTCF,
 #'   ID,

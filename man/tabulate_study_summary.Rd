@@ -18,25 +18,25 @@ tabulate_study_summary(
 )
 }
 \arguments{
-\item{data}{c-qt dataset}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{trt_col}{treatment column name}
+\item{trt_col}{An unquoted column name for treatment group}
 
-\item{id_col}{subject id column name}
+\item{id_col}{An unquoted column name for subject ID}
 
-\item{group_col}{optional additional grouping column}
+\item{group_col}{An unquoted column name for additional grouping variable}
 
-\item{protocol_number}{string of protocol number}
+\item{protocol_number}{A string of protocol number}
 
-\item{title}{string for table title}
+\item{title}{A string for table title}
 
-\item{study_status}{string for study status}
+\item{study_status}{A string for study status}
 
-\item{grouping_col_name}{string for naming grouping column, default = "Dose Regimen"}
+\item{grouping_col_name}{A string for naming grouping column (default: "Dose Regimen")}
 
-\item{n_sub_col_name}{string for n_sub column, default = "N"}
+\item{n_sub_col_name}{A string for n_sub column (default: "N")}
 
-\item{...}{optional additional args to gt::tab_options}
+\item{...}{Optional additional args to gt::tab_options}
 }
 \value{
 a gt table
@@ -45,7 +45,7 @@ a gt table
 Creates a gt table of study summary for number of subjects in each grouping
 }
 \examples{
-data_proc <- preprocess(data)
+data_proc <- preprocess(cqtkit_data_verapamil)
 
 tabulate_study_summary(data_proc, TRTG, ID,
 protocol_number = "A2AI201",

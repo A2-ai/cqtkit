@@ -15,19 +15,19 @@ tabulate_high_qtc_sub(
 )
 }
 \arguments{
-\item{data}{a dataframe of QTc dataset}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{qtc_col}{an unquoted column name of QTc data}
+\item{qtc_col}{An unquoted column name for QTc data}
 
-\item{deltaqtc_col}{an unquoted column name of deltaQTC data}
+\item{deltaqtc_col}{An unquoted column name for deltaQTC data}
 
-\item{group_col}{an optional unquoted column name of grouping column}
+\item{group_col}{An optional unquoted column name of grouping column}
 
-\item{group_label}{an optional label to use for group column}
+\item{group_label}{An optional label to use for group column}
 
-\item{title}{optional string to give the table a title, wrapped in gt::md()}
+\item{title}{Optional string to give the table a title, wrapped in gt::md()}
 
-\item{...}{optional additional args to gt::tab_options}
+\item{...}{Optional additional args to gt::tab_options}
 }
 \value{
 a gt table
@@ -36,7 +36,7 @@ a gt table
 Tabulates number of high QTc/deltaQTc observations.
 }
 \examples{
-data_proc <- preprocess(data)
+data_proc <- preprocess(cqtkit_data_verapamil)
 
 tabulate_high_qtc_sub(data_proc, QTCF, deltaQTCF)
 }

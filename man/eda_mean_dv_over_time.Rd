@@ -22,33 +22,33 @@ eda_mean_dv_over_time(
 )
 }
 \arguments{
-\item{data}{dataframe containing QTc dataset}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{dv_col}{an unquoted column name of dependent variable}
+\item{dv_col}{An unquoted column name for dependent variable}
 
-\item{ntime_col}{an unquoted column name of nominal Time grouping}
+\item{ntime_col}{An unquoted column name for nominal Time grouping}
 
-\item{dosef_col}{an unquoted column name of Dose grouping}
+\item{dosef_col}{An unquoted column name for Dose grouping}
 
-\item{secondary_data_col}{optional unquoted column name to overlay on secondary y-axis}
+\item{secondary_data_col}{Optional unquoted column name to overlay on secondary y-axis}
 
-\item{group_col}{an unquoted column name of additional grouping column}
+\item{group_col}{An unquoted column name for additional grouping column}
 
-\item{reference_dose}{Optional - DOSE of reference (i.e. placebo, DOSE == 0) measurements}
+\item{reference_dose}{Reference dose value for comparison calculations}
 
 \item{reference_threshold}{Optional - a numeric or vector of numerics to add dashed lines to plot}
 
-\item{conf_int}{fractional confidence interval, default = 0.9}
+\item{conf_int}{Numeric confidence interval level (default: 0.9)}
 
-\item{scale_factor}{optional scale factor for scaling secondary_data_col}
+\item{scale_factor}{Optional scale factor for scaling secondary_data_col}
 
-\item{shift_factor}{optional additive factory for shifting secondary data}
+\item{shift_factor}{Optional additive factor for shifting secondary data}
 
-\item{error_bars}{a string for setting which errorbars are shown, CI, SE, SD}
+\item{error_bars}{A string for setting which errorbars are shown, CI, SE, SD}
 
-\item{sec_ylabel}{a string for secondary ylabel, default is Concentration (ng/mL)}
+\item{sec_ylabel}{A string for secondary ylabel, default is Concentration (ng/mL)}
 
-\item{style}{a named list of any argument that can be passed to style_plots. Shapes are mapped to grouping variables and can be controlled via the shapes parameter in style}
+\item{style}{A named list of arguments passed to style_plot(). Shapes are mapped to grouping variables and can be controlled via the shapes parameter in style}
 }
 \value{
 a plot
@@ -57,10 +57,10 @@ a plot
 Plots mean dependent variable over time
 }
 \examples{
-data <- preprocess(data)
+data_proc <- preprocess(cqtkit_data_verapamil)
 
 eda_mean_dv_over_time(
-  data,
+  data_proc,
   deltaQTCF,
   NTLD,
   DOSEF,

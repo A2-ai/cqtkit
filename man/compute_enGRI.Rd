@@ -7,11 +7,11 @@
 compute_enGRI(data, conc_gm_col, ddqtc_col)
 }
 \arguments{
-\item{data}{a dataframe of QTc dataset}
+\item{data}{A data frame containing C-QT analysis dataset}
 
 \item{conc_gm_col}{CONC geometric mean column name}
 
-\item{ddqtc_col}{delta delta QTc column name}
+\item{ddqtc_col}{Delta delta QTc column name}
 }
 \value{
 a numeric (ms) of enGRI score
@@ -20,5 +20,5 @@ a numeric (ms) of enGRI score
 Exposure Normalized GRI computation
 }
 \examples{
-compute_enGRI(preprocess(data), CONC, deltaQTCF)
+compute_enGRI(preprocess(cqtkit_data_verapamil), CONC, deltaQTCF)
 }

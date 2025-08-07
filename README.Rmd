@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 # `cqtkit` <img src='man/figures/logo.png' align="right" height="138" />
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/a2-ai-gilead-collab/qtpie/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/a2-ai-gilead-collab/qtpie/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/a2-ai-gilead-collab/cqtkit/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/a2-ai-gilead-collab/cqtkit/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of `cqtkit` is to help streamline C-QT analyses from exploratory data analysis through model validation and prediction.
@@ -51,10 +51,10 @@ uses the following column names as defaults:
 deltaQTcF Baseline Mean, deltaHR Baseline Mean (if not already present in the dataset)
 
 ```{r data}
-glimpse(data)
+glimpse(cqtkit_data_verapamil)
 ```
 ```{r data-preprocessing}
-data_proc <- data %>% preprocess()
+data_proc <- cqtkit_data_verapamil %>% preprocess()
 glimpse(data_proc)
 ```
 
@@ -90,6 +90,7 @@ eda_mean_dv_over_time(
 
 ### QTc Correction
 ```{r qtc-comparison}
+bl <- cqtkit_data_bl_verapamil %>% compute_qtcb_qtcf(qtbl_col = NULL, rrbl_col = NULL)
 eda_qtc_comparison_plot(
   data = bl,
   rr_col = RR,

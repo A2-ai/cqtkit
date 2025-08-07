@@ -19,27 +19,27 @@ compute_deltas(
 )
 }
 \arguments{
-\item{data}{input dataset for QT analysis}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{qt_col}{an unquoted column name of QT measurements, QT by default}
+\item{qt_col}{An unquoted column name for QT measurements}
 
-\item{qtbl_col}{an unquoted column name of baseline QT measurements, QTBL by default}
+\item{qtbl_col}{An unquoted column name for baseline QT measurements}
 
-\item{rr_col}{an unquoted column name of RR measurements, RR by default}
+\item{rr_col}{An unquoted column name for RR measurements}
 
-\item{rrbl_col}{an unquoted column name of baseline RR measurements, RRBL by default}
+\item{rrbl_col}{An unquoted column name for baseline RR measurements}
 
-\item{hr_col}{an unquoted column name of HR measurements, HR by default}
+\item{hr_col}{An unquoted column name for HR measurements, HR by default}
 
-\item{hrbl_col}{an unquoted column name of baseline HR measurements, HRBL by default}
+\item{hrbl_col}{An unquoted column name for baseline HR measurements, HRBL by default}
 
-\item{qtcf_col}{an unquoted column name of QTCF measurements, QTCF by default}
+\item{qtcf_col}{An unquoted column name for QTCF measurements, QTCF by default}
 
-\item{qtcfbl_col}{an unquoted column name of baseline QTCF measurements, QTCFBL by default}
+\item{qtcfbl_col}{An unquoted column name for baseline QTCF measurements, QTCFBL by default}
 
-\item{qtcb_col}{an unquoted column name of QTCB measurements, QTCB by default}
+\item{qtcb_col}{An unquoted column name for QTCB measurements, QTCB by default}
 
-\item{qtcbbl_col}{an unquoted column name of baseline QTCB measurements, QTCBBL by default}
+\item{qtcbbl_col}{An unquoted column name for baseline QTCB measurements, QTCBBL by default}
 }
 \value{
 dataframe with deltaPARAM columns included
@@ -48,5 +48,5 @@ dataframe with deltaPARAM columns included
 Computes delta variables RR, QTCF, HR, etc
 }
 \examples{
-compute_deltas(compute_qtcb_qtcf(data))
+compute_deltas(compute_qtcb_qtcf(cqtkit_data_verapamil))
 }

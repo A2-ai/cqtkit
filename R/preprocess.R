@@ -1,17 +1,17 @@
 #' Computes QTCF and QTCB from qt_col and rr_col and QTCFBL and QTCBBL from qtbl_col and rrbl_col
 #'
-#' @param data a dataframe containing QT, RR, QTBL, RRBL
-#' @param qt_col an unquoted column name of QT measurements, QT by default
-#' @param qtbl_col an unquoted column name of baseline QT measurements, QTBL by default
-#' @param rr_col an unquoted column name of RR measurements, RR by default
-#' @param rrbl_col an unquoted column name of baseline RR measurements, RRBL by default
+#' @param data A data frame containing QT, RR, QTBL, RRBL
+#' @param qt_col An unquoted column name for QT measurements
+#' @param qtbl_col An unquoted column name for baseline QT measurements
+#' @param rr_col An unquoted column name for RR measurements
+#' @param rrbl_col An unquoted column name for baseline RR measurements
 #'
 #' @importFrom rlang .data
 #'
 #' @return data with QTCF, QTCB, QTCFBL, and QTCBBL columns
 #' @export
 #'
-#' @examples compute_qtcb_qtcf(data)
+#' @examples compute_qtcb_qtcf(cqtkit_data_verapamil)
 compute_qtcb_qtcf <- function(
   data,
   qt_col = QT,
@@ -52,23 +52,23 @@ compute_qtcb_qtcf <- function(
 
 #' Computes delta variables RR, QTCF, HR, etc
 #'
-#' @param data input dataset for QT analysis
-#' @param qt_col an unquoted column name of QT measurements, QT by default
-#' @param qtbl_col an unquoted column name of baseline QT measurements, QTBL by default
-#' @param rr_col an unquoted column name of RR measurements, RR by default
-#' @param rrbl_col an unquoted column name of baseline RR measurements, RRBL by default
-#' @param hr_col an unquoted column name of HR measurements, HR by default
-#' @param hrbl_col an unquoted column name of baseline HR measurements, HRBL by default
-#' @param qtcf_col an unquoted column name of QTCF measurements, QTCF by default
-#' @param qtcfbl_col an unquoted column name of baseline QTCF measurements, QTCFBL by default
-#' @param qtcb_col an unquoted column name of QTCB measurements, QTCB by default
-#' @param qtcbbl_col an unquoted column name of baseline QTCB measurements, QTCBBL by default
+#' @param data A data frame containing C-QT analysis dataset
+#' @param qt_col An unquoted column name for QT measurements
+#' @param qtbl_col An unquoted column name for baseline QT measurements
+#' @param rr_col An unquoted column name for RR measurements
+#' @param rrbl_col An unquoted column name for baseline RR measurements
+#' @param hr_col An unquoted column name for HR measurements, HR by default
+#' @param hrbl_col An unquoted column name for baseline HR measurements, HRBL by default
+#' @param qtcf_col An unquoted column name for QTCF measurements, QTCF by default
+#' @param qtcfbl_col An unquoted column name for baseline QTCF measurements, QTCFBL by default
+#' @param qtcb_col An unquoted column name for QTCB measurements, QTCB by default
+#' @param qtcbbl_col An unquoted column name for baseline QTCB measurements, QTCBBL by default
 #'
 #' @return dataframe with deltaPARAM columns included
 #' @export
 #'
 #' @examples
-#' compute_deltas(compute_qtcb_qtcf(data))
+#' compute_deltas(compute_qtcb_qtcf(cqtkit_data_verapamil))
 compute_deltas <- function(
   data,
   qt_col = QT,
@@ -126,17 +126,17 @@ compute_deltas <- function(
 
 #' computes delta HR BL Mean
 #'
-#' @param data input dataset for qtc analysis
-#' @param id_col an unquoted column name of ID data
-#' @param hrbl_col an unquoted column name of baseline HR measurements, default is HRBL
-#' @param deduplicate boolean, whether baseline values are duplicated over rows. If true duplicates will be removed from average
+#' @param data A data frame containing C-QT analysis dataset
+#' @param id_col An unquoted column name for subject ID
+#' @param hrbl_col An unquoted column name for baseline HR measurements, default is HRBL
+#' @param deduplicate Boolean, whether baseline values are duplicated over rows. If true duplicates will be removed from average
 #'
 #' @return data frame with deltaHRBL
 #' @importFrom rlang .data
 #' @export
 #'
 #' @examples
-#' compute_delta_hrblm(data)
+#' compute_delta_hrblm(cqtkit_data_verapamil)
 compute_delta_hrblm <- function(
   data,
   id_col = ID,
@@ -169,16 +169,16 @@ compute_delta_hrblm <- function(
 
 #' Computes Baseline Mean QTCB
 #'
-#' @param data dataframe of input data
-#' @param id_col an unquoted column name of ID data
-#' @param qtcbbl_col an unquoted column name of baseline QTCB measurements, default is QTCBBL
-#' @param deduplicate boolean, whether baseline values are duplicated over rows. If true duplicates will be removed from average
+#' @param data A data frame containing C-QT analysis dataset
+#' @param id_col An unquoted column name for subject ID
+#' @param qtcbbl_col An unquoted column name for baseline QTCB measurements, default is QTCBBL
+#' @param deduplicate Boolean, whether baseline values are duplicated over rows. If true duplicates will be removed from average
 #'
 #' @return a dataframe with deltaQTCBBL column
 #' @export
 #' @importFrom rlang .data
 #' @examples
-#' compute_delta_qtcbblm(compute_qtcb_qtcf(data))
+#' compute_delta_qtcbblm(compute_qtcb_qtcf(cqtkit_data_verapamil))
 compute_delta_qtcbblm <- function(
   data,
   id_col = ID,
@@ -211,16 +211,16 @@ compute_delta_qtcbblm <- function(
 
 #' Computes Baseline Mean QTCF
 #'
-#' @param data dataframe of input data
-#' @param id_col an unquoted column name of ID data
-#' @param qtcfbl_col an unquoted column name of baseline QTCB measurements, default is QTCBBL
-#' @param deduplicate boolean, whether baseline values are duplicated over rows. If true duplicates will be removed from average
+#' @param data A data frame containing C-QT analysis dataset
+#' @param id_col An unquoted column name for subject ID
+#' @param qtcfbl_col An unquoted column name for baseline QTCB measurements, default is QTCBBL
+#' @param deduplicate Boolean, whether baseline values are duplicated over rows. If true duplicates will be removed from average
 #'
 #' @return a dataframe with deltaQTCFBL column
 #' @export
 #' @importFrom rlang .data
 #' @examples
-#' compute_delta_qtcfblm(compute_qtcb_qtcf(data))
+#' compute_delta_qtcfblm(compute_qtcb_qtcf(cqtkit_data_verapamil))
 compute_delta_qtcfblm <- function(
   data,
   id_col = ID,
@@ -255,24 +255,24 @@ compute_delta_qtcfblm <- function(
 #' Computes QTcB, QTcF, deltaQTcF, deltaQTcB, deltaHR, deltaQTcB Baseline Mean,
 #' deltaQTcF Baseline Mean, deltaHR Baseline Mean
 #'
-#' @param data Data frame containing QTc data
-#' @param qt_col an unquoted column name of QT measurements, QT by default
-#' @param qtbl_col an unquoted column name of baseline QT measurements, QTBL by default
-#' @param rr_col an unquoted column name of RR measurements, RR by default
-#' @param rrbl_col an unquoted column name of baseline RR measurements, RRBL by default
-#' @param hr_col an unquoted column name of HR measurements, HR by default
-#' @param hrbl_col an unquoted column name of baseline HR measurements, HRBL by default
-#' @param qtcf_col an unquoted column name of QTCF measurements, QTCF by default
-#' @param qtcfbl_col an unquoted column name of baseline QTCF measurements, QTCFBL by default
-#' @param qtcb_col an unquoted column name of QTCB measurements, QTCB by default
-#' @param qtcbbl_col an unquoted column name of baseline QTCB measurements, QTCBBL by default
-#' @param id_col an unquoted column name of ID data
-#' @param deduplicate boolean, whether baseline values are duplicated over rows. If true duplicates will be removed from average
+#' @param data A data frame containing C-QT analysis dataset
+#' @param qt_col An unquoted column name for QT measurements
+#' @param qtbl_col An unquoted column name for baseline QT measurements
+#' @param rr_col An unquoted column name for RR measurements
+#' @param rrbl_col An unquoted column name for baseline RR measurements
+#' @param hr_col An unquoted column name for HR measurements, HR by default
+#' @param hrbl_col An unquoted column name for baseline HR measurements, HRBL by default
+#' @param qtcf_col An unquoted column name for QTCF measurements, QTCF by default
+#' @param qtcfbl_col An unquoted column name for baseline QTCF measurements, QTCFBL by default
+#' @param qtcb_col An unquoted column name for QTCB measurements, QTCB by default
+#' @param qtcbbl_col An unquoted column name for baseline QTCB measurements, QTCBBL by default
+#' @param id_col An unquoted column name for subject ID
+#' @param deduplicate Boolean, whether baseline values are duplicated over rows. If true duplicates will be removed from average
 #'
 #' @return dataframe with deltas computed from BL
 #' @export
 #'
-#' @examples preprocess(data)
+#' @examples preprocess(cqtkit_data_verapamil)
 preprocess <- function(
   data,
   qt_col = QT,

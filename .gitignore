@@ -6,5 +6,5 @@
 docs
 /doc/
 inst/doc
-
+.DS_Store
 

@@ -15,19 +15,19 @@ eda_quantiles_plot(
 )
 }
 \arguments{
-\item{data}{a dataframe of QTc dataset}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{xdata_col}{an unquoted column name of x data}
+\item{xdata_col}{An unquoted column name for x data}
 
-\item{ydata_col}{an unquoted column name of y data}
+\item{ydata_col}{An unquoted column name for y data}
 
-\item{trt_col}{an unquoted column name of treatment column to stratify the data by}
+\item{trt_col}{An unquoted column name for treatment column to stratify the data by}
 
-\item{conf_int}{a fractional value to set confidence interval, default = 0.9}
+\item{conf_int}{Numeric confidence interval level (default: 0.9)}
 
-\item{error_bars}{a string for setting which errorbars are shown, CI, SE, SD}
+\item{error_bars}{A string for setting which errorbars are shown, CI, SE, SD}
 
-\item{style}{a named list of any argument that can be passed to style_plot}
+\item{style}{A named list of arguments passed to style_plot()}
 }
 \value{
 a plot
@@ -36,10 +36,10 @@ a plot
 plots the observed decile-decile scatter plot of x-data vs y-data with linear regression.
 }
 \examples{
-data <- preprocess(data)
+data_proc <- preprocess(cqtkit_data_verapamil)
 
 eda_quantiles_plot(
-  data,
+  data_proc,
   RR,
   QTCF,
   trt_col = TRTG,

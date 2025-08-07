@@ -22,33 +22,33 @@ tabulate_exposure_predictions(
 )
 }
 \arguments{
-\item{data}{a dataframe of QTc dataset}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{fit}{the lme model to use for predictions}
+\item{fit}{An nlme::lme model object from model fitting}
 
-\item{conc_col}{an unquoted column name of concentration measurements used to fit the model}
+\item{conc_col}{An unquoted column name for concentration measurements used to fit the model}
 
-\item{treatment_predictors}{list of a values for contrast. conc will update}
+\item{treatment_predictors}{A list of a values for contrast. conc will update}
 
-\item{control_predictors}{list of b values for contrast}
+\item{control_predictors}{A list of b values for contrast}
 
-\item{doses}{vector of Doses to show prediction at}
+\item{doses}{A vector of doses to show prediction at}
 
-\item{cmaxes}{vector of Cmax for each dose}
+\item{cmaxes}{A vector of Cmax for each dose}
 
-\item{qtc_label}{label for QTc column name, default QTc (ms)}
+\item{qtc_label}{A label for QTc column name, default QTc (ms)}
 
 \item{conc_units}{Units for concentration default ng/mL}
 
-\item{conf_int}{confidence interval for predictions. Default 90\%}
+\item{conf_int}{Numeric confidence interval level (default: 0.9)}
 
-\item{decimals}{number of decimals to format numbers to. default is 2}
+\item{decimals}{Number of decimals to format numbers to. default is 2}
 
-\item{scientific}{boolean for converting to scientific notation}
+\item{scientific}{Boolean for converting to scientific notation}
 
-\item{title}{optional string for table title. Wrapped in gt::md()}
+\item{title}{Optional string for table title. Wrapped in gt::md()}
 
-\item{...}{optional additional args to gt::tab_options}
+\item{...}{Optional additional args to gt::tab_options}
 }
 \value{
 a gt table of predicted dQTc/ddQTc values and their CI at tpx and or
@@ -58,7 +58,7 @@ stpx dose/Cmax
 Tablulates exposure predictions at therapeutic and supratherapuetic Cmax.
 }
 \examples{
-data_proc <- preprocess(data)
+data_proc <- preprocess(cqtkit_data_verapamil)
 
 fit <- fit_prespecified_model(
   data_proc,

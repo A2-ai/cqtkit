@@ -7,17 +7,17 @@
 compute_fit_results(data, fit, dv_col, conc_col, ntime_col, trt_col = NULL)
 }
 \arguments{
-\item{data}{A dataframe of QTc dataset}
+\item{data}{A data frame containing C-QT analysis dataset}
 
-\item{fit}{model fit}
+\item{fit}{An nlme::lme model object from model fitting}
 
-\item{dv_col}{an unquoted column name of observed model dependent variable}
+\item{dv_col}{An unquoted column name for observed model dependent variable}
 
-\item{conc_col}{an unquoted column name of observed Concentration measurements}
+\item{conc_col}{An unquoted column name for observed Concentration measurements}
 
-\item{ntime_col}{an unquoted column name of time points for measurements}
+\item{ntime_col}{An unquoted column name for time points for measurements}
 
-\item{trt_col}{an unquoted column name of treatment group, default NULL}
+\item{trt_col}{An unquoted column name for treatment group, default NULL}
 }
 \value{
 a dataframe of predictions and residuals.
@@ -26,10 +26,10 @@ a dataframe of predictions and residuals.
 computes all fitted results and residuals for GOF plots
 }
 \examples{
-data <- preprocess(data)
+data_proc <- preprocess(cqtkit_data_verapamil)
 
 fit <- fit_prespecified_model(
-  data,
+  data_proc,
   deltaQTCF,
   ID,
   CONC,
@@ -40,5 +40,5 @@ fit <- fit_prespecified_model(
   TRUE
 )
 
-compute_fit_results(data, fit, deltaQTCF, CONC, NTLD)
+compute_fit_results(data_proc, fit, deltaQTCF, CONC, NTLD)
 }

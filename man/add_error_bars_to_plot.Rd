@@ -7,15 +7,15 @@
 add_error_bars_to_plot(data, p, reference_dose, error_bars, conf_int)
 }
 \arguments{
-\item{data}{dataframe from compute_grouped_mean_sd}
+\item{data}{A dataframe from compute_grouped_mean_sd}
 
-\item{p}{ggplot object to add error bars to}
+\item{p}{A ggplot object to add error bars to}
 
-\item{reference_dose}{reference dose value}
+\item{reference_dose}{Reference dose value for comparison calculations}
 
-\item{error_bars}{type of errorbars to use, ci, se, sd, null}
+\item{error_bars}{Type of errorbars to use (ci, se, sd, null)}
 
-\item{conf_int}{confidence interval for ci}
+\item{conf_int}{Numeric confidence interval level (default: 0.9)}
 }
 \value{
 ggplot2 with errorbars
