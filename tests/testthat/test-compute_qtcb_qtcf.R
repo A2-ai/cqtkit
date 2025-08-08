@@ -77,12 +77,15 @@ test_that("compute_qtcb_qtcf will compute QTCF, QTCB, QTCFBL, QTCBBL using suppl
 })
 
 test_that("compute_qtcb_qtcf will not overwrite existing QTCF, QTCB, QTCFBL, QTCBBL", {
-  .test_data <- cqtkit_data_verapamil %>% dplyr::select(-QTCB, -QTCF, -QTCFBL, -QTCBBL)
+  .test_data <- cqtkit_data_verapamil %>%
+    dplyr::select(-QTCB, -QTCF, -QTCFBL, -QTCBBL)
 
   data_proc <- .test_data %>% preprocess()
   expect_true(all(c("QTCB", "QTCBBL", "QTCF", "QTCFBL") %in% names(data_proc)))
 
-  expect_false(all(c("QTCB", "QTCBBL", "QTCF", "QTCFBL") %in% names(.test_data)))
+  expect_false(all(
+    c("QTCB", "QTCBBL", "QTCF", "QTCFBL") %in% names(.test_data)
+  ))
   df <- .test_data %>%
     compute_qtcb_qtcf()
   expect_true(all(c("QTCB", "QTCBBL", "QTCF", "QTCFBL") %in% names(df)))

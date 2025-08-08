@@ -1,4 +1,3 @@
-
 test_that("can set individual elements correctly", {
   style <- set_style(
     title = "My Title",

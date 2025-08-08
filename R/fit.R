@@ -22,7 +22,7 @@ fit_qtc_linear_model <- function(
   qt_col,
   rr_col,
   id_col,
-  method = 'REML',
+  method = "REML",
   remove_rr_iiv = FALSE
 ) {
   checkmate::assertDataFrame(data)
@@ -49,7 +49,7 @@ fit_qtc_linear_model <- function(
     fixed = fixed_formula,
     data = new_data,
     method = method,
-    na.action = 'na.exclude'
+    na.action = "na.exclude"
   )
 
   if (!rlang::quo_is_null(id)) {
@@ -113,7 +113,7 @@ fit_prespecified_model <- function(
   delta_bl_col,
   trt_col = NULL,
   tafd_col = NULL,
-  method = 'ML',
+  method = "ML",
   remove_conc_iiv = FALSE
 ) {
   checkmate::assertDataFrame(data)
@@ -183,7 +183,7 @@ fit_prespecified_model <- function(
       random = random_formula,
       data = new_data,
       method = method,
-      na.action = 'na.exclude'
+      na.action = "na.exclude"
     )
   )
   if (
@@ -230,7 +230,7 @@ compute_model_fit_parameters <- function(
   id_col_name = "ID",
   conf_int = 0.95
 ) {
-  checkmate::assert_class(fit, 'lme')
+  checkmate::assert_class(fit, "lme")
   checkmate::assertNumeric(conf_int, lower = 0, upper = 1)
 
   sum <- summary(fit)$tTable
@@ -240,12 +240,12 @@ compute_model_fit_parameters <- function(
   rownames(sum) <- new_names
 
   sum <- sum %>%
-    as.data.frame() %>% #The reason this is as.data.frame instead of tibble is to convert the rownames to a column, then convert to tibble at the end.
-    tibble::rownames_to_column(var = 'Parameters') %>%
+    as.data.frame() %>%
+    tibble::rownames_to_column(var = "Parameters") %>%
     dplyr::mutate(
-      'CIl' = .data$Value -
+      "CIl" = .data$Value -
         stats::qt((1 + conf_int) / 2, .data$DF) * .data$Std.Error,
-      'CIu' = .data$Value +
+      "CIu" = .data$Value +
         stats::qt((1 + conf_int) / 2, .data$DF) * .data$Std.Error
     ) %>%
     tibble::as_tibble()
@@ -352,7 +352,7 @@ compute_fit_results <- function(
   trt_col = NULL
 ) {
   checkmate::assertDataFrame(data)
-  checkmate::assert_class(fit, 'lme')
+  checkmate::assert_class(fit, "lme")
 
   dv <- rlang::enquo(dv_col)
   conc <- rlang::enquo(conc_col)
@@ -370,8 +370,8 @@ compute_fit_results <- function(
     IPRED = stats::fitted(fit, level = 1),
     RES = stats::residuals(fit, level = 0),
     IRES = stats::residuals(fit, level = 1),
-    WRES = stats::residuals(fit, level = 0, type = 'pearson'),
-    IWRES = stats::residuals(fit, level = 1, type = 'pearson')
+    WRES = stats::residuals(fit, level = 0, type = "pearson"),
+    IWRES = stats::residuals(fit, level = 1, type = "pearson")
   )
   if (!rlang::quo_is_null(trt)) {
     fit_results_df <- fit_results_df %>%

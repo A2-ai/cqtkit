@@ -289,7 +289,7 @@ compute_study_summary <- function(data, trt_col, id_col, group_col = NULL) {
   group <- rlang::enquo(group_col)
   id <- rlang::enquo(id_col)
 
-  required_cols <- unlist(lapply(c(trt, id, group), name_quo_if_not_null)) #helper.R
+  required_cols <- unlist(lapply(c(trt, id, group), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
   df <- tibble::tibble(
@@ -573,9 +573,9 @@ compute_grouped_mean_sd <- function(
       n = sum(!is.na(.data$dv)),
       se = .data$sd / sqrt(.data$n),
       ci_low = .data$mean_dv -
-        stats::qt((1 + conf_int) / 2, df = .data$n - 1) * .data$se, #stats::t.test(.data$dv, na.rm = TRUE, conf.level = conf_int)$conf.int[1],
+        stats::qt((1 + conf_int) / 2, df = .data$n - 1) * .data$se,
       ci_high = .data$mean_dv +
-        stats::qt((1 + conf_int) / 2, df = .data$n - 1) * .data$se, #stats::t.test(.data$dv, na.rm = TRUE, conf.level = conf_int)$conf.int[2],
+        stats::qt((1 + conf_int) / 2, df = .data$n - 1) * .data$se,
       group = dplyr::first(.data$grouping),
       .groups = "keep"
     )
@@ -590,7 +590,7 @@ compute_grouped_mean_sd <- function(
           .data$geo_mean_dv[.data$dose == reference_dose],
         delta_sd = sqrt(
           (.data$sd)**2 + (.data$sd[.data$dose == reference_dose])**2
-        ), #THIS MIGHT BE WRONG? - comes from propogation of error ddX = dX_j!=0 - dX_j==0
+        ),
         delta_se = sqrt(
           .data$sd**2 /
             .data$n +
@@ -643,7 +643,6 @@ compute_loess_linear_r_squared <- function(
   conc_str <- rlang::as_label(dqtc)
   dqtc_str <- rlang::as_label(conc)
 
-  ###### ADD IN TRT SPECIFIC LM...? ######
   f <- stats::as.formula(
     paste(dqtc_str, "~", conc_str, "+ 1")
   )
@@ -654,27 +653,27 @@ compute_loess_linear_r_squared <- function(
   lin_reg_pred <- stats::predict(lin_reg)
   loess_reg_pred <- stats::predict(loess_reg)
 
-  SS_res <- sum(
+  ss_res <- sum(
     (lin_reg_pred - loess_reg_pred)^2
   )
-  SS_tot <- sum(
+  ss_tot <- sum(
     (lin_reg_pred - mean(lin_reg_pred))^2
   )
 
   n <- lin_reg$model %>% nrow()
   enp <- loess_reg$enp
 
-  R_squared <- 1 - SS_res / SS_tot
-  R_squared_adj <- 1 - (1 - R_squared) * ((n - 1) / (n - enp - 1))
+  r_squared <- 1 - ss_res / ss_tot
+  r_squared_adj <- 1 - (1 - r_squared) * ((n - 1) / (n - enp - 1))
 
   # Coefficient of partial determination
-  R_parial_det <- 1 - sum(loess_reg$residuals^2) / sum(lin_reg$residuals^2)
+  r_parial_det <- 1 - sum(loess_reg$residuals^2) / sum(lin_reg$residuals^2)
 
   return(
     tibble::tibble(
-      R_squared = c(R_squared),
-      R_squared_adj = c(R_squared_adj),
-      R_partial_det = c(R_parial_det)
+      R_squared = c(r_squared),
+      R_squared_adj = c(r_squared_adj),
+      R_partial_det = c(r_parial_det)
     )
   )
 }
@@ -776,11 +775,11 @@ compute_potential_hysteresis <- function(
     warning("Multiple times have max dQTCF - first time is used")
   }
 
-  Tmax <- qtc_conc_df$ntld[which.max(qtc_conc_df$mean_conc)]
-  Umax <- qtc_conc_df$ntld[which.max(qtc_conc_df$mean_dqtc)]
+  tmax <- qtc_conc_df$ntld[which.max(qtc_conc_df$mean_conc)]
+  umax <- qtc_conc_df$ntld[which.max(qtc_conc_df$mean_dqtc)]
 
   large_time_diff <- FALSE
-  if (Umax - Tmax >= 1) {
+  if (umax - tmax >= 1) {
     large_time_diff <- TRUE
   }
 
@@ -959,7 +958,7 @@ compute_quantiles_obs_df <- function(
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assertNumeric(conf_int, lower = 0, upper = 1)
-  checkmate::assertNumeric(nbins) # this can be single number or vector for user-specified binning
+  checkmate::assertNumeric(nbins)
   checkmate::assertIntegerish(type, lower = 1, upper = 9)
 
   lower_p <- 1 - (1 + conf_int) / 2
@@ -1035,7 +1034,7 @@ compute_quantiles_obs_df <- function(
     ) %>%
     dplyr::group_by(.data$decile) %>%
     dplyr::summarize(
-      xdata = stats::median(.data$xdata, na.rm = TRUE), # some potentially goofy behavior here.
+      xdata = stats::median(.data$xdata, na.rm = TRUE),
       mean_dv = mean(.data$ydata, na.rm = TRUE),
       sd = stats::sd(.data$ydata, na.rm = TRUE),
       n = sum(!is.na(.data$ydata)),
@@ -1074,7 +1073,7 @@ compute_quantiles_obs_df <- function(
 #' compute_dataset_simulation(data_proc, fit, CONC)
 compute_dataset_simulation <- function(data, fit, xdata_col, sim_num = 0) {
   checkmate::assertDataFrame(data)
-  checkmate::assert(checkmate::check_class(fit, "lme")) #not sure how i feel about requiring LME, maybe could add in lmer from lme4 package
+  checkmate::assert(checkmate::check_class(fit, "lme"))
   checkmate::assertIntegerish(sim_num)
 
   xdata <- rlang::enquo(xdata_col)
@@ -1092,8 +1091,8 @@ compute_dataset_simulation <- function(data, fit, xdata_col, sim_num = 0) {
   )
 
   dummy_fit_var$coefficients$fixed <- sampled_parameters
-
-  fitted_values <- stats::predict(dummy_fit_var, level = 0) #because we overwrote parameters we want population pred
+  #because we overwrote parameters we want population pred
+  fitted_values <- stats::predict(dummy_fit_var, level = 0)
   residuals <- stats::residuals(fit) #use a random sampling from eps (residuals)
 
   qtc_pred <- tibble::tibble(
@@ -1147,7 +1146,7 @@ compute_summary_statistics_of_simulations <- function(
   type = 2
 ) {
   checkmate::assertDataFrame(data)
-  checkmate::assert(checkmate::check_class(fit, "lme")) #not sure how i feel about requiring LME, maybe could add in lmer from lme4 package.
+  checkmate::assert(checkmate::check_class(fit, "lme"))
   checkmate::assertNumeric(conf_int, lower = 0, upper = 1)
   checkmate::assertIntegerish(nruns)
   checkmate::assertNumeric(nbins)
@@ -1158,8 +1157,8 @@ compute_summary_statistics_of_simulations <- function(
   required_cols <- unlist(lapply(c(xdata), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
-  lower_p = 1 - (1 + conf_int) / 2
-  upper_p = (1 + conf_int) / 2
+  lower_p <- 1 - (1 + conf_int) / 2
+  upper_p <- (1 + conf_int) / 2
 
   sim_list <- lapply(1:nruns, function(x) {
     compute_dataset_simulation(data, fit, !!xdata, sim_num = x)
@@ -1300,7 +1299,6 @@ compute_conc_for_upper_pred <- function(
   b <- 2 * theta_1 * (theta_3 - threshold) - 2 * cov_theta_1_3 * t^2
   c <- (threshold - theta_3)^2 - t^2 * var_theta_3
 
-  #return solutions - I think this will be (conc for upper CI, conc for lower CI) but not sure
   quad_form(a, b, c)
 }
 

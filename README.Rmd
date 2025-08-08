@@ -47,7 +47,7 @@ library(gt)
 - RR, RRBL  
 - HR, HRBL
 
-The included `cqtkit_data_<drug>` datasets already contain preprocessed data that has been averaged across replicates, so they include many of the derived columns that `preprocess()` would typically create. However, `preprocess()` can still be useful to compute any missing derived parameters.
+The included `cqtkit_data_<drug>` datasets already contain preprocessed data that have been averaged across replicates, so they include many of the derived columns that `preprocess()` would typically create. However, `preprocess()` can still be useful to compute any missing derived parameters.
 
 ```{r data-preprocessing}
 data_proc <- cqtkit_data_verapamil %>% preprocess()
@@ -80,6 +80,7 @@ eda_mean_dv_over_time(
       "Reference 10" = NA
     ),
     legend.position = "top",
+    legend.title.position = "left",
     legend_nrow = 2
   )
 )
@@ -136,6 +137,7 @@ eda_scatter_with_regressions(
       "Verapamil HCL" = "Verapamil"
     ),
     legend.position = "top",
+    legend.title.position = "left",
     legend_nrow = 2
   )
 )
@@ -186,7 +188,8 @@ gof_plots(
   style = set_style(
     labels = c(
       "Verapamil HCL" = "Verapamil"
-    )
+    ),
+    legend.title.position = "left"
   )
 )
 ```
@@ -206,7 +209,8 @@ gof_concordance_plots(
       "Placebo" = "Placebo",
       "Reference 2" = "+/- 2 Residual",
       "Reference -2" = NA
-    )
+    ),
+    legend.title.position = "left"
   )
 )
 ```
@@ -228,7 +232,8 @@ gof_residuals_plots(
       "Placebo" = "Placebo",
       "Reference 2" = "+/- 2 Residual",
       "Reference -2" = NA
-    )
+    ),
+    legend.title.position = "left"
   )
 )
 ```
@@ -246,7 +251,7 @@ gof_vpc_plot(
 
 ## Exposure Predictions
 
-`cqtkit` can use a fitted model and make predictions of $\Delta \Delta$QTc at relevant exposures
+`cqtkit` can use a fitted model and make predictions of &Delta;&Delta;QTc at relevant exposures
 ```{r relevant exposure cmax}
 conc_for_10_ms <- compute_conc_for_upper_pred(
   data_proc,

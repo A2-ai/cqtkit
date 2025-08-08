@@ -17,14 +17,14 @@ add_error_bars_to_plot <- function(
   # no reference dose error bars here
   if (is.null(reference_dose)) {
     if (!is.null(error_bars)) {
-      if (error_bars == 'CI') {
+      if (error_bars == "CI") {
         p <- p +
           ggplot2::geom_errorbar(
             data = data,
             ggplot2::aes(ymin = .data$ci_low, ymax = .data$ci_high)
           )
         caption <- paste0("errorbars represent ", round(conf_int * 100), "% CI")
-      } else if (error_bars == 'SE') {
+      } else if (error_bars == "SE") {
         p <- p +
           ggplot2::geom_errorbar(
             data = data,
@@ -34,7 +34,7 @@ add_error_bars_to_plot <- function(
             )
           )
         caption <- paste0("errorbars represent SE")
-      } else if (error_bars == 'SD') {
+      } else if (error_bars == "SD") {
         p <- p +
           ggplot2::geom_errorbar(
             data = data,
@@ -52,14 +52,14 @@ add_error_bars_to_plot <- function(
   } else {
     # reference dose error bars
     if (!is.null(error_bars)) {
-      if (error_bars == 'CI') {
+      if (error_bars == "CI") {
         p <- p +
           ggplot2::geom_errorbar(
             data = data,
             ggplot2::aes(ymin = .data$ci_low_delta, ymax = .data$ci_up_delta)
           )
         caption <- paste0("errorbars represent ", round(conf_int * 100), "% CI")
-      } else if (error_bars == 'SE') {
+      } else if (error_bars == "SE") {
         p <- p +
           ggplot2::geom_errorbar(
             data = data,
@@ -69,7 +69,7 @@ add_error_bars_to_plot <- function(
             )
           )
         caption <- paste0("errorbars represent SE")
-      } else if (error_bars == 'SD') {
+      } else if (error_bars == "SD") {
         p <- p +
           ggplot2::geom_errorbar(
             data = data,
@@ -215,10 +215,10 @@ add_secondary_data <- function(
 
   # update args to have scale and shift if not provided
   if (is.null(scale)) {
-    scale = (max_second - min_second) / (max_first - min_first)
+    scale <- (max_second - min_second) / (max_first - min_first)
   }
   if (is.null(shift)) {
-    shift = min_first - min_second
+    shift <- min_first - min_second
   }
 
   p <- p +

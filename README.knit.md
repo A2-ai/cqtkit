@@ -1,71 +1,90 @@
+---
+output: github_document
+---
+
+
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+
+
+
+
+
 
 # `cqtkit` <img src='man/figures/logo.png' align="right" height="138" />
 
 <!-- badges: start -->
-
 [![R-CMD-check](https://github.com/a2-ai-gilead-collab/cqtkit/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/a2-ai-gilead-collab/cqtkit/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-`cqtkit` makes C-QTc analysis straightforward — enabling users to
-explore data, validate key assumptions from the white paper, fit and
-assess the pre-specified model with comprehensive goodness-of-fit plots,
-and generate relevant exposure–response predictions.
+`cqtkit` makes C-QTc analysis straightforward — enabling users to explore data, validate key assumptions from the white paper, fit and assess the pre-specified model with comprehensive goodness-of-fit plots, and generate relevant exposure–response predictions.
 
 ## Installation
 
-You can install the development version of `cqtkit` from
-[GitHub](https://github.com) with:
+You can install the development version of `cqtkit` from [GitHub](https://github.com) with:
 
-``` r
+
+
+::: {.cell}
+
+```{.r .cell-code}
 pak::pkg_install("a2-ai/cqtkit")
 ```
+:::
+
 
 ## Documentation
 
-The documentation site for cqtkit can be found
-[here](https://a2-ai.github.io/cqtkit-docs).
+The documentation site for cqtkit can be found [here](https://a2-ai.github.io/cqtkit-docs).
 
-``` r
+
+
+::: {.cell}
+
+```{.r .cell-code}
 library(cqtkit)
 library(dplyr)
 library(gt)
 ```
+:::
+
+
+
 
 ## Preprocessing of C-QT datasets
 
-`cqtkit` provides preprocessing functions to help compute derived ECG
-parameters during data assembly. The `preprocess` function can be used
-to compute baseline corrected ECG parameter values as well as mean
-baseline values from the following raw column names:
+`cqtkit` provides preprocessing functions to help compute derived ECG parameters during data assembly. The `preprocess` function can be used to compute baseline corrected ECG parameter values as well as mean baseline values from the following raw column names:
 
 - QT, QTBL
 - RR, RRBL  
 - HR, HRBL
 
-The included `cqtkit_data_<drug>` datasets already contain preprocessed
-data that has been averaged across replicates, so they include many of
-the derived columns that `preprocess()` would typically create. However,
-`preprocess()` can still be useful to compute any missing derived
-parameters.
+The included `cqtkit_data_<drug>` datasets already contain preprocessed data that have been averaged across replicates, so they include many of the derived columns that `preprocess()` would typically create. However, `preprocess()` can still be useful to compute any missing derived parameters.
 
-``` r
+
+
+::: {.cell}
+
+```{.r .cell-code}
 data_proc <- cqtkit_data_verapamil %>% preprocess()
 new_cols <- setdiff(names(data_proc), names(cqtkit_data_verapamil))
 cat(paste(new_cols, collapse = ", "), "\n")
 #> deltaQTCB, deltaQTCF, deltaRR, deltaHR, deltaQT
 ```
+:::
+
+
 
 ## Exploratory Data Analysis with cqtkit
+`cqtkit` provides extensive EDA functions for C-QT datasets to validate key assumptions from the [Scientific White Paper on concentration-QTc modeling](https://pubmed.ncbi.nlm.nih.gov/29209907/).
 
-`cqtkit` provides extensive EDA functions for C-QT datasets to validate
-key assumptions from the [Scientific White Paper on concentration-QTc
-modeling](https://pubmed.ncbi.nlm.nih.gov/29209907/).
+### Drug Effect on Heart Rate 
 
-### Drug Effect on Heart Rate
 
-``` r
+::: {.cell}
+
+```{.r .cell-code}
 eda_mean_dv_over_time(
   data = data_proc,
   dv_col = deltaHR,
@@ -92,11 +111,19 @@ eda_mean_dv_over_time(
 )
 ```
 
-<img src="man/figures/README-drug-effect-on-HR-1.png" width="100%" />
+::: {.cell-output-display}
+![](man/figures/README-drug-effect-on-HR-1.png){width=100%}
+:::
+:::
+
+
 
 ### QTc Correction
 
-``` r
+
+::: {.cell}
+
+```{.r .cell-code}
 bl <- cqtkit_data_bl_verapamil %>% compute_qtcb_qtcf(qtbl_col = NULL, rrbl_col = NULL)
 eda_qtc_comparison_plot(
   data = bl,
@@ -110,11 +137,20 @@ eda_qtc_comparison_plot(
 )
 ```
 
-<img src="man/figures/README-qtc-comparison-1.png" width="100%" />
+::: {.cell-output-display}
+![](man/figures/README-qtc-comparison-1.png){width=100%}
+:::
+:::
+
+
 
 ### Hysteresis
 
-``` r
+
+
+::: {.cell}
+
+```{.r .cell-code}
 eda_hysteresis_loop_plot(
   data_proc,
   NTLD,
@@ -130,11 +166,20 @@ eda_hysteresis_loop_plot(
 )
 ```
 
-<img src="man/figures/README-hysteresis-1.png" width="100%" />
+::: {.cell-output-display}
+![](man/figures/README-hysteresis-1.png){width=100%}
+:::
+:::
+
+
 
 ### Linearity of Concentration-QTc Relationship
 
-``` r
+
+
+::: {.cell}
+
+```{.r .cell-code}
 eda_scatter_with_regressions(
   data_proc,
   ydata_col = deltaQTCF,
@@ -156,14 +201,21 @@ eda_scatter_with_regressions(
 )
 ```
 
-<img src="man/figures/README-Linearity-1.png" width="100%" />
+::: {.cell-output-display}
+![](man/figures/README-Linearity-1.png){width=100%}
+:::
+:::
+
+
 
 ## Modeling
+`cqtkit` fits the prespecified linear mixed-effects model from the Scientific White Paper using the `nlme` package.
 
-`cqtkit` fits the prespecified linear mixed-effects model from the
-Scientific White Paper using the `nlme` package.
 
-``` r
+
+::: {.cell}
+
+```{.r .cell-code}
 dqtc_model <- fit_prespecified_model(
   data_proc,
   dv_col = deltaQTCF,
@@ -189,13 +241,18 @@ tabulate_model_fit_parameters(
   as_raw_html()
 ```
 
-<div id="llpadogthe" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-  &#10;  <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF">
+::: {.cell-output-display}
+
+```{=html}
+<div id="lwtzagbdtf" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+  
+  <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF">
   <thead style="border-style: none;">
     <tr class="gt_heading" style="border-style: none; background-color: #FFFFFF; text-align: center; border-bottom-color: #FFFFFF; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;" bgcolor="#FFFFFF" align="center">
-      <td colspan="3" class="gt_heading gt_title gt_font_normal gt_bottom_border" style="border-style: none; color: #333333; font-size: 125%; padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px; background-color: #FFFFFF; text-align: center; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; font-weight: normal;" bgcolor="#FFFFFF" align="center"><span class="gt_from_md">Fixed-Effect Estimates for ΔQTcF Model</span></td>
+      <td colspan="3" class="gt_heading gt_title gt_font_normal gt_bottom_border" style="border-style: none; color: #333333; font-size: 125%; padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px; background-color: #FFFFFF; text-align: center; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; font-weight: normal;" bgcolor="#FFFFFF" align="center"><span data-qmd-base64="Rml4ZWQtRWZmZWN0IEVzdGltYXRlcyBmb3IgJkRlbHRhO1FUY0YgTW9kZWw="><span class="gt_from_md">Fixed-Effect Estimates for ΔQTcF Model</span></span></td>
     </tr>
-    &#10;    <tr class="gt_col_headings" style="border-style: none; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;">
+    
+    <tr class="gt_col_headings" style="border-style: none; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;">
       <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Parameters" style="border-style: none; color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: normal; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; text-align: left;" bgcolor="#FFFFFF" valign="bottom" align="left">Parameters</th>
       <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Value" style="border-style: none; color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: normal; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" bgcolor="#FFFFFF" valign="bottom" align="right">Estimate [90% CI]</th>
       <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="p-value" style="border-style: none; color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: normal; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" bgcolor="#FFFFFF" valign="bottom" align="right">p-value</th>
@@ -271,15 +328,24 @@ tabulate_model_fit_parameters(
       <td class="gt_sourcenote" colspan="3" style="border-style: none; font-size: 90%; padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px;">Additive Residual error model with IIV on intercept and slope</td>
     </tr>
   </tfoot>
-  &#10;</table>
+  
+</table>
 </div>
+```
+
+:::
+:::
+
+
 
 ### Goodness-of-Fit Evaluation
+`cqtkit` has several Goodness-of-Fit functions for validating fitted models
 
-`cqtkit` has several Goodness-of-Fit functions for validating fitted
-models
 
-``` r
+
+::: {.cell}
+
+```{.r .cell-code}
 gof_plots(
   data = data_proc,
   fit = dqtc_model,
@@ -298,9 +364,14 @@ gof_plots(
 )
 ```
 
-<img src="man/figures/README-gof-summary-1.png" width="100%" />
+::: {.cell-output-display}
+![](man/figures/README-gof-summary-1.png){width=100%}
+:::
+:::
 
-``` r
+::: {.cell}
+
+```{.r .cell-code}
 gof_concordance_plots(
   data = data_proc,
   fit = dqtc_model,
@@ -322,9 +393,14 @@ gof_concordance_plots(
 )
 ```
 
-<img src="man/figures/README-concordance-1.png" width="100%" />
+::: {.cell-output-display}
+![](man/figures/README-concordance-1.png){width=100%}
+:::
+:::
 
-``` r
+::: {.cell}
+
+```{.r .cell-code}
 gof_residuals_plots(
   data = data_proc,
   fit = dqtc_model,
@@ -347,9 +423,14 @@ gof_residuals_plots(
 )
 ```
 
-<img src="man/figures/README-residuals-1.png" width="100%" />
+::: {.cell-output-display}
+![](man/figures/README-residuals-1.png){width=100%}
+:::
+:::
 
-``` r
+::: {.cell}
+
+```{.r .cell-code}
 gof_vpc_plot(
   data_proc,
   dqtc_model,
@@ -363,14 +444,21 @@ gof_vpc_plot(
 #> Your xdata quantiles had duplicates. Filtering for x values > 0
 ```
 
-<img src="man/figures/README-VPC-1.png" width="100%" />
+::: {.cell-output-display}
+![](man/figures/README-VPC-1.png){width=100%}
+:::
+:::
+
+
 
 ## Exposure Predictions
 
-`cqtkit` can use a fitted model and make predictions of
-$\Delta \Delta$QTc at relevant exposures
+`cqtkit` can use a fitted model and make predictions of &Delta;&Delta;QTc at relevant exposures
 
-``` r
+
+::: {.cell}
+
+```{.r .cell-code}
 conc_for_10_ms <- compute_conc_for_upper_pred(
   data_proc,
   dqtc_model,
@@ -389,8 +477,11 @@ stpx_cmax <- max(compute_pk_parameters(
   TRTG
 )[, "Cmax_gm"])
 ```
+:::
 
-``` r
+::: {.cell}
+
+```{.r .cell-code}
 predict_with_exposure_plot(
   data_proc,
   dqtc_model,
@@ -429,9 +520,14 @@ predict_with_exposure_plot(
 )
 ```
 
-<img src="man/figures/README-Exposure-prediction-plot-1.png" width="100%" />
+::: {.cell-output-display}
+![](man/figures/README-Exposure-prediction-plot-1.png){width=100%}
+:::
+:::
 
-``` r
+::: {.cell}
+
+```{.r .cell-code}
 tabulate_exposure_predictions(
   data_proc,
   dqtc_model,
@@ -460,16 +556,21 @@ tabulate_exposure_predictions(
   as_raw_html()
 ```
 
-<div id="ahowsjxmos" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-  &#10;  <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF">
+::: {.cell-output-display}
+
+```{=html}
+<div id="vhyjesyafj" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+  
+  <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF">
   <thead style="border-style: none;">
     <tr class="gt_heading" style="border-style: none; background-color: #FFFFFF; text-align: center; border-bottom-color: #FFFFFF; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;" bgcolor="#FFFFFF" align="center">
-      <td colspan="4" class="gt_heading gt_title gt_font_normal gt_bottom_border" style="border-style: none; color: #333333; font-size: 125%; padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px; background-color: #FFFFFF; text-align: center; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; font-weight: normal;" bgcolor="#FFFFFF" align="center"><span class="gt_from_md">ΔΔQTcF Predictions</span></td>
+      <td colspan="4" class="gt_heading gt_title gt_font_normal gt_bottom_border" style="border-style: none; color: #333333; font-size: 125%; padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px; background-color: #FFFFFF; text-align: center; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; font-weight: normal;" bgcolor="#FFFFFF" align="center"><span data-qmd-base64="JkRlbHRhOyZEZWx0YTtRVGNGIFByZWRpY3Rpb25z"><span class="gt_from_md">ΔΔQTcF Predictions</span></span></td>
     </tr>
-    &#10;    <tr class="gt_col_headings" style="border-style: none; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;">
+    
+    <tr class="gt_col_headings" style="border-style: none; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;">
       <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Dose" style="border-style: none; color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: normal; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" bgcolor="#FFFFFF" valign="bottom" align="right">Dose</th>
       <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Cmax" style="border-style: none; color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: normal; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" bgcolor="#FFFFFF" valign="bottom" align="right">Cmax (ng/mL)</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="pred" style="border-style: none; color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: normal; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" bgcolor="#FFFFFF" valign="bottom" align="right"><span class="gt_from_md">Δ Δ QTc (ms)</span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="pred" style="border-style: none; color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: normal; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" bgcolor="#FFFFFF" valign="bottom" align="right"><span data-qmd-base64="JkRlbHRhOyAmRGVsdGE7IFFUYyAobXMp"><span class="gt_from_md">Δ Δ QTc (ms)</span></span></th>
       <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="lower" style="border-style: none; color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: normal; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" bgcolor="#FFFFFF" valign="bottom" align="right">[90% CI]</th>
     </tr>
   </thead>
@@ -485,38 +586,30 @@ tabulate_exposure_predictions(
   </tbody>
   <tfoot class="gt_sourcenotes" style="border-style: none; color: #333333; background-color: #FFFFFF; border-bottom-style: none; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3;" bgcolor="#FFFFFF">
     <tr style="border-style: none;">
-      <td class="gt_sourcenote" colspan="4" style="border-style: none; font-size: 90%; padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px;"><span class="gt_from_md">* Computed C<sub style="margin-top: 0; margin-bottom: 0;">max</sub> for upper 90% CI to reach 10 ms</span></td>
+      <td class="gt_sourcenote" colspan="4" style="border-style: none; font-size: 90%; padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px;"><span data-qmd-base64="XCogQ29tcHV0ZWQgQ35tYXh+IGZvciB1cHBlciA5MCUgQ0kgdG8gcmVhY2ggMTAgbXM="><span class="gt_from_md">* Computed C<sub style="margin-top: 0; margin-bottom: 0;">max</sub> for upper 90% CI to reach 10 ms</span></span></td>
     </tr>
   </tfoot>
-  &#10;</table>
+  
+</table>
 </div>
+```
+
+:::
+:::
+
+
 
 ## References
 
 Scientific White Paper on concentration-QTc modeling
 
-> Garnett C, Bonate PL, Dang Q, Ferber G, Huang D, Liu J, Mehrotra D,
-> Riley S, Sager P, Tornoe C, Wang Y. Scientific white paper on
-> concentration-QTc modeling. J Pharmacokinet Pharmacodyn. 2018
-> Jun;45(3):383-397. doi: 10.1007/s10928-017-9558-5. Epub 2017 Dec 5.
-> Erratum in: J Pharmacokinet Pharmacodyn. 2018 Jun;45(3):399. doi:
-> 10.1007/s10928-017-9565-6. PMID: 29209907.
+> Garnett C, Bonate PL, Dang Q, Ferber G, Huang D, Liu J, Mehrotra D, Riley S, Sager P, Tornoe C, Wang Y. Scientific white paper on concentration-QTc modeling. J Pharmacokinet Pharmacodyn. 2018 Jun;45(3):383-397. doi: 10.1007/s10928-017-9558-5. Epub 2017 Dec 5. Erratum in: J Pharmacokinet Pharmacodyn. 2018 Jun;45(3):399. doi: 10.1007/s10928-017-9565-6. PMID: 29209907.
 
-Data was originally made available [in the following
-publication](https://ascpt.onlinelibrary.wiley.com/doi/10.1038/clpt.2014.155)
+Data was originally made available [in the following publication](https://ascpt.onlinelibrary.wiley.com/doi/10.1038/clpt.2014.155)
 
-> Johannesen L, Vicente J, Mason JW, Sanabria C, Waite-Labott K, Hong M,
-> Guo P, Lin J, Sørensen JS, Galeotti L, Florian J, Ugander M,
-> Stockbridge N, Strauss DG. Differentiating Drug-Induced Multichannel
-> Block on the Electrocardiogram: Randomized Study of Dofetilide,
-> Quinidine, Ranolazine, and Verapamil. Clin Pharmacol Ther. 2014 Jul
-> 23. doi: 10.1038/clpt.2014.155.
+> Johannesen L, Vicente J, Mason JW, Sanabria C, Waite-Labott K, Hong M, Guo P, Lin J, Sørensen JS, Galeotti L, Florian J, Ugander M, Stockbridge N, Strauss DG. Differentiating Drug-Induced Multichannel Block on the Electrocardiogram: Randomized Study of Dofetilide, Quinidine, Ranolazine, and Verapamil. Clin Pharmacol Ther. 2014 Jul 23. doi: 10.1038/clpt.2014.155.
 
-and obtained from
-[Physionet](https://physionet.org/content/ecgrdvq/1.0.0/#files-panel)
+and obtained from [Physionet](https://physionet.org/content/ecgrdvq/1.0.0/#files-panel)
 
-> Goldberger, A., Amaral, L., Glass, L., Hausdorff, J., Ivanov, P. C.,
-> Mark, R., … & Stanley, H. E. (2000). PhysioBank, PhysioToolkit, and
-> PhysioNet: Components of a new research resource for complex
-> physiologic signals. Circulation \[Online\]. 101 (23), pp. e215–e220.
-> RRID:SCR_007345.
+> Goldberger, A., Amaral, L., Glass, L., Hausdorff, J., Ivanov, P. C., Mark, R., ... & Stanley, H. E. (2000). PhysioBank, PhysioToolkit, and PhysioNet: Components of a new research resource for complex physiologic signals. Circulation [Online]. 101 (23), pp. e215–e220. RRID:SCR_007345.
+

@@ -1,5 +1,7 @@
 test_that("compute_pk_parameters warns when NA are present in data", {
-  .test_data <- cqtkit_data_verapamil %>% preprocess() %>% dplyr::filter(DOSE != 0)
+  .test_data <- cqtkit_data_verapamil %>%
+    preprocess() %>%
+    dplyr::filter(DOSE != 0)
   .test_data$CONC[[1]] <- NA
 
   expect_warning(
@@ -17,7 +19,9 @@ test_that('compute_pk_paramters errors for 0 in CONC data', {
 })
 
 test_that('compute_pk_parameters works for no 0 and no NA', {
-  .test_data <- cqtkit_data_verapamil %>% preprocess() %>% dplyr::filter(DOSE != 0)
+  .test_data <- cqtkit_data_verapamil %>%
+    preprocess() %>%
+    dplyr::filter(DOSE != 0)
 
   expect_no_warning(
     #i Actually got a <dplyr_regroup> with text: -- how to remove these?

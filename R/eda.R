@@ -42,7 +42,7 @@ eda_qt_rr_plot <- function(
   required_cols <- unlist(lapply(c(qt, rr, id, trt), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
-  model_type = match.arg(model_type)
+  model_type <- match.arg(model_type)
   if (rlang::quo_is_null(id) && (model_type == "lme") && show_model_results) {
     stop(
       "Must supply id_col if fitting LME model. Otherwise use model_type = 'lm'"
@@ -75,7 +75,7 @@ eda_qt_rr_plot <- function(
       conf_int = conf_int
     )
 
-    label = paste0(
+    label <- paste0(
       "Linear Regression Slope [",
       round(conf_int * 100),
       "% CI]: ",
@@ -89,10 +89,10 @@ eda_qt_rr_plot <- function(
 
     qt_rr_plot <- qt_rr_plot +
       ggplot2::geom_smooth(
-        method = 'lm',
+        method = "lm",
         se = FALSE,
         formula = y ~ x,
-        color = 'black'
+        color = "black"
       )
   } else if ((model_type == "lme") && show_model_results) {
     lme_mod <- fit_qtc_linear_model(
@@ -224,14 +224,14 @@ eda_qtc_comparison_plot <- function(
   qtcp <- rlang::enquo(qtcp_col)
   trt <- rlang::enquo(trt_col)
 
-  model_type = match.arg(model_type)
+  model_type <- match.arg(model_type)
   if (rlang::quo_is_null(id) && (model_type == "lme") && show_model_results) {
     stop(
       "Must supply id_col if fitting LME model. Otherwise use show_lm_results = TRUE"
     )
   }
 
-  legend_location = match.arg(
+  legend_location <- match.arg(
     legend_location,
     c("top", "bottom", "right", "left")
   )
@@ -313,12 +313,12 @@ eda_quantiles_plot <- function(
   ydata_col,
   trt_col = NULL,
   conf_int = 0.90,
-  error_bars = 'CI',
+  error_bars = "CI",
   style = list()
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assertNumeric(conf_int, lower = 0, upper = 1)
-  checkmate::assert_choice(error_bars, c('CI', 'SE', 'SD'), null.ok = TRUE)
+  checkmate::assert_choice(error_bars, c("CI", "SE", "SD"), null.ok = TRUE)
 
   xdata <- rlang::enquo(xdata_col)
   ydata <- rlang::enquo(ydata_col)

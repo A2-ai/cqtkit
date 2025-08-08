@@ -133,7 +133,8 @@ predict_with_observations_plot <- function(
 
   # Styling attributes for scale functions
   attr(p, "fill_colors") <- stats::setNames("grey", ci_label)
-  attr(p, "secondary_shapes") <- stats::setNames(1, "Predictions") # default open circle for line group
+  # default open circle for line group
+  attr(p, "secondary_shapes") <- stats::setNames(1, "Predictions")
 
   # Add reference line(s)
   p <- add_horizontal_references(p, reference_threshold)
@@ -460,7 +461,7 @@ predict_with_exposure_plot <- function(
   style = list()
 ) {
   checkmate::assertDataFrame(data)
-  checkmate::assert(checkmate::check_class(fit, "lme")) # not sure how i feel about requiring LME, maybe could add in lmer from lme4 package.
+  checkmate::assert(checkmate::check_class(fit, "lme"))
   checkmate::assertList(treatment_predictors)
   checkmate::assertList(control_predictors, null.ok = TRUE)
   checkmate::assertNumeric(cmaxes, null.ok = TRUE)

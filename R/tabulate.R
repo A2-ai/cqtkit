@@ -39,7 +39,7 @@ tabulate_study_summary <- function(
   group <- rlang::enquo(group_col)
   id <- rlang::enquo(id_col)
 
-  required_cols <- unlist(lapply(c(trt, id, group), name_quo_if_not_null)) #helper.R
+  required_cols <- unlist(lapply(c(trt, id, group), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
   study_sum <- compute_study_summary(data, !!trt, !!id, !!group)
@@ -530,7 +530,7 @@ tabulate_high_qtc_sub <- function(
     if (!rlang::quo_is_null(group)) {
       group_label <- name_quo_if_not_null(group)
     } else {
-      group_label = ""
+      group_label <- ""
     }
   }
   t <- t %>%
