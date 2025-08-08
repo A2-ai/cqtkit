@@ -26,7 +26,7 @@ The goal of `cqtkit` is to help streamline C-QT analyses from exploratory data a
 You can install the development version of `cqtkit` from [GitHub](https://github.com) with:
 
 ```{r installing cqtkit, eval=FALSE}
-#pak::pkg_install("a2-ai/cqtkit")
+pak::pkg_install("a2-ai/cqtkit")
 ```
 
 ```{r loading-cqtkit, results='hide', message=FALSE, warning=FALSE}

@@ -1,13 +1,17 @@
 Package: cqtkit
-Title: A package to aid in C-QT analyses
-Version: 0.1.5
+Title: Comprehensive C-QT Analysis From Data to Deliverables
+Version: 1.0.0
 Authors@R: c(
     person("Matt", "Smith", , "matthews@a2-ai.com", role = c("aut", "cre")),
     person("Devin", "Pastoor", , "devin@a2-ai.com", role = c("aut")),
     person("Mutaz", "Jaber", , "Mutaz.Jaber@gilead.com", role = c("ctb")),
     person("Ana", "Ruiz", , "Ana.Ruiz5@gilead.com", role = c("rev"))
     )
-Description: Creates tables, figures, models, and predictions needed for standard C-QT analyses.
+Description: Provides an end-to-end toolkit for C-QTc analysis, including
+    exploratory data analysis, model fitting, goodness-of-fit evaluation,
+    and exposure–response prediction. Generates publication-ready tables
+    and figures for inclusion in regulatory submissions, supporting
+    transparent, reproducible workflows from raw data to deliverables.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
