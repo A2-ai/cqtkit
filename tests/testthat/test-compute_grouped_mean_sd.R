@@ -1,5 +1,6 @@
 test_that("compute_grouped_mean_sd errors when time grouping does not reduce size", {
-  .test_data <- cqtkit_data_verapamil %>% dplyr::mutate('TIME_UNIQUE' = dplyr::row_number())
+  .test_data <- cqtkit_data_verapamil %>%
+    dplyr::mutate('TIME_UNIQUE' = dplyr::row_number())
   expect_error(
     compute_grouped_mean_sd(
       .test_data,
@@ -11,7 +12,8 @@ test_that("compute_grouped_mean_sd errors when time grouping does not reduce siz
 })
 
 test_that("compute_grouped_mean_sd errors when dose grouping does not reduce size", {
-  .test_data <- cqtkit_data_verapamil %>% dplyr::mutate('DOSE_UNIQUE' = dplyr::row_number())
+  .test_data <- cqtkit_data_verapamil %>%
+    dplyr::mutate('DOSE_UNIQUE' = dplyr::row_number())
   expect_error(
     compute_grouped_mean_sd(
       .test_data,

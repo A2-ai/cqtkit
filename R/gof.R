@@ -44,7 +44,7 @@ gof_plots <- function(
   conc_col,
   ntime_col,
   trt_col = NULL,
-  conc_xlabel = 'Concentration ng/mL',
+  conc_xlabel = "Concentration ng/mL",
   dv_label = bquote(Delta ~ "QTc (ms)"),
   legend_location = c("top", "bottom", "left", "right", "none"),
   style = list()
@@ -92,7 +92,7 @@ gof_plots <- function(
       )
     ) +
     ggplot2::theme_bw() +
-    ggplot2::geom_abline(slope = 1, color = 'black') +
+    ggplot2::geom_abline(slope = 1, color = "black") +
     ggplot2::geom_smooth(
       method = "loess",
       span = 0.99,
@@ -101,8 +101,8 @@ gof_plots <- function(
       se = FALSE
     ) +
     ggplot2::labs(
-      x = bquote('Predicted ' ~ .(dv_label)),
-      y = bquote('Observed ' ~ .(dv_label))
+      x = bquote("Predicted " ~ .(dv_label)),
+      y = bquote("Observed " ~ .(dv_label))
     ) +
     ggplot2::theme(aspect.ratio = 1) +
     ggplot2::coord_equal(xlim = p1_axis_limits, ylim = p1_axis_limits)
@@ -124,9 +124,9 @@ gof_plots <- function(
     )) +
     ggplot2::stat_qq() +
     ggplot2::theme_bw() +
-    ggplot2::labs(x = 'Theoretical Quantiles', y = 'Standardized Residuals') +
+    ggplot2::labs(x = "Theoretical Quantiles", y = "Standardized Residuals") +
     ggplot2::theme(aspect.ratio = 1) +
-    ggplot2::geom_abline(slope = 1, color = 'black') +
+    ggplot2::geom_abline(slope = 1, color = "black") +
     ggplot2::coord_equal(xlim = p2_axis_limits, ylim = p2_axis_limits)
 
   p2 <- do.call(style_plot, c(list(p = p2), style))
@@ -144,14 +144,14 @@ gof_plots <- function(
       color = .data$.trt_group
     )) +
     ggplot2::geom_smooth(
-      method = 'loess',
+      method = "loess",
       span = 0.99,
-      color = 'red',
+      color = "red",
       formula = y ~ x,
       se = FALSE
     ) +
     ggplot2::theme_bw() +
-    ggplot2::labs(x = conc_xlabel, y = 'Standardized Residuals') +
+    ggplot2::labs(x = conc_xlabel, y = "Standardized Residuals") +
     ggplot2::theme(aspect.ratio = 1)
 
   p3 <- do.call(style_plot, c(list(p = p3), style))
@@ -161,16 +161,16 @@ gof_plots <- function(
     ggplot2::geom_histogram(
       ggplot2::aes(y = ggplot2::after_stat(density)),
       binwidth = 0.5,
-      fill = 'grey',
-      color = 'black'
+      fill = "grey",
+      color = "black"
     ) +
     ggplot2::stat_function(
       fun = stats::dnorm,
       args = list(mean = 0, sd = 1),
-      color = 'black'
+      color = "black"
     ) +
     ggplot2::stat_density(geom = "line", color = "red") +
-    ggplot2::labs(x = 'Standardized residuals', y = 'Density') +
+    ggplot2::labs(x = "Standardized residuals", y = "Density") +
     ggplot2::theme_bw() +
     ggplot2::theme(aspect.ratio = 1)
 
@@ -230,14 +230,14 @@ gof_concordance_plots <- function(
   conc_col,
   ntime_col,
   trt_col = NULL,
-  dv_label = bquote(Delta ~ 'QTc (ms)'),
+  dv_label = bquote(Delta ~ "QTc (ms)"),
   legend_location = c("top", "bottom", "left", "right", "none"),
   style = list()
 ) {
   checkmate::assertDataFrame(data)
-  checkmate::assert(checkmate::check_class(fit, 'lme'))
+  checkmate::assert(checkmate::check_class(fit, "lme"))
 
-  legend_location = match.arg(legend_location)
+  legend_location <- match.arg(legend_location)
   dv <- rlang::enquo(dv_col)
   conc <- rlang::enquo(conc_col)
   time <- rlang::enquo(ntime_col)
@@ -256,10 +256,10 @@ gof_concordance_plots <- function(
   }
 
   #Concordance Plots
-  xdata <- list('PRED', 'IPRED')
+  xdata <- list("PRED", "IPRED")
   xlabels <- list(
-    bquote('Population Predicted ' ~ .(dv_label)),
-    bquote('Individual Predicted ' ~ .(dv_label))
+    bquote("Population Predicted " ~ .(dv_label)),
+    bquote("Individual Predicted " ~ .(dv_label))
   )
 
   all_values <- c(fit_results_df$PRED, fit_results_df$IPRED, fit_results_df$dv)
@@ -272,7 +272,7 @@ gof_concordance_plots <- function(
   plots <- lapply(seq_along(xdata), function(i) {
     .p <- fit_results_df %>%
       ggplot2::ggplot(
-        ggplot2::aes_string(x = xdata[[i]], y = 'dv')
+        ggplot2::aes_string(x = xdata[[i]], y = "dv")
       ) +
       ggplot2::geom_point(ggplot2::aes(
         color = .data$.trt_group,
@@ -282,17 +282,17 @@ gof_concordance_plots <- function(
       ggplot2::theme(aspect.ratio = 1) +
       ggplot2::geom_abline(slope = 1) +
       ggplot2::geom_smooth(
-        method = 'lm',
+        method = "lm",
         se = FALSE,
         formula = y ~ x,
-        color = 'red',
-        linetype = 'dashed'
+        color = "red",
+        linetype = "dashed"
       )
 
     this_style <- style
     this_style$xlabel <- this_style$xlabel %||% xlabels[[i]]
     this_style$ylabel <- this_style$ylabel %||%
-      bquote('Observed  ' ~ .(dv_label))
+      bquote("Observed  " ~ .(dv_label))
     this_style$legend <- this_style$legend %||% "Treatment Group"
 
     .p <- do.call(style_plot, c(list(p = .p), this_style))
@@ -356,17 +356,17 @@ gof_residuals_plots <- function(
   conc_col,
   ntime_col,
   trt_col = NULL,
-  conc_xlabel = 'Concentration (ng/mL)',
-  dv_label = bquote(Delta ~ 'QTc (ms)'),
+  conc_xlabel = "Concentration (ng/mL)",
+  dv_label = bquote(Delta ~ "QTc (ms)"),
   residual_references = c(-2, 2),
   legend_location = c("top", "bottom", "left", "right", "none"),
   style = list()
 ) {
   checkmate::assertDataFrame(data)
-  checkmate::assert(checkmate::check_class(fit, 'lme'))
+  checkmate::assert(checkmate::check_class(fit, "lme"))
   checkmate::assert_numeric(residual_references, null.ok = TRUE)
 
-  legend_location = match.arg(legend_location)
+  legend_location <- match.arg(legend_location)
 
   dv <- rlang::enquo(dv_col)
   conc <- rlang::enquo(conc_col)
@@ -385,13 +385,13 @@ gof_residuals_plots <- function(
     "All"
   }
 
-  xdata <- c('PRED', 'conc', 'IPRED', 'conc')
-  ydata <- c('WRES', 'WRES', 'IWRES', 'IWRES')
+  xdata <- c("PRED", "conc", "IPRED", "conc")
+  ydata <- c("WRES", "WRES", "IWRES", "IWRES")
 
   xlabel <- c(
-    bquote('Population Predicted ' ~ .(dv_label)),
+    bquote("Population Predicted " ~ .(dv_label)),
     conc_xlabel,
-    bquote('Individual Predicted ' ~ .(dv_label)),
+    bquote("Individual Predicted " ~ .(dv_label)),
     conc_xlabel
   )
 
@@ -431,7 +431,7 @@ gof_residuals_plots <- function(
     .p <- ggpubr::ggarrange(
       plotlist = plots,
       common.legend = TRUE,
-      legend = 'none'
+      legend = "none"
     )
   }
 
@@ -481,8 +481,8 @@ gof_qq_plots <- function(
   style = list()
 ) {
   checkmate::assertDataFrame(data)
-  checkmate::assert(checkmate::check_class(fit, 'lme'))
-  legend_location = match.arg(legend_location)
+  checkmate::assert(checkmate::check_class(fit, "lme"))
+  legend_location <- match.arg(legend_location)
 
   dv <- rlang::enquo(dv_col)
   conc <- rlang::enquo(conc_col)
@@ -501,7 +501,7 @@ gof_qq_plots <- function(
     "All"
   }
 
-  sample_data = list('WRES', 'IWRES')
+  sample_data <- list("WRES", "IWRES")
   plots <- list()
 
   if (is.null(style)) style <- list()
@@ -518,7 +518,7 @@ gof_qq_plots <- function(
         color = .data$.trt_group,
         shape = .data$.trt_group
       )) +
-      ggplot2::geom_abline(slope = 1, linetype = 'dashed') +
+      ggplot2::geom_abline(slope = 1, linetype = "dashed") +
       ggplot2::theme_bw()
 
     this_style <- style
@@ -543,7 +543,7 @@ gof_qq_plots <- function(
     .p <- ggpubr::ggarrange(
       plotlist = plots,
       common.legend = TRUE,
-      legend = 'none'
+      legend = "none"
     )
   }
 
@@ -601,10 +601,10 @@ gof_residuals_time_boxplots <- function(
   style = list()
 ) {
   checkmate::assertDataFrame(data)
-  checkmate::assert(checkmate::check_class(fit, 'lme'))
+  checkmate::assert(checkmate::check_class(fit, "lme"))
   checkmate::assert_numeric(residual_references, null.ok = TRUE)
 
-  legend_location = match.arg(legend_location)
+  legend_location <- match.arg(legend_location)
 
   dv <- rlang::enquo(dv_col)
   conc <- rlang::enquo(conc_col)
@@ -617,7 +617,7 @@ gof_residuals_time_boxplots <- function(
   fit_results_df <- compute_fit_results(data, fit, !!dv, !!conc, !!time, !!trt)
 
   time_plots <- list()
-  ydata <- c('WRES', 'IWRES')
+  ydata <- c("WRES", "IWRES")
 
   if (is.null(style)) style <- list()
 
@@ -625,7 +625,7 @@ gof_residuals_time_boxplots <- function(
     .rbp <- fit_results_df %>%
       ggplot2::ggplot(
         ggplot2::aes_string(
-          x = 'as.factor(time)',
+          x = "as.factor(time)",
           y = ydata[[i]]
         )
       ) +
@@ -669,7 +669,7 @@ gof_residuals_time_boxplots <- function(
       plotlist = time_plots,
       ncol = 1,
       common.legend = TRUE,
-      legend = 'none'
+      legend = "none"
     )
   }
 
@@ -718,7 +718,7 @@ gof_residuals_trt_boxplots <- function(
   style = list()
 ) {
   checkmate::assertDataFrame(data)
-  checkmate::assert(checkmate::check_class(fit, 'lme'))
+  checkmate::assert(checkmate::check_class(fit, "lme"))
   checkmate::assert_numeric(residual_references, null.ok = TRUE)
 
   dv <- rlang::enquo(dv_col)
@@ -732,7 +732,7 @@ gof_residuals_trt_boxplots <- function(
   fit_results_df <- compute_fit_results(data, fit, !!dv, !!conc, !!time, !!trt)
 
   trtg_plots <- list()
-  ydata <- c('WRES', 'IWRES')
+  ydata <- c("WRES", "IWRES")
 
   if (is.null(style)) style <- list()
 
@@ -741,7 +741,7 @@ gof_residuals_trt_boxplots <- function(
       ggplot2::ggplot(
         if (!rlang::quo_is_null(trt)) {
           ggplot2::aes_string(
-            x = 'TRTG',
+            x = "TRTG",
             y = ydata[[i]],
             fill = "TRTG"
           )
@@ -823,7 +823,7 @@ gof_vpc_plot <- function(
   style = list()
 ) {
   checkmate::assertDataFrame(data)
-  checkmate::assert(checkmate::check_class(fit, 'lme'))
+  checkmate::assert(checkmate::check_class(fit, "lme"))
   checkmate::assertNumeric(conf_int, lower = 0, upper = 1)
   checkmate::assertIntegerish(nruns)
   checkmate::assertNumeric(nbins)
@@ -836,9 +836,9 @@ gof_vpc_plot <- function(
   checkmate::assertNames(names(data), must.include = required_cols)
 
   # need to better understand lme variance matrix stuff for this.
-  if (typeof(fit$apVar) == 'character') {
-    if (fit$apVar == 'Non-positive definite approximate variance-covariance') {
-      stop('Fit has issues, try a new model')
+  if (typeof(fit$apVar) == "character") {
+    if (fit$apVar == "Non-positive definite approximate variance-covariance") {
+      stop("Fit has issues, try a new model")
     }
   }
 

@@ -41,52 +41,6 @@ quad_form <- function(a, b, c) {
   ))
 }
 
-#' Generates a suffix depending on the last number in n.
-#'
-#' @param n An integer
-#'
-#' @return a string of a number and the appropriate suffix
-#' @keywords internal
-#' @noRd
-#'
-#' @examples \dontrun{suffix(42)}
-suffix <- function(n) {
-  #Pretty sure this doesn't work as intended with decimals. but good enough for now.
-  suffixes <- c("th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th")
-
-  if (n %% 1 != 0) {
-    int <- as.numeric(strsplit(as.character(n), "\\.")[[1]][1])
-    num_str <- strsplit(as.character(int), "")[[1]]
-  } else {
-    num_str <- strsplit(as.character(n), "")[[1]]
-  }
-  rev_num_str <- rev(num_str)
-
-  last <- as.numeric(rev_num_str[[1]])
-  if (!('.' %in% rev_num_str)) {
-    if (n > 10) {
-      last_two <- as.numeric(paste0(rev_num_str[1:2], collapse = ''))
-      if (last_two %in% c(11, 21, 31)) {
-        #reversed
-        suffix <- 'th'
-      }
-    }
-    suffix <- suffixes[last + 1]
-    s <- paste0(n, suffix)
-  } else {
-    i = 1
-    while (last == 0) {
-      i <- i + 1
-      last <- as.numeric(rev_num_str[[i]])
-    }
-    suffix <- 'th'
-    s <- paste0(n, suffix)
-  }
-
-  s
-}
-
-
 #' Null coalescing operator
 #'
 #' Returns the left-hand side if it is not NULL, otherwise returns the right-hand side.

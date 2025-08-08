@@ -223,7 +223,8 @@ set_style <- function(
 
   valid_title_positions <- c("left", "right", "bottom", "top")
   if (
-    !is.null(s$legend.title.position) && !(s$legend.title.position %in% valid_title_positions)
+    !is.null(s$legend.title.position) &&
+      !(s$legend.title.position %in% valid_title_positions)
   ) {
     stop(paste(
       "legend.title.position must be one of:",
@@ -485,7 +486,8 @@ style_plot <- function(
         "legend.title.hjust must be 'left', 'center', 'right', or a numeric value between 0 and 1"
       )
     }
-    p <- p + ggplot2::theme(legend.title = ggplot2::element_text(hjust = hjust_value))
+    p <- p +
+      ggplot2::theme(legend.title = ggplot2::element_text(hjust = hjust_value))
   }
 
   # Legend ordering
