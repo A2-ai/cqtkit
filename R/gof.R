@@ -364,7 +364,7 @@ gof_residuals_plots <- function(
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, 'lme'))
-  checkmate::assert_numeric(residual_references)
+  checkmate::assert_numeric(residual_references, null.ok = TRUE)
 
   legend_location = match.arg(legend_location)
 
@@ -408,7 +408,9 @@ gof_residuals_plots <- function(
       )) +
       ggplot2::theme_bw()
 
-    .p <- add_horizontal_references(.p, residual_references)
+    if (!is.null(residual_references)) {
+      .p <- add_horizontal_references(.p, residual_references)
+    }
 
     this_style <- style
     this_style$xlabel <- this_style$xlabel %||% xlabel[[i]]
@@ -600,7 +602,7 @@ gof_residuals_time_boxplots <- function(
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, 'lme'))
-  checkmate::assert_numeric(residual_references)
+  checkmate::assert_numeric(residual_references, null.ok = TRUE)
 
   legend_location = match.arg(legend_location)
 
@@ -637,7 +639,9 @@ gof_residuals_time_boxplots <- function(
         ggplot2::geom_boxplot()
     }
 
-    .rbp <- add_horizontal_references(.rbp, residual_references)
+    if (!is.null(residual_references)) {
+      .rbp <- add_horizontal_references(.rbp, residual_references)
+    }
 
     this_style <- style
     this_style$xlabel <- this_style$xlabel %||%
@@ -715,7 +719,7 @@ gof_residuals_trt_boxplots <- function(
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, 'lme'))
-  checkmate::assert_numeric(residual_references)
+  checkmate::assert_numeric(residual_references, null.ok = TRUE)
 
   dv <- rlang::enquo(dv_col)
   conc <- rlang::enquo(conc_col)
@@ -748,7 +752,9 @@ gof_residuals_trt_boxplots <- function(
       ggplot2::geom_boxplot() +
       ggplot2::theme_bw()
 
-    .rbpt <- add_horizontal_references(.rbpt, residual_references)
+    if (!is.null(residual_references)) {
+      .rbpt <- add_horizontal_references(.rbpt, residual_references)
+    }
 
     this_style <- style
     this_style$xlabel <- this_style$xlabel %||% "Treatment Group"
