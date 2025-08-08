@@ -8,8 +8,10 @@
 [![R-CMD-check](https://github.com/a2-ai-gilead-collab/cqtkit/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/a2-ai-gilead-collab/cqtkit/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-The goal of `cqtkit` is to help streamline C-QT analyses from
-exploratory data analysis through model validation and prediction.
+`cqtkit` makes C-QTc analysis straightforward — enabling users to
+explore data, validate key assumptions from the white paper, fit and
+assess the pre-specified model with comprehensive goodness-of-fit plots,
+and generate relevant exposure–response predictions.
 
 ## Installation
 
@@ -17,8 +19,13 @@ You can install the development version of `cqtkit` from
 [GitHub](https://github.com) with:
 
 ``` r
-#pak::pkg_install("a2-ai/cqtkit")
+pak::pkg_install("a2-ai/cqtkit")
 ```
+
+## Documentation
+
+The documentation site for cqtkit can be found
+[here](https://a2-ai.github.io/cqtkit-docs).
 
 ``` r
 library(cqtkit)
@@ -28,111 +35,49 @@ library(gt)
 
 ## Preprocessing of C-QT datasets
 
-`cqtkit` has some simple preprocessing functions to compute baseline
-corrected ECG parameter values as well as mean baseline values. The
-`preprocess` function uses the following column names as defaults:
+`cqtkit` provides preprocessing functions to help compute derived ECG
+parameters during data assembly. The `preprocess` function can be used
+to compute baseline corrected ECG parameter values as well as mean
+baseline values from the following raw column names:
 
-- QT
-- QTBL
-- RR
-- RRBL
-- HR
-- HRBL
+- QT, QTBL
+- RR, RRBL  
+- HR, HRBL
 
-`preprocess` will compute QTcB, QTcF, deltaQTcF, deltaQTcB, deltaHR,
-deltaQTcB Baseline Mean, deltaQTcF Baseline Mean, deltaHR Baseline Mean
-(if not already present in the dataset)
-
-``` r
-glimpse(cqtkit_data_verapamil)
-#> Rows: 643
-#> Columns: 25
-#> $ ID          <dbl> 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010…
-#> $ TRTG        <fct> Placebo, Placebo, Placebo, Placebo, Placebo, Placebo, Plac…
-#> $ DOSE        <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
-#> $ DOSEU       <chr> "mg", "mg", "mg", "mg", "mg", "mg", "mg", "mg", "mg", "mg"…
-#> $ DOSEF       <fct> 0 mg, 0 mg, 0 mg, 0 mg, 0 mg, 0 mg, 0 mg, 0 mg, 0 mg, 0 mg…
-#> $ NTLD        <dbl> 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5…
-#> $ TAFD        <chr> "0.5 HR", "0.5 HR", "0.5 HR", "0.5 HR", "0.5 HR", "0.5 HR"…
-#> $ CONC        <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
-#> $ CONCU       <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-#> $ RR          <dbl> 968.0000, 1096.6667, 1026.3333, 862.3333, 1060.3333, 998.0…
-#> $ RRBL        <dbl> 851.0000, 1193.3333, 923.3333, 882.6667, 1125.6667, 999.00…
-#> $ HR          <dbl> 62.00087, 54.72344, 58.52646, 69.58055, 56.63748, 60.22827…
-#> $ HRBL        <dbl> 70.51648, 50.30616, 65.15289, 67.98733, 53.31878, 60.17652…
-#> $ HRBLM       <dbl> 57.26179, 57.26179, 57.26179, 57.26179, 57.26179, 57.26179…
-#> $ deltaHRBL   <dbl> 13.2546964, -6.9556229, 7.8911015, 10.7255444, -3.9430016,…
-#> $ QT          <dbl> 381.3333, 404.6667, 393.6667, 396.3333, 398.0000, 385.0000…
-#> $ QTBL        <dbl> 371.0000, 429.0000, 385.3333, 421.0000, 404.6667, 391.6667…
-#> $ QTCB        <dbl> 387.6220, 386.4297, 388.7420, 426.8032, 386.6319, 385.5230…
-#> $ QTCBBL      <dbl> 402.1889, 392.7982, 401.3473, 448.1171, 381.4729, 392.0552…
-#> $ QTCBBLM     <dbl> 392.4275, 392.4275, 392.4275, 392.4275, 392.4275, 392.4275…
-#> $ deltaQTCBBL <dbl> 9.7614075, 0.3706548, 8.9197751, 55.6895541, -10.9546387, …
-#> $ QTCF        <dbl> 385.5113, 392.4131, 390.3644, 416.3945, 390.3749, 385.3294…
-#> $ QTCFBL      <dbl> 391.5099, 404.5066, 395.9078, 438.8873, 389.0491, 391.9045…
-#> $ QTCFBLM     <dbl> 395.7976, 395.7976, 395.7976, 395.7976, 395.7976, 395.7976…
-#> $ deltaQTCFBL <dbl> -4.2876548, 8.7089908, 0.1101671, 43.0896799, -6.7484866, …
-```
+The included `cqtkit_data_<drug>` datasets already contain preprocessed
+data that has been averaged across replicates, so they include many of
+the derived columns that `preprocess()` would typically create. However,
+`preprocess()` can still be useful to compute any missing derived
+parameters.
 
 ``` r
 data_proc <- cqtkit_data_verapamil %>% preprocess()
-glimpse(data_proc)
-#> Rows: 643
-#> Columns: 30
-#> $ ID          <dbl> 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010…
-#> $ TRTG        <fct> Placebo, Placebo, Placebo, Placebo, Placebo, Placebo, Plac…
-#> $ DOSE        <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
-#> $ DOSEU       <chr> "mg", "mg", "mg", "mg", "mg", "mg", "mg", "mg", "mg", "mg"…
-#> $ DOSEF       <fct> 0 mg, 0 mg, 0 mg, 0 mg, 0 mg, 0 mg, 0 mg, 0 mg, 0 mg, 0 mg…
-#> $ NTLD        <dbl> 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5…
-#> $ TAFD        <chr> "0.5 HR", "0.5 HR", "0.5 HR", "0.5 HR", "0.5 HR", "0.5 HR"…
-#> $ CONC        <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
-#> $ CONCU       <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-#> $ RR          <dbl> 968.0000, 1096.6667, 1026.3333, 862.3333, 1060.3333, 998.0…
-#> $ RRBL        <dbl> 851.0000, 1193.3333, 923.3333, 882.6667, 1125.6667, 999.00…
-#> $ HR          <dbl> 62.00087, 54.72344, 58.52646, 69.58055, 56.63748, 60.22827…
-#> $ HRBL        <dbl> 70.51648, 50.30616, 65.15289, 67.98733, 53.31878, 60.17652…
-#> $ HRBLM       <dbl> 57.26179, 57.26179, 57.26179, 57.26179, 57.26179, 57.26179…
-#> $ deltaHRBL   <dbl> 13.2546964, -6.9556229, 7.8911015, 10.7255444, -3.9430016,…
-#> $ QT          <dbl> 381.3333, 404.6667, 393.6667, 396.3333, 398.0000, 385.0000…
-#> $ QTBL        <dbl> 371.0000, 429.0000, 385.3333, 421.0000, 404.6667, 391.6667…
-#> $ QTCB        <dbl> 387.6220, 386.4297, 388.7420, 426.8032, 386.6319, 385.5230…
-#> $ QTCBBL      <dbl> 402.1889, 392.7982, 401.3473, 448.1171, 381.4729, 392.0552…
-#> $ QTCBBLM     <dbl> 392.4275, 392.4275, 392.4275, 392.4275, 392.4275, 392.4275…
-#> $ deltaQTCBBL <dbl> 9.7614075, 0.3706548, 8.9197751, 55.6895541, -10.9546387, …
-#> $ QTCF        <dbl> 385.5113, 392.4131, 390.3644, 416.3945, 390.3749, 385.3294…
-#> $ QTCFBL      <dbl> 391.5099, 404.5066, 395.9078, 438.8873, 389.0491, 391.9045…
-#> $ QTCFBLM     <dbl> 395.7976, 395.7976, 395.7976, 395.7976, 395.7976, 395.7976…
-#> $ deltaQTCFBL <dbl> -4.2876548, 8.7089908, 0.1101671, 43.0896799, -6.7484866, …
-#> $ deltaQTCB   <dbl> -14.566915, -6.368436, -12.605253, -21.313821, 5.159063, -…
-#> $ deltaQTCF   <dbl> -5.9985922, -12.0935008, -5.5433355, -22.4927401, 1.325815…
-#> $ deltaRR     <dbl> 117.000000, -96.666667, 103.000000, -20.333333, -65.333333…
-#> $ deltaHR     <dbl> -8.51561199, 4.41728135, -6.62642805, 1.59322395, 3.318698…
-#> $ deltaQT     <dbl> 10.3333333, -24.3333333, 8.3333333, -24.6666667, -6.666666…
+new_cols <- setdiff(names(data_proc), names(cqtkit_data_verapamil))
+cat(paste(new_cols, collapse = ", "), "\n")
+#> deltaQTCB, deltaQTCF, deltaRR, deltaHR, deltaQT
 ```
 
 ## Exploratory Data Analysis with cqtkit
 
-`cqtkit` has several functions allowing for extensive EDA for a C-QT
-dataset and for validating the assumptions used by the [Scientific white
-paper on concentration-QTc
-modeling](https://pubmed.ncbi.nlm.nih.gov/29209907/)
+`cqtkit` provides extensive EDA functions for C-QT datasets to validate
+key assumptions from the [Scientific White Paper on concentration-QTc
+modeling](https://pubmed.ncbi.nlm.nih.gov/29209907/).
 
 ### Drug Effect on Heart Rate
 
 ``` r
 eda_mean_dv_over_time(
-  data = data_proc, 
-  dv_col = deltaHR, 
-  ntime_col = NTLD, 
-  dosef_col = DOSEF, 
-  reference_dose = "0 mg", 
+  data = data_proc,
+  dv_col = deltaHR,
+  ntime_col = NTLD,
+  dosef_col = DOSEF,
+  reference_dose = "0 mg",
   reference_threshold = c(-10, 10),
   secondary_data_col = CONC,
   group_col = TRTG,
   conf_int = 0.9,
   style = set_style(
-    ylabel = bquote(Delta ~ Delta ~"HR (bpm)"),
+    ylabel = bquote(Delta ~ Delta ~ "HR (bpm)"),
     legend = "Verapamil 120 mg Dose",
     labels = c(
       "120 mg Verapamil HCL deltaHR" = "ddHR",
@@ -169,7 +114,7 @@ eda_qtc_comparison_plot(
 ### Hysteresis
 
 ``` r
- eda_hysteresis_loop_plot(
+eda_hysteresis_loop_plot(
   data_proc,
   NTLD,
   deltaQTCF,
@@ -177,11 +122,11 @@ eda_qtc_comparison_plot(
   DOSEF,
   reference_dose = "0 mg",
   style = set_style(
-    ylabel = bquote(Delta~Delta~"QTcF (ms)"),
+    ylabel = bquote(Delta ~ Delta ~ "QTcF (ms)"),
     xlabel = "Verapamil Plasma Concentration (ng/mL)",
     legend.position = "none"
   )
-) 
+)
 ```
 
 <img src="man/figures/README-hysteresis-1.png" width="100%" />
@@ -206,15 +151,15 @@ eda_scatter_with_regressions(
     legend.position = "top",
     legend_nrow = 2
   )
-) 
+)
 ```
 
 <img src="man/figures/README-Linearity-1.png" width="100%" />
 
 ## Modeling
 
-`cqtkit` can fit the pre-specified model from the White paper using the
-`nlme` package
+`cqtkit` fits the prespecified linear mixed-effects model from the
+Scientific White Paper using the `nlme` package.
 
 ``` r
 dqtc_model <- fit_prespecified_model(
@@ -229,20 +174,20 @@ dqtc_model <- fit_prespecified_model(
 )
 
 tabulate_model_fit_parameters(
-  dqtc_model, 
-  trt_col_name = "TRTG", 
-  tafd_col_name = "TAFD", 
+  dqtc_model,
+  trt_col_name = "TRTG",
+  tafd_col_name = "TAFD",
   conf_int = 0.9,
-  decimals = 2 ,
+  decimals = 2,
   title = "Fixed-Effect Estimates for &Delta;QTcF Model"
-) %>% 
-tab_source_note(
-  source_note = "Additive Residual error model with IIV on intercept and slope"
-) %>% 
+) %>%
+  tab_source_note(
+    source_note = "Additive Residual error model with IIV on intercept and slope"
+  ) %>%
   as_raw_html()
 ```
 
-<div id="egbctrexyo" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="ynrkupokaa" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   &#10;  <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF">
   <thead style="border-style: none;">
     <tr class="gt_heading" style="border-style: none; background-color: #FFFFFF; text-align: center; border-bottom-color: #FFFFFF; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;" bgcolor="#FFFFFF" align="center">
@@ -327,7 +272,7 @@ tab_source_note(
   &#10;</table>
 </div>
 
-### Model Adequacy
+### Goodness-of-Fit Evaluation
 
 `cqtkit` has several Goodness-of-Fit functions for validating fitted
 models
@@ -353,7 +298,7 @@ gof_plots(
 <img src="man/figures/README-gof-summary-1.png" width="100%" />
 
 ``` r
-gof_concordance_plots(  
+gof_concordance_plots(
   data = data_proc,
   fit = dqtc_model,
   dv_col = deltaQTCF,
@@ -376,7 +321,7 @@ gof_concordance_plots(
 <img src="man/figures/README-concordance-1.png" width="100%" />
 
 ``` r
-gof_residuals_plots(  
+gof_residuals_plots(
   data = data_proc,
   fit = dqtc_model,
   dv_col = deltaQTCF,
@@ -461,16 +406,16 @@ predict_with_exposure_plot(
   reference_threshold = 10,
   style = set_style(
     xlabel = "Verapamil Plasma Concentration (ng/mL)",
-    ylabel = bquote(Delta~Delta~"QTcF (ms)"),
+    ylabel = bquote(Delta ~ Delta ~ "QTcF (ms)"),
     colors = c(
       "Cmax_228.46" = "red",
-      "Cmax_151.75" = "brown",
+      "Cmax_152.19" = "brown",
       "Cmax_114.23" = "skyblue"
     ),
     labels = c(
       "Cmax_228.46" = "2 x Supratherapeutic dose exposure",
       "Cmax_114.23" = "Supratherapeutic dose exposure",
-      "Cmax_151.75" = "Exposure for predicted 10 ms",
+      "Cmax_152.19" = "Exposure for predicted 10 ms",
       "Reference 10" = "10 ms ddQTcF",
       "90% CI" = "Model derived 90% CI"
     ),
@@ -503,14 +448,14 @@ tabulate_exposure_predictions(
   conc_units = "ng/mL",
   scientific = FALSE,
   title = "&Delta;&Delta;QTcF Predictions"
-) %>% 
+) %>%
   tab_source_note(
     source_note = gt::md("\\* Computed C~max~ for upper 90% CI to reach 10 ms")
-  ) %>% 
+  ) %>%
   as_raw_html()
 ```
 
-<div id="nlhjufbxzr" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="grbcbpecnj" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   &#10;  <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF">
   <thead style="border-style: none;">
     <tr class="gt_heading" style="border-style: none; background-color: #FFFFFF; text-align: center; border-bottom-color: #FFFFFF; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;" bgcolor="#FFFFFF" align="center">
@@ -543,7 +488,7 @@ tabulate_exposure_predictions(
 
 ## References
 
-Scientific white paper on concentration-QTc modeling
+Scientific White Paper on concentration-QTc modeling
 
 > Garnett C, Bonate PL, Dang Q, Ferber G, Huang D, Liu J, Mehrotra D,
 > Riley S, Sager P, Tornoe C, Wang Y. Scientific white paper on

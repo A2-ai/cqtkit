@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/a2-ai-gilead-collab/cqtkit/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/a2-ai-gilead-collab/cqtkit/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-The goal of `cqtkit` is to help streamline C-QT analyses from exploratory data analysis through model validation and prediction.
+`cqtkit` makes C-QTc analysis straightforward — enabling users to explore data, validate key assumptions from the white paper, fit and assess the pre-specified model with comprehensive goodness-of-fit plots, and generate relevant exposure–response predictions.
 
 ## Installation
 
@@ -28,6 +28,9 @@ You can install the development version of `cqtkit` from [GitHub](https://github
 ```{r installing cqtkit, eval=FALSE}
 pak::pkg_install("a2-ai/cqtkit")
 ```
+## Documentation
+
+The documentation site for cqtkit can be found [here](https://a2-ai.github.io/cqtkit-docs).
 
 ```{r loading-cqtkit, results='hide', message=FALSE, warning=FALSE}
 library(cqtkit)
@@ -35,46 +38,40 @@ library(dplyr)
 library(gt)
 ```
 
+
 ## Preprocessing of C-QT datasets
-`cqtkit` has some simple preprocessing functions to compute baseline corrected ECG 
-parameter values as well as mean baseline values. The `preprocess` function 
-uses the following column names as defaults:
 
-- QT
-- QTBL
-- RR
-- RRBL
-- HR
-- HRBL
+`cqtkit` provides preprocessing functions to help compute derived ECG parameters during data assembly. The `preprocess` function can be used to compute baseline corrected ECG parameter values as well as mean baseline values from the following raw column names:
 
-`preprocess` will compute QTcB, QTcF, deltaQTcF, deltaQTcB, deltaHR, deltaQTcB Baseline Mean,
-deltaQTcF Baseline Mean, deltaHR Baseline Mean (if not already present in the dataset)
+- QT, QTBL
+- RR, RRBL  
+- HR, HRBL
 
-```{r data}
-glimpse(cqtkit_data_verapamil)
-```
+The included `cqtkit_data_<drug>` datasets already contain preprocessed data that has been averaged across replicates, so they include many of the derived columns that `preprocess()` would typically create. However, `preprocess()` can still be useful to compute any missing derived parameters.
+
 ```{r data-preprocessing}
 data_proc <- cqtkit_data_verapamil %>% preprocess()
-glimpse(data_proc)
+new_cols <- setdiff(names(data_proc), names(cqtkit_data_verapamil))
+cat(paste(new_cols, collapse = ", "), "\n")
 ```
 
 ## Exploratory Data Analysis with cqtkit
-`cqtkit` has several functions allowing for extensive EDA for a C-QT dataset and for validating the assumptions used by the [Scientific white paper on concentration-QTc modeling](https://pubmed.ncbi.nlm.nih.gov/29209907/)
+`cqtkit` provides extensive EDA functions for C-QT datasets to validate key assumptions from the [Scientific White Paper on concentration-QTc modeling](https://pubmed.ncbi.nlm.nih.gov/29209907/).
 
 ### Drug Effect on Heart Rate 
 ```{r drug-effect-on-HR}
 eda_mean_dv_over_time(
-  data = data_proc, 
-  dv_col = deltaHR, 
-  ntime_col = NTLD, 
-  dosef_col = DOSEF, 
-  reference_dose = "0 mg", 
+  data = data_proc,
+  dv_col = deltaHR,
+  ntime_col = NTLD,
+  dosef_col = DOSEF,
+  reference_dose = "0 mg",
   reference_threshold = c(-10, 10),
   secondary_data_col = CONC,
   group_col = TRTG,
   conf_int = 0.9,
   style = set_style(
-    ylabel = bquote(Delta ~ Delta ~"HR (bpm)"),
+    ylabel = bquote(Delta ~ Delta ~ "HR (bpm)"),
     legend = "Verapamil 120 mg Dose",
     labels = c(
       "120 mg Verapamil HCL deltaHR" = "ddHR",
@@ -106,7 +103,7 @@ eda_qtc_comparison_plot(
 ### Hysteresis
 
 ```{r hysteresis}
- eda_hysteresis_loop_plot(
+eda_hysteresis_loop_plot(
   data_proc,
   NTLD,
   deltaQTCF,
@@ -114,11 +111,11 @@ eda_qtc_comparison_plot(
   DOSEF,
   reference_dose = "0 mg",
   style = set_style(
-    ylabel = bquote(Delta~Delta~"QTcF (ms)"),
+    ylabel = bquote(Delta ~ Delta ~ "QTcF (ms)"),
     xlabel = "Verapamil Plasma Concentration (ng/mL)",
     legend.position = "none"
   )
-) 
+)
 ```
 
 ### Linearity of Concentration-QTc Relationship
@@ -141,11 +138,11 @@ eda_scatter_with_regressions(
     legend.position = "top",
     legend_nrow = 2
   )
-) 
+)
 ```
 
 ## Modeling
-`cqtkit` can fit the pre-specified model from the White paper using the `nlme` package
+`cqtkit` fits the prespecified linear mixed-effects model from the Scientific White Paper using the `nlme` package.
 
 ```{r model-fitting}
 dqtc_model <- fit_prespecified_model(
@@ -160,20 +157,20 @@ dqtc_model <- fit_prespecified_model(
 )
 
 tabulate_model_fit_parameters(
-  dqtc_model, 
-  trt_col_name = "TRTG", 
-  tafd_col_name = "TAFD", 
+  dqtc_model,
+  trt_col_name = "TRTG",
+  tafd_col_name = "TAFD",
   conf_int = 0.9,
-  decimals = 2 ,
+  decimals = 2,
   title = "Fixed-Effect Estimates for &Delta;QTcF Model"
-) %>% 
-tab_source_note(
-  source_note = "Additive Residual error model with IIV on intercept and slope"
-) %>% 
+) %>%
+  tab_source_note(
+    source_note = "Additive Residual error model with IIV on intercept and slope"
+  ) %>%
   as_raw_html()
 ```
 
-### Model Adequacy
+### Goodness-of-Fit Evaluation
 `cqtkit` has several Goodness-of-Fit functions for validating fitted models
 
 ```{r gof-summary}
@@ -194,7 +191,7 @@ gof_plots(
 )
 ```
 ```{r concordance}
-gof_concordance_plots(  
+gof_concordance_plots(
   data = data_proc,
   fit = dqtc_model,
   dv_col = deltaQTCF,
@@ -215,7 +212,7 @@ gof_concordance_plots(
 ```
 
 ```{r residuals}
-gof_residuals_plots(  
+gof_residuals_plots(
   data = data_proc,
   fit = dqtc_model,
   dv_col = deltaQTCF,
@@ -268,7 +265,6 @@ stpx_cmax <- max(compute_pk_parameters(
   NTLD,
   TRTG
 )[, "Cmax_gm"])
-
 ```
 
 ```{r Exposure-prediction-plot}
@@ -292,16 +288,16 @@ predict_with_exposure_plot(
   reference_threshold = 10,
   style = set_style(
     xlabel = "Verapamil Plasma Concentration (ng/mL)",
-    ylabel = bquote(Delta~Delta~"QTcF (ms)"),
+    ylabel = bquote(Delta ~ Delta ~ "QTcF (ms)"),
     colors = c(
       "Cmax_228.46" = "red",
-      "Cmax_151.75" = "brown",
+      "Cmax_152.19" = "brown",
       "Cmax_114.23" = "skyblue"
     ),
     labels = c(
       "Cmax_228.46" = "2 x Supratherapeutic dose exposure",
       "Cmax_114.23" = "Supratherapeutic dose exposure",
-      "Cmax_151.75" = "Exposure for predicted 10 ms",
+      "Cmax_152.19" = "Exposure for predicted 10 ms",
       "Reference 10" = "10 ms ddQTcF",
       "90% CI" = "Model derived 90% CI"
     ),
@@ -331,15 +327,16 @@ tabulate_exposure_predictions(
   conc_units = "ng/mL",
   scientific = FALSE,
   title = "&Delta;&Delta;QTcF Predictions"
-) %>% 
+) %>%
   tab_source_note(
     source_note = gt::md("\\* Computed C~max~ for upper 90% CI to reach 10 ms")
-  ) %>% 
+  ) %>%
   as_raw_html()
 ```
 
 ## References
-Scientific white paper on concentration-QTc modeling
+
+Scientific White Paper on concentration-QTc modeling
 
 > Garnett C, Bonate PL, Dang Q, Ferber G, Huang D, Liu J, Mehrotra D, Riley S, Sager P, Tornoe C, Wang Y. Scientific white paper on concentration-QTc modeling. J Pharmacokinet Pharmacodyn. 2018 Jun;45(3):383-397. doi: 10.1007/s10928-017-9558-5. Epub 2017 Dec 5. Erratum in: J Pharmacokinet Pharmacodyn. 2018 Jun;45(3):399. doi: 10.1007/s10928-017-9565-6. PMID: 29209907.
 
