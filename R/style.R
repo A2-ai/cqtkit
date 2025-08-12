@@ -385,7 +385,10 @@ style_plot <- function(
     p,
     aesthetic = "color",
     groups = color_groups,
-    default_map = attr(p, "reference_colors") %||% character(0),
+    default_map = c(
+      attr(p, "reference_colors") %||% character(0),
+      attr(p, "prediction_colors") %||% character(0)
+    ),
     user_values = colors,
     user_labels = labels,
     scale_fn = ggplot2::scale_color_manual

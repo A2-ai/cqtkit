@@ -135,6 +135,8 @@ predict_with_observations_plot <- function(
   attr(p, "fill_colors") <- stats::setNames("grey", ci_label)
   # default open circle for line group
   attr(p, "secondary_shapes") <- stats::setNames(1, "Predictions")
+  # default black color for predictions line
+  attr(p, "prediction_colors") <- stats::setNames("black", "Predictions")
 
   # Add reference line(s)
   p <- add_horizontal_references(p, reference_threshold)
