@@ -9,6 +9,7 @@ eda_quantiles_plot(
   xdata_col,
   ydata_col,
   trt_col = NULL,
+  plot_observations = FALSE,
   conf_int = 0.9,
   error_bars = "CI",
   style = list()
@@ -22,6 +23,8 @@ eda_quantiles_plot(
 \item{ydata_col}{An unquoted column name for y data}
 
 \item{trt_col}{An unquoted column name for treatment column to stratify the data by}
+
+\item{plot_observations}{A boolean to include the raw individual data points as background points, default FALSE}
 
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
 
