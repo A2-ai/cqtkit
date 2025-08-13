@@ -199,7 +199,7 @@ fit_prespecified_model <- function(
 
 #' Converts tTable of summary(model_fit) to tibble and adds CIs.
 #'
-#' @param fit An nlme::lme model object from model fitting
+#' @param fit A model object from model fitting (nlme::lme or lmerTest::lmer)
 #' @param trt_col_name String of column name of trt used in model fitting
 #' @param tafd_col_name String of column name of tafd used in model fitting
 #' @param id_col_name String of column name of the id used in model fitting for random effects
@@ -227,6 +227,47 @@ compute_model_fit_parameters <- function(
   fit,
   trt_col_name = "TRTG",
   tafd_col_name = "TAFD",
+  id_col_name = "ID",
+  conf_int = 0.95
+) {
+  # Dispatch to appropriate function based on model type
+  if (inherits(fit, "lme")) {
+    compute_model_fit_parameters_lme(
+      fit = fit,
+      trt_col_name = trt_col_name,
+      tafd_col_name = tafd_col_name,
+      id_col_name = id_col_name,
+      conf_int = conf_int
+    )
+  } else if (inherits(fit, "lmerModLmerTest")) {
+    compute_model_fit_parameters_lmer_test(
+      fit = fit,
+      trt_col_name = trt_col_name,
+      tafd_col_name = tafd_col_name,
+      id_col_name = id_col_name,
+      conf_int = conf_int
+    )
+  } else {
+    stop(
+      "Unsupported model type: ", paste(class(fit), collapse = ", "), 
+      ". Supported types are 'lme' and 'lmerModLmerTest'."
+    )
+  }
+}
+
+#' Computes model fit parameters for lme objects
+#'
+#' @param fit An nlme::lme model object
+#' @param trt_col_name Treatment column name for parameter name cleaning 
+#' @param tafd_col_name Time column name for parameter name cleaning
+#' @param id_col_name ID column name (used for random effects extraction)
+#' @param conf_int Confidence interval level (default: 0.95)
+#'
+#' @return A tibble with parameter estimates and confidence intervals
+compute_model_fit_parameters_lme <- function(
+  fit,
+  trt_col_name = "TRTG",
+  tafd_col_name = "TAFD", 
   id_col_name = "ID",
   conf_int = 0.95
 ) {
@@ -310,6 +351,124 @@ compute_model_fit_parameters <- function(
     parameters <- rbind(sum, sigmav)
   }
 
+  return(parameters)
+}
+
+#' Computes model fit parameters for lmerModLmerTest objects
+#'
+#' @param fit An lmerModLmerTest model object
+#' @param trt_col_name Treatment column name for parameter name cleaning 
+#' @param tafd_col_name Time column name for parameter name cleaning
+#' @param id_col_name ID column name (used for random effects extraction)
+#' @param conf_int Confidence interval level (default: 0.95)
+#'
+#' @return A tibble with parameter estimates and confidence intervals
+compute_model_fit_parameters_lmer_test <- function(
+  fit,
+  trt_col_name = "TRTG", 
+  tafd_col_name = "TAFD",
+  id_col_name = "ID",
+  conf_int = 0.95
+) {
+  checkmate::assert_class(fit, "lmerModLmerTest")
+  checkmate::assertNumeric(conf_int, lower = 0, upper = 1)
+  
+  # Get coefficients from summary
+  coef_table <- summary(fit)$coefficients
+  
+  # Get confidence intervals 
+  ci_result <- stats::confint(fit, level = conf_int, oldNames = FALSE)
+  
+  # Process fixed effects
+  fixed_names <- rownames(coef_table)
+  
+  # Clean parameter names (same logic as lme version)
+  new_names <- gsub(paste0("^", trt_col_name), "", fixed_names)
+  new_names <- gsub(paste0("^", tafd_col_name), "", new_names)  
+  new_names <- gsub("[\\(\\)]", "", new_names)
+  
+  # Create fixed effects tibble matching lme format
+  fixed_effects <- tibble::tibble(
+    Parameters = new_names,
+    Value = coef_table[, "Estimate"],
+    `Std.Error` = coef_table[, "Std. Error"],
+    DF = coef_table[, "df"],
+    `t-value` = coef_table[, "t value"], 
+    `p-value` = coef_table[, "Pr(>|t|)"],
+    CIl = ci_result[fixed_names, 1],
+    CIu = ci_result[fixed_names, 2]
+  )
+  
+  # Process residual error (sigma)
+  sigma_row <- ci_result[rownames(ci_result) == "sigma", , drop = FALSE]
+  varcor <- summary(fit)$varcor
+  sigma_value <- varcor$Std.Dev.[varcor$Groups == "Residual"]
+  
+  residual_error <- tibble::tibble(
+    Parameters = "Residual Error",
+    Value = sigma_value,
+    `Std.Error` = NA_real_,
+    DF = NA_integer_,
+    `t-value` = NA_real_,
+    `p-value` = NA_real_, 
+    CIl = sigma_row[1, 1],
+    CIu = sigma_row[1, 2]
+  )
+  
+  # Start with fixed effects and residual error
+  parameters <- rbind(fixed_effects, residual_error)
+  
+  # Add random effects if id_col_name provided
+  if (!is.null(id_col_name)) {
+    # Find random effect rows in CI results (those containing sd_ and |id_col_name)
+    re_pattern <- paste0("sd_.*\\|", id_col_name)
+    re_rows <- grep(re_pattern, rownames(ci_result))
+    
+    if (length(re_rows) > 0) {
+      re_ci_names <- rownames(ci_result)[re_rows]
+      
+      # Get variance components from summary
+      varcor <- summary(fit)$varcor
+      
+      # Transform CI names and match with varcor
+      # "sd_(Intercept)|USUBJID" -> "IIV(Intercept)"
+      clean_re_names <- gsub(paste0("sd_(.*)\\|", id_col_name), "IIV(\\1)", re_ci_names)
+      clean_re_names <- gsub("\\(Intercept\\)", "(Intercept)", clean_re_names)
+      
+      # Extract values from varcor by matching names
+      re_values <- numeric(length(clean_re_names))
+      for (i in seq_along(clean_re_names)) {
+        # Extract variable name from IIV(varname)
+        if (grepl("IIV\\(Intercept\\)", clean_re_names[i])) {
+          # Find (Intercept) in varcor
+          intercept_row <- which(varcor$Name == "(Intercept)")
+          if (length(intercept_row) > 0) {
+            re_values[i] <- varcor$Std.Dev.[intercept_row[1]]
+          }
+        } else {
+          var_name <- gsub("IIV\\((.*)\\)", "\\1", clean_re_names[i])
+          var_row <- which(varcor$Name == var_name)
+          if (length(var_row) > 0) {
+            re_values[i] <- varcor$Std.Dev.[var_row[1]]
+          }
+        }
+      }
+      
+      random_effects <- tibble::tibble(
+        Parameters = clean_re_names,
+        Value = re_values,
+        `Std.Error` = NA_real_,
+        DF = NA_integer_,
+        `t-value` = NA_real_,
+        `p-value` = NA_real_,
+        CIl = ci_result[re_ci_names, 1],
+        CIu = ci_result[re_ci_names, 2]
+      )
+      
+      parameters <- rbind(fixed_effects, random_effects, residual_error)
+    }
+  }
+  
   return(parameters)
 }
 

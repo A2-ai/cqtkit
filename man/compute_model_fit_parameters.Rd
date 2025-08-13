@@ -13,7 +13,7 @@ compute_model_fit_parameters(
 )
 }
 \arguments{
-\item{fit}{An nlme::lme model object from model fitting}
+\item{fit}{A model object from model fitting (nlme::lme or lmerTest::lmer)}
 
 \item{trt_col_name}{String of column name of trt used in model fitting}
 
