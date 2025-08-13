@@ -202,7 +202,10 @@ tabulate_model_fit_parameters <- function(
   title = NULL,
   ...
 ) {
-  checkmate::assert_class(fit, "lme")
+  
+	if (!(inherits(fit, "lme") || inherits(fit, "lmerModLmerTest"))) {
+		stop("Unsupported model type. Must be from nlme::lme or lmerTest::lmer")
+	}
   checkmate::assertNumeric(conf_int, lower = 0, upper = 1)
 
   fit_result_df <- compute_model_fit_parameters(

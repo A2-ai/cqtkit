@@ -18,13 +18,12 @@
 #' qtcb_mod <- fit_qtc_linear_model(bl, QTCB, RR, ID)
 #' qtcf_mod <- fit_qtc_linear_model(bl, QTCF, RR, ID)
 fit_qtc_linear_model <- function(
-  data,
-  qt_col,
-  rr_col,
-  id_col,
-  method = "REML",
-  remove_rr_iiv = FALSE
-) {
+    data,
+    qt_col,
+    rr_col,
+    id_col,
+    method = "REML",
+    remove_rr_iiv = FALSE) {
   checkmate::assertDataFrame(data)
 
   qt <- rlang::enquo(qt_col)
@@ -106,16 +105,15 @@ fit_qtc_linear_model <- function(
 #'
 #' fit_prespecified_model(data_proc, deltaQTCF, ID, CONC, deltaQTCFBL, TRTG, TAFD)
 fit_prespecified_model <- function(
-  data,
-  dv_col,
-  id_col,
-  conc_col,
-  delta_bl_col,
-  trt_col = NULL,
-  tafd_col = NULL,
-  method = "ML",
-  remove_conc_iiv = FALSE
-) {
+    data,
+    dv_col,
+    id_col,
+    conc_col,
+    delta_bl_col,
+    trt_col = NULL,
+    tafd_col = NULL,
+    method = "ML",
+    remove_conc_iiv = FALSE) {
   checkmate::assertDataFrame(data)
 
   dv <- rlang::enquo(dv_col)
@@ -133,10 +131,10 @@ fit_prespecified_model <- function(
 
   # Ensure required columns are present
   vars <- c(dv, conc, deltaqtcbl, trt, tafd, id)
-  required_cols <- unlist(lapply(vars, name_quo_if_not_null)) #from helper.R
+  required_cols <- unlist(lapply(vars, name_quo_if_not_null)) # from helper.R
   checkmate::assertNames(names(data), must.include = required_cols)
 
-  #copy data to new variable to overwrite TAFD column if present in model.
+  # copy data to new variable to overwrite TAFD column if present in model.
   new_data <- data
 
   fixed_formula <- paste0(
@@ -224,12 +222,11 @@ fit_prespecified_model <- function(
 #' )
 #' compute_model_fit_parameters(fit)
 compute_model_fit_parameters <- function(
-  fit,
-  trt_col_name = "TRTG",
-  tafd_col_name = "TAFD",
-  id_col_name = "ID",
-  conf_int = 0.95
-) {
+    fit,
+    trt_col_name = "TRTG",
+    tafd_col_name = "TAFD",
+    id_col_name = "ID",
+    conf_int = 0.95) {
   # Dispatch to appropriate function based on model type
   if (inherits(fit, "lme")) {
     compute_model_fit_parameters_lme(
@@ -249,7 +246,7 @@ compute_model_fit_parameters <- function(
     )
   } else {
     stop(
-      "Unsupported model type: ", paste(class(fit), collapse = ", "), 
+      "Unsupported model type: ", paste(class(fit), collapse = ", "),
       ". Supported types are 'lme' and 'lmerModLmerTest'."
     )
   }
@@ -258,19 +255,18 @@ compute_model_fit_parameters <- function(
 #' Computes model fit parameters for lme objects
 #'
 #' @param fit An nlme::lme model object
-#' @param trt_col_name Treatment column name for parameter name cleaning 
+#' @param trt_col_name Treatment column name for parameter name cleaning
 #' @param tafd_col_name Time column name for parameter name cleaning
 #' @param id_col_name ID column name (used for random effects extraction)
 #' @param conf_int Confidence interval level (default: 0.95)
 #'
 #' @return A tibble with parameter estimates and confidence intervals
 compute_model_fit_parameters_lme <- function(
-  fit,
-  trt_col_name = "TRTG",
-  tafd_col_name = "TAFD", 
-  id_col_name = "ID",
-  conf_int = 0.95
-) {
+    fit,
+    trt_col_name = "TRTG",
+    tafd_col_name = "TAFD",
+    id_col_name = "ID",
+    conf_int = 0.95) {
   checkmate::assert_class(fit, "lme")
   checkmate::assertNumeric(conf_int, lower = 0, upper = 1)
 
@@ -357,118 +353,111 @@ compute_model_fit_parameters_lme <- function(
 #' Computes model fit parameters for lmerModLmerTest objects
 #'
 #' @param fit An lmerModLmerTest model object
-#' @param trt_col_name Treatment column name for parameter name cleaning 
+#' @param trt_col_name Treatment column name for parameter name cleaning
 #' @param tafd_col_name Time column name for parameter name cleaning
 #' @param id_col_name ID column name (used for random effects extraction)
 #' @param conf_int Confidence interval level (default: 0.95)
 #'
 #' @return A tibble with parameter estimates and confidence intervals
 compute_model_fit_parameters_lmer_test <- function(
-  fit,
-  trt_col_name = "TRTG", 
-  tafd_col_name = "TAFD",
-  id_col_name = "ID",
-  conf_int = 0.95
-) {
+    fit,
+    trt_col_name = "TRTG",
+    tafd_col_name = "TAFD",
+    id_col_name = "ID",
+    conf_int = 0.95) {
   checkmate::assert_class(fit, "lmerModLmerTest")
   checkmate::assertNumeric(conf_int, lower = 0, upper = 1)
-  
-  # Get coefficients from summary
-  coef_table <- summary(fit)$coefficients
-  
-  # Get confidence intervals 
-  ci_result <- stats::confint(fit, level = conf_int, oldNames = FALSE)
-  
-  # Process fixed effects
-  fixed_names <- rownames(coef_table)
-  
-  # Clean parameter names (same logic as lme version)
-  new_names <- gsub(paste0("^", trt_col_name), "", fixed_names)
-  new_names <- gsub(paste0("^", tafd_col_name), "", new_names)  
+
+  sum <- summary(fit)$coefficients
+  new_names <- gsub(paste0("^", trt_col_name), "", rownames(sum))
+  new_names <- gsub(paste0("^", tafd_col_name), "", new_names)
   new_names <- gsub("[\\(\\)]", "", new_names)
-  
-  # Create fixed effects tibble matching lme format
-  fixed_effects <- tibble::tibble(
-    Parameters = new_names,
-    Value = coef_table[, "Estimate"],
-    `Std.Error` = coef_table[, "Std. Error"],
-    DF = coef_table[, "df"],
-    `t-value` = coef_table[, "t value"], 
-    `p-value` = coef_table[, "Pr(>|t|)"],
-    CIl = ci_result[fixed_names, 1],
-    CIu = ci_result[fixed_names, 2]
-  )
-  
-  # Process residual error (sigma)
-  sigma_row <- ci_result[rownames(ci_result) == "sigma", , drop = FALSE]
-  varcor <- summary(fit)$varcor
-  sigma_value <- varcor$Std.Dev.[varcor$Groups == "Residual"]
-  
-  residual_error <- tibble::tibble(
-    Parameters = "Residual Error",
-    Value = sigma_value,
+  rownames(sum) <- new_names
+
+  sum <- sum %>%
+    as.data.frame() %>%
+    tibble::rownames_to_column(var = "Parameters") %>%
+    dplyr::mutate(
+      Value = .data$Estimate,
+      `Std.Error` = .data$`Std. Error`,
+      DF = .data$df,
+      `t-value` = .data$`t value`,
+      `p-value` = .data$`Pr(>|t|)`,
+      "CIl" = .data$Estimate -
+        stats::qt((1 + conf_int) / 2, .data$df) * .data$`Std. Error`,
+      "CIu" = .data$Estimate +
+        stats::qt((1 + conf_int) / 2, .data$df) * .data$`Std. Error`
+    ) %>%
+    dplyr::select("Parameters", "Value", "Std.Error", "DF", "t-value", "p-value", "CIl", "CIu") %>%
+    tibble::as_tibble()
+
+  # Add residuals (same structure as lme version)
+  varcor_df <- data.frame(summary(fit)$varcor)
+  sigma_ci <- stats::confint(fit, parm = "sigma", level = conf_int, oldNames = FALSE)
+
+  sigmav <- tibble::tibble(
+    Parameters = c("Residual Error"),
+    Value = varcor_df$sdcor[varcor_df$grp == "Residual"],
     `Std.Error` = NA_real_,
-    DF = NA_integer_,
+    DF = NA_real_,
     `t-value` = NA_real_,
-    `p-value` = NA_real_, 
-    CIl = sigma_row[1, 1],
-    CIu = sigma_row[1, 2]
+    `p-value` = NA_real_,
+    CIl = sigma_ci[1, 1],
+    CIu = sigma_ci[1, 2]
   )
-  
-  # Start with fixed effects and residual error
-  parameters <- rbind(fixed_effects, residual_error)
-  
-  # Add random effects if id_col_name provided
+
+  # Add random effects (same structure as lme version)
   if (!is.null(id_col_name)) {
-    # Find random effect rows in CI results (those containing sd_ and |id_col_name)
     re_pattern <- paste0("sd_.*\\|", id_col_name)
-    re_rows <- grep(re_pattern, rownames(ci_result))
-    
+    all_ci <- stats::confint(fit, level = conf_int, oldNames = FALSE)
+    re_rows <- grep(re_pattern, rownames(all_ci))
+
     if (length(re_rows) > 0) {
-      re_ci_names <- rownames(ci_result)[re_rows]
-      
-      # Get variance components from summary
-      varcor <- summary(fit)$varcor
-      
-      # Transform CI names and match with varcor
-      # "sd_(Intercept)|USUBJID" -> "IIV(Intercept)"
-      clean_re_names <- gsub(paste0("sd_(.*)\\|", id_col_name), "IIV(\\1)", re_ci_names)
-      clean_re_names <- gsub("\\(Intercept\\)", "(Intercept)", clean_re_names)
-      
-      # Extract values from varcor by matching names
-      re_values <- numeric(length(clean_re_names))
-      for (i in seq_along(clean_re_names)) {
-        # Extract variable name from IIV(varname)
-        if (grepl("IIV\\(Intercept\\)", clean_re_names[i])) {
-          # Find (Intercept) in varcor
-          intercept_row <- which(varcor$Name == "(Intercept)")
-          if (length(intercept_row) > 0) {
-            re_values[i] <- varcor$Std.Dev.[intercept_row[1]]
-          }
+      intervals_result <- all_ci[re_rows, , drop = FALSE]
+
+      random_eff <- tibble::tibble(
+        Parameters = gsub("sd", "IIV", rownames(intervals_result)),
+        Value = numeric(nrow(intervals_result)),
+        CIl = intervals_result[, 1],
+        CIu = intervals_result[, 2]
+      ) %>%
+        dplyr::filter(startsWith(.data$Parameters, "IIV")) %>%
+        dplyr::mutate(
+          Parameters = gsub(paste0("\\|", id_col_name), "", .data$Parameters),
+          Parameters = gsub("\\(Intercept\\)", "(Intercept)", .data$Parameters),
+          `Std.Error` = NA_real_,
+          DF = NA_real_,
+          `t-value` = NA_real_,
+          `p-value` = NA_real_
+        )
+
+      # Fill in values from varcor_df
+      for (i in seq_len(nrow(random_eff))) {
+        param_name <- random_eff$Parameters[i]
+        var_name <- gsub("IIV\\((.*)\\)", "\\1", param_name)
+
+        if (var_name == "(Intercept)") {
+          var_row <- which(varcor_df$var1 == "(Intercept)")
         } else {
-          var_name <- gsub("IIV\\((.*)\\)", "\\1", clean_re_names[i])
-          var_row <- which(varcor$Name == var_name)
-          if (length(var_row) > 0) {
-            re_values[i] <- varcor$Std.Dev.[var_row[1]]
-          }
+          var_row <- which(varcor_df$var1 == var_name)
+        }
+
+        if (length(var_row) > 0) {
+          random_eff$Value[i] <- varcor_df$sdcor[var_row[1]]
         }
       }
-      
-      random_effects <- tibble::tibble(
-        Parameters = clean_re_names,
-        Value = re_values,
-        `Std.Error` = NA_real_,
-        DF = NA_integer_,
-        `t-value` = NA_real_,
-        `p-value` = NA_real_,
-        CIl = ci_result[re_ci_names, 1],
-        CIu = ci_result[re_ci_names, 2]
-      )
-      
-      parameters <- rbind(fixed_effects, random_effects, residual_error)
+
+      random_eff <- random_eff %>%
+        dplyr::select("Parameters", "Value", "Std.Error", "DF", "t-value", "p-value", "CIl", "CIu")
+
+      parameters <- rbind(sum, random_eff, sigmav)
+    } else {
+      parameters <- rbind(sum, sigmav)
     }
+  } else {
+    parameters <- rbind(sum, sigmav)
   }
-  
+
   return(parameters)
 }
 
@@ -503,13 +492,12 @@ compute_model_fit_parameters_lmer_test <- function(
 #'
 #' compute_fit_results(data_proc, fit, deltaQTCF, CONC, NTLD)
 compute_fit_results <- function(
-  data,
-  fit,
-  dv_col,
-  conc_col,
-  ntime_col,
-  trt_col = NULL
-) {
+    data,
+    fit,
+    dv_col,
+    conc_col,
+    ntime_col,
+    trt_col = NULL) {
   checkmate::assertDataFrame(data)
   checkmate::assert_class(fit, "lme")
 
