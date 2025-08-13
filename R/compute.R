@@ -1512,11 +1512,21 @@ compute_contrast_observations <- function(
 
   if (is.null(control_predictors)) {
     # Simple case: no control group subtraction
-    observed_df <- tibble::tibble(
-      group = "Observations",
-      conc = data %>% dplyr::pull(!!conc),
-      dv = data %>% dplyr::pull(!!dv)
-    )
+    if (rlang::quo_is_null(trt)) {
+      # No treatment column provided, use default grouping
+      observed_df <- tibble::tibble(
+        group = "Observations",
+        conc = data %>% dplyr::pull(!!conc),
+        dv = data %>% dplyr::pull(!!dv)
+      )
+    } else {
+      # Use treatment column for grouping
+      observed_df <- tibble::tibble(
+        group = data %>% dplyr::pull(!!trt),
+        conc = data %>% dplyr::pull(!!conc),
+        dv = data %>% dplyr::pull(!!dv)
+      )
+    }
   } else {
     # Control group subtraction case
     trt_str <- rlang::as_name(trt)
@@ -1527,7 +1537,7 @@ compute_contrast_observations <- function(
       # Individual ID+time matching (crossover studies)
       treatment_df <- data %>%
         dplyr::filter(!!rlang::sym(trt_str) == !!treatment_value) %>%
-        dplyr::select(!!id, !!ntime, !!conc, treatment_dv = !!dv)
+        dplyr::select(!!id, !!ntime, !!conc, !!trt, treatment_dv = !!dv)
 
       control_df <- data %>%
         dplyr::filter(!!rlang::sym(trt_str) == !!control_value) %>%
@@ -1540,7 +1550,7 @@ compute_contrast_observations <- function(
         ) %>%
         dplyr::mutate(dv = .data$treatment_dv - .data$control_dv) %>%
         dplyr::transmute(
-          group = "Observations",
+          group = !!trt,
           conc = !!conc,
           dv
         )
@@ -1564,7 +1574,7 @@ compute_contrast_observations <- function(
         dplyr::left_join(control_means, by = rlang::as_name(ntime)) %>%
         dplyr::mutate(dv = !!dv - .data$control_mean_dv) %>%
         dplyr::transmute(
-          group = "Observations",
+          group = !!trt,
           conc = !!conc,
           dv
         )

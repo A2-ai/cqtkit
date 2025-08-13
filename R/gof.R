@@ -688,6 +688,7 @@ gof_residuals_time_boxplots <- function(
 #' @param ntime_col An unquoted column name for nominal time since dose
 #' @param trt_col An unquoted column name for treatment group"
 #' @param residual_references Numeric vector of reference residual lines to add, default -2 and 2
+#' @param legend_location String for legend position (top, bottom, left, right)
 #' @param style A named list of arguments passed to style_plot()
 #'
 #' @return a ggarrange plot
@@ -715,11 +716,14 @@ gof_residuals_trt_boxplots <- function(
   ntime_col,
   trt_col = NULL,
   residual_references = c(-2, 2),
+  legend_location = c("top", "bottom", "left", "right", "none"),
   style = list()
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
   checkmate::assert_numeric(residual_references, null.ok = TRUE)
+
+  legend_location <- match.arg(legend_location)
 
   dv <- rlang::enquo(dv_col)
   conc <- rlang::enquo(conc_col)
@@ -772,10 +776,13 @@ gof_residuals_trt_boxplots <- function(
   trt_plot <- ggpubr::ggarrange(
     plotlist = trtg_plots,
     ncol = 1,
-    common.legend = TRUE
+    common.legend = TRUE,
+    legend = legend_location
   )
-  if (!is.null(style$title))
+
+  if (!is.null(style$title)) {
     trt_plot <- ggpubr::annotate_figure(trt_plot, top = style$title)
+  }
 
   return(trt_plot)
 }

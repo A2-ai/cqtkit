@@ -283,6 +283,7 @@ eda_qtc_comparison_plot <- function(
 #' @param xdata_col An unquoted column name for x data
 #' @param ydata_col An unquoted column name for y data
 #' @param trt_col An unquoted column name for treatment column to stratify the data by
+#' @param plot_observations A boolean to include the raw individual data points as background points, default FALSE
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #' @param error_bars A string for setting which errorbars are shown, CI, SE, SD
 #' @param style A named list of arguments passed to style_plot()
@@ -312,6 +313,7 @@ eda_quantiles_plot <- function(
   xdata_col,
   ydata_col,
   trt_col = NULL,
+  plot_observations = FALSE,
   conf_int = 0.90,
   error_bars = "CI",
   style = list()
@@ -347,14 +349,31 @@ eda_quantiles_plot <- function(
         group = .data$.trt_group,
         color = .data$.trt_group
       )
-    ) +
-    ggplot2::geom_point(
+    )
+
+  if (plot_observations) {
+    p <- p +
+      ggplot2::geom_point(
+        data = data,
+        ggplot2::aes(
+          x = !!xdata,
+          y = !!ydata,
+          color = !!trt,
+        ),
+        alpha = 0.25
+      )
+  }
+
+  p <- p +
+      ggplot2::geom_point(
       ggplot2::aes(
         shape = .data$.trt_group
       )
     ) +
     ggplot2::geom_smooth(method = "lm", formula = y ~ x, level = conf_int) +
     ggplot2::theme_bw()
+
+
 
   p <- add_error_bars_to_plot(obs, p, NULL, error_bars, conf_int)
   caption <- p$labels$caption
