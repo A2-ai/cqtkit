@@ -408,48 +408,75 @@ compute_model_fit_parameters_lmer_test <- function(
 
   # Add random effects (same structure as lme version)
   if (!is.null(id_col_name)) {
-    re_pattern <- paste0("sd_.*\\|", id_col_name)
-    all_ci <- stats::confint(fit, level = conf_int, oldNames = FALSE)
-    re_rows <- grep(re_pattern, rownames(all_ci))
-
-    if (length(re_rows) > 0) {
-      intervals_result <- all_ci[re_rows, , drop = FALSE]
-
-      random_eff <- tibble::tibble(
-        Parameters = gsub("sd", "IIV", rownames(intervals_result)),
-        Value = numeric(nrow(intervals_result)),
-        CIl = intervals_result[, 1],
-        CIu = intervals_result[, 2]
-      ) %>%
-        dplyr::filter(startsWith(.data$Parameters, "IIV")) %>%
-        dplyr::mutate(
-          Parameters = gsub(paste0("\\|", id_col_name), "", .data$Parameters),
-          Parameters = gsub("\\(Intercept\\)", "(Intercept)", .data$Parameters),
+    # Extract random effects from varcor_df (excluding Residual and covariances)
+    # Only take variance components where var2 = NA (not covariance components)
+    re_vars <- varcor_df[varcor_df$grp != "Residual" & is.na(varcor_df$var2), ]
+    
+    if (nrow(re_vars) > 0) {
+      # Try to get confidence intervals for random effects
+      intervals_result <- NULL
+      tryCatch({
+        # First try profile method (default for lmer)
+        all_ci <- stats::confint(fit, level = conf_int, oldNames = FALSE)
+        re_pattern <- paste0("sd_.*\\|", id_col_name)
+        re_rows <- grep(re_pattern, rownames(all_ci))
+        if (length(re_rows) > 0) {
+          intervals_result <- all_ci[re_rows, , drop = FALSE]
+        }
+      }, error = function(e1) {
+        # If profile fails, try Wald method
+        tryCatch({
+          all_ci <- stats::confint(fit, level = conf_int, oldNames = FALSE, method = "Wald")
+          re_pattern <- paste0("sd_.*\\|", id_col_name)
+          re_rows <- grep(re_pattern, rownames(all_ci))
+          if (length(re_rows) > 0) {
+            intervals_result <<- all_ci[re_rows, , drop = FALSE]
+          }
+        }, error = function(e2) {
+          # If both fail, leave intervals_result as NULL
+          intervals_result <<- NULL
+        })
+      })
+      
+      # Build random effects tibble
+      random_eff_rows <- list()
+      
+      for (i in seq_len(nrow(re_vars))) {
+        var_name <- re_vars$var1[i]
+        
+        # Clean parameter name - remove extra parentheses from (Intercept)
+        clean_var_name <- gsub("^\\((.*)\\)$", "\\1", var_name)
+        clean_param <- paste0("IIV_(", clean_var_name, ")")
+        
+        # Try to find matching CI row
+        ci_lower <- NA_real_
+        ci_upper <- NA_real_
+        
+        if (!is.null(intervals_result)) {
+          # Look for matching confidence interval
+          ci_pattern <- paste0("sd_", gsub("\\(", "\\\\(", gsub("\\)", "\\\\)", var_name)), "\\|", id_col_name)
+          ci_row_idx <- grep(paste0("^", ci_pattern, "$"), rownames(intervals_result))
+          
+          if (length(ci_row_idx) > 0) {
+            ci_lower <- intervals_result[ci_row_idx[1], 1]
+            ci_upper <- intervals_result[ci_row_idx[1], 2]
+          }
+        }
+        
+        random_eff_rows[[i]] <- tibble::tibble(
+          Parameters = clean_param,
+          Value = re_vars$sdcor[i],
           `Std.Error` = NA_real_,
           DF = NA_real_,
           `t-value` = NA_real_,
-          `p-value` = NA_real_
+          `p-value` = NA_real_,
+          CIl = ci_lower,
+          CIu = ci_upper
         )
-
-      # Fill in values from varcor_df
-      for (i in seq_len(nrow(random_eff))) {
-        param_name <- random_eff$Parameters[i]
-        var_name <- gsub("IIV\\((.*)\\)", "\\1", param_name)
-
-        if (var_name == "(Intercept)") {
-          var_row <- which(varcor_df$var1 == "(Intercept)")
-        } else {
-          var_row <- which(varcor_df$var1 == var_name)
-        }
-
-        if (length(var_row) > 0) {
-          random_eff$Value[i] <- varcor_df$sdcor[var_row[1]]
-        }
       }
-
-      random_eff <- random_eff %>%
-        dplyr::select("Parameters", "Value", "Std.Error", "DF", "t-value", "p-value", "CIl", "CIu")
-
+      
+      # Combine into final tibble
+      random_eff <- dplyr::bind_rows(random_eff_rows)
       parameters <- rbind(sum, random_eff, sigmav)
     } else {
       parameters <- rbind(sum, sigmav)

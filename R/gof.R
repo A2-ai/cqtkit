@@ -51,7 +51,6 @@ gof_plots <- function(
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
-
   legend_location <- match.arg(legend_location)
 
   dv <- rlang::enquo(dv_col)
