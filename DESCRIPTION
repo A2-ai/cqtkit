@@ -1,6 +1,6 @@
 Package: cqtkit
 Title: Comprehensive C-QT Analysis From Data to Deliverables
-Version: 1.0.1
+Version: 1.0.2
 Authors@R: c(
     person("Matt", "Smith", , "matthews@a2-ai.com", role = c("aut", "cre")),
     person("Devin", "Pastoor", , "devin@a2-ai.com", role = c("aut")),
