@@ -45,7 +45,7 @@ test_that('compute_exposure_predictions does not add non-unique conc values with
     TRTG,
     TAFD,
     method = "ML",
-    remove_conc_iiv = FALSE
+    remove_conc_iiv = TRUE
   )
 
   expo_pred <- compute_exposure_predictions(
