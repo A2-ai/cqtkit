@@ -1385,7 +1385,7 @@ compute_exposure_predictions <- function(
 
   if (!rlang::is_empty(cmaxes)) {
     new_conc <- c(prediction_df$conc, cmaxes)
-    prediction_df <- tibble::tibble(conc = sort(unique(new_conc)))
+    prediction_df <- tibble::tibble(conc = sort(new_conc))
   }
 
   ########## SHOULD THIS BE ITS OWN FUNCTION? ############
