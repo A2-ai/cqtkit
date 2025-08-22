@@ -1,3 +1,9 @@
+# cqtkit 1.0.2
+
+### Fixed 
+* Fixed issue where duplicate conc values were added in `compute_exposure_predictions()` causing `predict_with_exposure_plot` to fail.
+
+
 # cqtkit 1.0.1
 
 ### Fixed
