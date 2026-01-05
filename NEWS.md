@@ -1,4 +1,4 @@
-# cqtkit 1.1.0.9000
+# cqtkit 1.1.0
 
 ### Enhanced
 * Added `qtc_label` and `unit` arguments to `tabulate_high_qtc_sub()` for customizable column headers.
