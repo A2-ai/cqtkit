@@ -5,7 +5,9 @@ name = "cqtkit"
 r_version = "4.5"
 
 repositories = [
-    { alias = "PRISM", url = "https://prism.dev.a2-ai.cloud/rpkgs/stratus/2025-12-15/"}
+    { alias = "PRISM", url = "https://prism.dev.a2-ai.cloud/rpkgs/stratus/2025-12-15/"},
+		# Added for R4.3 deps for gh actions
+		{ alias = "PPM", url = "https://packagemanager.posit.co/cran/latest"}
 ]
 
 dependencies = [
