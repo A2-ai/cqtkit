@@ -3,6 +3,7 @@
 ### Enhanced
 * Added `qtc_label` and `unit` arguments to `tabulate_high_qtc_sub()` for customizable column headers.
 * Added `time_label` argument to `tabulate_ecg_param_summary()` for customizable time column header.
+* Updated `compute_conc_for_upper_pred()` to support models without treatment group (contrasts between conc = 0 and conc != 0).
 
 # cqtkit 1.0.2
 

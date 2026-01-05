@@ -1235,12 +1235,13 @@ compute_summary_statistics_of_simulations <- function(
 #' @param data A data frame containing C-QT analysis dataset
 #' @param fit An nlme::lme model object from model fitting
 #' @param conc_col_name String of concentration (independent variable) column name
-#' @param trt_col_name String of treatment group column name
-#' @param treatment_group String of treatment group to make prediction for
+#' @param trt_col_name String of treatment group column name (optional, NULL for models without treatment)
+#' @param treatment_group String of treatment group to make prediction for (optional, NULL for models without treatment)
 #' @param threshold Value used as upper CI prediction, default = 10
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #'
-#' @returns list of the two potential solutions.
+#' @returns Single numeric concentration value where upper CI crosses threshold.
+#'   Returns NA with warning if no positive concentration is found.
 #' @export
 #'
 #' @examples
@@ -1266,8 +1267,8 @@ compute_conc_for_upper_pred <- function(
   data,
   fit,
   conc_col_name,
-  trt_col_name,
-  treatment_group,
+  trt_col_name = NULL,
+  treatment_group = NULL,
   threshold = 10,
   conf_int = 0.9
 ) {
@@ -1275,31 +1276,49 @@ compute_conc_for_upper_pred <- function(
   checkmate::assert(checkmate::check_class(fit, "lme"))
   checkmate::assertNumeric(conf_int, lower = 0, upper = 1)
 
-  #Pull out conc and trtg estimates for predictions
-  theta_1 <- fit$coefficients$fixed[[conc_col_name]]
-  theta_3 <- fit$coefficients$fixed[[paste0(trt_col_name, treatment_group)]]
-
-  # Get degrees of freedom - need to be more sure this is always correct?
+  # Get degrees of freedom
   df <- stats::coef(summary(fit))[1, 3]
   v <- stats::vcov(fit) %>% as.data.frame()
 
-  # Pull of var and cov for conc/trtg params
+  # Compute t value with correct p based on conf_int
+  t <- stats::qt(1 - (1 - conf_int) / 2, df)
+
+  # Pull out concentration slope estimate
+
+  theta_1 <- fit$coefficients$fixed[[conc_col_name]]
   var_theta_1 <- v[conc_col_name, conc_col_name]
+
+  if (is.null(trt_col_name) || is.null(treatment_group)) {
+    # Simple model without treatment group
+    conc <- threshold / (theta_1 + t * sqrt(var_theta_1))
+    return(conc)
+  }
+
+  # Model with treatment group - use quadratic formula
+  theta_3 <- fit$coefficients$fixed[[paste0(trt_col_name, treatment_group)]]
   var_theta_3 <- v[
     paste0(trt_col_name, treatment_group),
     paste0(trt_col_name, treatment_group)
   ]
   cov_theta_1_3 <- v[paste0(trt_col_name, treatment_group), conc_col_name]
 
-  # compute t value with correct p based on conf_int
-  t <- stats::qt(1 - (1 - conf_int) / 2, df)
-
-  # define polynomial coefficients
+  # Define polynomial coefficients
   a <- theta_1^2 - var_theta_1 * t^2
   b <- 2 * theta_1 * (theta_3 - threshold) - 2 * cov_theta_1_3 * t^2
   c <- (threshold - theta_3)^2 - t^2 * var_theta_3
 
-  quad_form(a, b, c)
+  result <- quad_form(a, b, c)
+
+  # Return the smallest positive concentration (first crossing of threshold)
+  positive_vals <- c(result$lower_conc, result$upper_conc)
+  positive_vals <- positive_vals[positive_vals > 0]
+
+  if (length(positive_vals) == 0) {
+    warning("No positive concentration found for threshold crossing")
+    return(NA_real_)
+  }
+
+  return(min(positive_vals))
 }
 
 #' Predicts dQTC over range of concentration values with contrast.
