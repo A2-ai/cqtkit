@@ -277,6 +277,7 @@ tabulate_model_fit_parameters <- function(
 #' @param delta_ecg_param_conf_int Confidence interval for dQTc summary stats default 90%
 #' @param decimals Number of decimals to fmt the table to default is 2, N column is 0
 #' @param row_group_label Optional label for the dose/dose + group column
+#' @param time_label A string label for the time column (default: "Time (hr)")
 #' @param title Optional title for the table, it will be wrapped in gt::md()
 #' @param ... Optional arguments for gt::tab_options
 #'
@@ -308,6 +309,7 @@ tabulate_ecg_param_summary <- function(
   delta_ecg_param_conf_int = 0.9,
   decimals = 2,
   row_group_label = NULL,
+  time_label = "Time (hr)",
   title = NULL,
   ...
 ) {
@@ -416,7 +418,7 @@ tabulate_ecg_param_summary <- function(
       pattern = "[{1}, {2}]"
     ) %>%
     gt::cols_label(
-      time = "Time (hr)",
+      time = time_label,
       n = "N",
       mean_ecg = "Mean",
       mean_decg = "Mean",
@@ -478,6 +480,8 @@ tabulate_ecg_param_summary <- function(
 #' @param deltaqtc_col An unquoted column name for deltaQTC data
 #' @param group_col An optional unquoted column name of grouping column
 #' @param group_label An optional label to use for group column
+#' @param qtc_label A string label for the QTc parameter (default: "QTc")
+#' @param unit A string for the unit of measurement (default: "ms")
 #' @param title Optional string to give the table a title, wrapped in gt::md()
 #' @param ... Optional additional args to gt::tab_options
 #'
@@ -487,13 +491,15 @@ tabulate_ecg_param_summary <- function(
 #' @examples
 #' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
-#' tabulate_high_qtc_sub(data_proc, QTCF, deltaQTCF)
+#' tabulate_high_qtc_sub(data_proc, QTCF, deltaQTCF, qtc_label = "QTcF")
 tabulate_high_qtc_sub <- function(
   data,
   qtc_col,
   deltaqtc_col,
   group_col = NULL,
   group_label = NULL,
+  qtc_label = "QTc",
+  unit = "ms",
   title = NULL,
   ...
 ) {
@@ -512,11 +518,11 @@ tabulate_high_qtc_sub <- function(
   t <- n_gt %>%
     gt::gt() %>%
     gt::cols_label(
-      n_QTc_gt_450 = gt::md("QTc > 450"),
-      n_QTc_gt_480 = gt::md("QTc > 480"),
-      n_QTc_gt_500 = gt::md("QTc > 500"),
-      n_dQTc_gt_30 = gt::md("&Delta; QTc > 30"),
-      n_dQTc_gt_60 = gt::md("&Delta; QTc > 60")
+      n_QTc_gt_450 = gt::md(paste0(qtc_label, " > 450 ", unit)),
+      n_QTc_gt_480 = gt::md(paste0(qtc_label, " > 480 ", unit)),
+      n_QTc_gt_500 = gt::md(paste0(qtc_label, " > 500 ", unit)),
+      n_dQTc_gt_30 = gt::md(paste0("&Delta; ", qtc_label, " > 30 ", unit)),
+      n_dQTc_gt_60 = gt::md(paste0("&Delta; ", qtc_label, " > 60 ", unit))
     )
 
   if (!is.null(title)) {

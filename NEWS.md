@@ -1,3 +1,9 @@
+# cqtkit 1.1.0.9000
+
+### Enhanced
+* Added `qtc_label` and `unit` arguments to `tabulate_high_qtc_sub()` for customizable column headers.
+* Added `time_label` argument to `tabulate_ecg_param_summary()` for customizable time column header.
+
 # cqtkit 1.0.2
 
 ### Fixed 
