@@ -491,7 +491,7 @@ tabulate_ecg_param_summary <- function(
 #' @examples
 #' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
-#' tabulate_high_qtc_sub(data_proc, QTCF, deltaQTCF, qtc_label = "QTcF")
+#' tabulate_high_qtc_sub(data_proc, QTCF, deltaQTCF, group_col = DOSEF, qtc_label = "QTcF")
 tabulate_high_qtc_sub <- function(
   data,
   qtc_col,
