@@ -18,6 +18,7 @@ tabulate_ecg_param_summary(
   delta_ecg_param_conf_int = 0.9,
   decimals = 2,
   row_group_label = NULL,
+  time_label = "Time (hr)",
   title = NULL,
   ...
 )
@@ -48,6 +49,8 @@ tabulate_ecg_param_summary(
 \item{decimals}{Number of decimals to fmt the table to default is 2, N column is 0}
 
 \item{row_group_label}{Optional label for the dose/dose + group column}
+
+\item{time_label}{A string label for the time column (default: "Time (hr)")}
 
 \item{title}{Optional title for the table, it will be wrapped in gt::md()}
 
