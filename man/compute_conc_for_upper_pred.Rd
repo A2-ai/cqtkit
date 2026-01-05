@@ -31,8 +31,8 @@ compute_conc_for_upper_pred(
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
 }
 \value{
-For models with treatment group: list of the two potential solutions from quadratic formula.
-For models without treatment group: single numeric concentration value.
+Single numeric concentration value where upper CI crosses threshold.
+Returns NA with warning if no positive concentration is found.
 }
 \description{
 Computes the concentration needed for a upper conf_int prediction

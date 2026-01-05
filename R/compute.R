@@ -1240,8 +1240,8 @@ compute_summary_statistics_of_simulations <- function(
 #' @param threshold Value used as upper CI prediction, default = 10
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #'
-#' @returns For models with treatment group: list of the two potential solutions from quadratic formula.
-#'   For models without treatment group: single numeric concentration value.
+#' @returns Single numeric concentration value where upper CI crosses threshold.
+#'   Returns NA with warning if no positive concentration is found.
 #' @export
 #'
 #' @examples
@@ -1307,7 +1307,18 @@ compute_conc_for_upper_pred <- function(
   b <- 2 * theta_1 * (theta_3 - threshold) - 2 * cov_theta_1_3 * t^2
   c <- (threshold - theta_3)^2 - t^2 * var_theta_3
 
-  quad_form(a, b, c)
+  result <- quad_form(a, b, c)
+
+  # Return the smallest positive concentration (first crossing of threshold)
+  positive_vals <- c(result$lower_conc, result$upper_conc)
+  positive_vals <- positive_vals[positive_vals > 0]
+
+  if (length(positive_vals) == 0) {
+    warning("No positive concentration found for threshold crossing")
+    return(NA_real_)
+  }
+
+  return(min(positive_vals))
 }
 
 #' Predicts dQTC over range of concentration values with contrast.
