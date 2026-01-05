@@ -9,8 +9,8 @@ compute_conc_for_upper_pred(
   data,
   fit,
   conc_col_name,
-  trt_col_name,
-  treatment_group,
+  trt_col_name = NULL,
+  treatment_group = NULL,
   threshold = 10,
   conf_int = 0.9
 )
@@ -22,16 +22,17 @@ compute_conc_for_upper_pred(
 
 \item{conc_col_name}{String of concentration (independent variable) column name}
 
-\item{trt_col_name}{String of treatment group column name}
+\item{trt_col_name}{String of treatment group column name (optional, NULL for models without treatment)}
 
-\item{treatment_group}{String of treatment group to make prediction for}
+\item{treatment_group}{String of treatment group to make prediction for (optional, NULL for models without treatment)}
 
 \item{threshold}{Value used as upper CI prediction, default = 10}
 
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
 }
 \value{
-list of the two potential solutions.
+For models with treatment group: list of the two potential solutions from quadratic formula.
+For models without treatment group: single numeric concentration value.
 }
 \description{
 Computes the concentration needed for a upper conf_int prediction
