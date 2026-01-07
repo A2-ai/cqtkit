@@ -2,8 +2,7 @@
 % Please edit documentation in R/fit.R
 \name{fit_qtc_linear_model}
 \alias{fit_qtc_linear_model}
-\title{Fits QT(c) data to linear mixed effects model with fixed effects of intercept and
-RR slope, with random effects on intercept and slope.}
+\title{Fit QTc Linear Model}
 \usage{
 fit_qtc_linear_model(
   data,

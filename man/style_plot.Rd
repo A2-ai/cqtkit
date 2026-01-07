@@ -2,7 +2,7 @@
 % Please edit documentation in R/style.R
 \name{style_plot}
 \alias{style_plot}
-\title{Styles a plot with provided colors and labels}
+\title{Style Plot}
 \usage{
 style_plot(
   p,
@@ -84,7 +84,7 @@ style_plot(
 an updated ggplot2 object
 }
 \description{
-Styles a plot with provided colors and labels
+Styles a plot with provided colors and labels.
 }
 \examples{
 data_proc <- cqtkit_data_verapamil |> preprocess()

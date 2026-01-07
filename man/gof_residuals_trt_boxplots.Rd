@@ -2,7 +2,7 @@
 % Please edit documentation in R/gof.R
 \name{gof_residuals_trt_boxplots}
 \alias{gof_residuals_trt_boxplots}
-\title{generates boxplots for treatment group}
+\title{GOF Residuals Treatment Boxplots}
 \usage{
 gof_residuals_trt_boxplots(
   data,
@@ -39,7 +39,7 @@ gof_residuals_trt_boxplots(
 a ggarrange plot
 }
 \description{
-generates boxplots for treatment group
+Generates boxplots of residuals for treatment group.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

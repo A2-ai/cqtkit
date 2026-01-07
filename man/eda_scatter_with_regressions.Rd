@@ -2,7 +2,7 @@
 % Please edit documentation in R/eda.R
 \name{eda_scatter_with_regressions}
 \alias{eda_scatter_with_regressions}
-\title{plots scatter plot with with linear and loess regressions. Can be used to check for linearity.}
+\title{EDA Scatter With Regressions}
 \usage{
 eda_scatter_with_regressions(
   data,
@@ -42,7 +42,7 @@ eda_scatter_with_regressions(
 a plot
 }
 \description{
-plots scatter plot with with linear and loess regressions. Can be used to check for linearity.
+Plots scatter plot with linear and loess regressions. Can be used to check for linearity.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

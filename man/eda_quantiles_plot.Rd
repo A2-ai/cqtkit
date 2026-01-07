@@ -2,7 +2,7 @@
 % Please edit documentation in R/eda.R
 \name{eda_quantiles_plot}
 \alias{eda_quantiles_plot}
-\title{plots the observed decile-decile scatter plot of x-data vs y-data with linear regression.}
+\title{EDA Quantiles Plot}
 \usage{
 eda_quantiles_plot(
   data,
@@ -36,7 +36,7 @@ eda_quantiles_plot(
 a plot
 }
 \description{
-plots the observed decile-decile scatter plot of x-data vs y-data with linear regression.
+Plots the observed decile-decile scatter plot of x-data vs y-data with linear regression.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

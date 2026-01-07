@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot-helpers.R
 \name{add_secondary_data}
 \alias{add_secondary_data}
-\title{adds secondary data to a plot}
+\title{Add Secondary Data}
 \usage{
 add_secondary_data(
   primary_data,
@@ -42,5 +42,5 @@ add_secondary_data(
 a ggplot2 object with additional data
 }
 \description{
-adds secondary data to a plot
+Adds secondary data to a plot.
 }

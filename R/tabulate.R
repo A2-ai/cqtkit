@@ -1,4 +1,6 @@
-#' Creates a gt table of study summary for number of subjects in each grouping
+#' Tabulate Study Summary
+#'
+#' Creates a gt table of study summary for number of subjects in each grouping.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param trt_col An unquoted column name for treatment group
@@ -66,7 +68,9 @@ tabulate_study_summary <- function(
   return(t)
 }
 
-#' Converts pk_parameters df into gt table for printing
+#' Tabulate PK Parameters
+#'
+#' Converts pk_parameters df into gt table for printing.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param id_col An unquoted column name for subject ID
@@ -157,7 +161,9 @@ tabulate_pk_parameters <- function(
   return(pk_params_table)
 }
 
-#' Generates table of model parameter esitmates and statistics
+#' Tabulate Model Fit Parameters
+#'
+#' Generates table of model parameter estimates and statistics.
 #'
 #' @param fit An nlme::lme model object from model fitting
 #' @param trt_col_name A string of column name of trt used in model fitting
@@ -262,7 +268,9 @@ tabulate_model_fit_parameters <- function(
   return(fit_result_table)
 }
 
-#' Generates a gt table of summary of QTc, dQTc and ddQTc over time stratified by dose
+#' Tabulate ECG Parameter Summary
+#'
+#' Generates a gt table of summary of QTc, dQTc and ddQTc over time stratified by dose.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param ntime_col An unquoted column name for nominal time data
@@ -473,6 +481,8 @@ tabulate_ecg_param_summary <- function(
   return(s_gt)
 }
 
+#' Tabulate High QTc Subjects
+#'
 #' Tabulates number of high QTc/deltaQTc observations.
 #'
 #' @param data A data frame containing C-QT analysis dataset
@@ -551,7 +561,9 @@ tabulate_high_qtc_sub <- function(
   return(t)
 }
 
-#' Tablulates exposure predictions at therapeutic and supratherapuetic Cmax.
+#' Tabulate Exposure Predictions
+#'
+#' Tabulates exposure predictions at therapeutic and supratherapeutic Cmax.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param fit An nlme::lme model object from model fitting

@@ -2,8 +2,7 @@
 % Please edit documentation in R/compute.R
 \name{compute_conc_for_upper_pred}
 \alias{compute_conc_for_upper_pred}
-\title{Computes the concentration needed for a upper conf_int prediction
-of the threshold value.}
+\title{Compute Concentration for Upper Prediction}
 \usage{
 compute_conc_for_upper_pred(
   data,
@@ -35,7 +34,7 @@ Single numeric concentration value where upper CI crosses threshold.
 Returns NA with warning if no positive concentration is found.
 }
 \description{
-Computes the concentration needed for a upper conf_int prediction
+Computes the concentration needed for an upper conf_int prediction
 of the threshold value.
 }
 \examples{

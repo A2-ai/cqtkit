@@ -2,7 +2,7 @@
 % Please edit documentation in R/tabulate.R
 \name{tabulate_high_qtc_sub}
 \alias{tabulate_high_qtc_sub}
-\title{Tabulates number of high QTc/deltaQTc observations.}
+\title{Tabulate High QTc Subjects}
 \usage{
 tabulate_high_qtc_sub(
   data,
@@ -44,5 +44,5 @@ Tabulates number of high QTc/deltaQTc observations.
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)
 
-tabulate_high_qtc_sub(data_proc, QTCF, deltaQTCF, qtc_label = "QTcF")
+tabulate_high_qtc_sub(data_proc, QTCF, deltaQTCF, group_col = DOSEF, qtc_label = "QTcF")
 }

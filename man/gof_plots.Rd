@@ -2,7 +2,7 @@
 % Please edit documentation in R/gof.R
 \name{gof_plots}
 \alias{gof_plots}
-\title{Makes goodness of fit plots}
+\title{GOF Plots}
 \usage{
 gof_plots(
   data,
@@ -42,7 +42,7 @@ gof_plots(
 a 2x2 grid of plots
 }
 \description{
-Makes goodness of fit plots
+Makes goodness of fit plots.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

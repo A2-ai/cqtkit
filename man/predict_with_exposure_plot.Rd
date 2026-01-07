@@ -2,7 +2,7 @@
 % Please edit documentation in R/predict.R
 \name{predict_with_exposure_plot}
 \alias{predict_with_exposure_plot}
-\title{Plots model predictions with therapeutic and supra therapeutic Cmax}
+\title{Predict With Exposure Plot}
 \usage{
 predict_with_exposure_plot(
   data,
@@ -39,7 +39,7 @@ predict_with_exposure_plot(
 a plot
 }
 \description{
-Plots model predictions with therapeutic and supra therapeutic Cmax
+Plots model predictions with therapeutic and supra therapeutic Cmax.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

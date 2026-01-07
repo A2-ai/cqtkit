@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute.R
 \name{compute_hysteresis_labeller}
 \alias{compute_hysteresis_labeller}
-\title{Gets labeller for hysteresis_loop_plot. Should most likely not be used by user}
+\title{Compute Hysteresis Labeller}
 \usage{
 compute_hysteresis_labeller(
   data,
@@ -30,7 +30,7 @@ compute_hysteresis_labeller(
 list with compute_potential_hysteresis results for each dose.
 }
 \description{
-Gets labeller for hysteresis_loop_plot. Should most likely not be used by user
+Gets labeller for hysteresis_loop_plot.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/tabulate.R
 \name{tabulate_exposure_predictions}
 \alias{tabulate_exposure_predictions}
-\title{Tablulates exposure predictions at therapeutic and supratherapuetic Cmax.}
+\title{Tabulate Exposure Predictions}
 \usage{
 tabulate_exposure_predictions(
   data,
@@ -55,7 +55,7 @@ a gt table of predicted dQTc/ddQTc values and their CI at tpx and or
 stpx dose/Cmax
 }
 \description{
-Tablulates exposure predictions at therapeutic and supratherapuetic Cmax.
+Tabulates exposure predictions at therapeutic and supratherapeutic Cmax.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/style.R
 \name{set_style}
 \alias{set_style}
-\title{Creates a style list for eda graphing functions}
+\title{Set Style}
 \usage{
 set_style(
   style = NULL,
@@ -84,7 +84,7 @@ set_style(
 a named list for using with style_plot
 }
 \description{
-Creates a style list for eda graphing functions
+Creates a style list for eda graphing functions.
 }
 \examples{
 data_proc <- cqtkit_data_verapamil |> preprocess()

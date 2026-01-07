@@ -1,3 +1,5 @@
+#' Fit QTc Linear Model
+#'
 #' Fits QT(c) data to linear mixed effects model with fixed effects of intercept and
 #' RR slope, with random effects on intercept and slope.
 #'
@@ -86,7 +88,9 @@ fit_qtc_linear_model <- function(
   return(mod)
 }
 
-#' generates nlme::lme model either prespecified or without TRT and TIME.
+#' Fit Prespecified Model
+#'
+#' Generates nlme::lme model either prespecified or without TRT and TIME.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param dv_col An unquoted column name for dependent variable measurements
@@ -197,6 +201,8 @@ fit_prespecified_model <- function(
   return(mod)
 }
 
+#' Compute Model Fit Parameters
+#'
 #' Converts tTable of summary(model_fit) to tibble and adds CIs.
 #'
 #' @param fit An nlme::lme model object from model fitting
@@ -313,7 +319,9 @@ compute_model_fit_parameters <- function(
   return(parameters)
 }
 
-#' computes all fitted results and residuals for GOF plots
+#' Compute Fit Results
+#'
+#' Computes all fitted results and residuals for GOF plots.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param fit An nlme::lme model object from model fitting

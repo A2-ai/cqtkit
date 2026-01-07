@@ -2,7 +2,7 @@
 % Please edit documentation in R/eda.R
 \name{eda_qt_rr_plot}
 \alias{eda_qt_rr_plot}
-\title{Plot QT against RR}
+\title{EDA QT RR Plot}
 \usage{
 eda_qt_rr_plot(
   data,
@@ -45,7 +45,7 @@ eda_qt_rr_plot(
 a plot of the input QT against RR
 }
 \description{
-Plot QT against RR
+Plots QT against RR.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

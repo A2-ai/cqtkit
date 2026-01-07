@@ -2,7 +2,7 @@
 % Please edit documentation in R/fit.R
 \name{compute_fit_results}
 \alias{compute_fit_results}
-\title{computes all fitted results and residuals for GOF plots}
+\title{Compute Fit Results}
 \usage{
 compute_fit_results(data, fit, dv_col, conc_col, ntime_col, trt_col = NULL)
 }
@@ -23,7 +23,7 @@ compute_fit_results(data, fit, dv_col, conc_col, ntime_col, trt_col = NULL)
 a dataframe of predictions and residuals.
 }
 \description{
-computes all fitted results and residuals for GOF plots
+Computes all fitted results and residuals for GOF plots.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

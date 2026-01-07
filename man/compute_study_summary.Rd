@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute.R
 \name{compute_study_summary}
 \alias{compute_study_summary}
-\title{Creates a dataframe summarizing number of subjects in each trtreatment group}
+\title{Compute Study Summary}
 \usage{
 compute_study_summary(data, trt_col, id_col, group_col = NULL)
 }
@@ -19,7 +19,7 @@ compute_study_summary(data, trt_col, id_col, group_col = NULL)
 a tibble of number of subjects in trt_col (or trt_col + group_col) along with total id_col
 }
 \description{
-Creates a dataframe summarizing number of subjects in each trtreatment group
+Creates a dataframe summarizing number of subjects in each treatment group.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

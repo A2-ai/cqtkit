@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute.R
 \name{compute_pk_parameters}
 \alias{compute_pk_parameters}
-\title{Generates pk parameters Cmax and Tmax for exporsure predictions.}
+\title{Compute PK Parameters}
 \usage{
 compute_pk_parameters(
   data,
@@ -30,7 +30,7 @@ compute_pk_parameters(
 a dataframe of pk parameters
 }
 \description{
-Generates pk parameters Cmax and Tmax for exporsure predictions.
+Generates PK parameters Cmax and Tmax for exposure predictions.
 }
 \examples{
 compute_pk_parameters(

@@ -2,9 +2,7 @@
 % Please edit documentation in R/compute.R
 \name{compute_exposure_predictions}
 \alias{compute_exposure_predictions}
-\title{Predicts dQTC over range of concentration values with contrast.
-To help keep the predictions quick, the concentration values to predict at are
-done at on order of magnitude of concentration values, if max(conc) = 7340, then by = 100}
+\title{Compute Exposure Predictions}
 \usage{
 compute_exposure_predictions(
   data,
@@ -38,7 +36,7 @@ lower and upper bounds CI.
 \description{
 Predicts dQTC over range of concentration values with contrast.
 To help keep the predictions quick, the concentration values to predict at are
-done at on order of magnitude of concentration values, if max(conc) = 7340, then by = 100
+done at an order of magnitude of concentration values, if max(conc) = 7340, then by = 100.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

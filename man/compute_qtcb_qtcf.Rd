@@ -2,7 +2,7 @@
 % Please edit documentation in R/preprocess.R
 \name{compute_qtcb_qtcf}
 \alias{compute_qtcb_qtcf}
-\title{Computes QTCF and QTCB from qt_col and rr_col and QTCFBL and QTCBBL from qtbl_col and rrbl_col}
+\title{Compute QTcB QTcF}
 \usage{
 compute_qtcb_qtcf(
   data,
@@ -27,7 +27,7 @@ compute_qtcb_qtcf(
 data with QTCF, QTCB, QTCFBL, and QTCBBL columns
 }
 \description{
-Computes QTCF and QTCB from qt_col and rr_col and QTCFBL and QTCBBL from qtbl_col and rrbl_col
+Compute QTcB QTcF
 }
 \examples{
 compute_qtcb_qtcf(cqtkit_data_verapamil)

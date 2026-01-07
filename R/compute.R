@@ -1,6 +1,8 @@
 #QTc computation functions for background calculations
 
-#' Fits a linear model of input dataframe
+#' Compute LM Fit
+#'
+#' Fits a linear model of input dataframe.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param xdata_col An unquoted column name for independent variable measurements
@@ -56,7 +58,9 @@ compute_lm_fit_df <- function(data, xdata_col, ydata_col, conf_int = 0.95) {
   ))
 }
 
-#' Takes the slope from a lme model and its confidence interval
+#' Compute LME Slope
+#'
+#' Takes the slope from a lme model and its confidence interval.
 #'
 #' @param lme_mod An nlme::lme model object from model fitting
 #' @param xdata_col An unquoted name of column used as independent data in LME
@@ -109,7 +113,9 @@ compute_lme_slope_df <- function(lme_mod, xdata_col, conf_int = 0.95) {
   ))
 }
 
-#' Generates pk parameters Cmax and Tmax for exporsure predictions.
+#' Compute PK Parameters
+#'
+#' Generates PK parameters Cmax and Tmax for exposure predictions.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param id_col An unquoted column name for subject ID
@@ -209,7 +215,9 @@ compute_pk_parameters <- function(
   return(pk_params_df)
 }
 
-#' Computes the number of subjects with QTc > 450, 500 as well as deltaQTc > 30, 60
+#' Compute High QTc Subjects
+#'
+#' Computes the number of subjects with QTc > 450, 480, 500 as well as deltaQTc > 30, 60.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param qtc_col An unquoted column name for containing QTc data
@@ -268,7 +276,9 @@ compute_high_qtc_sub <- function(
   return(n_gt)
 }
 
-#' Creates a dataframe summarizing number of subjects in each trtreatment group
+#' Compute Study Summary
+#'
+#' Creates a dataframe summarizing number of subjects in each treatment group.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param trt_col Column name of treatment group
@@ -324,7 +334,9 @@ compute_study_summary <- function(data, trt_col, id_col, group_col = NULL) {
   return(table)
 }
 
-#' Generates a tibble of summary of QTc, dQTc and ddQTc over time stratified by dose
+#' Compute ECG Parameter Summary
+#'
+#' Generates a tibble of summary of QTc, dQTc and ddQTc over time stratified by dose.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param ntime_col An unquoted column name for nominal time data
@@ -428,9 +440,10 @@ compute_ecg_param_summary <- function(
   return(tibble::as_tibble(summ))
 }
 
-#' computes a the mean and standard deviation of the dependent variable data
-#' in DV_col grouped by time and dose.
+#' Compute Grouped Mean SD
 #'
+#' Computes the mean and standard deviation of the dependent variable data
+#' in DV_col grouped by time and dose.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param dv_col An unquoted column name for dependent variable
@@ -617,9 +630,11 @@ compute_grouped_mean_sd <- function(
   }
 }
 
+#' Compute Loess Linear R Squared
+#'
 #' Computes R-squared and Adjusted R-squared of loess regression
 #' compared to linear regression. Used for determining linearity
-#' of C-QT data
+#' of C-QT data.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param deltaqtc_col An unquoted column name for dQTCF measurements
@@ -678,7 +693,9 @@ compute_loess_linear_r_squared <- function(
   )
 }
 
-#' Detects the pressence of hysteresis
+#' Compute Potential Hysteresis
+#'
+#' Detects the presence of hysteresis.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param ntime_col An unquoted column name for nominal timepoints
@@ -790,7 +807,9 @@ compute_potential_hysteresis <- function(
   }
 }
 
-#' Gets labeller for hysteresis_loop_plot. Should most likely not be used by user
+#' Compute Hysteresis Labeller
+#'
+#' Gets labeller for hysteresis_loop_plot.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param ntime_col An unquoted column name for Nominal time since last dose (h)
@@ -890,7 +909,9 @@ compute_hysteresis_labeller <- function(
   return(dose_labeller)
 }
 
-#' Exposure Normalized GRI computation
+#' Compute enGRI
+#'
+#' Computes the exposure-normalized Glomb-Ring Index (enGRI).
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param conc_gm_col CONC geometric mean column name
@@ -932,7 +953,9 @@ compute_enGRI <- function(data, conc_gm_col, ddqtc_col) {
     max(df$conc)
 }
 
-#' returns a dataframe of quantiles of concentrations and deltaQTcs
+#' Compute Quantiles Observation
+#'
+#' Returns a dataframe of quantiles of concentrations and deltaQTcs.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param xdata_col An unquoted column name for concentration measurements
@@ -1052,6 +1075,8 @@ compute_quantiles_obs_df <- function(
 }
 
 
+#' Compute Dataset Simulation
+#'
 #' Simulates a dataset used to fit the model.
 #'
 #' @param data A data frame containing C-QT analysis dataset
@@ -1104,7 +1129,9 @@ compute_dataset_simulation <- function(data, fit, xdata_col, sim_num = 0) {
 }
 
 
-#' Wrapper for calling compute_dataset_simulation nruns time and computing summary statsitics of the simulations
+#' Compute Summary Statistics of Simulations
+#'
+#' Wrapper for calling compute_dataset_simulation nruns times and computing summary statistics of the simulations.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param fit An nlme::lme model object from model fitting
@@ -1229,7 +1256,9 @@ compute_summary_statistics_of_simulations <- function(
   return(stat_cs)
 }
 
-#' Computes the concentration needed for a upper conf_int prediction
+#' Compute Concentration for Upper Prediction
+#'
+#' Computes the concentration needed for an upper conf_int prediction
 #' of the threshold value.
 #'
 #' @param data A data frame containing C-QT analysis dataset
@@ -1321,9 +1350,11 @@ compute_conc_for_upper_pred <- function(
   return(min(positive_vals))
 }
 
+#' Compute Exposure Predictions
+#'
 #' Predicts dQTC over range of concentration values with contrast.
 #' To help keep the predictions quick, the concentration values to predict at are
-#' done at on order of magnitude of concentration values, if max(conc) = 7340, then by = 100
+#' done at an order of magnitude of concentration values, if max(conc) = 7340, then by = 100.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param fit An nlme::lme model object from model fitting

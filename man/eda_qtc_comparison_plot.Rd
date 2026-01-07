@@ -2,7 +2,7 @@
 % Please edit documentation in R/eda.R
 \name{eda_qtc_comparison_plot}
 \alias{eda_qtc_comparison_plot}
-\title{plots different corrections of QT against RR to compare which to use.}
+\title{EDA QTc Comparison Plot}
 \usage{
 eda_qtc_comparison_plot(
   data,
@@ -57,7 +57,7 @@ eda_qtc_comparison_plot(
 a plot
 }
 \description{
-plots different corrections of QT against RR to compare which to use.
+Plots different corrections of QT against RR to compare which to use.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

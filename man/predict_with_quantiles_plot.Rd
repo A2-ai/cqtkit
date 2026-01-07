@@ -2,7 +2,7 @@
 % Please edit documentation in R/predict.R
 \name{predict_with_quantiles_plot}
 \alias{predict_with_quantiles_plot}
-\title{Plots predictions and 90\% CI}
+\title{Predict With Quantiles Plot}
 \usage{
 predict_with_quantiles_plot(
   data,
@@ -57,7 +57,7 @@ predict_with_quantiles_plot(
 a plot
 }
 \description{
-Plots predictions and 90\% CI
+Plots predictions and 90\% CI.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/preprocess.R
 \name{compute_delta_qtcfblm}
 \alias{compute_delta_qtcfblm}
-\title{Computes Baseline Mean QTCF}
+\title{Compute Delta QTcF Baseline Mean}
 \usage{
 compute_delta_qtcfblm(
   data,
@@ -24,7 +24,7 @@ compute_delta_qtcfblm(
 a dataframe with deltaQTCFBL column
 }
 \description{
-Computes Baseline Mean QTCF
+Compute Delta QTcF Baseline Mean
 }
 \examples{
 compute_delta_qtcfblm(compute_qtcb_qtcf(cqtkit_data_verapamil))

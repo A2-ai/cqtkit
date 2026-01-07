@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot-helpers.R
 \name{add_error_bars_to_plot}
 \alias{add_error_bars_to_plot}
-\title{adds errorbars to a plot}
+\title{Add Error Bars To Plot}
 \usage{
 add_error_bars_to_plot(data, p, reference_dose, error_bars, conf_int)
 }
@@ -21,5 +21,5 @@ add_error_bars_to_plot(data, p, reference_dose, error_bars, conf_int)
 ggplot2 with errorbars
 }
 \description{
-adds errorbars to a plot
+Adds errorbars to a plot.
 }

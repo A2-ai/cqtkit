@@ -2,7 +2,7 @@
 % Please edit documentation in R/preprocess.R
 \name{compute_delta_hrblm}
 \alias{compute_delta_hrblm}
-\title{computes delta HR BL Mean}
+\title{Compute Delta HR Baseline Mean}
 \usage{
 compute_delta_hrblm(data, id_col = ID, hrbl_col = HRBL, deduplicate = TRUE)
 }
@@ -19,7 +19,7 @@ compute_delta_hrblm(data, id_col = ID, hrbl_col = HRBL, deduplicate = TRUE)
 data frame with deltaHRBL
 }
 \description{
-computes delta HR BL Mean
+Compute Delta HR Baseline Mean
 }
 \examples{
 compute_delta_hrblm(cqtkit_data_verapamil)

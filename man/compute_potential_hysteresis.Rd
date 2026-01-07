@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute.R
 \name{compute_potential_hysteresis}
 \alias{compute_potential_hysteresis}
-\title{Detects the pressence of hysteresis}
+\title{Compute Potential Hysteresis}
 \usage{
 compute_potential_hysteresis(
   data,
@@ -27,7 +27,7 @@ compute_potential_hysteresis(
 a bool of TRUE if hysteresis detected else FALSE
 }
 \description{
-Detects the pressence of hysteresis
+Detects the presence of hysteresis.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

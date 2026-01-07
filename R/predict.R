@@ -1,4 +1,6 @@
-#' Plots predictions of the model with observed values
+#' Predict With Observations Plot
+#'
+#' Plots predictions of the model with observed values.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param fit An nlme::lme model object from model fitting
@@ -195,7 +197,9 @@ predict_with_observations_plot <- function(
 }
 
 
-#' Plots predictions and 90% CI
+#' Predict With Quantiles Plot
+#'
+#' Plots predictions and 90% CI.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param fit An nlme::lme model object from model fitting
@@ -404,7 +408,9 @@ predict_with_quantiles_plot <- function(
 }
 
 
-#' Plots model predictions with therapeutic and supra therapeutic Cmax
+#' Predict With Exposure Plot
+#'
+#' Plots model predictions with therapeutic and supra therapeutic Cmax.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param fit An nlme::lme model object from model fitting

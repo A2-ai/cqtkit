@@ -2,9 +2,7 @@
 % Please edit documentation in R/preprocess.R
 \name{preprocess}
 \alias{preprocess}
-\title{Pre-processes data
-Computes QTcB, QTcF, deltaQTcF, deltaQTcB, deltaHR, deltaQTcB Baseline Mean,
-deltaQTcF Baseline Mean, deltaHR Baseline Mean}
+\title{Preprocess}
 \usage{
 preprocess(
   data,
@@ -53,9 +51,8 @@ preprocess(
 dataframe with deltas computed from BL
 }
 \description{
-Pre-processes data
 Computes QTcB, QTcF, deltaQTcF, deltaQTcB, deltaHR, deltaQTcB Baseline Mean,
-deltaQTcF Baseline Mean, deltaHR Baseline Mean
+deltaQTcF Baseline Mean, deltaHR Baseline Mean.
 }
 \examples{
 preprocess(cqtkit_data_verapamil)

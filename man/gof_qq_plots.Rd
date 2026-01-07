@@ -2,7 +2,7 @@
 % Please edit documentation in R/gof.R
 \name{gof_qq_plots}
 \alias{gof_qq_plots}
-\title{Plots QQ plot of WRES and IWRES}
+\title{GOF QQ Plots}
 \usage{
 gof_qq_plots(
   data,
@@ -36,7 +36,7 @@ gof_qq_plots(
 a plot
 }
 \description{
-Plots QQ plot of WRES and IWRES
+Plots QQ plot of WRES and IWRES.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

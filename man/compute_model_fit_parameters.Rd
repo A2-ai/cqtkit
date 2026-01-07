@@ -2,7 +2,7 @@
 % Please edit documentation in R/fit.R
 \name{compute_model_fit_parameters}
 \alias{compute_model_fit_parameters}
-\title{Converts tTable of summary(model_fit) to tibble and adds CIs.}
+\title{Compute Model Fit Parameters}
 \usage{
 compute_model_fit_parameters(
   fit,

@@ -1,4 +1,6 @@
-#' Plot QT against RR
+#' EDA QT RR Plot
+#'
+#' Plots QT against RR.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param rr_col An unquoted column name for RR measurements
@@ -161,7 +163,9 @@ eda_qt_rr_plot <- function(
   return(qt_rr_plot)
 }
 
-#' plots different corrections of QT against RR to compare which to use.
+#' EDA QTc Comparison Plot
+#'
+#' Plots different corrections of QT against RR to compare which to use.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param rr_col An unquoted column name for RR measurements
@@ -277,7 +281,9 @@ eda_qtc_comparison_plot <- function(
   }
 }
 
-#' plots the observed decile-decile scatter plot of x-data vs y-data with linear regression.
+#' EDA Quantiles Plot
+#'
+#' Plots the observed decile-decile scatter plot of x-data vs y-data with linear regression.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param xdata_col An unquoted column name for x data
@@ -396,7 +402,9 @@ eda_quantiles_plot <- function(
   return(p)
 }
 
-#' plots scatter plot with with linear and loess regressions. Can be used to check for linearity.
+#' EDA Scatter With Regressions
+#'
+#' Plots scatter plot with linear and loess regressions. Can be used to check for linearity.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param ydata_col An unquoted column name for dependent variable measurements
@@ -529,7 +537,10 @@ eda_scatter_with_regressions <- function(
   return(p)
 }
 
-#' Hysteresis loop plot to visually inspect hysteresis
+#' EDA Hysteresis Loop Plot
+#'
+#' Hysteresis loop plot to visually inspect hysteresis.
+#'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param ntime_col An unquoted column name for nominal time points
 #' @param deltaqtc_col An unquoted column name for dQTC measurements at the time points in NTLD
@@ -718,7 +729,9 @@ eda_hysteresis_loop_plot <- function(
   return(.p)
 }
 
-#' Plots mean dependent variable over time
+#' EDA Mean DV Over Time
+#'
+#' Plots mean dependent variable over time.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param dv_col An unquoted column name for dependent variable

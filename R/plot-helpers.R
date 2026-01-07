@@ -1,4 +1,6 @@
-#' adds errorbars to a plot
+#' Add Error Bars To Plot
+#'
+#' Adds errorbars to a plot.
 #'
 #' @param data A dataframe from compute_grouped_mean_sd
 #' @param p A ggplot object to add error bars to
@@ -94,7 +96,9 @@ add_error_bars_to_plot <- function(
   return(p)
 }
 
-#' adds horizontal reference lines to plot
+#' Add Horizontal References
+#'
+#' Adds horizontal reference lines to plot.
 #'
 #' @param p A ggplot object
 #' @param reference_threshold Numeric/vector of numerics for horizontal lines
@@ -159,7 +163,9 @@ add_horizontal_references <- function(p, reference_threshold) {
 }
 
 
-#' adds secondary data to a plot
+#' Add Secondary Data
+#'
+#' Adds secondary data to a plot.
 #'
 #' @param primary_data Dataframe of primary data plotted
 #' @param secondary_data Dataframe containing data you'd like to add to plot

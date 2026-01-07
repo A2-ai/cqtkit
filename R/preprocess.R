@@ -1,4 +1,4 @@
-#' Computes QTCF and QTCB from qt_col and rr_col and QTCFBL and QTCBBL from qtbl_col and rrbl_col
+#' Compute QTcB QTcF
 #'
 #' @param data A data frame containing QT, RR, QTBL, RRBL
 #' @param qt_col An unquoted column name for QT measurements
@@ -50,7 +50,7 @@ compute_qtcb_qtcf <- function(
   return(data)
 }
 
-#' Computes delta variables RR, QTCF, HR, etc
+#' Compute Deltas
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param qt_col An unquoted column name for QT measurements
@@ -124,7 +124,7 @@ compute_deltas <- function(
   return(data)
 }
 
-#' computes delta HR BL Mean
+#' Compute Delta HR Baseline Mean
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param id_col An unquoted column name for subject ID
@@ -167,7 +167,7 @@ compute_delta_hrblm <- function(
   return(data)
 }
 
-#' Computes Baseline Mean QTCB
+#' Compute Delta QTcB Baseline Mean
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param id_col An unquoted column name for subject ID
@@ -209,7 +209,7 @@ compute_delta_qtcbblm <- function(
   return(data)
 }
 
-#' Computes Baseline Mean QTCF
+#' Compute Delta QTcF Baseline Mean
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param id_col An unquoted column name for subject ID
@@ -251,9 +251,10 @@ compute_delta_qtcfblm <- function(
 }
 
 
-#' Pre-processes data
+#' Preprocess
+#'
 #' Computes QTcB, QTcF, deltaQTcF, deltaQTcB, deltaHR, deltaQTcB Baseline Mean,
-#' deltaQTcF Baseline Mean, deltaHR Baseline Mean
+#' deltaQTcF Baseline Mean, deltaHR Baseline Mean.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param qt_col An unquoted column name for QT measurements

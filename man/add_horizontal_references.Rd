@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot-helpers.R
 \name{add_horizontal_references}
 \alias{add_horizontal_references}
-\title{adds horizontal reference lines to plot}
+\title{Add Horizontal References}
 \usage{
 add_horizontal_references(p, reference_threshold)
 }
@@ -15,7 +15,7 @@ add_horizontal_references(p, reference_threshold)
 a ggplot object with refence horizontal lines
 }
 \description{
-adds horizontal reference lines to plot
+Adds horizontal reference lines to plot.
 }
 \examples{
 data_proc <- cqtkit_data_verapamil |> preprocess()

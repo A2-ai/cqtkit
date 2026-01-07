@@ -2,7 +2,7 @@
 % Please edit documentation in R/eda.R
 \name{eda_hysteresis_loop_plot}
 \alias{eda_hysteresis_loop_plot}
-\title{Hysteresis loop plot to visually inspect hysteresis}
+\title{EDA Hysteresis Loop Plot}
 \usage{
 eda_hysteresis_loop_plot(
   data,
@@ -39,7 +39,7 @@ eda_hysteresis_loop_plot(
 a plot
 }
 \description{
-Hysteresis loop plot to visually inspect hysteresis
+Hysteresis loop plot to visually inspect hysteresis.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

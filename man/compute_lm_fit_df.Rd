@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute.R
 \name{compute_lm_fit_df}
 \alias{compute_lm_fit_df}
-\title{Fits a linear model of input dataframe}
+\title{Compute LM Fit}
 \usage{
 compute_lm_fit_df(data, xdata_col, ydata_col, conf_int = 0.95)
 }
@@ -19,7 +19,7 @@ compute_lm_fit_df(data, xdata_col, ydata_col, conf_int = 0.95)
 the fitted parameters of a lm of y ~ x
 }
 \description{
-Fits a linear model of input dataframe
+Fits a linear model of input dataframe.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

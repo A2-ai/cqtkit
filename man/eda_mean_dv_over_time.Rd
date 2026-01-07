@@ -2,7 +2,7 @@
 % Please edit documentation in R/eda.R
 \name{eda_mean_dv_over_time}
 \alias{eda_mean_dv_over_time}
-\title{Plots mean dependent variable over time}
+\title{EDA Mean DV Over Time}
 \usage{
 eda_mean_dv_over_time(
   data,
@@ -54,7 +54,7 @@ eda_mean_dv_over_time(
 a plot
 }
 \description{
-Plots mean dependent variable over time
+Plots mean dependent variable over time.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

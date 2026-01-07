@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute.R
 \name{compute_summary_statistics_of_simulations}
 \alias{compute_summary_statistics_of_simulations}
-\title{Wrapper for calling compute_dataset_simulation nruns time and computing summary statsitics of the simulations}
+\title{Compute Summary Statistics of Simulations}
 \usage{
 compute_summary_statistics_of_simulations(
   data,
@@ -33,7 +33,7 @@ compute_summary_statistics_of_simulations(
 a tibble of summary statistics of nruns worth of dataset simulations for a VPC.
 }
 \description{
-Wrapper for calling compute_dataset_simulation nruns time and computing summary statsitics of the simulations
+Wrapper for calling compute_dataset_simulation nruns times and computing summary statistics of the simulations.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

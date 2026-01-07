@@ -2,7 +2,7 @@
 % Please edit documentation in R/gof.R
 \name{gof_concordance_plots}
 \alias{gof_concordance_plots}
-\title{Concordance plots between population and individual predictions}
+\title{GOF Concordance Plots}
 \usage{
 gof_concordance_plots(
   data,
@@ -39,7 +39,7 @@ gof_concordance_plots(
 a plot
 }
 \description{
-Concordance plots between population and individual predictions
+Concordance plots between population and individual predictions.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

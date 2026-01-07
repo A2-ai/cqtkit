@@ -2,7 +2,7 @@
 % Please edit documentation in R/preprocess.R
 \name{compute_deltas}
 \alias{compute_deltas}
-\title{Computes delta variables RR, QTCF, HR, etc}
+\title{Compute Deltas}
 \usage{
 compute_deltas(
   data,
@@ -45,7 +45,7 @@ compute_deltas(
 dataframe with deltaPARAM columns included
 }
 \description{
-Computes delta variables RR, QTCF, HR, etc
+Compute Deltas
 }
 \examples{
 compute_deltas(compute_qtcb_qtcf(cqtkit_data_verapamil))

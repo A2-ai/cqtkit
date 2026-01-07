@@ -2,7 +2,7 @@
 % Please edit documentation in R/predict.R
 \name{predict_with_observations_plot}
 \alias{predict_with_observations_plot}
-\title{Plots predictions of the model with observed values}
+\title{Predict With Observations Plot}
 \usage{
 predict_with_observations_plot(
   data,
@@ -51,7 +51,7 @@ predict_with_observations_plot(
 a plot
 }
 \description{
-Plots predictions of the model with observed values
+Plots predictions of the model with observed values.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

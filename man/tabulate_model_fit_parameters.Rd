@@ -2,7 +2,7 @@
 % Please edit documentation in R/tabulate.R
 \name{tabulate_model_fit_parameters}
 \alias{tabulate_model_fit_parameters}
-\title{Generates table of model parameter esitmates and statistics}
+\title{Tabulate Model Fit Parameters}
 \usage{
 tabulate_model_fit_parameters(
   fit,
@@ -42,7 +42,7 @@ tabulate_model_fit_parameters(
 a gt table
 }
 \description{
-Generates table of model parameter esitmates and statistics
+Generates table of model parameter estimates and statistics.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

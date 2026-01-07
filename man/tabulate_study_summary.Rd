@@ -2,7 +2,7 @@
 % Please edit documentation in R/tabulate.R
 \name{tabulate_study_summary}
 \alias{tabulate_study_summary}
-\title{Creates a gt table of study summary for number of subjects in each grouping}
+\title{Tabulate Study Summary}
 \usage{
 tabulate_study_summary(
   data,
@@ -42,7 +42,7 @@ tabulate_study_summary(
 a gt table
 }
 \description{
-Creates a gt table of study summary for number of subjects in each grouping
+Creates a gt table of study summary for number of subjects in each grouping.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

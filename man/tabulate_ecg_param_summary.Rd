@@ -2,7 +2,7 @@
 % Please edit documentation in R/tabulate.R
 \name{tabulate_ecg_param_summary}
 \alias{tabulate_ecg_param_summary}
-\title{Generates a gt table of summary of QTc, dQTc and ddQTc over time stratified by dose}
+\title{Tabulate ECG Parameter Summary}
 \usage{
 tabulate_ecg_param_summary(
   data,
@@ -60,7 +60,7 @@ tabulate_ecg_param_summary(
 a gt table of the QTc/deltaQTc/delta delta QTc summary
 }
 \description{
-Generates a gt table of summary of QTc, dQTc and ddQTc over time stratified by dose
+Generates a gt table of summary of QTc, dQTc and ddQTc over time stratified by dose.
 }
 \examples{
 data_proc <- cqtkit_data_verapamil \%>\% preprocess()

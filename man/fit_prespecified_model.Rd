@@ -2,7 +2,7 @@
 % Please edit documentation in R/fit.R
 \name{fit_prespecified_model}
 \alias{fit_prespecified_model}
-\title{generates nlme::lme model either prespecified or without TRT and TIME.}
+\title{Fit Prespecified Model}
 \usage{
 fit_prespecified_model(
   data,
@@ -39,7 +39,7 @@ fit_prespecified_model(
 an nlme::lme model fit to the data
 }
 \description{
-generates nlme::lme model either prespecified or without TRT and TIME.
+Generates nlme::lme model either prespecified or without TRT and TIME.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

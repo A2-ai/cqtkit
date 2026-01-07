@@ -2,7 +2,7 @@
 % Please edit documentation in R/tabulate.R
 \name{tabulate_pk_parameters}
 \alias{tabulate_pk_parameters}
-\title{Converts pk_parameters df into gt table for printing}
+\title{Tabulate PK Parameters}
 \usage{
 tabulate_pk_parameters(
   data,
@@ -39,7 +39,7 @@ tabulate_pk_parameters(
 a gt table
 }
 \description{
-Converts pk_parameters df into gt table for printing
+Converts pk_parameters df into gt table for printing.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

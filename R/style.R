@@ -1,4 +1,6 @@
-#' Creates a style list for eda graphing functions
+#' Set Style
+#'
+#' Creates a style list for eda graphing functions.
 #'
 #' @param style An optional named list of style arguments to update
 #' @param title A string for a plot title
@@ -271,7 +273,9 @@ is_plot_label <- function(x) {
   is.null(x) || is.character(x) || is.language(x) || inherits(x, "expression")
 }
 
-#' Styles a plot with provided colors and labels
+#' Style Plot
+#'
+#' Styles a plot with provided colors and labels.
 #'
 #' @param p A ggplot2 object to update colors/legend labels
 #' @param title A string for a plot title

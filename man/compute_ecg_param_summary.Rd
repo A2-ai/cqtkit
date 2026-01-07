@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute.R
 \name{compute_ecg_param_summary}
 \alias{compute_ecg_param_summary}
-\title{Generates a tibble of summary of QTc, dQTc and ddQTc over time stratified by dose}
+\title{Compute ECG Parameter Summary}
 \usage{
 compute_ecg_param_summary(
   data,
@@ -36,7 +36,7 @@ compute_ecg_param_summary(
 a tibble of QTc/deltaQTc/delta delta QTc summary over dose and time.
 }
 \description{
-Generates a tibble of summary of QTc, dQTc and ddQTc over time stratified by dose
+Generates a tibble of summary of QTc, dQTc and ddQTc over time stratified by dose.
 }
 \examples{
 data_proc <- cqtkit_data_verapamil \%>\% preprocess()

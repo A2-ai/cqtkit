@@ -1,0 +1,144 @@
+# starlightr configuration file
+# This file defines how your R package documentation will be built into a Starlight site
+
+# Site metadata
+site:
+  title: "cqtkit"
+  description: "Provides an end-to-end toolkit for C-QTc analysis, including"
+  logo: "man/figures/logo.png"       # Path to logo image (relative to package root)
+  favicon: "man/figures/logo.png" # Path to favicon (can be same as logo)
+
+# Home page configuration
+home:
+  hero:
+    tagline: "Comprehensive C-QT Analysis From Data to Deliverables"
+    actions:
+    - text: cqtkit Reference Guide
+      link: ./reference/cqtkit
+      icon: right-arrow
+    - text: Explore the cqtkit repository 
+      link: https://github.com/a2-ai/cqtkit
+      icon: external
+      variant: minimal
+
+sidebar:
+  reference:
+    - label: "cqtkit's Reference"
+      contents:
+        - "cqtkit"
+    - label: "Preprocessing"
+      collapsed: true
+      contents:
+        - "preprocessing"
+        - "compute_qtcb_qtcf"
+        - "compute_delta_qtcfblm"
+        - "compute_delta_qtcbblm"
+        - "compute_delta_hrblm"
+        - "compute_deltas"
+        - "preprocess"
+    - label: "Exploratory Data Analysis"
+      collapsed: true
+      contents:
+        - "eda"
+        - "eda_mean_dv_over_time"
+        - "eda_qtc_comparison_plot"
+        - "eda_hysteresis_loop_plot"
+        - "eda_scatter_with_regressions"
+        - "eda_quantiles_plot"
+        - "eda_qt_rr_plot"
+    - label: "Compute"
+      collapsed: true
+      contents:
+        - "compute"
+        - "compute_grouped_mean_sd"
+        - "compute_pk_parameters"
+        - "compute_ecg_param_summary"
+        - "compute_high_qtc_sub"
+        - "compute_quantiles_obs_df"
+        - "compute_potential_hysteresis"
+        - "compute_hysteresis_labeller"
+        - "compute_contrast_observations"
+        - "compute_exposure_predictions"
+        - "compute_dataset_simulation"
+        - "compute_summary_statistics_of_simulations"
+        - "compute_lm_fit_df"
+        - "compute_engri"
+    - label: "Tabulate"
+      collapsed: true
+      contents:
+        - "tabulate"
+        - "tabulate_study_summary"
+        - "tabulate_ecg_param_summary"
+        - "tabulate_high_qtc_sub"
+        - "tabulate_pk_parameters"
+        - "tabulate_model_fit_parameters"
+        - "tabulate_exposure_predictions"
+    - label: "Fit"
+      collapsed: true
+      contents:
+        - "fit"
+        - "fit_prespecified_model"
+        - "fit_qtc_linear_model"
+        - "compute_model_fit_parameters"
+        - "compute_fit_results"
+    - label: "Goodness of Fit"
+      collapsed: true
+      contents:
+        - "gof"
+        - "gof_plots"
+        - "gof_concordance_plots"
+        - "gof_residuals_plots"
+        - "gof_qq_plots"
+        - "gof_residuals_time_boxplots"
+        - "gof_residuals_trt_boxplots"
+        - "gof_vpc_plot"
+    - label: "Prediction"
+      collapsed: true
+      contents:
+        - "predict"
+        - "predict_with_observations_plot"
+        - "predict_with_quantiles_plot"
+        - "predict_with_exposure_plot"
+    - label: "Style"
+      collapsed: true
+      contents:
+        - "style"
+        - "add_horizontal_references"
+        - "set_style"
+        - "style_plot"
+    - label: "Datasets"
+      collapsed: true
+      contents:
+        - "datasets"
+        - "cqtkit_data_verapamil"
+        - "cqtkit_data_bl_verapamil"
+        - "cqtkit_data_dofetilide"
+        - "cqtkit_data_bl_dofetilide"
+        - "cqtkit_data_quinidine"
+        - "cqtkit_data_bl_quinidine"
+        - "cqtkit_data_ranolazine"
+        - "cqtkit_data_bl_ranolazine"
+
+# Theme and appearance
+theme:
+  color_mode: "auto"  # light, dark, or auto
+
+# Content processing options
+content:
+  # Custom sections to format as code
+  code_sections:
+    - "usage"
+    - "examples"
+
+  # Sections to skip entirely
+  skip_sections:
+    - "seealso"
+    - "name"
+
+# Output directory for generated site
+output:
+  dir: "../cqtkit-docs"  # External directory (recommended)
+  # dir: "docs"       # Internal directory (not recommended due to bloat)
+  include_build_files: true
+
+

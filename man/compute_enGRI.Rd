@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute.R
 \name{compute_enGRI}
 \alias{compute_enGRI}
-\title{Exposure Normalized GRI computation}
+\title{Compute enGRI}
 \usage{
 compute_enGRI(data, conc_gm_col, ddqtc_col)
 }
@@ -17,7 +17,7 @@ compute_enGRI(data, conc_gm_col, ddqtc_col)
 a numeric (ms) of enGRI score
 }
 \description{
-Exposure Normalized GRI computation
+Computes the exposure-normalized Glomb-Ring Index (enGRI).
 }
 \examples{
 compute_enGRI(preprocess(cqtkit_data_verapamil), CONC, deltaQTCF)

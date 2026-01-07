@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute.R
 \name{compute_quantiles_obs_df}
 \alias{compute_quantiles_obs_df}
-\title{returns a dataframe of quantiles of concentrations and deltaQTcs}
+\title{Compute Quantiles Observation}
 \usage{
 compute_quantiles_obs_df(
   data,
@@ -30,7 +30,7 @@ compute_quantiles_obs_df(
 a tibble of conc, deltaQTC quantiles
 }
 \description{
-returns a dataframe of quantiles of concentrations and deltaQTcs
+Returns a dataframe of quantiles of concentrations and deltaQTcs.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)
