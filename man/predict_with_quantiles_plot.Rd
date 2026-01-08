@@ -54,7 +54,7 @@ predict_with_quantiles_plot(
 \item{style}{A named list of arguments passed to style_plot()}
 }
 \value{
-a plot
+A plot of binned observed data quantiles with model prediction line and confidence interval
 }
 \description{
 Plots predictions and 90\% CI.

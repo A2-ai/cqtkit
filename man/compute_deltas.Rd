@@ -42,7 +42,7 @@ compute_deltas(
 \item{qtcbbl_col}{An unquoted column name for baseline QTCB measurements, QTCBBL by default}
 }
 \value{
-dataframe with deltaPARAM columns included
+A data frame with deltaPARAM columns added
 }
 \description{
 Compute Deltas

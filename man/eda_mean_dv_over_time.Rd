@@ -51,7 +51,7 @@ eda_mean_dv_over_time(
 \item{style}{A named list of arguments passed to style_plot(). Shapes are mapped to grouping variables and can be controlled via the shapes parameter in style}
 }
 \value{
-a plot
+A line plot of mean dependent variable over time with optional error bars, reference lines, and secondary axis
 }
 \description{
 Plots mean dependent variable over time.

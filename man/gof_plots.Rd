@@ -39,7 +39,7 @@ gof_plots(
 \item{style}{A named list of arguments passed to style_plot()}
 }
 \value{
-a 2x2 grid of plots
+A 2x2 panel with concordance plots, residual distributions, Q-Q plots, and residual histograms
 }
 \description{
 Makes goodness of fit plots.

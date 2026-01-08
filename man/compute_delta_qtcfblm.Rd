@@ -18,10 +18,10 @@ compute_delta_qtcfblm(
 
 \item{qtcfbl_col}{An unquoted column name for baseline QTCB measurements, default is QTCBBL}
 
-\item{deduplicate}{Boolean, whether baseline values are duplicated over rows. If true duplicates will be removed from average}
+\item{deduplicate}{Logical, whether to remove duplicate baseline values before averaging}
 }
 \value{
-a dataframe with deltaQTCFBL column
+A data frame with deltaQTCFBL column added
 }
 \description{
 Compute Delta QTcF Baseline Mean

@@ -27,10 +27,10 @@ compute_quantiles_obs_df(
 \item{type}{Algorithm for quantile. Default (2), is SAS quantile algorithm}
 }
 \value{
-a tibble of conc, deltaQTC quantiles
+A tibble with binned concentration medians and corresponding deltaQTc statistics (mean, SD, SE, CI, median, quantiles)
 }
 \description{
-Returns a dataframe of quantiles of concentrations and deltaQTcs.
+Returns quantiles of concentrations and deltaQTc values.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

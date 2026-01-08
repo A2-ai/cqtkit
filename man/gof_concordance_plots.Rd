@@ -36,7 +36,7 @@ gof_concordance_plots(
 \item{style}{A named list of arguments passed to style_plot()}
 }
 \value{
-a plot
+A 2-panel plot comparing population (PRED) and individual (IPRED) predictions vs observed values
 }
 \description{
 Concordance plots between population and individual predictions.

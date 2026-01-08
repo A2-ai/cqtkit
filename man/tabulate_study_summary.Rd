@@ -39,7 +39,7 @@ tabulate_study_summary(
 \item{...}{Optional additional args to gt::tab_options}
 }
 \value{
-a gt table
+A gt table displaying subject counts by treatment group with protocol number and study status
 }
 \description{
 Creates a gt table of study summary for number of subjects in each grouping.

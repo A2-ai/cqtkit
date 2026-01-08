@@ -30,8 +30,7 @@ compute_conc_for_upper_pred(
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
 }
 \value{
-Single numeric concentration value where upper CI crosses threshold.
-Returns NA with warning if no positive concentration is found.
+Single numeric concentration value where upper CI crosses threshold. Returns NA with warning if no positive concentration is found.
 }
 \description{
 Computes the concentration needed for an upper conf_int prediction

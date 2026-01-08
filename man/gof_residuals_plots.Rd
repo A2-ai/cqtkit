@@ -42,7 +42,7 @@ gof_residuals_plots(
 \item{style}{A named list of arguments passed to style_plot()}
 }
 \value{
-a plot
+A 4-panel plot of WRES and IWRES residuals vs predicted values and concentration
 }
 \description{
 Plots residuals vs predicted dQTCF and concentration.

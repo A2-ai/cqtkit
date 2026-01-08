@@ -30,8 +30,7 @@ compute_exposure_predictions(
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
 }
 \value{
-A data frame that contains median concentration,
-lower and upper bounds CI.
+A tibble with concentration, predicted deltaQTc, and lower/upper confidence bounds for exposure-response predictions
 }
 \description{
 Predicts dQTC over range of concentration values with contrast.

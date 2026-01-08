@@ -13,10 +13,10 @@ compute_delta_hrblm(data, id_col = ID, hrbl_col = HRBL, deduplicate = TRUE)
 
 \item{hrbl_col}{An unquoted column name for baseline HR measurements, default is HRBL}
 
-\item{deduplicate}{Boolean, whether baseline values are duplicated over rows. If true duplicates will be removed from average}
+\item{deduplicate}{Logical, whether to remove duplicate baseline values before averaging}
 }
 \value{
-data frame with deltaHRBL
+A data frame with deltaHRBL column added
 }
 \description{
 Compute Delta HR Baseline Mean

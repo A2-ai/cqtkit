@@ -13,7 +13,7 @@
 #' @param legend_location String for legend position (top, bottom, left, right)
 #' @param style A named list of arguments passed to style_plot()
 #'
-#' @return a 2x2 grid of plots
+#' @return A 2x2 panel with concordance plots, residual distributions, Q-Q plots, and residual histograms
 #' @export
 #'
 #' @importFrom stats density
@@ -208,7 +208,7 @@ gof_plots <- function(
 #' @param legend_location String for legend position (top, bottom, left, right)
 #' @param style A named list of arguments passed to style_plot()
 #'
-#' @return a plot
+#' @return A 2-panel plot comparing population (PRED) and individual (IPRED) predictions vs observed values
 #' @export
 #'
 #' @importFrom rlang .data
@@ -331,7 +331,7 @@ gof_concordance_plots <- function(
 #' @param legend_location String for legend position (top, bottom, left, right)
 #' @param style A named list of arguments passed to style_plot()
 #'
-#' @return a plot
+#' @return A 4-panel plot of WRES and IWRES residuals vs predicted values and concentration
 #' @export
 #'
 #' @examples
@@ -460,7 +460,7 @@ gof_residuals_plots <- function(
 #' @param legend_location String for legend position (top, bottom, left, right)
 #' @param style A named list of arguments passed to style_plot()
 #'
-#' @return a plot
+#' @return A 2-panel Q-Q plot comparing WRES and IWRES to normal distribution
 #' @export
 #'
 #' @examples
@@ -574,7 +574,7 @@ gof_qq_plots <- function(
 #' @param legend_location String for legend position (top, bottom, left, right)
 #' @param style A named list of arguments passed to style_plot()
 #'
-#' @return a plot
+#' @return A 2-panel boxplot of WRES and IWRES residuals by nominal time
 #' @export
 #'
 #' @examples
@@ -703,7 +703,7 @@ gof_residuals_time_boxplots <- function(
 #' @param legend_location String for legend position (top, bottom, left, right)
 #' @param style A named list of arguments passed to style_plot()
 #'
-#' @return a ggarrange plot
+#' @return A 2-panel boxplot of WRES and IWRES residuals by treatment group
 #' @export
 #'
 #' @examples
@@ -813,7 +813,7 @@ gof_residuals_trt_boxplots <- function(
 #' @param type Integer for type parameter of stats::quantile
 #' @param style A named list of arguments passed to style_plot()
 #'
-#' @return a plot of the VPC results
+#' @return A visual predictive check plot with observed quantiles overlaid on simulated prediction intervals
 #' @export
 #'
 #' @examples

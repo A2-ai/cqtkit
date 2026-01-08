@@ -30,16 +30,16 @@ tabulate_model_fit_parameters(
 
 \item{decimals}{Number of decimals to format table to, default is 2}
 
-\item{show_standard_error}{Boolean that displays standard error of fixed effects estimates in table}
+\item{show_standard_error}{Logical, whether to display standard error of fixed effects estimates}
 
-\item{scientific}{Boolean for converting numbers to scientific notation if less than decimals}
+\item{scientific}{Logical, whether to use scientific notation for small values}
 
 \item{title}{Optional string for adding tab_header. It will be wrapped in gt::md()}
 
 \item{...}{Optional additional arguments for gt::tab_options}
 }
 \value{
-a gt table
+A gt table with fixed effect estimates, standard errors, confidence intervals, and p-values
 }
 \description{
 Generates table of model parameter estimates and statistics.

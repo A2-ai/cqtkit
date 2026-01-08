@@ -24,7 +24,7 @@ compute_qtcb_qtcf(
 \item{rrbl_col}{An unquoted column name for baseline RR measurements}
 }
 \value{
-data with QTCF, QTCB, QTCFBL, and QTCBBL columns
+A data frame with QTCF, QTCB, QTCFBL, and QTCBBL columns added
 }
 \description{
 Compute QTcB QTcF

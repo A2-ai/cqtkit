@@ -57,7 +57,7 @@ tabulate_ecg_param_summary(
 \item{...}{Optional arguments for gt::tab_options}
 }
 \value{
-a gt table of the QTc/deltaQTc/delta delta QTc summary
+A gt table with mean ECG parameters (QTc, deltaQTc, delta-delta QTc) and confidence intervals by dose and time
 }
 \description{
 Generates a gt table of summary of QTc, dQTc and ddQTc over time stratified by dose.

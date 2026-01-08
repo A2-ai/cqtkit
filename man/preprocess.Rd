@@ -45,10 +45,10 @@ preprocess(
 
 \item{id_col}{An unquoted column name for subject ID}
 
-\item{deduplicate}{Boolean, whether baseline values are duplicated over rows. If true duplicates will be removed from average}
+\item{deduplicate}{Logical, whether to remove duplicate baseline values before averaging}
 }
 \value{
-dataframe with deltas computed from BL
+A data frame with all delta columns computed from baseline
 }
 \description{
 Computes QTcB, QTcF, deltaQTcF, deltaQTcB, deltaHR, deltaQTcB Baseline Mean,

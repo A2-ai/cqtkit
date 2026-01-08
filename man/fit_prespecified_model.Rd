@@ -33,10 +33,10 @@ fit_prespecified_model(
 
 \item{method}{Method for nlme::lme fitting (ML or REML)}
 
-\item{remove_conc_iiv}{Boolean for removing IIV on concentration slope parameter}
+\item{remove_conc_iiv}{Logical, whether to remove IIV on concentration slope}
 }
 \value{
-an nlme::lme model fit to the data
+An nlme::lme model object with the prespecified C-QT model structure (fixed effects for concentration, baseline, optional treatment and time)
 }
 \description{
 Generates nlme::lme model either prespecified or without TRT and TIME.

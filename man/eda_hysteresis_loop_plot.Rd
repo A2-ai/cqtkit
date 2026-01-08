@@ -31,12 +31,12 @@ eda_hysteresis_loop_plot(
 
 \item{reference_dose}{Reference dose value for comparison calculations}
 
-\item{show_hysteresis_warning}{Boolean, if TRUE adds Hysteresis Detected to facet wrap label for groups with hysteresis detected}
+\item{show_hysteresis_warning}{Logical, whether to add "Hysteresis Detected" to facet labels for affected groups}
 
 \item{style}{A named list of arguments passed to style_plot()}
 }
 \value{
-a plot
+A faceted plot showing concentration vs deltaQTc trajectories over time with directional arrows
 }
 \description{
 Hysteresis loop plot to visually inspect hysteresis.

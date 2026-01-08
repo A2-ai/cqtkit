@@ -48,7 +48,7 @@ predict_with_observations_plot(
 \item{style}{A named list of arguments passed to style_plot()}
 }
 \value{
-a plot
+A scatter plot of observations with model prediction line and confidence interval ribbon
 }
 \description{
 Plots predictions of the model with observed values.

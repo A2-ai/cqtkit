@@ -14,7 +14,7 @@ compute_enGRI(data, conc_gm_col, ddqtc_col)
 \item{ddqtc_col}{Delta delta QTc column name}
 }
 \value{
-a numeric (ms) of enGRI score
+Numeric exposure-normalized Glomb-Ring Index value in ms, indicating hysteresis magnitude
 }
 \description{
 Computes the exposure-normalized Glomb-Ring Index (enGRI).

@@ -27,7 +27,7 @@ compute_hysteresis_labeller(
 \item{group_col}{An unquoted column name for additional grouping variable.}
 }
 \value{
-list with compute_potential_hysteresis results for each dose.
+A labeller function for ggplot2 facets that appends hysteresis detection status to dose labels
 }
 \description{
 Gets labeller for hysteresis_loop_plot.

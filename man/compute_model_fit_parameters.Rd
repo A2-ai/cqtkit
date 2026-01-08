@@ -24,7 +24,7 @@ compute_model_fit_parameters(
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
 }
 \value{
-a tibble of model_fit parameters
+A tibble with fixed effect estimates, standard errors, degrees of freedom, t-values, p-values, confidence intervals, and random effect variances
 }
 \description{
 Converts tTable of summary(model_fit) to tibble and adds CIs.

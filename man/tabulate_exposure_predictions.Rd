@@ -44,15 +44,14 @@ tabulate_exposure_predictions(
 
 \item{decimals}{Number of decimals to format numbers to. default is 2}
 
-\item{scientific}{Boolean for converting to scientific notation}
+\item{scientific}{Logical, whether to use scientific notation}
 
 \item{title}{Optional string for table title. Wrapped in gt::md()}
 
 \item{...}{Optional additional args to gt::tab_options}
 }
 \value{
-a gt table of predicted dQTc/ddQTc values and their CI at tpx and or
-stpx dose/Cmax
+A gt table with predicted deltaQTc values and confidence intervals at therapeutic and supratherapeutic Cmax
 }
 \description{
 Tabulates exposure predictions at therapeutic and supratherapeutic Cmax.

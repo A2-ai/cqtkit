@@ -2,14 +2,14 @@
 
 #' Compute LM Fit
 #'
-#' Fits a linear model of input dataframe.
+#' Fits a linear model of input data frame.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param xdata_col An unquoted column name for independent variable measurements
 #' @param ydata_col An unquoted column name for dependent variable measurements
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #'
-#' @return the fitted parameters of a lm of y ~ x
+#' @return A tibble with linear model coefficients (intercept, slope), their confidence intervals, and p-values
 #' @export
 #'
 #' @examples
@@ -66,7 +66,7 @@ compute_lm_fit_df <- function(data, xdata_col, ydata_col, conf_int = 0.95) {
 #' @param xdata_col An unquoted name of column used as independent data in LME
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #'
-#' @return tibble of slope, lower_ci, upper_ci
+#' @return A tibble with the slope estimate and its lower and upper confidence bounds
 #' @export
 #'
 #' @examples
@@ -126,7 +126,7 @@ compute_lme_slope_df <- function(lme_mod, xdata_col, conf_int = 0.95) {
 #'
 #' @importFrom rlang .data
 #'
-#' @return a dataframe of pk parameters
+#' @return A tibble with PK summary statistics by group: N, Tmax (median/min/max), and Cmax (geometric mean, CV%, median/min/max)
 #' @export
 #'
 #' @examples
@@ -224,7 +224,7 @@ compute_pk_parameters <- function(
 #' @param deltaqtc_col An unquoted column name for containing deltaQTc data
 #' @param group_col An optional column name for grouping data
 #'
-#' @return a tibble containing the number of subjects with high QTc values
+#' @return A tibble with counts of observations exceeding QTc thresholds (450, 480, 500 ms) and deltaQTc thresholds (30, 60 ms)
 #' @export
 #'
 #' @examples
@@ -278,14 +278,14 @@ compute_high_qtc_sub <- function(
 
 #' Compute Study Summary
 #'
-#' Creates a dataframe summarizing number of subjects in each treatment group.
+#' Creates a data frame summarizing number of subjects in each treatment group.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param trt_col Column name of treatment group
 #' @param id_col Column name of ID
 #' @param group_col Optional additional grouping column
 #'
-#' @return a tibble of number of subjects in trt_col (or trt_col + group_col) along with total id_col
+#' @return A tibble with unique subject counts per treatment group and overall total
 #' @export
 #'
 #' @examples
@@ -347,7 +347,7 @@ compute_study_summary <- function(data, trt_col, id_col, group_col = NULL) {
 #' @param reference_dose Reference dose value for comparison calculations
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #'
-#' @return a tibble of QTc/deltaQTc/delta delta QTc summary over dose and time.
+#' @return A tibble with mean QTc, deltaQTc, and optionally delta-delta QTc values with confidence intervals, stratified by dose and time
 #' @export
 #'
 #' @examples
@@ -453,7 +453,7 @@ compute_ecg_param_summary <- function(
 #' @param reference_dose Reference dose value for comparison calculations
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #'
-#' @return a dataframe of the dv averaged over the grouped time and dose
+#' @return A tibble with mean, SD, SE, and confidence intervals for the dependent variable, grouped by time and dose
 #' @export
 #' @importFrom rlang .data
 #' @examples
@@ -641,7 +641,7 @@ compute_grouped_mean_sd <- function(
 #' @param conc_col An unquoted column name for drug concentration measurements
 #' @param span A fractional value for LOESS span parameter in geom_smooth if LOESS is used, default 0.99
 #'
-#' @return a tibble of R_squared and adjusted R_squared
+#' @return A tibble with R-squared, adjusted R-squared, and partial coefficient of determination comparing loess to linear fit
 #' @export
 #'
 #' @examples
@@ -703,7 +703,7 @@ compute_loess_linear_r_squared <- function(
 #' @param conc_col An unquoted column name for concentration measurements
 #' @param group_col An unquoted column name for grouping column - usually DOSEF
 #'
-#' @return a bool of TRUE if hysteresis detected else FALSE
+#' @return Logical TRUE if hysteresis detected (Tmax-Umax lag >= 1 hour with sustained QTc elevation), FALSE otherwise
 #' @export
 #'
 #' @examples
@@ -818,7 +818,7 @@ compute_potential_hysteresis <- function(
 #' @param dosef_col An unquoted column name for doses as factor
 #' @param group_col An unquoted column name for additional grouping variable.
 #'
-#' @return list with compute_potential_hysteresis results for each dose.
+#' @return A labeller function for ggplot2 facets that appends hysteresis detection status to dose labels
 #' @export
 #'
 #' @examples
@@ -917,7 +917,7 @@ compute_hysteresis_labeller <- function(
 #' @param conc_gm_col CONC geometric mean column name
 #' @param ddqtc_col Delta delta QTc column name
 #'
-#' @return a numeric (ms) of enGRI score
+#' @return Numeric exposure-normalized Glomb-Ring Index value in ms, indicating hysteresis magnitude
 #' @export
 #'
 #' @examples
@@ -955,7 +955,7 @@ compute_enGRI <- function(data, conc_gm_col, ddqtc_col) {
 
 #' Compute Quantiles Observation
 #'
-#' Returns a dataframe of quantiles of concentrations and deltaQTcs.
+#' Returns quantiles of concentrations and deltaQTc values.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param xdata_col An unquoted column name for concentration measurements
@@ -964,7 +964,7 @@ compute_enGRI <- function(data, conc_gm_col, ddqtc_col) {
 #' @param nbins Integer number of bins to break independent variable into - OR - a user specified vector for non-uniform binning
 #' @param type Algorithm for quantile. Default (2), is SAS quantile algorithm
 #'
-#' @return a tibble of conc, deltaQTC quantiles
+#' @return A tibble with binned concentration medians and corresponding deltaQTc statistics (mean, SD, SE, CI, median, quantiles)
 #' @export
 #'
 #' @examples
@@ -1084,7 +1084,7 @@ compute_quantiles_obs_df <- function(
 #' @param xdata_col An unquoted column name for xdata
 #' @param sim_num An optional simulation number
 #'
-#' @return a dataframe of simulation results
+#' @return A tibble with simulated predictions (pred), concentration values (xdata), and simulation number
 #' @export
 #'
 #' @examples
@@ -1141,7 +1141,7 @@ compute_dataset_simulation <- function(data, fit, xdata_col, sim_num = 0) {
 #' @param nbins Integer number of bins to break independent variable into - OR - a user specified vector for non-uniform binning
 #' @param type Algorithm for quantile. Default (2), is SAS quantile algorithm
 #'
-#' @return a tibble of summary statistics of nruns worth of dataset simulations for a VPC.
+#' @return A tibble with VPC statistics: median and 5th/95th percentile predictions with their confidence bounds across simulation runs
 #' @export
 #'
 #' @examples
@@ -1269,8 +1269,7 @@ compute_summary_statistics_of_simulations <- function(
 #' @param threshold Value used as upper CI prediction, default = 10
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #'
-#' @returns Single numeric concentration value where upper CI crosses threshold.
-#'   Returns NA with warning if no positive concentration is found.
+#' @return Single numeric concentration value where upper CI crosses threshold. Returns NA with warning if no positive concentration is found.
 #' @export
 #'
 #' @examples
@@ -1364,8 +1363,7 @@ compute_conc_for_upper_pred <- function(
 #' @param cmaxes Vector of Cmax for each dose
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #'
-#' @return A data frame that contains median concentration,
-#'  lower and upper bounds CI.
+#' @return A tibble with concentration, predicted deltaQTc, and lower/upper confidence bounds for exposure-response predictions
 #' @export
 #'
 #' @importFrom rlang .data
@@ -1471,7 +1469,7 @@ compute_exposure_predictions <- function(
   return(qtc_pred)
 }
 
-#' Compute contrast observations for prediction plots
+#' Compute Contrast Observations
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param conc_col An unquoted column name for drug concentration measurements
@@ -1483,7 +1481,7 @@ compute_exposure_predictions <- function(
 #' @param control_predictors An optional list for contrast predictions
 #' @param contrast_method A string specifying contrast method: "matched" for individual ID+time matching (crossover studies), "group" for group-wise subtraction (parallel studies)
 #'
-#' @return a tibble with columns: group, conc, dv
+#' @return A tibble with group labels, concentration, and dependent variable values (optionally contrast-adjusted)
 #' @export
 #'
 #' @examples

@@ -36,7 +36,7 @@ gof_residuals_time_boxplots(
 \item{style}{A named list of arguments passed to style_plot()}
 }
 \value{
-a plot
+A 2-panel boxplot of WRES and IWRES residuals by nominal time
 }
 \description{
 Plots boxplots of residuals over Nominal Times.

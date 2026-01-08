@@ -24,7 +24,7 @@ compute_potential_hysteresis(
 \item{group_col}{An unquoted column name for grouping column - usually DOSEF}
 }
 \value{
-a bool of TRUE if hysteresis detected else FALSE
+Logical TRUE if hysteresis detected (Tmax-Umax lag >= 1 hour with sustained QTc elevation), FALSE otherwise
 }
 \description{
 Detects the presence of hysteresis.

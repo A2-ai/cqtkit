@@ -16,10 +16,10 @@ compute_lm_fit_df(data, xdata_col, ydata_col, conf_int = 0.95)
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
 }
 \value{
-the fitted parameters of a lm of y ~ x
+A tibble with linear model coefficients (intercept, slope), their confidence intervals, and p-values
 }
 \description{
-Fits a linear model of input dataframe.
+Fits a linear model of input data frame.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

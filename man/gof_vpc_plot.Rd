@@ -36,7 +36,7 @@ gof_vpc_plot(
 \item{style}{A named list of arguments passed to style_plot()}
 }
 \value{
-a plot of the VPC results
+A visual predictive check plot with observed quantiles overlaid on simulated prediction intervals
 }
 \description{
 Performs a visual predictive check and plots the results.

@@ -36,7 +36,7 @@ gof_residuals_trt_boxplots(
 \item{style}{A named list of arguments passed to style_plot()}
 }
 \value{
-a ggarrange plot
+A 2-panel boxplot of WRES and IWRES residuals by treatment group
 }
 \description{
 Generates boxplots of residuals for treatment group.

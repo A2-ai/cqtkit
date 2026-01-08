@@ -36,7 +36,7 @@ tabulate_pk_parameters(
 \item{...}{Optional additional arguments to gt::tab_options}
 }
 \value{
-a gt table
+A gt table with PK parameters: N, Tmax (median/min/max), Cmax (geometric mean, CV\%, median/min/max) by dose group
 }
 \description{
 Converts pk_parameters df into gt table for printing.

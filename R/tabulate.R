@@ -13,7 +13,7 @@
 #' @param n_sub_col_name A string for n_sub column (default: "N")
 #' @param ... Optional additional args to gt::tab_options
 #'
-#' @return a gt table
+#' @return A gt table displaying subject counts by treatment group with protocol number and study status
 #' @export
 #'
 #' @examples
@@ -84,7 +84,7 @@ tabulate_study_summary <- function(
 #'
 #' @importFrom rlang .data
 #'
-#' @return a gt table
+#' @return A gt table with PK parameters: N, Tmax (median/min/max), Cmax (geometric mean, CV%, median/min/max) by dose group
 #' @export
 #'
 #' @examples
@@ -171,14 +171,14 @@ tabulate_pk_parameters <- function(
 #' @param id_col_name A string of column name of id used in model fitting for random effects
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #' @param decimals Number of decimals to format table to, default is 2
-#' @param show_standard_error Boolean that displays standard error of fixed effects estimates in table
-#' @param scientific Boolean for converting numbers to scientific notation if less than decimals
+#' @param show_standard_error Logical, whether to display standard error of fixed effects estimates
+#' @param scientific Logical, whether to use scientific notation for small values
 #' @param title Optional string for adding tab_header. It will be wrapped in gt::md()
 #' @param ... Optional additional arguments for gt::tab_options
 #'
 #' @importFrom rlang .data
 #'
-#' @return a gt table
+#' @return A gt table with fixed effect estimates, standard errors, confidence intervals, and p-values
 #' @export
 #'
 #' @examples
@@ -289,7 +289,7 @@ tabulate_model_fit_parameters <- function(
 #' @param title Optional title for the table, it will be wrapped in gt::md()
 #' @param ... Optional arguments for gt::tab_options
 #'
-#' @return a gt table of the QTc/deltaQTc/delta delta QTc summary
+#' @return A gt table with mean ECG parameters (QTc, deltaQTc, delta-delta QTc) and confidence intervals by dose and time
 #' @export
 #'
 #' @examples
@@ -495,7 +495,7 @@ tabulate_ecg_param_summary <- function(
 #' @param title Optional string to give the table a title, wrapped in gt::md()
 #' @param ... Optional additional args to gt::tab_options
 #'
-#' @return a gt table
+#' @return A gt table with counts of observations exceeding QTc thresholds (>450, >480, >500 ms) and deltaQTc thresholds (>30, >60 ms)
 #' @export
 #'
 #' @examples
@@ -576,14 +576,13 @@ tabulate_high_qtc_sub <- function(
 #' @param conc_units Units for concentration default ng/mL
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #' @param decimals Number of decimals to format numbers to. default is 2
-#' @param scientific Boolean for converting to scientific notation
+#' @param scientific Logical, whether to use scientific notation
 #' @param title Optional string for table title. Wrapped in gt::md()
 #' @param ... Optional additional args to gt::tab_options
 #'
 #' @importFrom rlang .data
 #'
-#' @return a gt table of predicted dQTc/ddQTc values and their CI at tpx and or
-#' stpx dose/Cmax
+#' @return A gt table with predicted deltaQTc values and confidence intervals at therapeutic and supratherapeutic Cmax
 #' @export
 #'
 #' @examples

@@ -12,7 +12,7 @@ add_horizontal_references(p, reference_threshold)
 \item{reference_threshold}{Numeric/vector of numerics for horizontal lines}
 }
 \value{
-a ggplot object with refence horizontal lines
+A ggplot2 object with horizontal reference lines added
 }
 \description{
 Adds horizontal reference lines to plot.

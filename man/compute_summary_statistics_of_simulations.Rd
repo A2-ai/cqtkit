@@ -30,7 +30,7 @@ compute_summary_statistics_of_simulations(
 \item{type}{Algorithm for quantile. Default (2), is SAS quantile algorithm}
 }
 \value{
-a tibble of summary statistics of nruns worth of dataset simulations for a VPC.
+A tibble with VPC statistics: median and 5th/95th percentile predictions with their confidence bounds across simulation runs
 }
 \description{
 Wrapper for calling compute_dataset_simulation nruns times and computing summary statistics of the simulations.

@@ -30,7 +30,7 @@ compute_grouped_mean_sd(
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
 }
 \value{
-a dataframe of the dv averaged over the grouped time and dose
+A tibble with mean, SD, SE, and confidence intervals for the dependent variable, grouped by time and dose
 }
 \description{
 Computes the mean and standard deviation of the dependent variable data

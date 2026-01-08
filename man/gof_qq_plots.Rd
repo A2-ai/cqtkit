@@ -33,7 +33,7 @@ gof_qq_plots(
 \item{style}{A named list of arguments passed to style_plot()}
 }
 \value{
-a plot
+A 2-panel Q-Q plot comparing WRES and IWRES to normal distribution
 }
 \description{
 Plots QQ plot of WRES and IWRES.

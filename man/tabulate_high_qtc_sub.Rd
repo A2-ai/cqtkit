@@ -36,7 +36,7 @@ tabulate_high_qtc_sub(
 \item{...}{Optional additional args to gt::tab_options}
 }
 \value{
-a gt table
+A gt table with counts of observations exceeding QTc thresholds (>450, >480, >500 ms) and deltaQTc thresholds (>30, >60 ms)
 }
 \description{
 Tabulates number of high QTc/deltaQTc observations.

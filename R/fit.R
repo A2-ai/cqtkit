@@ -8,9 +8,9 @@
 #' @param rr_col An unquoted column name for RR measurements
 #' @param id_col An unquoted column name for subject ID
 #' @param method Method for nlme::lme fitting (ML or REML)
-#' @param remove_rr_iiv Boolean for removing IIV on slope
+#' @param remove_rr_iiv Logical, whether to remove IIV on slope
 #'
-#' @return nlme::lme model
+#' @return An nlme::lme model object with QT ~ RR relationship, including random effects on intercept and optionally slope
 #' @export
 #'
 #' @examples
@@ -100,9 +100,9 @@ fit_qtc_linear_model <- function(
 #' @param trt_col An unquoted column name for treatment group
 #' @param tafd_col An unquoted column name for time measurements
 #' @param method Method for nlme::lme fitting (ML or REML)
-#' @param remove_conc_iiv Boolean for removing IIV on concentration slope parameter
+#' @param remove_conc_iiv Logical, whether to remove IIV on concentration slope
 #'
-#' @return an nlme::lme model fit to the data
+#' @return An nlme::lme model object with the prespecified C-QT model structure (fixed effects for concentration, baseline, optional treatment and time)
 #' @export
 #'
 #' @examples
@@ -211,7 +211,7 @@ fit_prespecified_model <- function(
 #' @param id_col_name String of column name of the id used in model fitting for random effects
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #'
-#' @return a tibble of model_fit parameters
+#' @return A tibble with fixed effect estimates, standard errors, degrees of freedom, t-values, p-values, confidence intervals, and random effect variances
 #' @export
 #'
 #' @examples
@@ -332,7 +332,7 @@ compute_model_fit_parameters <- function(
 #'
 #' @importFrom nlme lme
 #'
-#' @return a dataframe of predictions and residuals.
+#' @return A tibble with observed DV, concentration, time, population/individual predictions (PRED/IPRED), and residuals (RES/IRES/WRES/IWRES)
 #' @export
 #'
 #' @examples

@@ -36,7 +36,7 @@ predict_with_exposure_plot(
 \item{style}{A named list of arguments passed to style_plot()}
 }
 \value{
-a plot
+A plot of model predictions with confidence interval and vertical Cmax reference lines
 }
 \description{
 Plots model predictions with therapeutic and supra therapeutic Cmax.

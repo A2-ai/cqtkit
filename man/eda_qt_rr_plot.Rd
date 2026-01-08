@@ -33,16 +33,16 @@ eda_qt_rr_plot(
 
 \item{model_type}{Lm or lme, which model to fit for showing on plot}
 
-\item{show_model_results}{A bool for showing regression slope on plot.}
+\item{show_model_results}{Logical, whether to show regression slope on plot}
 
 \item{method}{Method for nlme::lme fitting (ML or REML)}
 
-\item{remove_rr_iiv}{A boolean for removing IIV on RR slope}
+\item{remove_rr_iiv}{Logical, whether to remove IIV on RR slope}
 
 \item{style}{A named list of arguments passed to style_plot()}
 }
 \value{
-a plot of the input QT against RR
+A scatter plot of QT vs RR with optional regression line and slope estimate caption
 }
 \description{
 Plots QT against RR.

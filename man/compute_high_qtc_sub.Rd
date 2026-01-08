@@ -16,7 +16,7 @@ compute_high_qtc_sub(data, qtc_col, deltaqtc_col, group_col = NULL)
 \item{group_col}{An optional column name for grouping data}
 }
 \value{
-a tibble containing the number of subjects with high QTc values
+A tibble with counts of observations exceeding QTc thresholds (450, 480, 500 ms) and deltaQTc thresholds (30, 60 ms)
 }
 \description{
 Computes the number of subjects with QTc > 450, 480, 500 as well as deltaQTc > 30, 60.

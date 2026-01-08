@@ -39,7 +39,7 @@ add_secondary_data(
 \item{ylabel}{Primary y axis label}
 }
 \value{
-a ggplot2 object with additional data
+A ggplot2 object with secondary data layer and dual y-axis
 }
 \description{
 Adds secondary data to a plot.

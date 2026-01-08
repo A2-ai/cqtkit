@@ -14,7 +14,7 @@ compute_lme_slope_df(lme_mod, xdata_col, conf_int = 0.95)
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
 }
 \value{
-tibble of slope, lower_ci, upper_ci
+A tibble with the slope estimate and its lower and upper confidence bounds
 }
 \description{
 Takes the slope from a lme model and its confidence interval.
