@@ -1,3 +1,5 @@
+#' Fit QTc Linear Model
+#'
 #' Fits QT(c) data to linear mixed effects model with fixed effects of intercept and
 #' RR slope, with random effects on intercept and slope.
 #'
@@ -6,9 +8,9 @@
 #' @param rr_col An unquoted column name for RR measurements
 #' @param id_col An unquoted column name for subject ID
 #' @param method Method for nlme::lme fitting (ML or REML)
-#' @param remove_rr_iiv Boolean for removing IIV on slope
+#' @param remove_rr_iiv Logical, whether to remove IIV on slope
 #'
-#' @return nlme::lme model
+#' @return An nlme::lme model object with QT ~ RR relationship, including random effects on intercept and optionally slope
 #' @export
 #'
 #' @examples
@@ -86,7 +88,31 @@ fit_qtc_linear_model <- function(
   return(mod)
 }
 
-#' generates nlme::lme model either prespecified or without TRT and TIME.
+#' Fit Prespecified Model
+#'
+#' Generates nlme::lme model either prespecified or without TRT and TIME.
+#'
+#' The model structure is:
+#' \deqn{
+#'   \Delta \text{QTcF}_{i,j,k} =
+#'   \left( \theta_0 + \eta_{0,i} \right)
+#'   + \left( \theta_1 + \eta_{1,i} \right) C_{i,j,k}
+#'   + \theta_2 \left( \Delta\text{QTcF}_{i,j,k=0} - \text{QTcF}_{\text{baseline}} \right)\\
+#'   + \theta_3 \text{TRTG}_j
+#'   + \theta_4 \text{TAFD}_k
+#' }
+#'
+#' Where:
+#' \itemize{
+#'   \item \eqn{\theta_0} = population intercept
+#'   \item \eqn{\theta_1} = population slope for concentration effect
+#'   \item \eqn{\theta_2} = coefficient for time-matched baseline correction
+#'   \item \eqn{\theta_3} = treatment group effect (optional, when trt_col provided)
+#'   \item \eqn{\theta_4} = time effect (optional, when tafd_col provided)
+#'   \item \eqn{\eta_{0,i}} = random intercept for subject i
+#'   \item \eqn{\eta_{1,i}} = random slope for subject i (omitted when remove_conc_iiv = TRUE)
+#'   \item \eqn{C_{i,j,k}} = drug concentration
+#' }
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param dv_col An unquoted column name for dependent variable measurements
@@ -96,9 +122,9 @@ fit_qtc_linear_model <- function(
 #' @param trt_col An unquoted column name for treatment group
 #' @param tafd_col An unquoted column name for time measurements
 #' @param method Method for nlme::lme fitting (ML or REML)
-#' @param remove_conc_iiv Boolean for removing IIV on concentration slope parameter
+#' @param remove_conc_iiv Logical, whether to remove IIV on concentration slope
 #'
-#' @return an nlme::lme model fit to the data
+#' @return An nlme::lme model object with the prespecified C-QT model structure (fixed effects for concentration, baseline, optional treatment and time)
 #' @export
 #'
 #' @examples
@@ -197,6 +223,8 @@ fit_prespecified_model <- function(
   return(mod)
 }
 
+#' Compute Model Fit Parameters
+#'
 #' Converts tTable of summary(model_fit) to tibble and adds CIs.
 #'
 #' @param fit An nlme::lme model object from model fitting
@@ -205,7 +233,7 @@ fit_prespecified_model <- function(
 #' @param id_col_name String of column name of the id used in model fitting for random effects
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #'
-#' @return a tibble of model_fit parameters
+#' @return A tibble with fixed effect estimates, standard errors, degrees of freedom, t-values, p-values, confidence intervals, and random effect variances
 #' @export
 #'
 #' @examples
@@ -313,7 +341,9 @@ compute_model_fit_parameters <- function(
   return(parameters)
 }
 
-#' computes all fitted results and residuals for GOF plots
+#' Compute Fit Results
+#'
+#' Computes all fitted results and residuals for GOF plots.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param fit An nlme::lme model object from model fitting
@@ -324,7 +354,7 @@ compute_model_fit_parameters <- function(
 #'
 #' @importFrom nlme lme
 #'
-#' @return a dataframe of predictions and residuals.
+#' @return A tibble with observed DV, concentration, time, population/individual predictions (PRED/IPRED), and residuals (RES/IRES/WRES/IWRES)
 #' @export
 #'
 #' @examples

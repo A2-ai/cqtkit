@@ -2,7 +2,7 @@
 % Please edit documentation in R/style.R
 \name{set_style}
 \alias{set_style}
-\title{Creates a style list for eda graphing functions}
+\title{Set Style}
 \usage{
 set_style(
   style = NULL,
@@ -66,9 +66,9 @@ set_style(
 
 \item{legend.title.hjust}{A string or numeric for legend title horizontal justification ("left"/0, "center"/0.5, "right"/1)}
 
-\item{logx}{A boolean for setting x-axis to log scale}
+\item{logx}{Logical, whether to use log scale for x-axis}
 
-\item{logy}{A boolean for setting y-axis to log scale}
+\item{logy}{Logical, whether to use log scale for y-axis}
 
 \item{fill_alpha}{A numeric for controlling alpha of fill colors}
 
@@ -81,10 +81,10 @@ set_style(
 \item{legend_nrow}{A numeric for number of rows in legend}
 }
 \value{
-a named list for using with style_plot
+A named list of style parameters for use with style_plot()
 }
 \description{
-Creates a style list for eda graphing functions
+Creates a style list for eda graphing functions.
 }
 \examples{
 data_proc <- cqtkit_data_verapamil |> preprocess()

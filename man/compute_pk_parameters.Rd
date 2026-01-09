@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute.R
 \name{compute_pk_parameters}
 \alias{compute_pk_parameters}
-\title{Generates pk parameters Cmax and Tmax for exporsure predictions.}
+\title{Compute PK Parameters}
 \usage{
 compute_pk_parameters(
   data,
@@ -27,10 +27,10 @@ compute_pk_parameters(
 \item{group_col}{An unquoted column name for additional grouping variable}
 }
 \value{
-a dataframe of pk parameters
+A tibble with PK summary statistics by group: N, Tmax (median/min/max), and Cmax (geometric mean, CV\%, median/min/max)
 }
 \description{
-Generates pk parameters Cmax and Tmax for exporsure predictions.
+Generates PK parameters Cmax and Tmax for exposure predictions.
 }
 \examples{
 compute_pk_parameters(

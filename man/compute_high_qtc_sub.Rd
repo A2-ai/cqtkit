@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute.R
 \name{compute_high_qtc_sub}
 \alias{compute_high_qtc_sub}
-\title{Computes the number of subjects with QTc > 450, 500 as well as deltaQTc > 30, 60}
+\title{Compute High QTc Subjects}
 \usage{
 compute_high_qtc_sub(data, qtc_col, deltaqtc_col, group_col = NULL)
 }
@@ -16,10 +16,10 @@ compute_high_qtc_sub(data, qtc_col, deltaqtc_col, group_col = NULL)
 \item{group_col}{An optional column name for grouping data}
 }
 \value{
-a tibble containing the number of subjects with high QTc values
+A tibble with counts of observations exceeding QTc thresholds (450, 480, 500 ms) and deltaQTc thresholds (30, 60 ms)
 }
 \description{
-Computes the number of subjects with QTc > 450, 500 as well as deltaQTc > 30, 60
+Computes the number of subjects with QTc > 450, 480, 500 as well as deltaQTc > 30, 60.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

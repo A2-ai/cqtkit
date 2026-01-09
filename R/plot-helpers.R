@@ -1,12 +1,14 @@
-#' adds errorbars to a plot
+#' Add Error Bars To Plot
 #'
-#' @param data A dataframe from compute_grouped_mean_sd
+#' Adds errorbars to a plot.
+#'
+#' @param data A data frame from compute_grouped_mean_sd
 #' @param p A ggplot object to add error bars to
 #' @param reference_dose Reference dose value for comparison calculations
 #' @param error_bars Type of errorbars to use (ci, se, sd, null)
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #'
-#' @returns ggplot2 with errorbars
+#' @return A ggplot2 object with error bars added
 add_error_bars_to_plot <- function(
   data,
   p,
@@ -94,12 +96,14 @@ add_error_bars_to_plot <- function(
   return(p)
 }
 
-#' adds horizontal reference lines to plot
+#' Add Horizontal References
+#'
+#' Adds horizontal reference lines to plot.
 #'
 #' @param p A ggplot object
 #' @param reference_threshold Numeric/vector of numerics for horizontal lines
 #'
-#' @returns a ggplot object with refence horizontal lines
+#' @return A ggplot2 object with horizontal reference lines added
 #' @importFrom rlang .data
 #'
 #' @export
@@ -159,7 +163,9 @@ add_horizontal_references <- function(p, reference_threshold) {
 }
 
 
-#' adds secondary data to a plot
+#' Add Secondary Data
+#'
+#' Adds secondary data to a plot.
 #'
 #' @param primary_data Dataframe of primary data plotted
 #' @param secondary_data Dataframe containing data you'd like to add to plot
@@ -174,7 +180,7 @@ add_horizontal_references <- function(p, reference_threshold) {
 #'
 #' @importFrom rlang .data
 #'
-#' @returns a ggplot2 object with additional data
+#' @return A ggplot2 object with secondary data layer and dual y-axis
 add_secondary_data <- function(
   primary_data,
   secondary_data,

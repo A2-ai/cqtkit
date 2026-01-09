@@ -1,6 +1,6 @@
 Package: cqtkit
 Title: Comprehensive C-QT Analysis From Data to Deliverables
-Version: 1.0.2
+Version: 1.1.0
 Authors@R: c(
     person("Matt", "Smith", , "matthews@a2-ai.com", role = c("aut", "cre")),
     person("Devin", "Pastoor", , "devin@a2-ai.com", role = c("aut")),
@@ -15,7 +15,7 @@ Description: Provides an end-to-end toolkit for C-QTc analysis, including
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Imports: 
     checkmate,
     contrast,

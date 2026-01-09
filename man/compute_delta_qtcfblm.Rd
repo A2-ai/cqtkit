@@ -2,7 +2,7 @@
 % Please edit documentation in R/preprocess.R
 \name{compute_delta_qtcfblm}
 \alias{compute_delta_qtcfblm}
-\title{Computes Baseline Mean QTCF}
+\title{Compute Delta QTcF Baseline Mean}
 \usage{
 compute_delta_qtcfblm(
   data,
@@ -18,13 +18,13 @@ compute_delta_qtcfblm(
 
 \item{qtcfbl_col}{An unquoted column name for baseline QTCB measurements, default is QTCBBL}
 
-\item{deduplicate}{Boolean, whether baseline values are duplicated over rows. If true duplicates will be removed from average}
+\item{deduplicate}{Logical, whether to remove duplicate baseline values before averaging}
 }
 \value{
-a dataframe with deltaQTCFBL column
+A data frame with deltaQTCFBL column added
 }
 \description{
-Computes Baseline Mean QTCF
+Compute Delta QTcF Baseline Mean
 }
 \examples{
 compute_delta_qtcfblm(compute_qtcb_qtcf(cqtkit_data_verapamil))

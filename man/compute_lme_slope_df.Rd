@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute.R
 \name{compute_lme_slope_df}
 \alias{compute_lme_slope_df}
-\title{Takes the slope from a lme model and its confidence interval}
+\title{Compute LME Slope}
 \usage{
 compute_lme_slope_df(lme_mod, xdata_col, conf_int = 0.95)
 }
@@ -14,10 +14,10 @@ compute_lme_slope_df(lme_mod, xdata_col, conf_int = 0.95)
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
 }
 \value{
-tibble of slope, lower_ci, upper_ci
+A tibble with the slope estimate and its lower and upper confidence bounds
 }
 \description{
-Takes the slope from a lme model and its confidence interval
+Takes the slope from a lme model and its confidence interval.
 }
 \examples{
 df <- cqtkit_data_verapamil \%>\% preprocess()
@@ -31,5 +31,5 @@ lme_mod <- df \%>\%
       remove_rr_iiv = FALSE
   )
 
-slope_data <- compute_lme_slope_df(lme_mod, RR, 0.9)
+compute_lme_slope_df(lme_mod, RR, 0.9)
 }

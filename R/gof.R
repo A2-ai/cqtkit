@@ -1,4 +1,6 @@
-#' Makes goodness of fit plots
+#' GOF Plots
+#'
+#' Makes goodness of fit plots.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param fit An nlme::lme model object from model fitting
@@ -11,7 +13,7 @@
 #' @param legend_location String for legend position (top, bottom, left, right)
 #' @param style A named list of arguments passed to style_plot()
 #'
-#' @return a 2x2 grid of plots
+#' @return A 2x2 panel with concordance plots, residual distributions, Q-Q plots, and residual histograms
 #' @export
 #'
 #' @importFrom stats density
@@ -192,7 +194,9 @@ gof_plots <- function(
   return(.p)
 }
 
-#' Concordance plots between population and individual predictions
+#' GOF Concordance Plots
+#'
+#' Concordance plots between population and individual predictions.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param fit An nlme::lme model object from model fitting
@@ -204,7 +208,7 @@ gof_plots <- function(
 #' @param legend_location String for legend position (top, bottom, left, right)
 #' @param style A named list of arguments passed to style_plot()
 #'
-#' @return a plot
+#' @return A 2-panel plot comparing population (PRED) and individual (IPRED) predictions vs observed values
 #' @export
 #'
 #' @importFrom rlang .data
@@ -272,7 +276,7 @@ gof_concordance_plots <- function(
   plots <- lapply(seq_along(xdata), function(i) {
     .p <- fit_results_df %>%
       ggplot2::ggplot(
-        ggplot2::aes_string(x = xdata[[i]], y = "dv")
+        ggplot2::aes(x = .data[[xdata[[i]]]], y = .data$dv)
       ) +
       ggplot2::geom_point(ggplot2::aes(
         color = .data$.trt_group,
@@ -311,7 +315,9 @@ gof_concordance_plots <- function(
   return(.p)
 }
 
-#' Plots residuals vs predicted dQTCF and concentration
+#' GOF Residuals Plots
+#'
+#' Plots residuals vs predicted dQTCF and concentration.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param fit An nlme::lme model object from model fitting
@@ -325,7 +331,7 @@ gof_concordance_plots <- function(
 #' @param legend_location String for legend position (top, bottom, left, right)
 #' @param style A named list of arguments passed to style_plot()
 #'
-#' @return a plot
+#' @return A 4-panel plot of WRES and IWRES residuals vs predicted values and concentration
 #' @export
 #'
 #' @examples
@@ -400,7 +406,7 @@ gof_residuals_plots <- function(
   plots <- lapply(seq_along(xdata), function(i) {
     .p <- fit_results_df %>%
       ggplot2::ggplot(
-        ggplot2::aes_string(x = xdata[[i]], y = ydata[[i]])
+        ggplot2::aes(x = .data[[xdata[[i]]]], y = .data[[ydata[[i]]]])
       ) +
       ggplot2::geom_point(ggplot2::aes(
         color = .data$.trt_group,
@@ -441,7 +447,9 @@ gof_residuals_plots <- function(
   return(.p)
 }
 
-#' Plots QQ plot of WRES and IWRES
+#' GOF QQ Plots
+#'
+#' Plots QQ plot of WRES and IWRES.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param fit An nlme::lme model object from model fitting
@@ -452,7 +460,7 @@ gof_residuals_plots <- function(
 #' @param legend_location String for legend position (top, bottom, left, right)
 #' @param style A named list of arguments passed to style_plot()
 #'
-#' @return a plot
+#' @return A 2-panel Q-Q plot comparing WRES and IWRES to normal distribution
 #' @export
 #'
 #' @examples
@@ -512,7 +520,7 @@ gof_qq_plots <- function(
 
     .qqp <- fit_results_df %>%
       ggplot2::ggplot(
-        ggplot2::aes_string(sample = r)
+        ggplot2::aes(sample = .data[[r]])
       ) +
       ggplot2::stat_qq(ggplot2::aes(
         color = .data$.trt_group,
@@ -552,7 +560,9 @@ gof_qq_plots <- function(
   return(.p)
 }
 
-#' plots boxplots of residuals over Nominal Times
+#' GOF Residuals Time Boxplots
+#'
+#' Plots boxplots of residuals over Nominal Times.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param fit An nlme::lme model object from model fitting
@@ -564,7 +574,7 @@ gof_qq_plots <- function(
 #' @param legend_location String for legend position (top, bottom, left, right)
 #' @param style A named list of arguments passed to style_plot()
 #'
-#' @return a plot
+#' @return A 2-panel boxplot of WRES and IWRES residuals by nominal time
 #' @export
 #'
 #' @examples
@@ -624,9 +634,9 @@ gof_residuals_time_boxplots <- function(
   for (i in seq_along(ydata)) {
     .rbp <- fit_results_df %>%
       ggplot2::ggplot(
-        ggplot2::aes_string(
-          x = "as.factor(time)",
-          y = ydata[[i]]
+        ggplot2::aes(
+          x = as.factor(.data$time),
+          y = .data[[ydata[[i]]]]
         )
       ) +
       ggplot2::theme_bw()
@@ -679,7 +689,9 @@ gof_residuals_time_boxplots <- function(
   return(.p)
 }
 
-#' generates boxplots for treatment group
+#' GOF Residuals Treatment Boxplots
+#'
+#' Generates boxplots of residuals for treatment group.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param fit An nlme::lme model object from model fitting
@@ -691,7 +703,7 @@ gof_residuals_time_boxplots <- function(
 #' @param legend_location String for legend position (top, bottom, left, right)
 #' @param style A named list of arguments passed to style_plot()
 #'
-#' @return a ggarrange plot
+#' @return A 2-panel boxplot of WRES and IWRES residuals by treatment group
 #' @export
 #'
 #' @examples
@@ -744,13 +756,13 @@ gof_residuals_trt_boxplots <- function(
     .rbpt <- fit_results_df %>%
       ggplot2::ggplot(
         if (!rlang::quo_is_null(trt)) {
-          ggplot2::aes_string(
-            x = "TRTG",
-            y = ydata[[i]],
-            fill = "TRTG"
+          ggplot2::aes(
+            x = .data$TRTG,
+            y = .data[[ydata[[i]]]],
+            fill = .data$TRTG
           )
         } else {
-          ggplot2::aes_string(y = ydata[[i]])
+          ggplot2::aes(y = .data[[ydata[[i]]]])
         }
       ) +
       ggplot2::geom_boxplot() +
@@ -787,7 +799,9 @@ gof_residuals_trt_boxplots <- function(
   return(trt_plot)
 }
 
-#' Performs a visual predictive check and plots the results
+#' GOF VPC Plot
+#'
+#' Performs a visual predictive check and plots the results.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param fit An nlme::lme model object from model fitting
@@ -799,7 +813,7 @@ gof_residuals_trt_boxplots <- function(
 #' @param type Integer for type parameter of stats::quantile
 #' @param style A named list of arguments passed to style_plot()
 #'
-#' @return a plot of the VPC results
+#' @return A visual predictive check plot with observed quantiles overlaid on simulated prediction intervals
 #' @export
 #'
 #' @examples

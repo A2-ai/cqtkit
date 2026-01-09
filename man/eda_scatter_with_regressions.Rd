@@ -2,7 +2,7 @@
 % Please edit documentation in R/eda.R
 \name{eda_scatter_with_regressions}
 \alias{eda_scatter_with_regressions}
-\title{plots scatter plot with with linear and loess regressions. Can be used to check for linearity.}
+\title{EDA Scatter With Regressions}
 \usage{
 eda_scatter_with_regressions(
   data,
@@ -28,9 +28,9 @@ eda_scatter_with_regressions(
 
 \item{reference_threshold}{Optional vector of numbers to add as horizontal dashed lines}
 
-\item{loess_line}{A bool to add LOESS regression line}
+\item{loess_line}{Logical, whether to add LOESS regression line}
 
-\item{linear_line}{A bool to add a linear regression line}
+\item{linear_line}{Logical, whether to add linear regression line}
 
 \item{span}{A fractional value for LOESS span parameter in geom_smooth if LOESS is used, default 0.99}
 
@@ -39,10 +39,10 @@ eda_scatter_with_regressions(
 \item{style}{A named list of arguments passed to style_plot(). Shapes are mapped to treatment groups and can be controlled via the shapes parameter in style}
 }
 \value{
-a plot
+A scatter plot with linear and/or LOESS regression lines for assessing linearity
 }
 \description{
-plots scatter plot with with linear and loess regressions. Can be used to check for linearity.
+Plots scatter plot with linear and loess regressions. Can be used to check for linearity.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

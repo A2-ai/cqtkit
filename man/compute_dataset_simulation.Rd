@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute.R
 \name{compute_dataset_simulation}
 \alias{compute_dataset_simulation}
-\title{Simulates a dataset used to fit the model.}
+\title{Compute Dataset Simulation}
 \usage{
 compute_dataset_simulation(data, fit, xdata_col, sim_num = 0)
 }
@@ -16,7 +16,7 @@ compute_dataset_simulation(data, fit, xdata_col, sim_num = 0)
 \item{sim_num}{An optional simulation number}
 }
 \value{
-a dataframe of simulation results
+A tibble with simulated predictions (pred), concentration values (xdata), and simulation number
 }
 \description{
 Simulates a dataset used to fit the model.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/fit.R
 \name{compute_model_fit_parameters}
 \alias{compute_model_fit_parameters}
-\title{Converts tTable of summary(model_fit) to tibble and adds CIs.}
+\title{Compute Model Fit Parameters}
 \usage{
 compute_model_fit_parameters(
   fit,
@@ -24,7 +24,7 @@ compute_model_fit_parameters(
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
 }
 \value{
-a tibble of model_fit parameters
+A tibble with fixed effect estimates, standard errors, degrees of freedom, t-values, p-values, confidence intervals, and random effect variances
 }
 \description{
 Converts tTable of summary(model_fit) to tibble and adds CIs.

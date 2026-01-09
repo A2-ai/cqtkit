@@ -2,7 +2,7 @@
 % Please edit documentation in R/tabulate.R
 \name{tabulate_high_qtc_sub}
 \alias{tabulate_high_qtc_sub}
-\title{Tabulates number of high QTc/deltaQTc observations.}
+\title{Tabulate High QTc Subjects}
 \usage{
 tabulate_high_qtc_sub(
   data,
@@ -10,6 +10,8 @@ tabulate_high_qtc_sub(
   deltaqtc_col,
   group_col = NULL,
   group_label = NULL,
+  qtc_label = "QTc",
+  unit = "ms",
   title = NULL,
   ...
 )
@@ -25,12 +27,16 @@ tabulate_high_qtc_sub(
 
 \item{group_label}{An optional label to use for group column}
 
+\item{qtc_label}{A string label for the QTc parameter (default: "QTc")}
+
+\item{unit}{A string for the unit of measurement (default: "ms")}
+
 \item{title}{Optional string to give the table a title, wrapped in gt::md()}
 
 \item{...}{Optional additional args to gt::tab_options}
 }
 \value{
-a gt table
+A gt table with counts of observations exceeding QTc thresholds (>450, >480, >500 ms) and deltaQTc thresholds (>30, >60 ms)
 }
 \description{
 Tabulates number of high QTc/deltaQTc observations.
@@ -38,5 +44,5 @@ Tabulates number of high QTc/deltaQTc observations.
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)
 
-tabulate_high_qtc_sub(data_proc, QTCF, deltaQTCF)
+tabulate_high_qtc_sub(data_proc, QTCF, deltaQTCF, group_col = DOSEF, qtc_label = "QTcF")
 }

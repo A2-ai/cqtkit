@@ -2,7 +2,7 @@
 % Please edit documentation in R/gof.R
 \name{gof_residuals_plots}
 \alias{gof_residuals_plots}
-\title{Plots residuals vs predicted dQTCF and concentration}
+\title{GOF Residuals Plots}
 \usage{
 gof_residuals_plots(
   data,
@@ -42,10 +42,10 @@ gof_residuals_plots(
 \item{style}{A named list of arguments passed to style_plot()}
 }
 \value{
-a plot
+A 4-panel plot of WRES and IWRES residuals vs predicted values and concentration
 }
 \description{
-Plots residuals vs predicted dQTCF and concentration
+Plots residuals vs predicted dQTCF and concentration.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

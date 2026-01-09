@@ -1,8 +1,10 @@
-#' Internal function for helping dealing with enquos. returns the quo_name if quo is not null
+#' Name Quo If Not Null
+#'
+#' Returns the quo_name if quo is not NULL.
 #'
 #' @param quo An rlang::enquo variable
 #'
-#' @return an rlang::quo_name if quo is not null.
+#' @return The quo_name if quo is not NULL, otherwise NULL
 #'
 #' @keywords internal
 #' @noRd
@@ -24,7 +26,7 @@ name_quo_if_not_null <- function(quo) {
 #' @param b X coefficient
 #' @param c X^0 coefficient
 #'
-#' @returns list of lower, upper x solutions
+#' @return A list with lower_conc and upper_conc solutions
 #' @keywords internal
 #' @noRd
 #'

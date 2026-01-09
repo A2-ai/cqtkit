@@ -2,12 +2,12 @@
 % Please edit documentation in R/plot-helpers.R
 \name{add_error_bars_to_plot}
 \alias{add_error_bars_to_plot}
-\title{adds errorbars to a plot}
+\title{Add Error Bars To Plot}
 \usage{
 add_error_bars_to_plot(data, p, reference_dose, error_bars, conf_int)
 }
 \arguments{
-\item{data}{A dataframe from compute_grouped_mean_sd}
+\item{data}{A data frame from compute_grouped_mean_sd}
 
 \item{p}{A ggplot object to add error bars to}
 
@@ -18,8 +18,8 @@ add_error_bars_to_plot(data, p, reference_dose, error_bars, conf_int)
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
 }
 \value{
-ggplot2 with errorbars
+A ggplot2 object with error bars added
 }
 \description{
-adds errorbars to a plot
+Adds errorbars to a plot.
 }

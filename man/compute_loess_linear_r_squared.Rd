@@ -2,9 +2,7 @@
 % Please edit documentation in R/compute.R
 \name{compute_loess_linear_r_squared}
 \alias{compute_loess_linear_r_squared}
-\title{Computes R-squared and Adjusted R-squared of loess regression
-compared to linear regression. Used for determining linearity
-of C-QT data}
+\title{Compute Loess Linear R Squared}
 \usage{
 compute_loess_linear_r_squared(data, deltaqtc_col, conc_col, span = 0.99)
 }
@@ -18,12 +16,12 @@ compute_loess_linear_r_squared(data, deltaqtc_col, conc_col, span = 0.99)
 \item{span}{A fractional value for LOESS span parameter in geom_smooth if LOESS is used, default 0.99}
 }
 \value{
-a tibble of R_squared and adjusted R_squared
+A tibble with R-squared, adjusted R-squared, and partial coefficient of determination comparing loess to linear fit
 }
 \description{
 Computes R-squared and Adjusted R-squared of loess regression
 compared to linear regression. Used for determining linearity
-of C-QT data
+of C-QT data.
 }
 \examples{
 compute_loess_linear_r_squared(cqtkit_data_verapamil \%>\% preprocess(), deltaQTCF, CONC)

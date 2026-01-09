@@ -2,15 +2,17 @@ use_lockfile = false
 
 [project]
 name = "cqtkit"
-r_version = "4.4"
+r_version = "4.5"
 
 repositories = [
-    { alias = "PRISM", url = "https://prism.dev.a2-ai.cloud/rpkgs/stratus/2025-05-09/"}
+  { alias = "prism-current", url = "https://prism.dev.a2-ai.cloud/rpkgs/stratus/2025-12-15/" },
+	# has rms 6.7.1 for R4.3 compatibility	
+  { alias = "prism-old", url = "https://prism.dev.a2-ai.cloud/rpkgs/stratus/2025-05-09/" },
 ]
 
 dependencies = [
-    "devtools",
-    {name = "cqtkit", path = ".", dependencies_only = true, install_suggestions = true},
-    "covr",
+  "devtools",
+  "covr",
+  { name = "cqtkit", path = ".", dependencies_only = true, install_suggestions = true },
 ]
 

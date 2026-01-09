@@ -2,7 +2,7 @@
 % Please edit documentation in R/gof.R
 \name{gof_qq_plots}
 \alias{gof_qq_plots}
-\title{Plots QQ plot of WRES and IWRES}
+\title{GOF QQ Plots}
 \usage{
 gof_qq_plots(
   data,
@@ -33,10 +33,10 @@ gof_qq_plots(
 \item{style}{A named list of arguments passed to style_plot()}
 }
 \value{
-a plot
+A 2-panel Q-Q plot comparing WRES and IWRES to normal distribution
 }
 \description{
-Plots QQ plot of WRES and IWRES
+Plots QQ plot of WRES and IWRES.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

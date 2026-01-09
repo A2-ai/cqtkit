@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute.R
 \name{compute_hysteresis_labeller}
 \alias{compute_hysteresis_labeller}
-\title{Gets labeller for hysteresis_loop_plot. Should most likely not be used by user}
+\title{Compute Hysteresis Labeller}
 \usage{
 compute_hysteresis_labeller(
   data,
@@ -27,10 +27,10 @@ compute_hysteresis_labeller(
 \item{group_col}{An unquoted column name for additional grouping variable.}
 }
 \value{
-list with compute_potential_hysteresis results for each dose.
+A labeller function for ggplot2 facets that appends hysteresis detection status to dose labels
 }
 \description{
-Gets labeller for hysteresis_loop_plot. Should most likely not be used by user
+Gets labeller for hysteresis_loop_plot.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

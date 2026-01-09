@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute.R
 \name{compute_quantiles_obs_df}
 \alias{compute_quantiles_obs_df}
-\title{returns a dataframe of quantiles of concentrations and deltaQTcs}
+\title{Compute Quantiles Observation}
 \usage{
 compute_quantiles_obs_df(
   data,
@@ -27,10 +27,10 @@ compute_quantiles_obs_df(
 \item{type}{Algorithm for quantile. Default (2), is SAS quantile algorithm}
 }
 \value{
-a tibble of conc, deltaQTC quantiles
+A tibble with binned concentration medians and corresponding deltaQTc statistics (mean, SD, SE, CI, median, quantiles)
 }
 \description{
-returns a dataframe of quantiles of concentrations and deltaQTcs
+Returns quantiles of concentrations and deltaQTc values.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

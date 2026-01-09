@@ -2,8 +2,7 @@
 % Please edit documentation in R/fit.R
 \name{fit_qtc_linear_model}
 \alias{fit_qtc_linear_model}
-\title{Fits QT(c) data to linear mixed effects model with fixed effects of intercept and
-RR slope, with random effects on intercept and slope.}
+\title{Fit QTc Linear Model}
 \usage{
 fit_qtc_linear_model(
   data,
@@ -25,10 +24,10 @@ fit_qtc_linear_model(
 
 \item{method}{Method for nlme::lme fitting (ML or REML)}
 
-\item{remove_rr_iiv}{Boolean for removing IIV on slope}
+\item{remove_rr_iiv}{Logical, whether to remove IIV on slope}
 }
 \value{
-nlme::lme model
+An nlme::lme model object with QT ~ RR relationship, including random effects on intercept and optionally slope
 }
 \description{
 Fits QT(c) data to linear mixed effects model with fixed effects of intercept and

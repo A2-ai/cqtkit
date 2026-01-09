@@ -2,7 +2,7 @@
 % Please edit documentation in R/eda.R
 \name{eda_qtc_comparison_plot}
 \alias{eda_qtc_comparison_plot}
-\title{plots different corrections of QT against RR to compare which to use.}
+\title{EDA QTc Comparison Plot}
 \usage{
 eda_qtc_comparison_plot(
   data,
@@ -43,21 +43,21 @@ eda_qtc_comparison_plot(
 
 \item{model_type}{Lm or lme, which model to fit for showing on plot}
 
-\item{show_model_results}{A bool for showing regression slope on plot.}
+\item{show_model_results}{Logical, whether to show regression slope on plot}
 
 \item{method}{Method for nlme::lme fitting (ML or REML)}
 
-\item{remove_rr_iiv}{A boolean for removing IIV on RR slope}
+\item{remove_rr_iiv}{Logical, whether to remove IIV on RR slope}
 
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
 
 \item{style}{A named list of arguments passed to style_plot()}
 }
 \value{
-a plot
+A multi-panel plot comparing QT, QTcB, QTcF, and QTcP corrections against RR
 }
 \description{
-plots different corrections of QT against RR to compare which to use.
+Plots different corrections of QT against RR to compare which to use.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

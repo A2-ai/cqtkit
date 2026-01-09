@@ -2,7 +2,7 @@
 % Please edit documentation in R/predict.R
 \name{predict_with_quantiles_plot}
 \alias{predict_with_quantiles_plot}
-\title{Plots predictions and 90\% CI}
+\title{Predict With Quantiles Plot}
 \usage{
 predict_with_quantiles_plot(
   data,
@@ -54,10 +54,10 @@ predict_with_quantiles_plot(
 \item{style}{A named list of arguments passed to style_plot()}
 }
 \value{
-a plot
+A plot of binned observed data quantiles with model prediction line and confidence interval
 }
 \description{
-Plots predictions and 90\% CI
+Plots predictions and 90\% CI.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

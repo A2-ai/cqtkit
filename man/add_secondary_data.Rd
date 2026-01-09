@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot-helpers.R
 \name{add_secondary_data}
 \alias{add_secondary_data}
-\title{adds secondary data to a plot}
+\title{Add Secondary Data}
 \usage{
 add_secondary_data(
   primary_data,
@@ -39,8 +39,8 @@ add_secondary_data(
 \item{ylabel}{Primary y axis label}
 }
 \value{
-a ggplot2 object with additional data
+A ggplot2 object with secondary data layer and dual y-axis
 }
 \description{
-adds secondary data to a plot
+Adds secondary data to a plot.
 }

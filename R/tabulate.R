@@ -1,4 +1,6 @@
-#' Creates a gt table of study summary for number of subjects in each grouping
+#' Tabulate Study Summary
+#'
+#' Creates a gt table of study summary for number of subjects in each grouping.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param trt_col An unquoted column name for treatment group
@@ -11,7 +13,7 @@
 #' @param n_sub_col_name A string for n_sub column (default: "N")
 #' @param ... Optional additional args to gt::tab_options
 #'
-#' @return a gt table
+#' @return A gt table displaying subject counts by treatment group with protocol number and study status
 #' @export
 #'
 #' @examples
@@ -66,7 +68,9 @@ tabulate_study_summary <- function(
   return(t)
 }
 
-#' Converts pk_parameters df into gt table for printing
+#' Tabulate PK Parameters
+#'
+#' Converts pk_parameters df into gt table for printing.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param id_col An unquoted column name for subject ID
@@ -80,7 +84,7 @@ tabulate_study_summary <- function(
 #'
 #' @importFrom rlang .data
 #'
-#' @return a gt table
+#' @return A gt table with PK parameters: N, Tmax (median/min/max), Cmax (geometric mean, CV%, median/min/max) by dose group
 #' @export
 #'
 #' @examples
@@ -157,7 +161,9 @@ tabulate_pk_parameters <- function(
   return(pk_params_table)
 }
 
-#' Generates table of model parameter esitmates and statistics
+#' Tabulate Model Fit Parameters
+#'
+#' Generates table of model parameter estimates and statistics.
 #'
 #' @param fit An nlme::lme model object from model fitting
 #' @param trt_col_name A string of column name of trt used in model fitting
@@ -165,14 +171,14 @@ tabulate_pk_parameters <- function(
 #' @param id_col_name A string of column name of id used in model fitting for random effects
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #' @param decimals Number of decimals to format table to, default is 2
-#' @param show_standard_error Boolean that displays standard error of fixed effects estimates in table
-#' @param scientific Boolean for converting numbers to scientific notation if less than decimals
+#' @param show_standard_error Logical, whether to display standard error of fixed effects estimates
+#' @param scientific Logical, whether to use scientific notation for small values
 #' @param title Optional string for adding tab_header. It will be wrapped in gt::md()
 #' @param ... Optional additional arguments for gt::tab_options
 #'
 #' @importFrom rlang .data
 #'
-#' @return a gt table
+#' @return A gt table with fixed effect estimates, standard errors, confidence intervals, and p-values
 #' @export
 #'
 #' @examples
@@ -262,7 +268,9 @@ tabulate_model_fit_parameters <- function(
   return(fit_result_table)
 }
 
-#' Generates a gt table of summary of QTc, dQTc and ddQTc over time stratified by dose
+#' Tabulate ECG Parameter Summary
+#'
+#' Generates a gt table of summary of QTc, dQTc and ddQTc over time stratified by dose.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param ntime_col An unquoted column name for nominal time data
@@ -277,10 +285,11 @@ tabulate_model_fit_parameters <- function(
 #' @param delta_ecg_param_conf_int Confidence interval for dQTc summary stats default 90%
 #' @param decimals Number of decimals to fmt the table to default is 2, N column is 0
 #' @param row_group_label Optional label for the dose/dose + group column
+#' @param time_label A string label for the time column (default: "Time (hr)")
 #' @param title Optional title for the table, it will be wrapped in gt::md()
 #' @param ... Optional arguments for gt::tab_options
 #'
-#' @return a gt table of the QTc/deltaQTc/delta delta QTc summary
+#' @return A gt table with mean ECG parameters (QTc, deltaQTc, delta-delta QTc) and confidence intervals by dose and time
 #' @export
 #'
 #' @examples
@@ -308,6 +317,7 @@ tabulate_ecg_param_summary <- function(
   delta_ecg_param_conf_int = 0.9,
   decimals = 2,
   row_group_label = NULL,
+  time_label = "Time (hr)",
   title = NULL,
   ...
 ) {
@@ -416,7 +426,7 @@ tabulate_ecg_param_summary <- function(
       pattern = "[{1}, {2}]"
     ) %>%
     gt::cols_label(
-      time = "Time (hr)",
+      time = time_label,
       n = "N",
       mean_ecg = "Mean",
       mean_decg = "Mean",
@@ -471,6 +481,8 @@ tabulate_ecg_param_summary <- function(
   return(s_gt)
 }
 
+#' Tabulate High QTc Subjects
+#'
 #' Tabulates number of high QTc/deltaQTc observations.
 #'
 #' @param data A data frame containing C-QT analysis dataset
@@ -478,22 +490,26 @@ tabulate_ecg_param_summary <- function(
 #' @param deltaqtc_col An unquoted column name for deltaQTC data
 #' @param group_col An optional unquoted column name of grouping column
 #' @param group_label An optional label to use for group column
+#' @param qtc_label A string label for the QTc parameter (default: "QTc")
+#' @param unit A string for the unit of measurement (default: "ms")
 #' @param title Optional string to give the table a title, wrapped in gt::md()
 #' @param ... Optional additional args to gt::tab_options
 #'
-#' @return a gt table
+#' @return A gt table with counts of observations exceeding QTc thresholds (>450, >480, >500 ms) and deltaQTc thresholds (>30, >60 ms)
 #' @export
 #'
 #' @examples
 #' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
-#' tabulate_high_qtc_sub(data_proc, QTCF, deltaQTCF)
+#' tabulate_high_qtc_sub(data_proc, QTCF, deltaQTCF, group_col = DOSEF, qtc_label = "QTcF")
 tabulate_high_qtc_sub <- function(
   data,
   qtc_col,
   deltaqtc_col,
   group_col = NULL,
   group_label = NULL,
+  qtc_label = "QTc",
+  unit = "ms",
   title = NULL,
   ...
 ) {
@@ -512,11 +528,11 @@ tabulate_high_qtc_sub <- function(
   t <- n_gt %>%
     gt::gt() %>%
     gt::cols_label(
-      n_QTc_gt_450 = gt::md("QTc > 450"),
-      n_QTc_gt_480 = gt::md("QTc > 480"),
-      n_QTc_gt_500 = gt::md("QTc > 500"),
-      n_dQTc_gt_30 = gt::md("&Delta; QTc > 30"),
-      n_dQTc_gt_60 = gt::md("&Delta; QTc > 60")
+      n_QTc_gt_450 = gt::md(paste0(qtc_label, " > 450 ", unit)),
+      n_QTc_gt_480 = gt::md(paste0(qtc_label, " > 480 ", unit)),
+      n_QTc_gt_500 = gt::md(paste0(qtc_label, " > 500 ", unit)),
+      n_dQTc_gt_30 = gt::md(paste0("&Delta; ", qtc_label, " > 30 ", unit)),
+      n_dQTc_gt_60 = gt::md(paste0("&Delta; ", qtc_label, " > 60 ", unit))
     )
 
   if (!is.null(title)) {
@@ -545,7 +561,9 @@ tabulate_high_qtc_sub <- function(
   return(t)
 }
 
-#' Tablulates exposure predictions at therapeutic and supratherapuetic Cmax.
+#' Tabulate Exposure Predictions
+#'
+#' Tabulates exposure predictions at therapeutic and supratherapeutic Cmax.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param fit An nlme::lme model object from model fitting
@@ -558,14 +576,13 @@ tabulate_high_qtc_sub <- function(
 #' @param conc_units Units for concentration default ng/mL
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #' @param decimals Number of decimals to format numbers to. default is 2
-#' @param scientific Boolean for converting to scientific notation
+#' @param scientific Logical, whether to use scientific notation
 #' @param title Optional string for table title. Wrapped in gt::md()
 #' @param ... Optional additional args to gt::tab_options
 #'
 #' @importFrom rlang .data
 #'
-#' @return a gt table of predicted dQTc/ddQTc values and their CI at tpx and or
-#' stpx dose/Cmax
+#' @return A gt table with predicted deltaQTc values and confidence intervals at therapeutic and supratherapeutic Cmax
 #' @export
 #'
 #' @examples

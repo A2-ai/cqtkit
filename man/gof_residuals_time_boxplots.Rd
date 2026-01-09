@@ -2,7 +2,7 @@
 % Please edit documentation in R/gof.R
 \name{gof_residuals_time_boxplots}
 \alias{gof_residuals_time_boxplots}
-\title{plots boxplots of residuals over Nominal Times}
+\title{GOF Residuals Time Boxplots}
 \usage{
 gof_residuals_time_boxplots(
   data,
@@ -36,10 +36,10 @@ gof_residuals_time_boxplots(
 \item{style}{A named list of arguments passed to style_plot()}
 }
 \value{
-a plot
+A 2-panel boxplot of WRES and IWRES residuals by nominal time
 }
 \description{
-plots boxplots of residuals over Nominal Times
+Plots boxplots of residuals over Nominal Times.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

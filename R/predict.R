@@ -1,4 +1,6 @@
-#' Plots predictions of the model with observed values
+#' Predict With Observations Plot
+#'
+#' Plots predictions of the model with observed values.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param fit An nlme::lme model object from model fitting
@@ -14,7 +16,7 @@
 #' @param contrast_method A string specifying contrast method when using control_predictors: "matched" for individual ID+time matching (crossover studies), "group" for group-wise subtraction (parallel studies)
 #' @param style A named list of arguments passed to style_plot()
 #'
-#' @return a plot
+#' @return A scatter plot of observations with model prediction line and confidence interval ribbon
 #' @export
 #'
 #' @examples
@@ -195,7 +197,9 @@ predict_with_observations_plot <- function(
 }
 
 
-#' Plots predictions and 90% CI
+#' Predict With Quantiles Plot
+#'
+#' Plots predictions and 90% CI.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param fit An nlme::lme model object from model fitting
@@ -213,7 +217,7 @@ predict_with_observations_plot <- function(
 #' @param contrast_method A string specifying contrast method when using control_predictors: "matched" for individual ID+time matching (crossover studies), "group" for group-wise subtraction (parallel studies)
 #' @param style A named list of arguments passed to style_plot()
 #'
-#' @return a plot
+#' @return A plot of binned observed data quantiles with model prediction line and confidence interval
 #' @export
 #' @importFrom rlang .data
 #' @importFrom rlang :=
@@ -404,7 +408,9 @@ predict_with_quantiles_plot <- function(
 }
 
 
-#' Plots model predictions with therapeutic and supra therapeutic Cmax
+#' Predict With Exposure Plot
+#'
+#' Plots model predictions with therapeutic and supra therapeutic Cmax.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param fit An nlme::lme model object from model fitting
@@ -416,7 +422,7 @@ predict_with_quantiles_plot <- function(
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #' @param style A named list of arguments passed to style_plot()
 #'
-#' @return a plot
+#' @return A plot of model predictions with confidence interval and vertical Cmax reference lines
 #' @export
 #'
 #' @examples

@@ -2,7 +2,7 @@
 % Please edit documentation in R/gof.R
 \name{gof_concordance_plots}
 \alias{gof_concordance_plots}
-\title{Concordance plots between population and individual predictions}
+\title{GOF Concordance Plots}
 \usage{
 gof_concordance_plots(
   data,
@@ -36,10 +36,10 @@ gof_concordance_plots(
 \item{style}{A named list of arguments passed to style_plot()}
 }
 \value{
-a plot
+A 2-panel plot comparing population (PRED) and individual (IPRED) predictions vs observed values
 }
 \description{
-Concordance plots between population and individual predictions
+Concordance plots between population and individual predictions.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

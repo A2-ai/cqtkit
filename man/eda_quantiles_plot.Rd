@@ -2,7 +2,7 @@
 % Please edit documentation in R/eda.R
 \name{eda_quantiles_plot}
 \alias{eda_quantiles_plot}
-\title{plots the observed decile-decile scatter plot of x-data vs y-data with linear regression.}
+\title{EDA Quantiles Plot}
 \usage{
 eda_quantiles_plot(
   data,
@@ -24,7 +24,7 @@ eda_quantiles_plot(
 
 \item{trt_col}{An unquoted column name for treatment column to stratify the data by}
 
-\item{plot_observations}{A boolean to include the raw individual data points as background points, default FALSE}
+\item{plot_observations}{Logical, whether to include raw individual data points as background (default: FALSE)}
 
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
 
@@ -33,10 +33,10 @@ eda_quantiles_plot(
 \item{style}{A named list of arguments passed to style_plot()}
 }
 \value{
-a plot
+A scatter plot of decile medians with linear regression and optional error bars
 }
 \description{
-plots the observed decile-decile scatter plot of x-data vs y-data with linear regression.
+Plots the observed decile-decile scatter plot of x-data vs y-data with linear regression.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

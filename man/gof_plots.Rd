@@ -2,7 +2,7 @@
 % Please edit documentation in R/gof.R
 \name{gof_plots}
 \alias{gof_plots}
-\title{Makes goodness of fit plots}
+\title{GOF Plots}
 \usage{
 gof_plots(
   data,
@@ -39,10 +39,10 @@ gof_plots(
 \item{style}{A named list of arguments passed to style_plot()}
 }
 \value{
-a 2x2 grid of plots
+A 2x2 panel with concordance plots, residual distributions, Q-Q plots, and residual histograms
 }
 \description{
-Makes goodness of fit plots
+Makes goodness of fit plots.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

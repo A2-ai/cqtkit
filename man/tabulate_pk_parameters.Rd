@@ -2,7 +2,7 @@
 % Please edit documentation in R/tabulate.R
 \name{tabulate_pk_parameters}
 \alias{tabulate_pk_parameters}
-\title{Converts pk_parameters df into gt table for printing}
+\title{Tabulate PK Parameters}
 \usage{
 tabulate_pk_parameters(
   data,
@@ -36,10 +36,10 @@ tabulate_pk_parameters(
 \item{...}{Optional additional arguments to gt::tab_options}
 }
 \value{
-a gt table
+A gt table with PK parameters: N, Tmax (median/min/max), Cmax (geometric mean, CV\%, median/min/max) by dose group
 }
 \description{
-Converts pk_parameters df into gt table for printing
+Converts pk_parameters df into gt table for printing.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

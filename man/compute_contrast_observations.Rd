@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute.R
 \name{compute_contrast_observations}
 \alias{compute_contrast_observations}
-\title{Compute contrast observations for prediction plots}
+\title{Compute Contrast Observations}
 \usage{
 compute_contrast_observations(
   data,
@@ -36,10 +36,10 @@ compute_contrast_observations(
 \item{contrast_method}{A string specifying contrast method: "matched" for individual ID+time matching (crossover studies), "group" for group-wise subtraction (parallel studies)}
 }
 \value{
-a tibble with columns: group, conc, dv
+A tibble with group labels, concentration, and dependent variable values (optionally contrast-adjusted)
 }
 \description{
-Compute contrast observations for prediction plots
+Compute Contrast Observations
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

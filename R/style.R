@@ -1,4 +1,6 @@
-#' Creates a style list for eda graphing functions
+#' Set Style
+#'
+#' Creates a style list for eda graphing functions.
 #'
 #' @param style An optional named list of style arguments to update
 #' @param title A string for a plot title
@@ -15,8 +17,8 @@
 #' @param shape_order A numeric for setting shape legend order
 #' @param linetype_order A numeric for setting linetype legend order
 #' @param legend.position A string for legend position
-#' @param logx A boolean for setting x-axis to log scale
-#' @param logy A boolean for setting y-axis to log scale
+#' @param logx Logical, whether to use log scale for x-axis
+#' @param logy Logical, whether to use log scale for y-axis
 #' @param fill_alpha A numeric for controlling alpha of fill colors
 #' @param fill_legend A string to replace fill legend title
 #' @param fill_order A numeric for setting fill legend order
@@ -25,7 +27,7 @@
 #' @param caption_hjust A string or numeric for caption horizontal justification ("left"/0, "center"/0.5, "right"/1)
 #' @param legend_nrow A numeric for number of rows in legend
 #'
-#' @returns a named list for using with style_plot
+#' @return A named list of style parameters for use with style_plot()
 #' @export
 #'
 #' @examples
@@ -271,7 +273,9 @@ is_plot_label <- function(x) {
   is.null(x) || is.character(x) || is.language(x) || inherits(x, "expression")
 }
 
-#' Styles a plot with provided colors and labels
+#' Style Plot
+#'
+#' Styles a plot with provided colors and labels.
 #'
 #' @param p A ggplot2 object to update colors/legend labels
 #' @param title A string for a plot title
@@ -290,15 +294,15 @@ is_plot_label <- function(x) {
 #' @param legend.position A string for legend position
 #' @param legend.title.position A string for legend title position ("top", "left", "bottom", "right")
 #' @param legend.title.hjust A string or numeric for legend title horizontal justification ("left"/0, "center"/0.5, "right"/1)
-#' @param logx A boolean for setting x-axis to log scale
-#' @param logy A boolean for setting y-axis to log scale
+#' @param logx Logical, whether to use log scale for x-axis
+#' @param logy Logical, whether to use log scale for y-axis
 #' @param fill_alpha A numeric for controlling alpha of fill colors
 #' @param fill_legend A string to replace fill legend title
 #' @param fill_order A numeric for setting fill legend order
 #' @param caption_hjust A string or numeric for caption horizontal justification ("left"/0, "center"/0.5, "right"/1)
 #' @param legend_nrow A numeric for number of rows in legend
 #'
-#' @returns an updated ggplot2 object
+#' @return A ggplot2 object with applied colors, labels, shapes, and theme settings
 #' @export
 #'
 #' @examples

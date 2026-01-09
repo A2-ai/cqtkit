@@ -2,9 +2,7 @@
 % Please edit documentation in R/preprocess.R
 \name{preprocess}
 \alias{preprocess}
-\title{Pre-processes data
-Computes QTcB, QTcF, deltaQTcF, deltaQTcB, deltaHR, deltaQTcB Baseline Mean,
-deltaQTcF Baseline Mean, deltaHR Baseline Mean}
+\title{Preprocess}
 \usage{
 preprocess(
   data,
@@ -47,15 +45,14 @@ preprocess(
 
 \item{id_col}{An unquoted column name for subject ID}
 
-\item{deduplicate}{Boolean, whether baseline values are duplicated over rows. If true duplicates will be removed from average}
+\item{deduplicate}{Logical, whether to remove duplicate baseline values before averaging}
 }
 \value{
-dataframe with deltas computed from BL
+A data frame with all delta columns computed from baseline
 }
 \description{
-Pre-processes data
 Computes QTcB, QTcF, deltaQTcF, deltaQTcB, deltaHR, deltaQTcB Baseline Mean,
-deltaQTcF Baseline Mean, deltaHR Baseline Mean
+deltaQTcF Baseline Mean, deltaHR Baseline Mean.
 }
 \examples{
 preprocess(cqtkit_data_verapamil)

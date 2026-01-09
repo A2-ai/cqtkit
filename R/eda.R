@@ -1,4 +1,6 @@
-#' Plot QT against RR
+#' EDA QT RR Plot
+#'
+#' Plots QT against RR.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param rr_col An unquoted column name for RR measurements
@@ -7,12 +9,12 @@
 #' @param trt_col An unquoted column name for treatment group
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #' @param model_type Lm or lme, which model to fit for showing on plot
-#' @param show_model_results A bool for showing regression slope on plot.
+#' @param show_model_results Logical, whether to show regression slope on plot
 #' @param method Method for nlme::lme fitting (ML or REML)
-#' @param remove_rr_iiv A boolean for removing IIV on RR slope
+#' @param remove_rr_iiv Logical, whether to remove IIV on RR slope
 #' @param style A named list of arguments passed to style_plot()
 #'
-#' @return a plot of the input QT against RR
+#' @return A scatter plot of QT vs RR with optional regression line and slope estimate caption
 #' @export
 #'
 #' @examples
@@ -161,7 +163,9 @@ eda_qt_rr_plot <- function(
   return(qt_rr_plot)
 }
 
-#' plots different corrections of QT against RR to compare which to use.
+#' EDA QTc Comparison Plot
+#'
+#' Plots different corrections of QT against RR to compare which to use.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param rr_col An unquoted column name for RR measurements
@@ -173,13 +177,13 @@ eda_qt_rr_plot <- function(
 #' @param trt_col An unquoted column name for treatment group data
 #' @param legend_location String for legend position (top, bottom, left, right)
 #' @param model_type Lm or lme, which model to fit for showing on plot
-#' @param show_model_results A bool for showing regression slope on plot.
+#' @param show_model_results Logical, whether to show regression slope on plot
 #' @param method Method for nlme::lme fitting (ML or REML)
-#' @param remove_rr_iiv A boolean for removing IIV on RR slope
+#' @param remove_rr_iiv Logical, whether to remove IIV on RR slope
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #' @param style A named list of arguments passed to style_plot()
 #'
-#' @return a plot
+#' @return A multi-panel plot comparing QT, QTcB, QTcF, and QTcP corrections against RR
 #' @export
 #'
 #' @examples
@@ -277,18 +281,20 @@ eda_qtc_comparison_plot <- function(
   }
 }
 
-#' plots the observed decile-decile scatter plot of x-data vs y-data with linear regression.
+#' EDA Quantiles Plot
+#'
+#' Plots the observed decile-decile scatter plot of x-data vs y-data with linear regression.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param xdata_col An unquoted column name for x data
 #' @param ydata_col An unquoted column name for y data
 #' @param trt_col An unquoted column name for treatment column to stratify the data by
-#' @param plot_observations A boolean to include the raw individual data points as background points, default FALSE
+#' @param plot_observations Logical, whether to include raw individual data points as background (default: FALSE)
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #' @param error_bars A string for setting which errorbars are shown, CI, SE, SD
 #' @param style A named list of arguments passed to style_plot()
 #'
-#' @return a plot
+#' @return A scatter plot of decile medians with linear regression and optional error bars
 #'
 #' @export
 #'
@@ -396,20 +402,22 @@ eda_quantiles_plot <- function(
   return(p)
 }
 
-#' plots scatter plot with with linear and loess regressions. Can be used to check for linearity.
+#' EDA Scatter With Regressions
+#'
+#' Plots scatter plot with linear and loess regressions. Can be used to check for linearity.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param ydata_col An unquoted column name for dependent variable measurements
 #' @param xdata_col An unquoted column name for independent variable measurements
 #' @param trt_col An unquoted column name for treatment group
 #' @param reference_threshold Optional vector of numbers to add as horizontal dashed lines
-#' @param loess_line A bool to add LOESS regression line
-#' @param linear_line A bool to add a linear regression line
+#' @param loess_line Logical, whether to add LOESS regression line
+#' @param linear_line Logical, whether to add linear regression line
 #' @param span A fractional value for LOESS span parameter in geom_smooth if LOESS is used, default 0.99
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #' @param style A named list of arguments passed to style_plot(). Shapes are mapped to treatment groups and can be controlled via the shapes parameter in style
 #'
-#' @return a plot
+#' @return A scatter plot with linear and/or LOESS regression lines for assessing linearity
 #' @export
 #'
 #' @examples
@@ -529,7 +537,16 @@ eda_scatter_with_regressions <- function(
   return(p)
 }
 
-#' Hysteresis loop plot to visually inspect hysteresis
+#' EDA Hysteresis Loop Plot
+#'
+#' Hysteresis loop plot to visually inspect hysteresis. Counter-clockwise loops
+#' (effect lags concentration) suggest hysteresis may be present.
+#'
+#' When `show_hysteresis_warning = TRUE`, facet labels are annotated based on
+#' the detection algorithm in [compute_potential_hysteresis()], which flags
+#' hysteresis when the time of max effect (Umax) lags max concentration (Tmax)
+#' by >= 1 hour and more than 3 timepoints show mean deltaQTc > 5 ms.
+#'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param ntime_col An unquoted column name for nominal time points
 #' @param deltaqtc_col An unquoted column name for dQTC measurements at the time points in NTLD
@@ -537,10 +554,13 @@ eda_scatter_with_regressions <- function(
 #' @param dosef_col An unquoted column name for DOSE factors.
 #' @param group_col An unquoted column name for additional grouping column
 #' @param reference_dose Reference dose value for comparison calculations
-#' @param show_hysteresis_warning Boolean, if TRUE adds Hysteresis Detected to facet wrap label for groups with hysteresis detected
+#' @param show_hysteresis_warning Logical, whether to add "Hysteresis Detected" to facet labels for affected groups
 #' @param style A named list of arguments passed to style_plot()
 #'
-#' @return a plot
+#' @return A faceted plot showing concentration vs deltaQTc trajectories over time with directional arrows
+#'
+#' @seealso [compute_potential_hysteresis()] for the detection algorithm used when
+#'   `show_hysteresis_warning = TRUE`
 #' @export
 #'
 #' @examples
@@ -718,7 +738,9 @@ eda_hysteresis_loop_plot <- function(
   return(.p)
 }
 
-#' Plots mean dependent variable over time
+#' EDA Mean DV Over Time
+#'
+#' Plots mean dependent variable over time.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param dv_col An unquoted column name for dependent variable
@@ -735,7 +757,7 @@ eda_hysteresis_loop_plot <- function(
 #' @param sec_ylabel A string for secondary ylabel, default is Concentration (ng/mL)
 #' @param style A named list of arguments passed to style_plot(). Shapes are mapped to grouping variables and can be controlled via the shapes parameter in style
 #'
-#' @return a plot
+#' @return A line plot of mean dependent variable over time with optional error bars, reference lines, and secondary axis
 #' @export
 #'
 #' @examples

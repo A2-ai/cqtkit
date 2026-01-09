@@ -2,8 +2,7 @@
 % Please edit documentation in R/compute.R
 \name{compute_grouped_mean_sd}
 \alias{compute_grouped_mean_sd}
-\title{computes a the mean and standard deviation of the dependent variable data
-in DV_col grouped by time and dose.}
+\title{Compute Grouped Mean SD}
 \usage{
 compute_grouped_mean_sd(
   data,
@@ -31,10 +30,10 @@ compute_grouped_mean_sd(
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
 }
 \value{
-a dataframe of the dv averaged over the grouped time and dose
+A tibble with mean, SD, SE, and confidence intervals for the dependent variable, grouped by time and dose
 }
 \description{
-computes a the mean and standard deviation of the dependent variable data
+Computes the mean and standard deviation of the dependent variable data
 in DV_col grouped by time and dose.
 }
 \examples{

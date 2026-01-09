@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute.R
 \name{compute_ecg_param_summary}
 \alias{compute_ecg_param_summary}
-\title{Generates a tibble of summary of QTc, dQTc and ddQTc over time stratified by dose}
+\title{Compute ECG Parameter Summary}
 \usage{
 compute_ecg_param_summary(
   data,
@@ -33,10 +33,10 @@ compute_ecg_param_summary(
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
 }
 \value{
-a tibble of QTc/deltaQTc/delta delta QTc summary over dose and time.
+A tibble with mean QTc, deltaQTc, and optionally delta-delta QTc values with confidence intervals, stratified by dose and time
 }
 \description{
-Generates a tibble of summary of QTc, dQTc and ddQTc over time stratified by dose
+Generates a tibble of summary of QTc, dQTc and ddQTc over time stratified by dose.
 }
 \examples{
 data_proc <- cqtkit_data_verapamil \%>\% preprocess()
