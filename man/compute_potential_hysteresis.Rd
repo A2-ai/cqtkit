@@ -27,7 +27,15 @@ compute_potential_hysteresis(
 Logical TRUE if hysteresis detected (Tmax-Umax lag >= 1 hour with sustained QTc elevation), FALSE otherwise
 }
 \description{
-Detects the presence of hysteresis.
+Detects the presence of counter-clockwise hysteresis (effect lags concentration).
+}
+\details{
+Hysteresis is flagged when both conditions are met:
+\itemize{
+\item The time of maximum QTc effect (Umax) occurs >= 1 hour after time of
+maximum concentration (Tmax)
+\item More than 3 timepoints have mean deltaQTc > 5 ms (sustained elevation)
+}
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)
@@ -39,4 +47,7 @@ compute_potential_hysteresis(
   deltaQTCF,
   CONC,
   DOSEF)
+}
+\seealso{
+\code{\link[=eda_hysteresis_loop_plot]{eda_hysteresis_loop_plot()}} for visual inspection of hysteresis loops
 }

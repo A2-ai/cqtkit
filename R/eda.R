@@ -539,7 +539,13 @@ eda_scatter_with_regressions <- function(
 
 #' EDA Hysteresis Loop Plot
 #'
-#' Hysteresis loop plot to visually inspect hysteresis.
+#' Hysteresis loop plot to visually inspect hysteresis. Counter-clockwise loops
+#' (effect lags concentration) suggest hysteresis may be present.
+#'
+#' When `show_hysteresis_warning = TRUE`, facet labels are annotated based on
+#' the detection algorithm in [compute_potential_hysteresis()], which flags
+#' hysteresis when the time of max effect (Umax) lags max concentration (Tmax)
+#' by >= 1 hour and more than 3 timepoints show mean deltaQTc > 5 ms.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param ntime_col An unquoted column name for nominal time points
@@ -552,6 +558,9 @@ eda_scatter_with_regressions <- function(
 #' @param style A named list of arguments passed to style_plot()
 #'
 #' @return A faceted plot showing concentration vs deltaQTc trajectories over time with directional arrows
+#'
+#' @seealso [compute_potential_hysteresis()] for the detection algorithm used when
+#'   `show_hysteresis_warning = TRUE`
 #' @export
 #'
 #' @examples

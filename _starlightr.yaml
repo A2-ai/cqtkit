@@ -52,15 +52,19 @@ sidebar:
         - "compute_pk_parameters"
         - "compute_ecg_param_summary"
         - "compute_high_qtc_sub"
+        - "compute_study_summary"
         - "compute_quantiles_obs_df"
         - "compute_potential_hysteresis"
         - "compute_hysteresis_labeller"
         - "compute_contrast_observations"
         - "compute_exposure_predictions"
+        - "compute_conc_for_upper_pred"
         - "compute_dataset_simulation"
         - "compute_summary_statistics_of_simulations"
         - "compute_lm_fit_df"
-        - "compute_engri"
+        - "compute_lme_slope_df"
+        - "compute_enGRI"
+        - "compute_loess_linear_r_squared"
     - label: "Tabulate"
       collapsed: true
       contents:
@@ -123,11 +127,9 @@ sidebar:
 versions:
   enabled: true
   list:
-  - tag: "1.1.0"
-    label: "v1.1.0"
-    default: true
   - tag: "1.0.2"
     label: "v1.0.2"
+    default: true
   - tag: "1.0.1"
     label: "v1.0.1"
   - tag: "1.0.0"

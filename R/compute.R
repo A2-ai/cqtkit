@@ -695,7 +695,14 @@ compute_loess_linear_r_squared <- function(
 
 #' Compute Potential Hysteresis
 #'
-#' Detects the presence of hysteresis.
+#' Detects the presence of counter-clockwise hysteresis (effect lags concentration).
+#'
+#' Hysteresis is flagged when both conditions are met:
+#' \itemize{
+#'   \item The time of maximum QTc effect (Umax) occurs >= 1 hour after time of
+#'         maximum concentration (Tmax)
+#'   \item More than 3 timepoints have mean deltaQTc > 5 ms (sustained elevation)
+#' }
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param ntime_col An unquoted column name for nominal timepoints
@@ -704,6 +711,8 @@ compute_loess_linear_r_squared <- function(
 #' @param group_col An unquoted column name for grouping column - usually DOSEF
 #'
 #' @return Logical TRUE if hysteresis detected (Tmax-Umax lag >= 1 hour with sustained QTc elevation), FALSE otherwise
+#'
+#' @seealso [eda_hysteresis_loop_plot()] for visual inspection of hysteresis loops
 #' @export
 #'
 #' @examples

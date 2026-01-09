@@ -39,7 +39,14 @@ eda_hysteresis_loop_plot(
 A faceted plot showing concentration vs deltaQTc trajectories over time with directional arrows
 }
 \description{
-Hysteresis loop plot to visually inspect hysteresis.
+Hysteresis loop plot to visually inspect hysteresis. Counter-clockwise loops
+(effect lags concentration) suggest hysteresis may be present.
+}
+\details{
+When \code{show_hysteresis_warning = TRUE}, facet labels are annotated based on
+the detection algorithm in \code{\link[=compute_potential_hysteresis]{compute_potential_hysteresis()}}, which flags
+hysteresis when the time of max effect (Umax) lags max concentration (Tmax)
+by >= 1 hour and more than 3 timepoints show mean deltaQTc > 5 ms.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)
@@ -55,4 +62,8 @@ eda_hysteresis_loop_plot(
     ylabel = bquote(Delta~Delta~"QTcF (ms)")
   )
 )
+}
+\seealso{
+\code{\link[=compute_potential_hysteresis]{compute_potential_hysteresis()}} for the detection algorithm used when
+\code{show_hysteresis_warning = TRUE}
 }
