@@ -14,6 +14,5 @@ dependencies = [
   "devtools",
   "covr",
   { name = "cqtkit", path = ".", dependencies_only = true, install_suggestions = true },
-	{ name = "starlightr", git = "https://github.com/a2-ai/starlightr", branch = "main"},
 ]
 
