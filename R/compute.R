@@ -1387,12 +1387,13 @@ compute_conc_for_upper_pred <- function(
 #'    data = data_proc
 #' )
 #'
-#' compute_exposure_predictions(
+#' exposure <- compute_exposure_predictions(
 #'   data_proc,
 #'   fit,
 #'   CONC,
 #'   list(CONC = 10)
 #' )
+#' exposure
 compute_exposure_predictions <- function(
   data,
   fit,
