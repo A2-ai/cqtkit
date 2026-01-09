@@ -31,5 +31,5 @@ lme_mod <- df \%>\%
       remove_rr_iiv = FALSE
   )
 
-slope_data <- compute_lme_slope_df(lme_mod, RR, 0.9)
+compute_lme_slope_df(lme_mod, RR, 0.9)
 }

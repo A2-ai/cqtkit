@@ -81,7 +81,7 @@ compute_lm_fit_df <- function(data, xdata_col, ydata_col, conf_int = 0.95) {
 #'       remove_rr_iiv = FALSE
 #'   )
 #'
-#' slope_data <- compute_lme_slope_df(lme_mod, RR, 0.9)
+#' compute_lme_slope_df(lme_mod, RR, 0.9)
 compute_lme_slope_df <- function(lme_mod, xdata_col, conf_int = 0.95) {
   ###QC: Check model type and that slope exists???
   xdata <- rlang::enquo(xdata_col)
@@ -1387,13 +1387,12 @@ compute_conc_for_upper_pred <- function(
 #'    data = data_proc
 #' )
 #'
-#' exposure <- compute_exposure_predictions(
+#' compute_exposure_predictions(
 #'   data_proc,
 #'   fit,
 #'   CONC,
 #'   list(CONC = 10)
 #' )
-#' exposure
 compute_exposure_predictions <- function(
   data,
   fit,

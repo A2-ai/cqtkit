@@ -92,6 +92,28 @@ fit_qtc_linear_model <- function(
 #'
 #' Generates nlme::lme model either prespecified or without TRT and TIME.
 #'
+#' The model structure is:
+#' \deqn{
+#'   \Delta \text{QTcF}_{i,j,k} =
+#'   \left( \theta_0 + \eta_{0,i} \right)
+#'   + \left( \theta_1 + \eta_{1,i} \right) C_{i,j,k}
+#'   + \theta_2 \left( \Delta\text{QTcF}_{i,j,k=0} - \text{QTcF}_{\text{baseline}} \right)\\
+#'   + \theta_3 \text{TRTG}_j
+#'   + \theta_4 \text{TAFD}_k
+#' }
+#'
+#' Where:
+#' \itemize{
+#'   \item \eqn{\theta_0} = population intercept
+#'   \item \eqn{\theta_1} = population slope for concentration effect
+#'   \item \eqn{\theta_2} = coefficient for time-matched baseline correction
+#'   \item \eqn{\theta_3} = treatment group effect (optional, when trt_col provided)
+#'   \item \eqn{\theta_4} = time effect (optional, when tafd_col provided)
+#'   \item \eqn{\eta_{0,i}} = random intercept for subject i
+#'   \item \eqn{\eta_{1,i}} = random slope for subject i (omitted when remove_conc_iiv = TRUE)
+#'   \item \eqn{C_{i,j,k}} = drug concentration
+#' }
+#'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param dv_col An unquoted column name for dependent variable measurements
 #' @param id_col An unquoted column name for ID data
