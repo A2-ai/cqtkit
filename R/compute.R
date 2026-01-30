@@ -276,14 +276,14 @@ names(qtc_exprs) <- paste0("n_QTc_gt_", qtc_thresholds)
   all_exprs <- c(qtc_exprs, dqtc_exprs)
 
   if (!rlang::quo_is_null(group)) {
-    qtdf <- qtdf %>%
-      dplyr::mutate(group = data %>% dplyr::pull(!!group))
-    n_gt <- qtdf %>%
-      dplyr::group_by(.data$group) %>%
+    qtdf <- qtdf |>
+      dplyr::mutate(group = data |> dplyr::pull(!!group))
+    n_gt <- qtdf |>
+      dplyr::group_by(.data$group) |>
       dplyr::summarise(!!!all_exprs)
   } else {
-    n_gt <- qtdf %>%
-      dplyr::summarise(!!!all_exprs) %>%
+    n_gt <- qtdf |>
+      dplyr::summarise(!!!all_exprs) |>
       dplyr::mutate(group = "Total", .before = 1)
   }
   return(n_gt)
@@ -333,9 +333,9 @@ compute_high_qtc_sub <- function(
   checkmate::assertNames(names(data), must.include = required_cols)
 
   qtdf <- tibble::tibble(
-    id = data %>% dplyr::pull(!!id),
-    qtc = data %>% dplyr::pull(!!qtc),
-    deltaqtc = data %>% dplyr::pull(!!deltaqtc)
+    id = data |> dplyr::pull(!!id),
+    qtc = data |> dplyr::pull(!!qtc),
+    deltaqtc = data |> dplyr::pull(!!deltaqtc)
   )
 
   # Build column expressions for QTc thresholds (count distinct subjects)
@@ -353,14 +353,14 @@ compute_high_qtc_sub <- function(
   all_exprs <- c(qtc_exprs, dqtc_exprs)
 
   if (!rlang::quo_is_null(group)) {
-    qtdf <- qtdf %>%
-      dplyr::mutate(group = data %>% dplyr::pull(!!group))
-    n_gt <- qtdf %>%
-      dplyr::group_by(.data$group) %>%
+    qtdf <- qtdf |>
+      dplyr::mutate(group = data |> dplyr::pull(!!group))
+    n_gt <- qtdf |>
+      dplyr::group_by(.data$group) |>
       dplyr::summarise(!!!all_exprs)
   } else {
-    n_gt <- qtdf %>%
-      dplyr::summarise(!!!all_exprs) %>%
+    n_gt <- qtdf |>
+      dplyr::summarise(!!!all_exprs) |>
       dplyr::mutate(group = "Total", .before = 1)
   }
   return(n_gt)

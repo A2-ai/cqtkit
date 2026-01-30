@@ -547,12 +547,12 @@ tabulate_high_qtc_obs <- function(
 
   all_labels <- c(qtc_labels, dqtc_labels)
 
-  t <- n_gt %>%
-    gt::gt() %>%
+  t <- n_gt |>
+    gt::gt() |>
     gt::cols_label(!!!all_labels)
 
   if (!is.null(title)) {
-    t <- t %>%
+    t <- t |>
       gt::tab_header(
         title = gt::md(title)
       )
@@ -565,7 +565,7 @@ tabulate_high_qtc_obs <- function(
       group_label <- ""
     }
   }
-  t <- t %>%
+  t <- t |>
     gt::cols_label(group = group_label)
 
   args <- rlang::list2(...)
@@ -647,8 +647,8 @@ tabulate_high_qtc_sub <- function(
 
   all_labels <- c(qtc_labels, dqtc_labels)
 
-  t <- n_gt %>%
-    gt::gt() %>%
+  t <- n_gt |>
+    gt::gt() |>
     gt::cols_label(!!!all_labels)
 
   if (!is.null(title)) {
