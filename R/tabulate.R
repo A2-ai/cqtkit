@@ -45,16 +45,16 @@ tabulate_study_summary <- function(
   checkmate::assertNames(names(data), must.include = required_cols)
 
   study_sum <- compute_study_summary(data, !!trt, !!id, !!group)
-  t <- study_sum %>%
-    gt::gt() %>%
+  t <- study_sum |>
+    gt::gt() |>
     gt::cols_label(
       grouping = grouping_col_name,
       n_sub = n_sub_col_name
-    ) %>%
+    ) |>
     gt::tab_header(
       title = gt::md(title),
       subtitle = paste(sprintf("Protocol Number: %s", protocol_number))
-    ) %>%
+    ) |>
     gt::tab_source_note(
       source_note = sprintf("Study Status: %s", study_status)
     )
@@ -90,7 +90,7 @@ tabulate_study_summary <- function(
 #' @examples
 #' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
-#' tabulate_pk_parameters(data_proc %>% dplyr::filter(DOSE != 0), ID, DOSE, CONC, NTLD)
+#' tabulate_pk_parameters(data_proc |> dplyr::filter(DOSE != 0), ID, DOSE, CONC, NTLD)
 tabulate_pk_parameters <- function(
   data,
   id_col,
@@ -119,34 +119,34 @@ tabulate_pk_parameters <- function(
     group_col = !!group
   )
 
-  pk_params_table <- pk_params_df %>%
-    gt::gt() %>%
+  pk_params_table <- pk_params_df |>
+    gt::gt() |>
     gt::cols_merge(
       columns = c(.data$Tmax_median, .data$Tmax_min, .data$Tmax_max),
       pattern = "{1} ({2}, {3})"
-    ) %>%
+    ) |>
     gt::cols_merge(
       columns = c(.data$Cmax_gm, .data$Cmax_cv),
       pattern = "{1} ({2})"
-    ) %>%
+    ) |>
     gt::cols_merge(
       columns = c(.data$Cmax_median, .data$Cmax_min, .data$Cmax_max),
       pattern = "{1} ({2}, {3})"
-    ) %>%
+    ) |>
     gt::cols_label(
       group = "Dose Group",
       Tmax_median = "Tmax Median (min, max)",
       Cmax_gm = "Cmax geometric mean (%CV)",
       Cmax_median = "Cmax Median (min, max)"
-    ) %>%
-    gt::fmt_number(decimals = decimals) %>%
+    ) |>
+    gt::fmt_number(decimals = decimals) |>
     gt::fmt_number(
       decimals = 0,
       columns = .data$N
     )
 
   if (!is.null(title)) {
-    pk_params_table <- pk_params_table %>%
+    pk_params_table <- pk_params_table |>
       gt::tab_header(
         title = gt::md(title)
       )
@@ -220,39 +220,39 @@ tabulate_model_fit_parameters <- function(
   )
 
   if (!show_standard_error) {
-    fit_result_df <- fit_result_df %>%
+    fit_result_df <- fit_result_df |>
       dplyr::select(-"Std.Error")
   }
 
-  fit_result_table <- fit_result_df %>%
-    dplyr::select(-"DF", -"t-value") %>%
-    gt::gt() %>%
+  fit_result_table <- fit_result_df |>
+    dplyr::select(-"DF", -"t-value") |>
+    gt::gt() |>
     gt::cols_merge(
       columns = c(.data$Value, .data$CIl, .data$CIu),
       pattern = "{1} [{2}, {3}]"
-    ) %>%
+    ) |>
     gt::cols_label(
       Value = paste0("Estimate [", conf_int * 100, "% CI]")
     )
   if (show_standard_error) {
-    fit_result_table <- fit_result_table %>%
+    fit_result_table <- fit_result_table |>
       gt::cols_label(
         Std.Error = "Standard Error"
       )
   }
 
-  fit_result_table <- fit_result_table %>%
-    gt::fmt_number(decimals = decimals) %>%
+  fit_result_table <- fit_result_table |>
+    gt::fmt_number(decimals = decimals) |>
     gt::sub_missing()
 
   if (!is.null(title)) {
-    fit_result_table <- fit_result_table %>%
+    fit_result_table <- fit_result_table |>
       gt::tab_header(
         title = gt::md(title)
       )
   }
   if (scientific) {
-    fit_result_table <- fit_result_table %>%
+    fit_result_table <- fit_result_table |>
       gt::fmt_scientific(
         columns = gt::everything(),
         decimals = decimals
@@ -293,7 +293,7 @@ tabulate_model_fit_parameters <- function(
 #' @export
 #'
 #' @examples
-#' data_proc <- cqtkit_data_verapamil %>% preprocess()
+#' data_proc <- cqtkit_data_verapamil |> preprocess()
 #' tabulate_ecg_param_summary(
 #'  data_proc,
 #'  NTLD,
@@ -367,7 +367,7 @@ tabulate_ecg_param_summary <- function(
   }
 
   if (!is.null(reference_dose)) {
-    s_proc <- summary %>%
+    s_proc <- summary |>
       dplyr::mutate(
         mean_ddecg = dplyr::if_else(
           .data$dose == reference_dose,
@@ -388,43 +388,43 @@ tabulate_ecg_param_summary <- function(
   } else {
     s_proc <- summary
   }
-  s_proc <- s_proc %>% dplyr::select(-"dose")
+  s_proc <- s_proc |> dplyr::select(-"dose")
 
-  s_gt <- s_proc %>%
-    dplyr::group_by(group) %>%
-    gt::gt() %>%
+  s_gt <- s_proc |>
+    dplyr::group_by(group) |>
+    gt::gt() |>
     gt::tab_options(
       row_group.as_column = TRUE
-    ) %>%
+    ) |>
     gt::tab_style(
       style = gt::cell_text(
         v_align = "middle",
         align = "center"
       ),
       locations = gt::cells_row_groups()
-    ) %>%
+    ) |>
     gt::tab_spanner(
       label = paste0("Observed ", ecg_param_name, " (", unit, ")"),
       columns = c(.data$mean_ecg, .data$ecg_low, .data$ecg_high)
-    ) %>%
+    ) |>
     gt::tab_spanner(
       label = "Baseline Corrected",
       columns = c(.data$mean_decg, .data$decg_low, .data$decg_high),
       level = 2
-    ) %>%
+    ) |>
     gt::tab_spanner(
       label = paste0(ecg_param_name, " (", unit, ")"),
       columns = c(.data$mean_decg, .data$decg_low, .data$decg_high),
       level = 1
-    ) %>%
+    ) |>
     gt::cols_merge(
       columns = c(.data$ecg_low, .data$ecg_high),
       pattern = "[{1}, {2}]"
-    ) %>%
+    ) |>
     gt::cols_merge(
       columns = c(.data$decg_low, .data$decg_high),
       pattern = "[{1}, {2}]"
-    ) %>%
+    ) |>
     gt::cols_label(
       time = time_label,
       n = "N",
@@ -434,21 +434,21 @@ tabulate_ecg_param_summary <- function(
       decg_low = paste0(round(delta_ecg_param_conf_int * 100), "% CI"),
     )
   if (!is.null(reference_dose)) {
-    s_gt <- s_gt %>%
+    s_gt <- s_gt |>
       gt::tab_spanner(
         label = "Baseline and Placebo",
         columns = c(.data$mean_ddecg, .data$ddecg_low, .data$ddecg_high),
         level = 2
-      ) %>%
+      ) |>
       gt::tab_spanner(
         label = paste0("Corrected ", ecg_param_name, " (", unit, ")"),
         columns = c(.data$mean_ddecg, .data$ddecg_low, .data$ddecg_high),
         level = 1
-      ) %>%
+      ) |>
       gt::cols_merge(
         columns = c(.data$ddecg_low, .data$ddecg_high),
         pattern = "[{1}, {2}]"
-      ) %>%
+      ) |>
       gt::cols_label(
         mean_ddecg = "Mean",
         ddecg_low = paste0(round(delta_ecg_param_conf_int * 100), "% CI")
@@ -456,23 +456,23 @@ tabulate_ecg_param_summary <- function(
   }
 
   if (!is.null(row_group_label)) {
-    s_gt <- s_gt %>%
+    s_gt <- s_gt |>
       gt::tab_stubhead(label = row_group_label)
   }
 
   if (!is.null(title)) {
-    s_gt <- s_gt %>%
+    s_gt <- s_gt |>
       gt::tab_header(
         title = gt::md(title)
       )
   }
 
-  s_gt <- s_gt %>%
-    gt::fmt_number(decimals = decimals) %>%
+  s_gt <- s_gt |>
+    gt::fmt_number(decimals = decimals) |>
     gt::fmt_number(
       decimals = 0,
       columns = .data$n
-    ) %>%
+    ) |>
     gt::sub_missing()
 
   tab_option_args$data <- s_gt
@@ -652,7 +652,7 @@ tabulate_high_qtc_sub <- function(
     gt::cols_label(!!!all_labels)
 
   if (!is.null(title)) {
-    t <- t %>%
+    t <- t |>
       gt::tab_header(
         title = gt::md(title)
       )
@@ -665,7 +665,7 @@ tabulate_high_qtc_sub <- function(
       group_label <- ""
     }
   }
-  t <- t %>%
+  t <- t |>
     gt::cols_label(group = group_label)
 
   args <- rlang::list2(...)
@@ -716,7 +716,7 @@ tabulate_high_qtc_sub <- function(
 #'   TRUE
 #' )
 #' pk_df <- compute_pk_parameters(
-#'   data_proc %>% dplyr::filter(DOSE != 0),
+#'   data_proc |> dplyr::filter(DOSE != 0),
 #'   ID,
 #'   DOSEF,
 #'   CONC,
@@ -796,36 +796,36 @@ tabulate_exposure_predictions <- function(
     control_predictors,
     cmaxes,
     conf_int
-  ) %>%
-    dplyr::filter(conc %in% cmaxes) %>%
-    dplyr::mutate(conc = factor(conc, levels = cmaxes)) %>%
-    dplyr::arrange(conc) %>%
-    dplyr::mutate(conc = as.numeric(as.character(conc))) %>%
-    dplyr::mutate(Dose = doses) %>%
-    dplyr::rename(Cmax = .data$conc) %>%
-    dplyr::select("Dose", "Cmax", "pred", "lower", "upper") %>%
-    gt::gt() %>%
+  ) |>
+    dplyr::filter(conc %in% cmaxes) |>
+    dplyr::mutate(conc = factor(conc, levels = cmaxes)) |>
+    dplyr::arrange(conc) |>
+    dplyr::mutate(conc = as.numeric(as.character(conc))) |>
+    dplyr::mutate(Dose = doses) |>
+    dplyr::rename(Cmax = .data$conc) |>
+    dplyr::select("Dose", "Cmax", "pred", "lower", "upper") |>
+    gt::gt() |>
     gt::cols_merge(
       columns = c(.data$lower, .data$upper),
       pattern = "[{1}, {2}]"
-    ) %>%
+    ) |>
     gt::cols_label(
       Dose = "Dose",
       Cmax = paste0("Cmax (", conc_units, ")"),
       pred = gt::md(label),
       lower = paste0("[", round(conf_int * 100), "% CI]")
-    ) %>%
+    ) |>
     gt::fmt_number(columns = dplyr::everything(), decimals = decimals)
 
   if (!is.null(title)) {
-    pred_df <- pred_df %>%
+    pred_df <- pred_df |>
       gt::tab_header(
         title = gt::md(title)
       )
   }
 
   if (scientific) {
-    pred_df <- pred_df %>%
+    pred_df <- pred_df |>
       gt::fmt_scientific(
         decimals = decimals
       )

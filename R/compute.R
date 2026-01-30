@@ -70,9 +70,9 @@ compute_lm_fit_df <- function(data, xdata_col, ydata_col, conf_int = 0.95) {
 #' @export
 #'
 #' @examples
-#' df <- cqtkit_data_verapamil %>% preprocess()
+#' df <- cqtkit_data_verapamil |> preprocess()
 #'
-#' lme_mod <- df %>%
+#' lme_mod <- df |>
 #'   fit_qtc_linear_model(
 #'       QT,
 #'       RR,
@@ -94,16 +94,16 @@ compute_lme_slope_df <- function(lme_mod, xdata_col, conf_int = 0.95) {
     conf_int = conf_int
   )
 
-  slope <- estimates %>%
-    dplyr::filter(.data$Parameters == rlang::quo_name(xdata)) %>%
+  slope <- estimates |>
+    dplyr::filter(.data$Parameters == rlang::quo_name(xdata)) |>
     dplyr::pull(.data$Value)
 
-  slope_ci_lower <- estimates %>%
-    dplyr::filter(.data$Parameters == rlang::quo_name(xdata)) %>%
+  slope_ci_lower <- estimates |>
+    dplyr::filter(.data$Parameters == rlang::quo_name(xdata)) |>
     dplyr::pull(.data$CIl)
 
-  slope_ci_upper <- estimates %>%
-    dplyr::filter(.data$Parameters == rlang::quo_name(xdata)) %>%
+  slope_ci_upper <- estimates |>
+    dplyr::filter(.data$Parameters == rlang::quo_name(xdata)) |>
     dplyr::pull(.data$CIu)
 
   return(tibble::tibble(
@@ -131,7 +131,7 @@ compute_lme_slope_df <- function(lme_mod, xdata_col, conf_int = 0.95) {
 #'
 #' @examples
 #' compute_pk_parameters(
-#'   preprocess(cqtkit_data_verapamil) %>% dplyr::filter(DOSE != 0),
+#'   preprocess(cqtkit_data_verapamil) |> dplyr::filter(DOSE != 0),
 #'   ID,
 #'   DOSE,
 #'   CONC,
@@ -159,13 +159,13 @@ compute_pk_parameters <- function(
   checkmate::assertNames(names(data), must.include = required_cols)
 
   pk_df <- tibble::tibble(
-    id = data %>% dplyr::pull(!!id),
-    dose = data %>% dplyr::pull(!!dose),
-    conc = data %>% dplyr::pull(!!conc),
-    ntld = data %>% dplyr::pull(!!ntld)
+    id = data |> dplyr::pull(!!id),
+    dose = data |> dplyr::pull(!!dose),
+    conc = data |> dplyr::pull(!!conc),
+    ntld = data |> dplyr::pull(!!ntld)
   )
   if (!rlang::quo_is_null(group)) {
-    pk_df$group <- data %>% dplyr::pull(!!group)
+    pk_df$group <- data |> dplyr::pull(!!group)
   } else {
     pk_df$group <- pk_df$dose
   }
@@ -187,8 +187,8 @@ compute_pk_parameters <- function(
     pk_df$group <- paste(pk_df$group, pk_df$dose)
   }
 
-  pk_params_df <- pk_df %>%
-    dplyr::group_by(.data$id, .data$group) %>%
+  pk_params_df <- pk_df |>
+    dplyr::group_by(.data$id, .data$group) |>
     dplyr::mutate(
       Tmax = .data$ntld[which.max(.data$conc)],
       Cmax = .data$conc[which.max(.data$conc)] #what if CMax is 0?
@@ -198,8 +198,8 @@ compute_pk_parameters <- function(
   }
   checkmate::assert(all(pk_params_df$Cmax > 0))
 
-  pk_params_df <- pk_params_df %>%
-    dplyr::group_by(.data$group) %>%
+  pk_params_df <- pk_params_df |>
+    dplyr::group_by(.data$group) |>
     dplyr::summarize(
       N = dplyr::n_distinct(.data$id),
       Tmax_median = stats::median(.data$Tmax, na.rm = TRUE),
@@ -255,8 +255,8 @@ compute_high_qtc_obs <- function(
   checkmate::assertNames(names(data), must.include = required_cols)
 
   qtdf <- tibble::tibble(
-    qtc = data %>% dplyr::pull(!!qtc),
-    deltaqtc = data %>% dplyr::pull(!!deltaqtc)
+    qtc = data |> dplyr::pull(!!qtc),
+    deltaqtc = data |> dplyr::pull(!!deltaqtc)
   )
 
   # Build column expressions for QTc thresholds
@@ -393,28 +393,28 @@ compute_study_summary <- function(data, trt_col, id_col, group_col = NULL) {
   checkmate::assertNames(names(data), must.include = required_cols)
 
   df <- tibble::tibble(
-    id = data %>% dplyr::pull(!!id),
-    trt = data %>% dplyr::pull(!!trt)
+    id = data |> dplyr::pull(!!id),
+    trt = data |> dplyr::pull(!!trt)
   )
   if (!rlang::quo_is_null(group)) {
-    df$group <- data %>% dplyr::pull(!!group)
+    df$group <- data |> dplyr::pull(!!group)
   }
 
   if (!rlang::quo_is_null(group)) {
-    df <- df %>%
+    df <- df |>
       dplyr::mutate(
         grouping = paste(.data$trt, .data$group)
       )
   } else {
-    df <- df %>%
+    df <- df |>
       dplyr::mutate(
         grouping = paste(.data$trt)
       )
   }
 
-  table <- df %>%
-    dplyr::group_by(.data$grouping) %>%
-    dplyr::summarize(n_sub = dplyr::n_distinct(.data$id)) %>%
+  table <- df |>
+    dplyr::group_by(.data$grouping) |>
+    dplyr::summarize(n_sub = dplyr::n_distinct(.data$id)) |>
     dplyr::add_row(
       grouping = "Total",
       n_sub = dplyr::n_distinct(df$id),
@@ -441,7 +441,7 @@ compute_study_summary <- function(data, trt_col, id_col, group_col = NULL) {
 #' @export
 #'
 #' @examples
-#' data_proc <- cqtkit_data_verapamil %>% preprocess()
+#' data_proc <- cqtkit_data_verapamil |> preprocess()
 #'
 #' compute_ecg_param_summary(data_proc, NTLD, DOSEF, QTCF, deltaQTCF)
 compute_ecg_param_summary <- function(
@@ -480,9 +480,9 @@ compute_ecg_param_summary <- function(
       group_col = !!group,
       reference_dose = reference_dose,
       conf_int = conf_int
-    ) %>%
-    dplyr::arrange(dose) %>%
-    dplyr::select(selections) %>%
+    ) |>
+    dplyr::arrange(dose) |>
+    dplyr::select(selections) |>
     dplyr::rename(
       mean_ecg = .data$mean_dv,
       ecg_low = .data$ci_low,
@@ -504,9 +504,9 @@ compute_ecg_param_summary <- function(
     !!group,
     reference_dose = reference_dose,
     conf_int = conf_int
-  ) %>%
-    dplyr::arrange(dose) %>%
-    dplyr::select(selections) %>%
+  ) |>
+    dplyr::arrange(dose) |>
+    dplyr::select(selections) |>
     dplyr::rename(
       mean_decg = .data$mean_dv,
       decg_low = .data$ci_low,
@@ -514,7 +514,7 @@ compute_ecg_param_summary <- function(
     )
 
   if (!is.null(reference_dose)) {
-    decg_summ <- decg_summ %>%
+    decg_summ <- decg_summ |>
       dplyr::rename(
         mean_ddecg = .data$mean_delta_dv,
         ddecg_low = .data$ci_low_delta,
@@ -578,12 +578,12 @@ compute_grouped_mean_sd <- function(
 
   ##########################
   df <- tibble::tibble(
-    dv = data %>% dplyr::pull(!!dv),
-    time = data %>% dplyr::pull(!!time),
-    dose = data %>% dplyr::pull(!!dose),
+    dv = data |> dplyr::pull(!!dv),
+    time = data |> dplyr::pull(!!time),
+    dose = data |> dplyr::pull(!!dose),
   )
   if (!rlang::quo_is_null(group)) {
-    df$group <- data %>% dplyr::pull(!!group)
+    df$group <- data |> dplyr::pull(!!group)
   }
 
   if (!is.null(reference_dose)) {
@@ -593,9 +593,9 @@ compute_grouped_mean_sd <- function(
     )
   }
 
-  nrow_df <- df %>% nrow()
-  nrow_time_grouped_df <- df$time %>% unique() %>% length()
-  nrow_dose_grouped_df <- df$dose %>% unique() %>% length()
+  nrow_df <- df |> nrow()
+  nrow_time_grouped_df <- df$time |> unique() |> length()
+  nrow_dose_grouped_df <- df$dose |> unique() |> length()
 
   if (nrow_df == nrow_time_grouped_df) {
     stop(
@@ -610,7 +610,7 @@ compute_grouped_mean_sd <- function(
   }
 
   if (!rlang::quo_is_null(group)) {
-    nrow_group_grouped_df <- df$group %>% unique() %>% length()
+    nrow_group_grouped_df <- df$group |> unique() |> length()
 
     if (nrow_df == nrow_group_grouped_df) {
       stop(
@@ -638,20 +638,20 @@ compute_grouped_mean_sd <- function(
   ############################ - this could be prep_data function return qc_df
 
   if (!rlang::quo_is_null(group)) {
-    df <- df %>%
+    df <- df |>
       dplyr::mutate(
         grouping = paste(.data$dose, .data$group)
-      ) %>%
+      ) |>
       dplyr::group_by(.data$time, .data$dose, .data$group)
   } else {
-    df <- df %>%
+    df <- df |>
       dplyr::mutate(
         grouping = paste(.data$dose)
-      ) %>%
+      ) |>
       dplyr::group_by(.data$time, .data$dose)
   }
 
-  df <- df %>%
+  df <- df |>
     dplyr::summarize(
       mean_dv = mean(.data$dv, na.rm = TRUE),
       sd = stats::sd(.data$dv, na.rm = TRUE),
@@ -684,8 +684,8 @@ compute_grouped_mean_sd <- function(
     )
 
   if (!is.null(reference_dose)) {
-    delta_df <- df %>%
-      dplyr::group_by(.data$time) %>%
+    delta_df <- df |>
+      dplyr::group_by(.data$time) |>
       dplyr::mutate(
         mean_delta_dv = .data$mean_dv -
           .data$mean_dv[.data$dose == reference_dose],
@@ -735,7 +735,7 @@ compute_grouped_mean_sd <- function(
 #' @export
 #'
 #' @examples
-#' compute_loess_linear_r_squared(cqtkit_data_verapamil %>% preprocess(), deltaQTCF, CONC)
+#' compute_loess_linear_r_squared(cqtkit_data_verapamil |> preprocess(), deltaQTCF, CONC)
 compute_loess_linear_r_squared <- function(
   data,
   deltaqtc_col,
@@ -765,7 +765,7 @@ compute_loess_linear_r_squared <- function(
     (lin_reg_pred - mean(lin_reg_pred))^2
   )
 
-  n <- lin_reg$model %>% nrow()
+  n <- lin_reg$model |> nrow()
   enp <- loess_reg$enp
 
   r_squared <- 1 - ss_res / ss_tot
@@ -836,10 +836,10 @@ compute_potential_hysteresis <- function(
   checkmate::assertNames(names(data), must.include = required_cols)
 
   qtc_conc_df <- tibble::tibble(
-    ntld = data %>% dplyr::pull(!!ntld),
-    deltaqtc = data %>% dplyr::pull(!!deltaqtc),
-    conc = data %>% dplyr::pull(!!conc),
-    group = data %>% dplyr::pull(!!group)
+    ntld = data |> dplyr::pull(!!ntld),
+    deltaqtc = data |> dplyr::pull(!!deltaqtc),
+    conc = data |> dplyr::pull(!!conc),
+    group = data |> dplyr::pull(!!group)
   )
 
   if (any(is.na(qtc_conc_df$deltaqtc))) {
@@ -853,23 +853,23 @@ compute_potential_hysteresis <- function(
     )
   }
 
-  if (length(qtc_conc_df$group %>% unique()) != 1)
+  if (length(qtc_conc_df$group |> unique()) != 1)
     message("Only input single dose data")
-  stopifnot(length(qtc_conc_df$group %>% unique()) == 1)
+  stopifnot(length(qtc_conc_df$group |> unique()) == 1)
 
-  if (length(qtc_conc_df$ntld %>% unique()) < 3)
+  if (length(qtc_conc_df$ntld |> unique()) < 3)
     message("Three time points are needed within NTIME")
-  stopifnot(length(qtc_conc_df$ntld %>% unique()) > 3)
+  stopifnot(length(qtc_conc_df$ntld |> unique()) > 3)
 
-  qtc_conc_df <- qtc_conc_df %>%
-    dplyr::group_by(.data$ntld, .groups = "keep") %>%
+  qtc_conc_df <- qtc_conc_df |>
+    dplyr::group_by(.data$ntld, .groups = "keep") |>
     dplyr::mutate(
       mean_conc = mean(.data$conc, na.rm = TRUE),
       mean_dqtc = mean(.data$deltaqtc, na.rm = TRUE)
-    ) %>%
-    dplyr::select(-conc, -deltaqtc) %>%
-    dplyr::distinct() %>%
-    dplyr::arrange(.data$ntld) %>%
+    ) |>
+    dplyr::select(-conc, -deltaqtc) |>
+    dplyr::distinct() |>
+    dplyr::arrange(.data$ntld) |>
     dplyr::ungroup()
 
   high_qtc_counter <- 0
@@ -955,18 +955,18 @@ compute_hysteresis_labeller <- function(
   checkmate::assertNames(names(data), must.include = required_cols)
 
   qtc_conc_df <- tibble::tibble(
-    ntld = data %>% dplyr::pull(!!ntld),
-    deltaqtc = data %>% dplyr::pull(!!deltaqtc),
-    conc = data %>% dplyr::pull(!!conc),
-    dosef = data %>% dplyr::pull(!!dosef),
+    ntld = data |> dplyr::pull(!!ntld),
+    deltaqtc = data |> dplyr::pull(!!deltaqtc),
+    conc = data |> dplyr::pull(!!conc),
+    dosef = data |> dplyr::pull(!!dosef),
   )
 
   if (!rlang::quo_is_null(group)) {
-    qtc_conc_df$group <- data %>% dplyr::pull(!!group)
+    qtc_conc_df$group <- data |> dplyr::pull(!!group)
   } else {
     qtc_conc_df$group <- factor(
-      data %>% dplyr::pull(!!dosef),
-      levels = levels(data %>% dplyr::pull(!!dosef))
+      data |> dplyr::pull(!!dosef),
+      levels = levels(data |> dplyr::pull(!!dosef))
     )
   }
   checkmate::assert_factor(qtc_conc_df$dosef)
@@ -988,7 +988,7 @@ compute_hysteresis_labeller <- function(
   hysteresis <- list()
   for (dose in group_levels) {
     h <- compute_potential_hysteresis(
-      data = qtc_conc_df %>% dplyr::filter(.data$group == dose),
+      data = qtc_conc_df |> dplyr::filter(.data$group == dose),
       ntime_col = ntld,
       deltaqtc_col = deltaqtc,
       conc_col = conc,
@@ -1035,8 +1035,8 @@ compute_enGRI <- function(data, conc_gm_col, ddqtc_col) {
   checkmate::assertNames(names(data), must.include = required_cols)
 
   df <- tibble::tibble(
-    conc = data %>% dplyr::pull(!!conc),
-    ddqtc = data %>% dplyr::pull(!!ddqtc)
+    conc = data |> dplyr::pull(!!conc),
+    ddqtc = data |> dplyr::pull(!!ddqtc)
   )
 
   if (length(df$conc) != length(df$ddqtc)) {
@@ -1093,22 +1093,22 @@ compute_quantiles_obs_df <- function(
   checkmate::assertNames(names(data), must.include = required_cols)
 
   input_df <- tibble::tibble(
-    xdata = data %>% dplyr::pull(!!xdata),
-    ydata = data %>% dplyr::pull(!!ydata)
+    xdata = data |> dplyr::pull(!!xdata),
+    ydata = data |> dplyr::pull(!!ydata)
   )
 
   if (any(is.na(input_df$xdata))) {
     warning(
       "Your X data contains NA and is removed in calculations of this function"
     )
-    input_df <- input_df %>%
+    input_df <- input_df |>
       dplyr::filter(!is.na(.data$xdata))
   }
   if (any(is.na(input_df$ydata))) {
     warning(
       "Your Y data contains NA and is removed in calculations of this function"
     )
-    input_df <- input_df %>%
+    input_df <- input_df |>
       dplyr::filter(!is.na(.data$ydata))
   }
 
@@ -1120,7 +1120,7 @@ compute_quantiles_obs_df <- function(
     )
 
     # Check if quantiles is correct length
-    if (quantiles %>% unique() %>% length() < nbins + 1) {
+    if (quantiles |> unique() |> length() < nbins + 1) {
       q_unique <- unique(quantiles)
 
       repeated_idx <- which(duplicated(quantiles))
@@ -1132,14 +1132,14 @@ compute_quantiles_obs_df <- function(
           repeated_val
         )
       )
-      quantiles_fixed <- input_df %>%
-        dplyr::filter(.data$xdata > repeated_val) %>%
-        dplyr::pull(.data$xdata) %>%
+      quantiles_fixed <- input_df |>
+        dplyr::filter(.data$xdata > repeated_val) |>
+        dplyr::pull(.data$xdata) |>
         stats::quantile(probs = seq(0, 1, length.out = nbins), type = type)
 
       q_combined <- c(q_unique[q_unique <= repeated_val], quantiles_fixed)
       q_combined <- unique(q_combined)
-      if (q_combined %>% unique() %>% length() < nbins + 1) {
+      if (q_combined |> unique() |> length() < nbins + 1) {
         stop(
           "Duplicates still present. Please manually supply nbins with desired cut points"
         )
@@ -1150,11 +1150,11 @@ compute_quantiles_obs_df <- function(
     quantiles <- nbins # use the vector supplied by user.
   }
 
-  obs_par <- input_df %>%
+  obs_par <- input_df |>
     dplyr::mutate(
-      decile = .data$xdata %>% cut(breaks = quantiles, include.lowest = TRUE)
-    ) %>%
-    dplyr::group_by(.data$decile) %>%
+      decile = .data$xdata |> cut(breaks = quantiles, include.lowest = TRUE)
+    ) |>
+    dplyr::group_by(.data$decile) |>
     dplyr::summarize(
       xdata = stats::median(.data$xdata, na.rm = TRUE),
       mean_dv = mean(.data$ydata, na.rm = TRUE),
@@ -1168,7 +1168,7 @@ compute_quantiles_obs_df <- function(
       med_y = stats::median(.data$ydata, na.rm = TRUE),
       low_p_y = stats::quantile(.data$ydata, probs = lower_p, type = type),
       high_p_y = stats::quantile(.data$ydata, probs = upper_p, type = type)
-    ) %>%
+    ) |>
     dplyr::ungroup()
   return(obs_par)
 }
@@ -1296,25 +1296,25 @@ compute_summary_statistics_of_simulations <- function(
       combined_sim$xdata,
       probs = seq(0, 1, 1 / nbins),
       type = type
-    ) %>%
+    ) |>
       unique()
   } else {
     quantiles <- nbins # use the vector supplied by user.
   }
 
-  stat_cs <- combined_sim %>%
+  stat_cs <- combined_sim |>
     dplyr::mutate(
-      decile = .data$xdata %>% cut(quantiles, include.lowest = TRUE)
-    ) %>%
-    dplyr::group_by(.data$decile, .data$sim_num) %>%
+      decile = .data$xdata |> cut(quantiles, include.lowest = TRUE)
+    ) |>
+    dplyr::group_by(.data$decile, .data$sim_num) |>
     dplyr::summarize(
       med_xdata = stats::median(.data$xdata),
       med_pred = stats::median(.data$pred),
       low_pred = stats::quantile(.data$pred, probs = 0.05), #These are not supposed to change with conf_int, but fixed for VPC
       high_pred = stats::quantile(.data$pred, probs = 0.95), #These are not supposed to change with conf_int, but fixed for VPC
       .groups = "keep"
-    ) %>%
-    dplyr::group_by(.data$med_xdata) %>%
+    ) |>
+    dplyr::group_by(.data$med_xdata) |>
     dplyr::mutate(
       mean_med_pred = mean(.data$med_pred),
       low_med_pred = stats::quantile(
@@ -1349,7 +1349,7 @@ compute_summary_statistics_of_simulations <- function(
         probs = upper_p,
         type = type
       )
-    ) %>%
+    ) |>
     tibble::as_tibble()
 
   return(stat_cs)
@@ -1373,7 +1373,7 @@ compute_summary_statistics_of_simulations <- function(
 #'
 #' @examples
 #' mod <- fit_prespecified_model(
-#'   cqtkit_data_verapamil %>% preprocess(),
+#'   cqtkit_data_verapamil |> preprocess(),
 #'   deltaQTCF,
 #'   ID,
 #'   CONC,
@@ -1384,7 +1384,7 @@ compute_summary_statistics_of_simulations <- function(
 #'   remove_conc_iiv = TRUE
 #' )
 #' compute_conc_for_upper_pred(
-#'   cqtkit_data_verapamil %>% preprocess(),
+#'   cqtkit_data_verapamil |> preprocess(),
 #'   mod,
 #'   "CONC",
 #'   "TRTG",
@@ -1405,7 +1405,7 @@ compute_conc_for_upper_pred <- function(
 
   # Get degrees of freedom
   df <- stats::coef(summary(fit))[1, 3]
-  v <- stats::vcov(fit) %>% as.data.frame()
+  v <- stats::vcov(fit) |> as.data.frame()
 
   # Compute t value with correct p based on conf_int
   t <- stats::qt(1 - (1 - conf_int) / 2, df)
@@ -1502,7 +1502,7 @@ compute_exposure_predictions <- function(
   required_cols <- unlist(lapply(c(conc), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
-  conc_data <- data %>% dplyr::pull(!!conc)
+  conc_data <- data |> dplyr::pull(!!conc)
 
   # need to better understand lme variance matrix stuff for this.
   if (typeof(fit$apVar) == "character") {
@@ -1558,7 +1558,7 @@ compute_exposure_predictions <- function(
       pred = contrast_df$Contrast,
       lower = contrast_df$Lower,
       upper = contrast_df$Upper
-    ) %>%
+    ) |>
       tibble::as_tibble()
     return(pred)
   })
@@ -1663,15 +1663,15 @@ compute_contrast_observations <- function(
       # No treatment column provided, use default grouping
       observed_df <- tibble::tibble(
         group = "Observations",
-        conc = data %>% dplyr::pull(!!conc),
-        dv = data %>% dplyr::pull(!!dv)
+        conc = data |> dplyr::pull(!!conc),
+        dv = data |> dplyr::pull(!!dv)
       )
     } else {
       # Use treatment column for grouping
       observed_df <- tibble::tibble(
-        group = data %>% dplyr::pull(!!trt),
-        conc = data %>% dplyr::pull(!!conc),
-        dv = data %>% dplyr::pull(!!dv)
+        group = data |> dplyr::pull(!!trt),
+        conc = data |> dplyr::pull(!!conc),
+        dv = data |> dplyr::pull(!!dv)
       )
     }
   } else {
@@ -1682,20 +1682,20 @@ compute_contrast_observations <- function(
 
     if (contrast_method == "matched") {
       # Individual ID+time matching (crossover studies)
-      treatment_df <- data %>%
-        dplyr::filter(!!rlang::sym(trt_str) == !!treatment_value) %>%
+      treatment_df <- data |>
+        dplyr::filter(!!rlang::sym(trt_str) == !!treatment_value) |>
         dplyr::select(!!id, !!ntime, !!conc, !!trt, treatment_dv = !!dv)
 
-      control_df <- data %>%
-        dplyr::filter(!!rlang::sym(trt_str) == !!control_value) %>%
+      control_df <- data |>
+        dplyr::filter(!!rlang::sym(trt_str) == !!control_value) |>
         dplyr::select(!!id, !!ntime, control_dv = !!dv)
 
-      observed_df <- treatment_df %>%
+      observed_df <- treatment_df |>
         dplyr::left_join(
           control_df,
           by = c(rlang::as_name(id), rlang::as_name(ntime))
-        ) %>%
-        dplyr::mutate(dv = .data$treatment_dv - .data$control_dv) %>%
+        ) |>
+        dplyr::mutate(dv = .data$treatment_dv - .data$control_dv) |>
         dplyr::transmute(
           group = !!trt,
           conc = !!conc,
@@ -1704,22 +1704,22 @@ compute_contrast_observations <- function(
 
       if (any(is.na(observed_df$dv))) {
         warning("Observed data contained NA and are removed in plot")
-        observed_df <- observed_df %>% dplyr::filter(!is.na(dv))
+        observed_df <- observed_df |> dplyr::filter(!is.na(dv))
       }
     } else if (contrast_method == "group") {
       # Group-wise subtraction (parallel studies)
-      control_means <- data %>%
-        dplyr::filter(!!rlang::sym(trt_str) == !!control_value) %>%
-        dplyr::group_by(!!ntime) %>%
+      control_means <- data |>
+        dplyr::filter(!!rlang::sym(trt_str) == !!control_value) |>
+        dplyr::group_by(!!ntime) |>
         dplyr::summarise(
           control_mean_dv = mean(!!dv, na.rm = TRUE),
           .groups = "drop"
         )
 
-      observed_df <- data %>%
-        dplyr::filter(!!rlang::sym(trt_str) == !!treatment_value) %>%
-        dplyr::left_join(control_means, by = rlang::as_name(ntime)) %>%
-        dplyr::mutate(dv = !!dv - .data$control_mean_dv) %>%
+      observed_df <- data |>
+        dplyr::filter(!!rlang::sym(trt_str) == !!treatment_value) |>
+        dplyr::left_join(control_means, by = rlang::as_name(ntime)) |>
+        dplyr::mutate(dv = !!dv - .data$control_mean_dv) |>
         dplyr::transmute(
           group = !!trt,
           conc = !!conc,
@@ -1730,7 +1730,7 @@ compute_contrast_observations <- function(
         warning(
           "Control group means contained NA, resulting in NA observations that are removed"
         )
-        observed_df <- observed_df %>% dplyr::filter(!is.na(dv))
+        observed_df <- observed_df |> dplyr::filter(!is.na(dv))
       }
     }
   }

@@ -25,7 +25,6 @@ Imports:
     ggpubr,
     gt,
     gtools,
-    magrittr,
     MASS,
     nlme,
     purrr,
@@ -38,7 +37,7 @@ Suggests:
     testthat (>= 3.0.0),
     pak,
 Config/testthat/edition: 3
-Depends: 
-    R (>= 3.5.0)
+Depends:
+    R (>= 4.1.0)
 LazyData: true
 URL: https://a2-ai.github.io/cqtkit-docs

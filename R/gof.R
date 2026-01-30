@@ -82,7 +82,7 @@ gof_plots <- function(
 
   p1_axis_limits <- range(p1_all_values, na.rm = TRUE)
 
-  p1 <- fit_results_df %>%
+  p1 <- fit_results_df |>
     ggplot2::ggplot(ggplot2::aes(
       x = .data$PRED,
       y = .data$dv,
@@ -118,7 +118,7 @@ gof_plots <- function(
   p2_all_values <- c(fit_results_df$IWRES)
   p2_axis_limits <- range(p2_all_values, na.rm = TRUE)
 
-  p2 <- fit_results_df %>%
+  p2 <- fit_results_df |>
     ggplot2::ggplot(ggplot2::aes(
       sample = .data$IWRES,
       shape = .data$.trt_group,
@@ -134,7 +134,7 @@ gof_plots <- function(
   p2 <- do.call(style_plot, c(list(p = p2), style))
 
   #residuals vs concentration
-  p3 <- fit_results_df %>%
+  p3 <- fit_results_df |>
     ggplot2::ggplot(ggplot2::aes(
       x = .data$conc,
       y = .data$IWRES,
@@ -158,7 +158,7 @@ gof_plots <- function(
 
   p3 <- do.call(style_plot, c(list(p = p3), style))
 
-  p4 <- fit_results_df %>%
+  p4 <- fit_results_df |>
     ggplot2::ggplot(ggplot2::aes(x = .data$IWRES)) +
     ggplot2::geom_histogram(
       ggplot2::aes(y = ggplot2::after_stat(density)),
@@ -274,7 +274,7 @@ gof_concordance_plots <- function(
   if (is.null(style$ylims)) style$ylims <- axis_limits
 
   plots <- lapply(seq_along(xdata), function(i) {
-    .p <- fit_results_df %>%
+    .p <- fit_results_df |>
       ggplot2::ggplot(
         ggplot2::aes(x = .data[[xdata[[i]]]], y = .data$dv)
       ) +
@@ -404,7 +404,7 @@ gof_residuals_plots <- function(
   if (is.null(style)) style <- list()
 
   plots <- lapply(seq_along(xdata), function(i) {
-    .p <- fit_results_df %>%
+    .p <- fit_results_df |>
       ggplot2::ggplot(
         ggplot2::aes(x = .data[[xdata[[i]]]], y = .data[[ydata[[i]]]])
       ) +
@@ -518,7 +518,7 @@ gof_qq_plots <- function(
     all_values <- c(fit_results_df$WRES, fit_results_df$IWRES)
     axis_limits <- range(all_values, na.rm = TRUE)
 
-    .qqp <- fit_results_df %>%
+    .qqp <- fit_results_df |>
       ggplot2::ggplot(
         ggplot2::aes(sample = .data[[r]])
       ) +
@@ -632,7 +632,7 @@ gof_residuals_time_boxplots <- function(
   if (is.null(style)) style <- list()
 
   for (i in seq_along(ydata)) {
-    .rbp <- fit_results_df %>%
+    .rbp <- fit_results_df |>
       ggplot2::ggplot(
         ggplot2::aes(
           x = as.factor(.data$time),
@@ -753,7 +753,7 @@ gof_residuals_trt_boxplots <- function(
   if (is.null(style)) style <- list()
 
   for (i in seq_along(ydata)) {
-    .rbpt <- fit_results_df %>%
+    .rbpt <- fit_results_df |>
       ggplot2::ggplot(
         if (!rlang::quo_is_null(trt)) {
           ggplot2::aes(

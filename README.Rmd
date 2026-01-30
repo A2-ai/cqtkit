@@ -50,7 +50,7 @@ library(gt)
 The included `cqtkit_data_<drug>` datasets already contain preprocessed data that have been averaged across replicates, so they include many of the derived columns that `preprocess()` would typically create. However, `preprocess()` can still be useful to compute any missing derived parameters.
 
 ```{r data-preprocessing}
-data_proc <- cqtkit_data_verapamil %>% preprocess()
+data_proc <- cqtkit_data_verapamil |> preprocess()
 new_cols <- setdiff(names(data_proc), names(cqtkit_data_verapamil))
 cat(paste(new_cols, collapse = ", "), "\n")
 ```
@@ -88,7 +88,7 @@ eda_mean_dv_over_time(
 
 ### QTc Correction
 ```{r qtc-comparison}
-bl <- cqtkit_data_bl_verapamil %>% compute_qtcb_qtcf(qtbl_col = NULL, rrbl_col = NULL)
+bl <- cqtkit_data_bl_verapamil |> compute_qtcb_qtcf(qtbl_col = NULL, rrbl_col = NULL)
 eda_qtc_comparison_plot(
   data = bl,
   rr_col = RR,
@@ -165,10 +165,10 @@ tabulate_model_fit_parameters(
   conf_int = 0.9,
   decimals = 2,
   title = "Fixed-Effect Estimates for &Delta;QTcF Model"
-) %>%
+) |>
   tab_source_note(
     source_note = "Additive Residual error model with IIV on intercept and slope"
-  ) %>%
+  ) |>
   as_raw_html()
 ```
 
@@ -263,7 +263,7 @@ conc_for_10_ms <- compute_conc_for_upper_pred(
 
 
 stpx_cmax <- max(compute_pk_parameters(
-  data_proc %>% dplyr::filter(TRTG != "Placebo"),
+  data_proc |> dplyr::filter(TRTG != "Placebo"),
   ID,
   DOSE,
   CONC,
@@ -332,10 +332,10 @@ tabulate_exposure_predictions(
   conc_units = "ng/mL",
   scientific = FALSE,
   title = "&Delta;&Delta;QTcF Predictions"
-) %>%
+) |>
   tab_source_note(
     source_note = gt::md("\\* Computed C~max~ for upper 90% CI to reach 10 ms")
-  ) %>%
+  ) |>
   as_raw_html()
 ```
 

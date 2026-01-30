@@ -38,7 +38,7 @@ of the threshold value.
 }
 \examples{
 mod <- fit_prespecified_model(
-  cqtkit_data_verapamil \%>\% preprocess(),
+  cqtkit_data_verapamil |> preprocess(),
   deltaQTCF,
   ID,
   CONC,
@@ -49,7 +49,7 @@ mod <- fit_prespecified_model(
   remove_conc_iiv = TRUE
 )
 compute_conc_for_upper_pred(
-  cqtkit_data_verapamil \%>\% preprocess(),
+  cqtkit_data_verapamil |> preprocess(),
   mod,
   "CONC",
   "TRTG",
