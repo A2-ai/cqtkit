@@ -481,28 +481,31 @@ tabulate_ecg_param_summary <- function(
   return(s_gt)
 }
 
-#' Tabulate High QTc Subjects
+#' Tabulate High QTc Observations
 #'
 #' Tabulates number of high QTc/deltaQTc observations.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param qtc_col An unquoted column name for QTc data
-#' @param deltaqtc_col An unquoted column name for deltaQTC data
+#' @param deltaqtc_col An unquoted column name for deltaQTc data
 #' @param group_col An optional unquoted column name of grouping column
 #' @param group_label An optional label to use for group column
 #' @param qtc_label A string label for the QTc parameter (default: "QTc")
 #' @param unit A string for the unit of measurement (default: "ms")
+#' @param qtc_thresholds Numeric vector of QTc thresholds (default: c(450, 480, 500))
+#' @param dqtc_thresholds Numeric vector of deltaQTc thresholds (default: c(30, 60))
 #' @param title Optional string to give the table a title, wrapped in gt::md()
 #' @param ... Optional additional args to gt::tab_options
 #'
-#' @return A gt table with counts of observations exceeding QTc thresholds (>450, >480, >500 ms) and deltaQTc thresholds (>30, >60 ms)
+#' @return A gt table with counts of observations exceeding each threshold
 #' @export
 #'
 #' @examples
 #' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
-#' tabulate_high_qtc_sub(data_proc, QTCF, deltaQTCF, group_col = DOSEF, qtc_label = "QTcF")
-tabulate_high_qtc_sub <- function(
+#' tabulate_high_qtc_obs(data_proc, QTCF, deltaQTCF, group_col = DOSEF, qtc_label = "QTcF")
+#' tabulate_high_qtc_obs(data_proc, QTCF, deltaQTCF, qtc_thresholds = c(430, 450))
+tabulate_high_qtc_obs <- function(
   data,
   qtc_col,
   deltaqtc_col,
@@ -510,10 +513,14 @@ tabulate_high_qtc_sub <- function(
   group_label = NULL,
   qtc_label = "QTc",
   unit = "ms",
+  qtc_thresholds = c(450, 480, 500),
+  dqtc_thresholds = c(30, 60),
   title = NULL,
   ...
 ) {
   checkmate::assertDataFrame(data)
+  checkmate::assertNumeric(qtc_thresholds, min.len = 1)
+  checkmate::assertNumeric(dqtc_thresholds, min.len = 1)
 
   qtc <- rlang::enquo(qtc_col)
   deltaqtc <- rlang::enquo(deltaqtc_col)
@@ -522,18 +529,127 @@ tabulate_high_qtc_sub <- function(
   required_cols <- unlist(lapply(c(qtc, deltaqtc, group), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
-  n_gt <- compute_high_qtc_sub(data, !!qtc, !!deltaqtc, !!group)
+  n_gt <- compute_high_qtc_obs(data, !!qtc, !!deltaqtc, !!group,
+                               qtc_thresholds = qtc_thresholds,
+                               dqtc_thresholds = dqtc_thresholds)
 
-  # Convert to long format manually to prevent inclusion of tidyr just for pivot_longer.
+  # Build dynamic column labels for QTc thresholds
+  qtc_labels <- purrr::map(qtc_thresholds, function(thresh) {
+    gt::md(paste0(qtc_label, " > ", thresh, " ", unit))
+  })
+  names(qtc_labels) <- paste0("n_QTc_gt_", qtc_thresholds)
+
+  # Build dynamic column labels for dQTc thresholds
+  dqtc_labels <- purrr::map(dqtc_thresholds, function(thresh) {
+    gt::md(paste0("&Delta; ", qtc_label, " > ", thresh, " ", unit))
+  })
+  names(dqtc_labels) <- paste0("n_dQTc_gt_", dqtc_thresholds)
+
+  all_labels <- c(qtc_labels, dqtc_labels)
+
   t <- n_gt %>%
     gt::gt() %>%
-    gt::cols_label(
-      n_QTc_gt_450 = gt::md(paste0(qtc_label, " > 450 ", unit)),
-      n_QTc_gt_480 = gt::md(paste0(qtc_label, " > 480 ", unit)),
-      n_QTc_gt_500 = gt::md(paste0(qtc_label, " > 500 ", unit)),
-      n_dQTc_gt_30 = gt::md(paste0("&Delta; ", qtc_label, " > 30 ", unit)),
-      n_dQTc_gt_60 = gt::md(paste0("&Delta; ", qtc_label, " > 60 ", unit))
-    )
+    gt::cols_label(!!!all_labels)
+
+  if (!is.null(title)) {
+    t <- t %>%
+      gt::tab_header(
+        title = gt::md(title)
+      )
+  }
+
+  if (is.null(group_label)) {
+    if (!rlang::quo_is_null(group)) {
+      group_label <- name_quo_if_not_null(group)
+    } else {
+      group_label <- ""
+    }
+  }
+  t <- t %>%
+    gt::cols_label(group = group_label)
+
+  args <- rlang::list2(...)
+  tab_option_args <- args[names(args) %in% names(formals(gt::tab_options))]
+  tab_option_args$data <- t
+
+  t <- do.call(gt::tab_options, tab_option_args)
+
+  return(t)
+}
+
+#' Tabulate High QTc Subjects
+#'
+#' Tabulates number of subjects with high QTc/deltaQTc observations.
+#'
+#' @param data A data frame containing C-QT analysis dataset
+#' @param qtc_col An unquoted column name for QTc data
+#' @param deltaqtc_col An unquoted column name for deltaQTc data
+#' @param id_col An unquoted column name for subject ID (required)
+#' @param group_col An optional unquoted column name of grouping column
+#' @param group_label An optional label to use for group column
+#' @param qtc_label A string label for the QTc parameter (default: "QTc")
+#' @param unit A string for the unit of measurement (default: "ms")
+#' @param qtc_thresholds Numeric vector of QTc thresholds (default: c(450, 480, 500))
+#' @param dqtc_thresholds Numeric vector of deltaQTc thresholds (default: c(30, 60))
+#' @param title Optional string to give the table a title, wrapped in gt::md()
+#' @param ... Optional additional args to gt::tab_options
+#'
+#' @return A gt table with counts of subjects with at least one observation
+#'         exceeding each threshold
+#' @export
+#'
+#' @examples
+#' data_proc <- preprocess(cqtkit_data_verapamil)
+#'
+#' tabulate_high_qtc_sub(data_proc, QTCF, deltaQTCF, ID, group_col = DOSEF, qtc_label = "QTcF")
+#' tabulate_high_qtc_sub(data_proc, QTCF, deltaQTCF, ID, qtc_thresholds = c(430, 450))
+tabulate_high_qtc_sub <- function(
+  data,
+  qtc_col,
+  deltaqtc_col,
+  id_col,
+  group_col = NULL,
+  group_label = NULL,
+  qtc_label = "QTc",
+  unit = "ms",
+  qtc_thresholds = c(450, 480, 500),
+  dqtc_thresholds = c(30, 60),
+  title = NULL,
+  ...
+) {
+  checkmate::assertDataFrame(data)
+  checkmate::assertNumeric(qtc_thresholds, min.len = 1)
+  checkmate::assertNumeric(dqtc_thresholds, min.len = 1)
+
+  qtc <- rlang::enquo(qtc_col)
+  deltaqtc <- rlang::enquo(deltaqtc_col)
+  id <- rlang::enquo(id_col)
+  group <- rlang::enquo(group_col)
+
+  required_cols <- unlist(lapply(c(qtc, deltaqtc, id, group), name_quo_if_not_null))
+  checkmate::assertNames(names(data), must.include = required_cols)
+
+  n_gt <- compute_high_qtc_sub(data, !!qtc, !!deltaqtc, !!id, !!group,
+                               qtc_thresholds = qtc_thresholds,
+                               dqtc_thresholds = dqtc_thresholds)
+
+  # Build dynamic column labels for QTc thresholds
+  qtc_labels <- purrr::map(qtc_thresholds, function(thresh) {
+    gt::md(paste0(qtc_label, " > ", thresh, " ", unit))
+  })
+  names(qtc_labels) <- paste0("n_QTc_gt_", qtc_thresholds)
+
+  # Build dynamic column labels for dQTc thresholds
+  dqtc_labels <- purrr::map(dqtc_thresholds, function(thresh) {
+    gt::md(paste0("&Delta; ", qtc_label, " > ", thresh, " ", unit))
+  })
+  names(dqtc_labels) <- paste0("n_dQTc_gt_", dqtc_thresholds)
+
+  all_labels <- c(qtc_labels, dqtc_labels)
+
+  t <- n_gt %>%
+    gt::gt() %>%
+    gt::cols_label(!!!all_labels)
 
   if (!is.null(title)) {
     t <- t %>%

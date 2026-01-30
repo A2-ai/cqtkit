@@ -1,3 +1,16 @@
+# cqtkit 1.2.0
+
+### Breaking Changes
+* **BREAKING**: `compute_high_qtc_sub()` and `tabulate_high_qtc_sub()` have been renamed to `compute_high_qtc_obs()` and `tabulate_high_qtc_obs()` respectively, since these functions count observations (rows), not subjects.
+* New `compute_high_qtc_sub()` and `tabulate_high_qtc_sub()` functions now count distinct subjects with at least one observation exceeding thresholds. These require an `id_col` argument.
+
+### Enhanced
+* All high QTc functions now support configurable `qtc_thresholds` and `dqtc_thresholds` arguments (defaults: `c(450, 480, 500)` and `c(30, 60)`).
+
+### Migration Guide
+* If you were using `compute_high_qtc_sub()` or `tabulate_high_qtc_sub()` for observation-level counts, rename to `compute_high_qtc_obs()` or `tabulate_high_qtc_obs()`.
+* If you need subject-level counts (distinct individuals), use the new `compute_high_qtc_sub()` or `tabulate_high_qtc_sub()` with the required `id_col` argument.
+
 # cqtkit 1.1.0
 
 ### Enhanced
