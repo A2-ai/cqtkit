@@ -277,15 +277,15 @@ compute_model_fit_parameters <- function(
   new_names <- gsub("[\\(\\)]", "", new_names)
   rownames(sum) <- new_names
 
-  sum <- sum %>%
-    as.data.frame() %>%
-    tibble::rownames_to_column(var = "Parameters") %>%
+  sum <- sum |>
+    as.data.frame() |>
+    tibble::rownames_to_column(var = "Parameters") |>
     dplyr::mutate(
       "CIl" = .data$Value -
         stats::qt((1 + conf_int) / 2, .data$DF) * .data$Std.Error,
       "CIu" = .data$Value +
         stats::qt((1 + conf_int) / 2, .data$DF) * .data$Std.Error
-    ) %>%
+    ) |>
     tibble::as_tibble()
 
   if (include_reference_levels) {
@@ -338,9 +338,9 @@ compute_model_fit_parameters <- function(
   }
 
   # add residuals
-  sigmav <- nlme::intervals(fit, conf_int)$sigma %>%
-    t() %>%
-    tibble::as_tibble() %>%
+  sigmav <- nlme::intervals(fit, conf_int)$sigma |>
+    t() |>
+    tibble::as_tibble() |>
     dplyr::mutate(
       Parameters = c("Residual Error"),
       Value = .data$`est.`,
@@ -350,7 +350,7 @@ compute_model_fit_parameters <- function(
       `p-value` = NA_real_,
       CIl = .data$lower,
       CIu = .data$upper,
-    ) %>%
+    ) |>
     dplyr::select(
       "Parameters",
       "Value",
@@ -371,8 +371,8 @@ compute_model_fit_parameters <- function(
       Value = intervals_result[, "est."],
       CIl = intervals_result[, "lower"],
       CIu = intervals_result[, "upper"]
-    ) %>%
-      dplyr::filter(startsWith(.data$Parameters, "IIV")) %>%
+    ) |>
+      dplyr::filter(startsWith(.data$Parameters, "IIV")) |>
       dplyr::mutate(
         Parameters = gsub("\\(\\(", "\\(", .data$Parameters),
         Parameters = gsub("\\)\\)", "\\)", .data$Parameters),
@@ -380,7 +380,7 @@ compute_model_fit_parameters <- function(
         DF = NA_integer_,
         `t-value` = NA_real_,
         `p-value` = NA_real_
-      ) %>%
+      ) |>
       dplyr::select(
         "Parameters",
         "Value",
@@ -479,9 +479,9 @@ compute_fit_results <- function(
   checkmate::assertNames(names(data), must.include = required_cols)
 
   fit_results_df <- tibble::tibble(
-    dv = data %>% dplyr::pull(!!dv),
-    conc = data %>% dplyr::pull(!!conc),
-    time = data %>% dplyr::pull(!!time),
+    dv = data |> dplyr::pull(!!dv),
+    conc = data |> dplyr::pull(!!conc),
+    time = data |> dplyr::pull(!!time),
     PRED = stats::fitted(fit, level = 0),
     IPRED = stats::fitted(fit, level = 1),
     RES = stats::residuals(fit, level = 0),
@@ -490,10 +490,10 @@ compute_fit_results <- function(
     IWRES = stats::residuals(fit, level = 1, type = "pearson")
   )
   if (!rlang::quo_is_null(trt)) {
-    fit_results_df <- fit_results_df %>%
-      dplyr::mutate(TRTG = data %>% dplyr::pull(!!trt))
+    fit_results_df <- fit_results_df |>
+      dplyr::mutate(TRTG = data |> dplyr::pull(!!trt))
   } else {
-    fit_results_df <- fit_results_df %>%
+    fit_results_df <- fit_results_df |>
       dplyr::mutate(TRTG = "")
   }
   return(fit_results_df)

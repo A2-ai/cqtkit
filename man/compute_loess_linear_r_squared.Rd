@@ -24,5 +24,5 @@ compared to linear regression. Used for determining linearity
 of C-QT data.
 }
 \examples{
-compute_loess_linear_r_squared(cqtkit_data_verapamil \%>\% preprocess(), deltaQTCF, CONC)
+compute_loess_linear_r_squared(cqtkit_data_verapamil |> preprocess(), deltaQTCF, CONC)
 }
