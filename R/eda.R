@@ -61,7 +61,7 @@ eda_qt_rr_plot <- function(
     }
   )
 
-  qt_rr_plot <- plot_data %>%
+  qt_rr_plot <- plot_data |>
     ggplot2::ggplot(ggplot2::aes(x = !!rr, y = !!qt)) +
     ggplot2::geom_point(ggplot2::aes(
       color = .data$.trt_group,
@@ -113,16 +113,16 @@ eda_qt_rr_plot <- function(
       id_col_name = name_quo_if_not_null(id)
     )
 
-    slope <- estimates %>%
-      dplyr::filter(.data$Parameters == rlang::quo_name(rr)) %>%
+    slope <- estimates |>
+      dplyr::filter(.data$Parameters == rlang::quo_name(rr)) |>
       dplyr::pull(.data$Value)
 
-    slope_ci_lower <- estimates %>%
-      dplyr::filter(.data$Parameters == rlang::quo_name(rr)) %>%
+    slope_ci_lower <- estimates |>
+      dplyr::filter(.data$Parameters == rlang::quo_name(rr)) |>
       dplyr::pull(.data$CIl)
 
-    slope_ci_upper <- estimates %>%
-      dplyr::filter(.data$Parameters == rlang::quo_name(rr)) %>%
+    slope_ci_upper <- estimates |>
+      dplyr::filter(.data$Parameters == rlang::quo_name(rr)) |>
       dplyr::pull(.data$CIu)
 
     label <- paste0(
@@ -342,12 +342,12 @@ eda_quantiles_plot <- function(
     "All" # Fallback for global plot
   }
 
-  obs <- data %>%
-    dplyr::group_by(.data$.trt_group) %>%
-    dplyr::group_modify(~ compute_quantiles_obs_df(.x, !!xdata, !!ydata)) %>%
+  obs <- data |>
+    dplyr::group_by(.data$.trt_group) |>
+    dplyr::group_modify(~ compute_quantiles_obs_df(.x, !!xdata, !!ydata)) |>
     dplyr::ungroup()
 
-  p <- obs %>%
+  p <- obs |>
     ggplot2::ggplot(
       ggplot2::aes(
         x = .data$xdata,
@@ -452,17 +452,17 @@ eda_scatter_with_regressions <- function(
   checkmate::assertNames(names(data), must.include = required_cols)
 
   dqtcf_conc_df <- tibble::tibble(
-    ydata = data %>% dplyr::pull(!!ydata),
-    xdata = data %>% dplyr::pull(!!xdata)
+    ydata = data |> dplyr::pull(!!ydata),
+    xdata = data |> dplyr::pull(!!xdata)
   )
 
   if (!rlang::quo_is_null(trt)) {
-    dqtcf_conc_df$trt <- data %>% dplyr::pull(!!trt)
+    dqtcf_conc_df$trt <- data |> dplyr::pull(!!trt)
   } else {
     dqtcf_conc_df$trt <- as.factor("Treatment")
   }
 
-  p <- dqtcf_conc_df %>%
+  p <- dqtcf_conc_df |>
     ggplot2::ggplot(
       ggplot2::aes(
         x = .data$xdata,
@@ -503,7 +503,7 @@ eda_scatter_with_regressions <- function(
   }
 
   # Add horizontal references
-  p <- p %>% add_horizontal_references(reference_threshold)
+  p <- p |> add_horizontal_references(reference_threshold)
 
   # Set linetype attribute for styling
   linetype_values <- c()
@@ -607,11 +607,11 @@ eda_hysteresis_loop_plot <- function(
   if (!is.null(reference_dose)) {
     checkmate::assert_choice(
       as.character(reference_dose),
-      as.character(data %>% dplyr::pull(!!dosef))
+      as.character(data |> dplyr::pull(!!dosef))
     )
   }
 
-  checkmate::assert_factor(data %>% dplyr::pull(!!dosef))
+  checkmate::assert_factor(data |> dplyr::pull(!!dosef))
 
   ### This should be it's own compute_ function
   mean_qtc_df <- compute_grouped_mean_sd(
@@ -636,7 +636,7 @@ eda_hysteresis_loop_plot <- function(
     time = mean_conc_df$time,
     dose = factor(
       mean_conc_df$dose,
-      levels = levels(data %>% dplyr::pull(!!dosef))
+      levels = levels(data |> dplyr::pull(!!dosef))
     ),
     meanCONC = mean_conc_df$mean_dv,
     meandQTC = mean_qtc_df$mean_dv,
@@ -646,7 +646,7 @@ eda_hysteresis_loop_plot <- function(
   if (!is.null(reference_dose)) {
     mean_qtc_conc_df$meandQTC <- mean_qtc_df$mean_delta_dv
     mean_qtc_conc_df$meanCONC <- mean_conc_df$mean_delta_dv
-    mean_qtc_conc_df <- mean_qtc_conc_df %>%
+    mean_qtc_conc_df <- mean_qtc_conc_df |>
       dplyr::filter(.data$dose != reference_dose)
   }
 
@@ -667,7 +667,7 @@ eda_hysteresis_loop_plot <- function(
   }
   hysteresis_labels <- sapply(group_levels, function(g) dose_labeller()[[g]])
 
-  mean_qtc_conc_df <- mean_qtc_conc_df %>%
+  mean_qtc_conc_df <- mean_qtc_conc_df |>
     dplyr::mutate(
       dosef_hys = factor(
         as.character(dose_labeller()[as.character(.data$group)]),
@@ -676,16 +676,16 @@ eda_hysteresis_loop_plot <- function(
     )
 
   # Add mid point calculation for adding arrows
-  mean_qtc_conc_df <- mean_qtc_conc_df %>%
-    dplyr::group_by(.data$group) %>%
-    dplyr::arrange(.data$time) %>%
+  mean_qtc_conc_df <- mean_qtc_conc_df |>
+    dplyr::group_by(.data$group) |>
+    dplyr::arrange(.data$time) |>
     dplyr::mutate(
       xmid = (.data$meanCONC + dplyr::lead(.data$meanCONC)) / 2,
       ymid = (.data$meandQTC + dplyr::lead(.data$meandQTC)) / 2
-    ) %>%
+    ) |>
     dplyr::ungroup()
 
-  .p <- mean_qtc_conc_df %>%
+  .p <- mean_qtc_conc_df |>
     ggplot2::ggplot(
       ggplot2::aes(
         x = .data$meanCONC,
@@ -698,7 +698,7 @@ eda_hysteresis_loop_plot <- function(
     ggplot2::geom_point() +
     ggplot2::geom_path() +
     ggplot2::geom_segment(
-      data = mean_qtc_conc_df %>%
+      data = mean_qtc_conc_df |>
         dplyr::filter(!is.na(.data$xmid) & !is.na(.data$ymid)),
       ggplot2::aes(
         xend = .data$xmid,
@@ -836,9 +836,9 @@ eda_mean_dv_over_time <- function(
   # Check reference dose to grab correct y-value column either meanDV or mean_delta_DV
   if (!is.null(reference_dose)) {
     y_data <- "mean_delta_dv"
-    dv_time_df <- dv_time_df %>% dplyr::filter(.data$dose != reference_dose)
+    dv_time_df <- dv_time_df |> dplyr::filter(.data$dose != reference_dose)
     if (!rlang::quo_is_null(sec_dv)) {
-      sec_dv_time_df <- sec_dv_time_df %>%
+      sec_dv_time_df <- sec_dv_time_df |>
         dplyr::filter(.data$dose != reference_dose)
     }
   } else {
@@ -849,35 +849,35 @@ eda_mean_dv_over_time <- function(
   if (rlang::quo_is_null(group)) {
     if (!rlang::quo_is_null(sec_dv)) {
       # Include DV names when sec_dv is provided
-      dv_time_df <- dv_time_df %>%
+      dv_time_df <- dv_time_df |>
         dplyr::mutate(grouping = paste(.data$dose, rlang::quo_name(dv)))
 
-      sec_dv_time_df <- sec_dv_time_df %>%
+      sec_dv_time_df <- sec_dv_time_df |>
         dplyr::mutate(grouping = paste(.data$dose, rlang::quo_name(sec_dv)))
     } else {
       # Just use dose without DV name when sec_dv is NULL
-      dv_time_df <- dv_time_df %>%
+      dv_time_df <- dv_time_df |>
         dplyr::mutate(grouping = as.character(.data$dose))
     }
   } else {
     if (!rlang::quo_is_null(sec_dv)) {
       # Include DV names when sec_dv is provided
-      dv_time_df <- dv_time_df %>%
+      dv_time_df <- dv_time_df |>
         dplyr::mutate(
           grouping = as.factor(paste(.data$group, rlang::quo_name(dv)))
         )
 
-      sec_dv_time_df <- sec_dv_time_df %>%
+      sec_dv_time_df <- sec_dv_time_df |>
         dplyr::mutate(
           grouping = as.factor(paste(.data$group, rlang::quo_name(sec_dv)))
         )
     } else {
       # Just use group without DV name when sec_dv is NULL
-      dv_time_df <- dv_time_df %>%
+      dv_time_df <- dv_time_df |>
         dplyr::mutate(grouping = as.factor(.data$group))
     }
   }
-  p <- dv_time_df %>%
+  p <- dv_time_df |>
     ggplot2::ggplot(ggplot2::aes(
       x = .data$time,
       y = .data[[y_data]],

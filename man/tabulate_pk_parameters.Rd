@@ -44,5 +44,5 @@ Converts pk_parameters df into gt table for printing.
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)
 
-tabulate_pk_parameters(data_proc \%>\% dplyr::filter(DOSE != 0), ID, DOSE, CONC, NTLD)
+tabulate_pk_parameters(data_proc |> dplyr::filter(DOSE != 0), ID, DOSE, CONC, NTLD)
 }

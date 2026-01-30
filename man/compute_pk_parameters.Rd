@@ -34,7 +34,7 @@ Generates PK parameters Cmax and Tmax for exposure predictions.
 }
 \examples{
 compute_pk_parameters(
-  preprocess(cqtkit_data_verapamil) \%>\% dplyr::filter(DOSE != 0),
+  preprocess(cqtkit_data_verapamil) |> dplyr::filter(DOSE != 0),
   ID,
   DOSE,
   CONC,

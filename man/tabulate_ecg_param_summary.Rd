@@ -63,7 +63,7 @@ A gt table with mean ECG parameters (QTc, deltaQTc, delta-delta QTc) and confide
 Generates a gt table of summary of QTc, dQTc and ddQTc over time stratified by dose.
 }
 \examples{
-data_proc <- cqtkit_data_verapamil \%>\% preprocess()
+data_proc <- cqtkit_data_verapamil |> preprocess()
 tabulate_ecg_param_summary(
  data_proc,
  NTLD,

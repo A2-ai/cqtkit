@@ -151,11 +151,11 @@ compute_delta_hrblm <- function(
   required_cols <- unlist(lapply(c(id, hrbl), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
-  baseline_data <- data %>%
+  baseline_data <- data |>
     dplyr::select(!!id, !!hrbl)
 
   if (deduplicate) {
-    baseline_data <- baseline_data %>%
+    baseline_data <- baseline_data |>
       dplyr::distinct()
   }
 
@@ -193,11 +193,11 @@ compute_delta_qtcbblm <- function(
   required_cols <- unlist(lapply(c(id, qtcbbl), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
-  baseline_data <- data %>%
+  baseline_data <- data |>
     dplyr::select(!!id, !!qtcbbl)
 
   if (deduplicate) {
-    baseline_data <- baseline_data %>%
+    baseline_data <- baseline_data |>
       dplyr::distinct()
   }
 
@@ -235,11 +235,11 @@ compute_delta_qtcfblm <- function(
   required_cols <- unlist(lapply(c(id, qtcfbl), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
-  baseline_data <- data %>%
+  baseline_data <- data |>
     dplyr::select(!!id, !!qtcfbl)
 
   if (deduplicate) {
-    baseline_data <- baseline_data %>%
+    baseline_data <- baseline_data |>
       dplyr::distinct()
   }
 
@@ -303,11 +303,11 @@ preprocess <- function(
   qtcbbl <- rlang::enquo(qtcbbl_col)
   id <- rlang::enquo(id_col)
 
-  data %>%
-    compute_qtcb_qtcf(!!qt, !!qtbl, !!rr, !!rrbl) %>%
-    compute_delta_hrblm(!!id, !!hrbl, deduplicate) %>%
-    compute_delta_qtcbblm(!!id, !!qtcbbl, deduplicate) %>%
-    compute_delta_qtcfblm(!!id, !!qtcfbl, deduplicate) %>%
+  data |>
+    compute_qtcb_qtcf(!!qt, !!qtbl, !!rr, !!rrbl) |>
+    compute_delta_hrblm(!!id, !!hrbl, deduplicate) |>
+    compute_delta_qtcbblm(!!id, !!qtcbbl, deduplicate) |>
+    compute_delta_qtcfblm(!!id, !!qtcfbl, deduplicate) |>
     compute_deltas(
       !!qt,
       !!qtbl,

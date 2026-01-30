@@ -1,0 +1,155 @@
+#' cqtkit: Comprehensive C-QT Analysis From Data to Deliverables
+#'
+#' An end-to-end toolkit for concentration-QT (C-QT) analysis in clinical
+#' pharmacology. Provides functions for ECG data preprocessing, exploratory
+#' data analysis, statistical modeling, goodness-of-fit evaluation, and
+#' exposure-response predictions. Generates publication-ready tables and
+#' figures for regulatory submissions.
+#'
+#' cqtkit has seven main classes of functions for analyzing C-QT data:
+#'
+#' @section Preprocessing:
+#' These functions compute QT corrections and baseline means:
+#' \itemize{
+#'   \item \code{\link{preprocess}}: Main preprocessing function that computes
+#'     QTc corrections and baseline-corrected parameters
+#'   \item \code{\link{compute_qtcb_qtcf}}: Compute Bazett's and Fridericia's
+#'     QT corrections
+#'   \item \code{\link{compute_deltas}}: Compute change from baseline for ECG
+#'     parameters
+#'   \item \code{\link{compute_delta_qtcfblm}}: Compute mean baseline QTcF
+#'     difference
+#'   \item \code{\link{compute_delta_qtcbblm}}: Compute mean baseline QTcB
+#'     difference
+#'   \item \code{\link{compute_delta_hrblm}}: Compute mean baseline HR
+#'     difference
+#' }
+#'
+#' @section EDA:
+#' These functions generate exploratory data analysis plots:
+#' \itemize{
+#'   \item \code{\link{eda_scatter_with_regressions}}: Scatter plot with linear
+#'     and loess regression lines
+#'   \item \code{\link{eda_qt_rr_plot}}: QT vs RR relationship plot
+#'   \item \code{\link{eda_qtc_comparison_plot}}: Compare QTcB and QTcF
+#'     corrections
+#'   \item \code{\link{eda_mean_dv_over_time}}: Mean dependent variable over
+#'     time
+#'   \item \code{\link{eda_quantiles_plot}}: Quantile-based visualization of
+#'     C-QT data
+#'   \item \code{\link{eda_hysteresis_loop_plot}}: Detect and visualize
+#'     hysteresis
+#' }
+#'
+#' @section Compute:
+#' These functions compute various aspects of QT analyses:
+#' \itemize{
+#'   \item \code{\link{compute_grouped_mean_sd}}: Compute grouped means and
+#'     standard deviations
+#'   \item \code{\link{compute_ecg_param_summary}}: Summarize ECG parameters
+#'   \item \code{\link{compute_pk_parameters}}: Compute PK parameters (Cmax,
+#'     Tmax, etc.)
+#'   \item \code{\link{compute_high_qtc_sub}}: Count observations exceeding QTc
+#'     thresholds
+#'   \item \code{\link{compute_study_summary}}: Summarize study population
+#'   \item \code{\link{compute_fit_results}}: Extract model fit results
+#'   \item \code{\link{compute_model_fit_parameters}}: Extract model parameters
+#'   \item \code{\link{compute_lm_fit_df}}: Compute linear model fit data frame
+#'   \item \code{\link{compute_lme_slope_df}}: Extract slope from mixed-effects
+#'     model
+#'   \item \code{\link{compute_loess_linear_r_squared}}: Compare loess vs linear
+#'     fit
+#'   \item \code{\link{compute_quantiles_obs_df}}: Compute quantile-based
+#'     summary
+#'   \item \code{\link{compute_potential_hysteresis}}: Detect potential
+#'     hysteresis
+#'   \item \code{\link{compute_hysteresis_labeller}}: Label hysteresis phases
+#'   \item \code{\link{compute_enGRI}}: Compute generalized R-squared index
+#'   \item \code{\link{compute_contrast_observations}}: Compute model contrasts
+#'   \item \code{\link{compute_dataset_simulation}}: Simulate datasets for VPC
+#'   \item \code{\link{compute_summary_statistics_of_simulations}}: Summarize
+#'     simulation results
+#'   \item \code{\link{compute_conc_for_upper_pred}}: Find concentration for
+#'     upper prediction bound
+#'   \item \code{\link{compute_exposure_predictions}}: Compute QTc predictions
+#'     at specified concentrations
+#' }
+#'
+#' @section Tabulate:
+#' These functions generate summary and analysis tables:
+#' \itemize{
+#'   \item \code{\link{tabulate_study_summary}}: Study population summary table
+#'   \item \code{\link{tabulate_ecg_param_summary}}: ECG parameter summary table
+#'   \item \code{\link{tabulate_pk_parameters}}: PK parameter summary table
+#'   \item \code{\link{tabulate_high_qtc_sub}}: High QTc observation counts
+#'     table
+#'   \item \code{\link{tabulate_model_fit_parameters}}: Model parameter
+#'     estimates table
+#'   \item \code{\link{tabulate_exposure_predictions}}: Exposure-response
+#'     predictions table
+#' }
+#'
+#' @section Fit:
+#' These functions generate the prespecified linear mixed effects model:
+#' \itemize{
+#'   \item \code{\link{fit_prespecified_model}}: Fit the prespecified linear
+#'     mixed-effects model per ICH E14/S7B guidelines
+#'   \item \code{\link{fit_qtc_linear_model}}: Fit simple linear model for QTc
+#' }
+#'
+#' @section GoF:
+#' These functions generate goodness-of-fit plots of a fitted model:
+#' \itemize{
+#'   \item \code{\link{gof_plots}}: Generate standard goodness-of-fit plots
+#'   \item \code{\link{gof_residuals_plots}}: Residual diagnostic plots
+#'   \item \code{\link{gof_residuals_trt_boxplots}}: Residuals by treatment
+#'     group
+#'   \item \code{\link{gof_residuals_time_boxplots}}: Residuals over time
+#'   \item \code{\link{gof_qq_plots}}: Q-Q plots for normality assessment
+#'   \item \code{\link{gof_concordance_plots}}: Observed vs predicted plots
+#'   \item \code{\link{gof_vpc_plot}}: Visual predictive check plot
+#' }
+#'
+#' @section Predict:
+#' These functions generate prediction plots:
+#' \itemize{
+#'   \item \code{\link{predict_with_observations_plot}}: Plot predictions with
+#'     observed data
+#'   \item \code{\link{predict_with_quantiles_plot}}: Plot predictions with
+#'     quantile summaries
+#'   \item \code{\link{predict_with_exposure_plot}}: Plot predictions at
+#'     therapeutic exposures
+#' }
+#'
+#' cqtkit also has plot manipulation functions:
+#'
+#' @section Style:
+#' These functions style a ggplot object:
+#' \itemize{
+#'   \item \code{\link{set_style}}: Set global plot style options
+#'   \item \code{\link{style_plot}}: Apply styling to a ggplot object
+#'   \item \code{\link{add_horizontal_references}}: Add reference lines to plots
+#' }
+#'
+#' cqtkit also has included datasets:
+#'
+#' @section Datasets:
+#' Baseline and on-treatment datasets ready for use with cqtkit. Example
+#' datasets from Johannesen et al. demonstrating a range of QTc effects:
+#' \itemize{
+#'   \item \code{\link{cqtkit_data_verapamil}}: Verapamil on-treatment data
+#'     (~8 ms QTc effect)
+#'   \item \code{\link{cqtkit_data_bl_verapamil}}: Verapamil baseline data
+#'   \item \code{\link{cqtkit_data_dofetilide}}: Dofetilide on-treatment data
+#'     (~38 ms QTc effect)
+#'   \item \code{\link{cqtkit_data_bl_dofetilide}}: Dofetilide baseline data
+#'   \item \code{\link{cqtkit_data_ranolazine}}: Ranolazine on-treatment data
+#'     (~14 ms QTc effect)
+#'   \item \code{\link{cqtkit_data_bl_ranolazine}}: Ranolazine baseline data
+#'   \item \code{\link{cqtkit_data_quinidine}}: Quinidine on-treatment data
+#'     (~50 ms QTc effect)
+#'   \item \code{\link{cqtkit_data_bl_quinidine}}: Quinidine baseline data
+#' }
+#'
+#' @keywords internal
+"_PACKAGE"
