@@ -9,7 +9,10 @@ compute_model_fit_parameters(
   trt_col_name = "TRTG",
   tafd_col_name = "TAFD",
   id_col_name = "ID",
-  conf_int = 0.95
+  conc_col_name = "CONC",
+  baseline_col_name = "deltaQTCFBL",
+  conf_int = 0.95,
+  include_reference_levels = FALSE
 )
 }
 \arguments{
@@ -21,7 +24,13 @@ compute_model_fit_parameters(
 
 \item{id_col_name}{String of column name of the id used in model fitting for random effects}
 
+\item{conc_col_name}{String of column name of concentration (slope) used in model fitting}
+
+\item{baseline_col_name}{String of column name of baseline covariate used in model fitting}
+
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
+
+\item{include_reference_levels}{Logical, whether to include reference factor levels with Estimate = 0 (default: FALSE)}
 }
 \value{
 A tibble with fixed effect estimates, standard errors, degrees of freedom, t-values, p-values, confidence intervals, and random effect variances
@@ -44,4 +53,7 @@ fit <- fit_prespecified_model(
   TRUE
 )
 compute_model_fit_parameters(fit)
+
+# Include reference levels
+compute_model_fit_parameters(fit, include_reference_levels = TRUE)
 }

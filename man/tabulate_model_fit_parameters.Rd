@@ -9,10 +9,13 @@ tabulate_model_fit_parameters(
   trt_col_name = "TRTG",
   tafd_col_name = "TAFD",
   id_col_name = "ID",
+  conc_col_name = "CONC",
+  baseline_col_name = "deltaQTCFBL",
   conf_int = 0.95,
   decimals = 2,
   show_standard_error = FALSE,
   scientific = TRUE,
+  include_reference_levels = FALSE,
   title = NULL,
   ...
 )
@@ -26,6 +29,10 @@ tabulate_model_fit_parameters(
 
 \item{id_col_name}{A string of column name of id used in model fitting for random effects}
 
+\item{conc_col_name}{A string of column name of concentration (slope) used in model fitting}
+
+\item{baseline_col_name}{A string of column name of baseline covariate used in model fitting}
+
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
 
 \item{decimals}{Number of decimals to format table to, default is 2}
@@ -33,6 +40,8 @@ tabulate_model_fit_parameters(
 \item{show_standard_error}{Logical, whether to display standard error of fixed effects estimates}
 
 \item{scientific}{Logical, whether to use scientific notation for small values}
+
+\item{include_reference_levels}{Logical, whether to include reference factor levels with Estimate = 0 (default: FALSE)}
 
 \item{title}{Optional string for adding tab_header. It will be wrapped in gt::md()}
 
@@ -59,4 +68,7 @@ fit <- fit_prespecified_model(
 )
 
 tabulate_model_fit_parameters(fit, "TRTG", "TAFD", "ID")
+
+# Include reference levels in table
+tabulate_model_fit_parameters(fit, "TRTG", "TAFD", "ID", include_reference_levels = TRUE)
 }

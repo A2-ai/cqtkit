@@ -80,7 +80,7 @@ predict_with_quantiles_plot(
   treatment_predictors = list(
     CONC = 0,
     TRTG = "Verapamil HCL",
-    TAFD = "2 HR",
+    TAFD = "0.5 HR", #using reference time
     deltaQTCFBL = 0
   )
 )
