@@ -14,14 +14,43 @@ home:
     tagline: "Comprehensive C-QT Analysis From Data to Deliverables"
     actions:
     - text: cqtkit Reference Guide
-      link: ./reference/cqtkit
+      link: ./reference/cqtkit/
       icon: right-arrow
     - text: Explore the cqtkit repository 
       link: https://github.com/a2-ai/cqtkit
       icon: external
       variant: minimal
+  cards:
+    - icon: pen
+      title: Data Preprocessing Functions
+      description: Reference of preprocessing functions
+      link: ./reference/preprocessing/
+    - icon: seti:code-search
+      title: Exploratory Data Analysis Functions 
+      description: Reference of EDA functions
+		  link: ./reference/eda
+    - icon: laptop
+	    title: Compute Functions
+      description: Reference of Computational functions
+		  link: ./reference/compute/
+    - icon: list-format
+	    title: Tabling Functions
+      description: Reference of Table functions
+      link: ./reference/tabulate/
+    - icon: approve-check
+	    title: Goodness of Fit Functions
+      description: Reference of GoF functions 
+      link: reference/gof/
+	  - icon: information
+      title: Predict Functions
+		  description: Reference of Prediction functions 
+      link: ./reference/predict/
 
 sidebar:
+  articles: 
+    - label: "Getting Started"
+      contents:
+        - "README"
   reference:
     - cqtkit
     - label: "Preprocessing"
@@ -153,13 +182,14 @@ content:
 
   # Sections to skip entirely
   skip_sections:
-    - "seealso"
     - "name"
 
 # Output directory for generated site
 output:
-  dir: "../cqtkit-docs"  # External directory (recommended)
+  dir: "../Docs/cqtkit-docs"  # External directory (recommended)
   # dir: "docs"       # Internal directory (not recommended due to bloat)
   include_build_files: true
+
+
 
 

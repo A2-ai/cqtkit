@@ -215,29 +215,37 @@ compute_pk_parameters <- function(
   return(pk_params_df)
 }
 
-#' Compute High QTc Subjects
+#' Compute High QTc Observations
 #'
-#' Computes the number of subjects with QTc > 450, 480, 500 as well as deltaQTc > 30, 60.
+#' Computes the number of observations (rows) where QTc exceeds specified
+#' thresholds or deltaQTc exceeds specified thresholds.
 #'
 #' @param data A data frame containing C-QT analysis dataset
-#' @param qtc_col An unquoted column name for containing QTc data
-#' @param deltaqtc_col An unquoted column name for containing deltaQTc data
+#' @param qtc_col An unquoted column name for QTc data
+#' @param deltaqtc_col An unquoted column name for deltaQTc data
 #' @param group_col An optional column name for grouping data
+#' @param qtc_thresholds Numeric vector of QTc thresholds (default: c(450, 480, 500))
+#' @param dqtc_thresholds Numeric vector of deltaQTc thresholds (default: c(30, 60))
 #'
-#' @return A tibble with counts of observations exceeding QTc thresholds (450, 480, 500 ms) and deltaQTc thresholds (30, 60 ms)
+#' @return A tibble with counts of observations exceeding each threshold
 #' @export
 #'
 #' @examples
 #' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
-#' compute_high_qtc_sub(data_proc, QTCF, deltaQTCF)
-compute_high_qtc_sub <- function(
+#' compute_high_qtc_obs(data_proc, QTCF, deltaQTCF)
+#' compute_high_qtc_obs(data_proc, QTCF, deltaQTCF, qtc_thresholds = c(430, 450))
+compute_high_qtc_obs <- function(
   data,
   qtc_col,
   deltaqtc_col,
-  group_col = NULL
+  group_col = NULL,
+  qtc_thresholds = c(450, 480, 500),
+  dqtc_thresholds = c(30, 60)
 ) {
   checkmate::assertDataFrame(data)
+  checkmate::assertNumeric(qtc_thresholds, min.len = 1)
+  checkmate::assertNumeric(dqtc_thresholds, min.len = 1)
 
   qtc <- rlang::enquo(qtc_col)
   deltaqtc <- rlang::enquo(deltaqtc_col)
@@ -251,27 +259,109 @@ compute_high_qtc_sub <- function(
     deltaqtc = data |> dplyr::pull(!!deltaqtc)
   )
 
+  # Build column expressions for QTc thresholds
+
+  qtc_exprs <- purrr::map(qtc_thresholds, function(thresh) {
+    rlang::expr(sum(.data$qtc > !!thresh, na.rm = TRUE))
+  })
+
+names(qtc_exprs) <- paste0("n_QTc_gt_", qtc_thresholds)
+
+  # Build column expressions for dQTc thresholds
+  dqtc_exprs <- purrr::map(dqtc_thresholds, function(thresh) {
+    rlang::expr(sum(.data$deltaqtc > !!thresh, na.rm = TRUE))
+  })
+  names(dqtc_exprs) <- paste0("n_dQTc_gt_", dqtc_thresholds)
+
+  all_exprs <- c(qtc_exprs, dqtc_exprs)
+
   if (!rlang::quo_is_null(group)) {
     qtdf <- qtdf |>
       dplyr::mutate(group = data |> dplyr::pull(!!group))
     n_gt <- qtdf |>
       dplyr::group_by(.data$group) |>
-      dplyr::summarise(
-        n_QTc_gt_450 = sum(.data$qtc > 450, na.rm = TRUE),
-        n_QTc_gt_480 = sum(.data$qtc > 480, na.rm = TRUE),
-        n_QTc_gt_500 = sum(.data$qtc > 500, na.rm = TRUE),
-        n_dQTc_gt_30 = sum(.data$deltaqtc > 30, na.rm = TRUE),
-        n_dQTc_gt_60 = sum(.data$deltaqtc > 60, na.rm = TRUE)
-      )
+      dplyr::summarise(!!!all_exprs)
   } else {
-    n_gt <- tibble::tibble(
-      group = "Total",
-      n_QTc_gt_450 = qtdf |> dplyr::filter(.data$qtc > 450) |> nrow(),
-      n_QTc_gt_480 = qtdf |> dplyr::filter(.data$qtc > 480) |> nrow(),
-      n_QTc_gt_500 = qtdf |> dplyr::filter(.data$qtc > 500) |> nrow(),
-      n_dQTc_gt_30 = qtdf |> dplyr::filter(.data$deltaqtc > 30) |> nrow(),
-      n_dQTc_gt_60 = qtdf |> dplyr::filter(.data$deltaqtc > 60) |> nrow()
-    )
+    n_gt <- qtdf |>
+      dplyr::summarise(!!!all_exprs) |>
+      dplyr::mutate(group = "Total", .before = 1)
+  }
+  return(n_gt)
+}
+
+#' Compute High QTc Subjects
+#'
+#' Computes the number of subjects (individuals) with at least one observation
+#' where QTc exceeds specified thresholds or deltaQTc exceeds specified thresholds.
+#'
+#' @param data A data frame containing C-QT analysis dataset
+#' @param qtc_col An unquoted column name for QTc data
+#' @param deltaqtc_col An unquoted column name for deltaQTc data
+#' @param id_col An unquoted column name for subject ID (required)
+#' @param group_col An optional column name for grouping data
+#' @param qtc_thresholds Numeric vector of QTc thresholds (default: c(450, 480, 500))
+#' @param dqtc_thresholds Numeric vector of deltaQTc thresholds (default: c(30, 60))
+#'
+#' @return A tibble with counts of subjects with at least one observation
+#'         exceeding each threshold
+#' @export
+#'
+#' @examples
+#' data_proc <- preprocess(cqtkit_data_verapamil)
+#'
+#' compute_high_qtc_sub(data_proc, QTCF, deltaQTCF, ID)
+#' compute_high_qtc_sub(data_proc, QTCF, deltaQTCF, ID, qtc_thresholds = c(430, 450))
+compute_high_qtc_sub <- function(
+  data,
+  qtc_col,
+  deltaqtc_col,
+  id_col,
+  group_col = NULL,
+  qtc_thresholds = c(450, 480, 500),
+  dqtc_thresholds = c(30, 60)
+) {
+  checkmate::assertDataFrame(data)
+  checkmate::assertNumeric(qtc_thresholds, min.len = 1)
+  checkmate::assertNumeric(dqtc_thresholds, min.len = 1)
+
+  qtc <- rlang::enquo(qtc_col)
+  deltaqtc <- rlang::enquo(deltaqtc_col)
+  id <- rlang::enquo(id_col)
+  group <- rlang::enquo(group_col)
+
+  required_cols <- unlist(lapply(c(qtc, deltaqtc, id, group), name_quo_if_not_null))
+  checkmate::assertNames(names(data), must.include = required_cols)
+
+  qtdf <- tibble::tibble(
+    id = data |> dplyr::pull(!!id),
+    qtc = data |> dplyr::pull(!!qtc),
+    deltaqtc = data |> dplyr::pull(!!deltaqtc)
+  )
+
+  # Build column expressions for QTc thresholds (count distinct subjects)
+  qtc_exprs <- purrr::map(qtc_thresholds, function(thresh) {
+    rlang::expr(dplyr::n_distinct(.data$id[.data$qtc > !!thresh], na.rm = TRUE))
+  })
+  names(qtc_exprs) <- paste0("n_QTc_gt_", qtc_thresholds)
+
+  # Build column expressions for dQTc thresholds (count distinct subjects)
+  dqtc_exprs <- purrr::map(dqtc_thresholds, function(thresh) {
+    rlang::expr(dplyr::n_distinct(.data$id[.data$deltaqtc > !!thresh], na.rm = TRUE))
+  })
+  names(dqtc_exprs) <- paste0("n_dQTc_gt_", dqtc_thresholds)
+
+  all_exprs <- c(qtc_exprs, dqtc_exprs)
+
+  if (!rlang::quo_is_null(group)) {
+    qtdf <- qtdf |>
+      dplyr::mutate(group = data |> dplyr::pull(!!group))
+    n_gt <- qtdf |>
+      dplyr::group_by(.data$group) |>
+      dplyr::summarise(!!!all_exprs)
+  } else {
+    n_gt <- qtdf |>
+      dplyr::summarise(!!!all_exprs) |>
+      dplyr::mutate(group = "Total", .before = 1)
   }
   return(n_gt)
 }
