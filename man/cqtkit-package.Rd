@@ -4,7 +4,7 @@
 \name{cqtkit-package}
 \alias{cqtkit}
 \alias{cqtkit-package}
-\title{cqtkit: Comprehensive C-QT Analysis From Data to Deliverables}
+\title{\code{cqtkit}: Comprehensive C-QT Analysis From Data to Deliverables}
 \description{
 An end-to-end toolkit for concentration-QT (C-QT) analysis in clinical
 pharmacology. Provides functions for ECG data preprocessing, exploratory
