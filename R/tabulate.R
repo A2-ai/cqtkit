@@ -169,10 +169,13 @@ tabulate_pk_parameters <- function(
 #' @param trt_col_name A string of column name of trt used in model fitting
 #' @param tafd_col_name A string of column name of tafd used in model fitting
 #' @param id_col_name A string of column name of id used in model fitting for random effects
+#' @param conc_col_name A string of column name of concentration (slope) used in model fitting
+#' @param baseline_col_name A string of column name of baseline covariate used in model fitting
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #' @param decimals Number of decimals to format table to, default is 2
 #' @param show_standard_error Logical, whether to display standard error of fixed effects estimates
 #' @param scientific Logical, whether to use scientific notation for small values
+#' @param include_reference_levels Logical, whether to include reference factor levels with Estimate = 0 (default: FALSE)
 #' @param title Optional string for adding tab_header. It will be wrapped in gt::md()
 #' @param ... Optional additional arguments for gt::tab_options
 #'
@@ -196,15 +199,21 @@ tabulate_pk_parameters <- function(
 #' )
 #'
 #' tabulate_model_fit_parameters(fit, "TRTG", "TAFD", "ID")
+#'
+#' # Include reference levels in table
+#' tabulate_model_fit_parameters(fit, "TRTG", "TAFD", "ID", include_reference_levels = TRUE)
 tabulate_model_fit_parameters <- function(
   fit,
   trt_col_name = "TRTG",
   tafd_col_name = "TAFD",
   id_col_name = "ID",
+  conc_col_name = "CONC",
+  baseline_col_name = "deltaQTCFBL",
   conf_int = 0.95,
   decimals = 2,
   show_standard_error = FALSE,
   scientific = TRUE,
+  include_reference_levels = FALSE,
   title = NULL,
   ...
 ) {
@@ -216,7 +225,10 @@ tabulate_model_fit_parameters <- function(
     trt_col_name,
     tafd_col_name,
     id_col_name,
-    conf_int
+    conc_col_name,
+    baseline_col_name,
+    conf_int,
+    include_reference_levels
   )
 
   if (!show_standard_error) {
@@ -226,7 +238,12 @@ tabulate_model_fit_parameters <- function(
 
   fit_result_table <- fit_result_df |>
     dplyr::select(-"DF", -"t-value") |>
+    dplyr::group_by(.data$Section) |>
     gt::gt() |>
+    gt::tab_style(
+      style = gt::cell_text(weight = "bold"),
+      locations = gt::cells_row_groups()
+    ) |>
     gt::cols_merge(
       columns = c(.data$Value, .data$CIl, .data$CIu),
       pattern = "{1} [{2}, {3}]"

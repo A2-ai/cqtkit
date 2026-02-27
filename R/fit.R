@@ -231,7 +231,10 @@ fit_prespecified_model <- function(
 #' @param trt_col_name String of column name of trt used in model fitting
 #' @param tafd_col_name String of column name of tafd used in model fitting
 #' @param id_col_name String of column name of the id used in model fitting for random effects
+#' @param conc_col_name String of column name of concentration (slope) used in model fitting
+#' @param baseline_col_name String of column name of baseline covariate used in model fitting
 #' @param conf_int Numeric confidence interval level (default: 0.9)
+#' @param include_reference_levels Logical, whether to include reference factor levels with Estimate = 0 (default: FALSE)
 #'
 #' @return A tibble with fixed effect estimates, standard errors, degrees of freedom, t-values, p-values, confidence intervals, and random effect variances
 #' @export
@@ -251,16 +254,23 @@ fit_prespecified_model <- function(
 #'   TRUE
 #' )
 #' compute_model_fit_parameters(fit)
+#'
+#' # Include reference levels
+#' compute_model_fit_parameters(fit, include_reference_levels = TRUE)
 compute_model_fit_parameters <- function(
   fit,
   trt_col_name = "TRTG",
   tafd_col_name = "TAFD",
   id_col_name = "ID",
-  conf_int = 0.95
+  conc_col_name = "CONC",
+  baseline_col_name = "deltaQTCFBL",
+  conf_int = 0.95,
+  include_reference_levels = FALSE
 ) {
   checkmate::assert_class(fit, "lme")
   checkmate::assertNumeric(conf_int, lower = 0, upper = 1)
 
+  model_data <- nlme::getData(fit)
   sum <- summary(fit)$tTable
   new_names <- gsub(paste0("^", trt_col_name), "", rownames(sum))
   new_names <- gsub(paste0("^", tafd_col_name), "", new_names)
@@ -277,6 +287,55 @@ compute_model_fit_parameters <- function(
         stats::qt((1 + conf_int) / 2, .data$DF) * .data$Std.Error
     ) |>
     tibble::as_tibble()
+
+  if (include_reference_levels) {
+    create_ref_row <- function(level_name) {
+      tibble::tibble(
+        Parameters = paste0(level_name, " (Reference)"),
+        Value = 0,
+        Std.Error = NA_real_,
+        DF = NA_integer_,
+        `t-value` = NA_real_,
+        `p-value` = NA_real_,
+        CIl = NA_real_,
+        CIu = NA_real_
+      )
+    }
+
+    # Find trt reference level
+    if (!is.null(trt_col_name) && trt_col_name %in% names(model_data)) {
+      all_levels <- unique(model_data[[trt_col_name]])
+      ref_level <- setdiff(all_levels, sum$Parameters)
+      if (length(ref_level) == 1) {
+        in_table <- intersect(as.character(all_levels), sum$Parameters)
+        first_idx <- which(sum$Parameters %in% in_table)[1]
+        if (!is.na(first_idx)) {
+          sum <- dplyr::bind_rows(
+            sum[1:(first_idx - 1), ],
+            create_ref_row(ref_level),
+            sum[first_idx:nrow(sum), ]
+          )
+        }
+      }
+    }
+
+    # Find tafd reference level
+    if (!is.null(tafd_col_name) && tafd_col_name %in% names(model_data)) {
+      all_levels <- unique(model_data[[tafd_col_name]])
+      ref_level <- setdiff(all_levels, sum$Parameters)
+      if (length(ref_level) == 1) {
+        in_table <- intersect(as.character(all_levels), sum$Parameters)
+        first_idx <- which(sum$Parameters %in% in_table)[1]
+        if (!is.na(first_idx)) {
+          sum <- dplyr::bind_rows(
+            sum[1:(first_idx - 1), ],
+            create_ref_row(ref_level),
+            sum[first_idx:nrow(sum), ]
+          )
+        }
+      }
+    }
+  }
 
   # add residuals
   sigmav <- nlme::intervals(fit, conf_int)$sigma |>
@@ -337,6 +396,33 @@ compute_model_fit_parameters <- function(
   } else {
     parameters <- rbind(sum, sigmav)
   }
+
+  # Add Section column and reorder: Slope, Treatment, Intercept, Baseline, Time, Random Effects
+  trt_levels <- if (!is.null(trt_col_name) && trt_col_name %in% names(model_data)) {
+    as.character(unique(model_data[[trt_col_name]]))
+  } else {
+    character()
+  }
+  tafd_levels <- if (!is.null(tafd_col_name) && tafd_col_name %in% names(model_data)) {
+    as.character(unique(model_data[[tafd_col_name]]))
+  } else {
+    character()
+  }
+
+  params <- parameters$Parameters
+  parameters$Section <- dplyr::case_when(
+    params == conc_col_name ~ "Slope",
+    params %in% trt_levels | gsub(" \\(Reference\\)", "", params) %in% trt_levels ~ "Treatment",
+    params == "Intercept" | params == baseline_col_name ~ "Intercept",
+    params %in% tafd_levels | gsub(" \\(Reference\\)", "", params) %in% tafd_levels ~ "Time",
+    grepl("^IIV", params) | params == "Residual Error" ~ "Random Effects",
+    TRUE ~ "Other"
+  )
+  parameters$Section <- factor(
+    parameters$Section,
+    levels = c("Slope", "Treatment", "Intercept", "Time", "Random Effects", "Other")
+  )
+  parameters <- parameters[order(parameters$Section), ]
 
   return(parameters)
 }
