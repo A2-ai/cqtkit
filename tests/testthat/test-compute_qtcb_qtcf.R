@@ -69,6 +69,28 @@ test_that("compute_qtcb_qtcf will compute QTCF, QTCB, QTCFBL, QTCBBL using suppl
   expect_true(all(c("QTCB", "QTCBBL", "QTCF", "QTCFBL") %in% names(df)))
 })
 
+test_that("compute_qtcb_qtcf computes correct Bazett and Fridericia corrections", {
+  .test_data <- cqtkit_data_verapamil |>
+    dplyr::select(-QTCB, -QTCBBL, -QTCF, -QTCFBL)
+
+  result <- compute_qtcb_qtcf(.test_data)
+
+  # Bazett: QTcB = QT / sqrt(RR/1000)
+  expected_qtcb <- .test_data$QT / sqrt(.test_data$RR / 1000)
+  expect_equal(result$QTCB, expected_qtcb, tolerance = 1e-10)
+
+  # Fridericia: QTcF = QT / (RR/1000)^(1/3)
+  expected_qtcf <- .test_data$QT / (.test_data$RR / 1000)^(1 / 3)
+  expect_equal(result$QTCF, expected_qtcf, tolerance = 1e-10)
+
+  # Baseline corrections use QTBL and RRBL
+  expected_qtcbbl <- .test_data$QTBL / sqrt(.test_data$RRBL / 1000)
+  expect_equal(result$QTCBBL, expected_qtcbbl, tolerance = 1e-10)
+
+  expected_qtcfbl <- .test_data$QTBL / (.test_data$RRBL / 1000)^(1 / 3)
+  expect_equal(result$QTCFBL, expected_qtcfbl, tolerance = 1e-10)
+})
+
 test_that("compute_qtcb_qtcf will not overwrite existing QTCF, QTCB, QTCFBL, QTCBBL", {
   .test_data <- cqtkit_data_verapamil |>
     dplyr::select(-QTCB, -QTCF, -QTCFBL, -QTCBBL)

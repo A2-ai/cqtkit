@@ -122,15 +122,15 @@ tabulate_pk_parameters <- function(
   pk_params_table <- pk_params_df |>
     gt::gt() |>
     gt::cols_merge(
-      columns = c(.data$Tmax_median, .data$Tmax_min, .data$Tmax_max),
+      columns = c("Tmax_median", "Tmax_min", "Tmax_max"),
       pattern = "{1} ({2}, {3})"
     ) |>
     gt::cols_merge(
-      columns = c(.data$Cmax_gm, .data$Cmax_cv),
+      columns = c("Cmax_gm", "Cmax_cv"),
       pattern = "{1} ({2})"
     ) |>
     gt::cols_merge(
-      columns = c(.data$Cmax_median, .data$Cmax_min, .data$Cmax_max),
+      columns = c("Cmax_median", "Cmax_min", "Cmax_max"),
       pattern = "{1} ({2}, {3})"
     ) |>
     gt::cols_label(
@@ -142,7 +142,7 @@ tabulate_pk_parameters <- function(
     gt::fmt_number(decimals = decimals) |>
     gt::fmt_number(
       decimals = 0,
-      columns = .data$N
+      columns = "N"
     )
 
   if (!is.null(title)) {
@@ -245,7 +245,7 @@ tabulate_model_fit_parameters <- function(
       locations = gt::cells_row_groups()
     ) |>
     gt::cols_merge(
-      columns = c(.data$Value, .data$CIl, .data$CIu),
+      columns = c("Value", "CIl", "CIu"),
       pattern = "{1} [{2}, {3}]"
     ) |>
     gt::cols_label(
@@ -422,24 +422,24 @@ tabulate_ecg_param_summary <- function(
     ) |>
     gt::tab_spanner(
       label = paste0("Observed ", ecg_param_name, " (", unit, ")"),
-      columns = c(.data$mean_ecg, .data$ecg_low, .data$ecg_high)
+      columns = c("mean_ecg", "ecg_low", "ecg_high")
     ) |>
     gt::tab_spanner(
       label = "Baseline Corrected",
-      columns = c(.data$mean_decg, .data$decg_low, .data$decg_high),
+      columns = c("mean_decg", "decg_low", "decg_high"),
       level = 2
     ) |>
     gt::tab_spanner(
       label = paste0(ecg_param_name, " (", unit, ")"),
-      columns = c(.data$mean_decg, .data$decg_low, .data$decg_high),
+      columns = c("mean_decg", "decg_low", "decg_high"),
       level = 1
     ) |>
     gt::cols_merge(
-      columns = c(.data$ecg_low, .data$ecg_high),
+      columns = c("ecg_low", "ecg_high"),
       pattern = "[{1}, {2}]"
     ) |>
     gt::cols_merge(
-      columns = c(.data$decg_low, .data$decg_high),
+      columns = c("decg_low", "decg_high"),
       pattern = "[{1}, {2}]"
     ) |>
     gt::cols_label(
@@ -454,16 +454,16 @@ tabulate_ecg_param_summary <- function(
     s_gt <- s_gt |>
       gt::tab_spanner(
         label = "Baseline and Placebo",
-        columns = c(.data$mean_ddecg, .data$ddecg_low, .data$ddecg_high),
+        columns = c("mean_ddecg", "ddecg_low", "ddecg_high"),
         level = 2
       ) |>
       gt::tab_spanner(
         label = paste0("Corrected ", ecg_param_name, " (", unit, ")"),
-        columns = c(.data$mean_ddecg, .data$ddecg_low, .data$ddecg_high),
+        columns = c("mean_ddecg", "ddecg_low", "ddecg_high"),
         level = 1
       ) |>
       gt::cols_merge(
-        columns = c(.data$ddecg_low, .data$ddecg_high),
+        columns = c("ddecg_low", "ddecg_high"),
         pattern = "[{1}, {2}]"
       ) |>
       gt::cols_label(
@@ -488,7 +488,7 @@ tabulate_ecg_param_summary <- function(
     gt::fmt_number(decimals = decimals) |>
     gt::fmt_number(
       decimals = 0,
-      columns = .data$n
+      columns = "n"
     ) |>
     gt::sub_missing()
 
@@ -819,11 +819,11 @@ tabulate_exposure_predictions <- function(
     dplyr::arrange(conc) |>
     dplyr::mutate(conc = as.numeric(as.character(conc))) |>
     dplyr::mutate(Dose = doses) |>
-    dplyr::rename(Cmax = .data$conc) |>
+    dplyr::rename(Cmax = "conc") |>
     dplyr::select("Dose", "Cmax", "pred", "lower", "upper") |>
     gt::gt() |>
     gt::cols_merge(
-      columns = c(.data$lower, .data$upper),
+      columns = c("lower", "upper"),
       pattern = "[{1}, {2}]"
     ) |>
     gt::cols_label(
