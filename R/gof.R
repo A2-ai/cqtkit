@@ -211,7 +211,7 @@ gof_plots <- function(
 #' @return A 2-panel plot comparing population (PRED) and individual (IPRED) predictions vs observed values
 #' @export
 #'
-#' @importFrom rlang .data
+
 #'
 #' @examples
 #' data_proc <- preprocess(cqtkit_data_verapamil)

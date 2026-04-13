@@ -82,7 +82,7 @@ tabulate_study_summary <- function(
 #' @param title Optional title for the table, it will be wrapped in gt::md()
 #' @param ... Optional additional arguments to gt::tab_options
 #'
-#' @importFrom rlang .data
+
 #'
 #' @return A gt table with PK parameters: N, Tmax (median/min/max), Cmax (geometric mean, CV%, median/min/max) by dose group
 #' @export
@@ -179,7 +179,7 @@ tabulate_pk_parameters <- function(
 #' @param title Optional string for adding tab_header. It will be wrapped in gt::md()
 #' @param ... Optional additional arguments for gt::tab_options
 #'
-#' @importFrom rlang .data
+
 #'
 #' @return A gt table with fixed effect estimates, standard errors, confidence intervals, and p-values
 #' @export
@@ -713,7 +713,7 @@ tabulate_high_qtc_sub <- function(
 #' @param title Optional string for table title. Wrapped in gt::md()
 #' @param ... Optional additional args to gt::tab_options
 #'
-#' @importFrom rlang .data
+
 #'
 #' @return A gt table with predicted deltaQTc values and confidence intervals at therapeutic and supratherapeutic Cmax
 #' @export

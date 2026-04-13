@@ -124,7 +124,7 @@ compute_lme_slope_df <- function(lme_mod, xdata_col, conf_int = 0.95) {
 #' @param ntime_col An unquoted column name for nominal times
 #' @param group_col An unquoted column name for additional grouping variable
 #'
-#' @importFrom rlang .data
+
 #'
 #' @return A tibble with PK summary statistics by group: N, Tmax (median/min/max), and Cmax (geometric mean, CV%, median/min/max)
 #' @export
@@ -546,7 +546,7 @@ compute_ecg_param_summary <- function(
 #'
 #' @return A tibble with mean, SD, SE, and confidence intervals for the dependent variable, grouped by time and dose
 #' @export
-#' @importFrom rlang .data
+
 #' @examples
 #' data_proc <- preprocess(cqtkit_data_verapamil)
 #' data_proc <- dplyr::mutate(data_proc, DOSEF = as.factor(DOSEF))
@@ -1466,7 +1466,7 @@ compute_conc_for_upper_pred <- function(
 #' @return A tibble with concentration, predicted deltaQTc, and lower/upper confidence bounds for exposure-response predictions
 #' @export
 #'
-#' @importFrom rlang .data
+
 #'
 #' @examples
 #' data_proc <- preprocess(cqtkit_data_verapamil)

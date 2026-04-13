@@ -104,7 +104,7 @@ add_error_bars_to_plot <- function(
 #' @param reference_threshold Numeric/vector of numerics for horizontal lines
 #'
 #' @return A ggplot2 object with horizontal reference lines added
-#' @importFrom rlang .data
+
 #'
 #' @export
 #'
@@ -178,7 +178,7 @@ add_horizontal_references <- function(p, reference_threshold) {
 #' @param sec_ylabel Secondary y axis label
 #' @param ylabel Primary y axis label
 #'
-#' @importFrom rlang .data
+
 #'
 #' @return A ggplot2 object with secondary data layer and dual y-axis
 add_secondary_data <- function(

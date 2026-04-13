@@ -154,6 +154,9 @@
 #' @keywords internal
 "_PACKAGE"
 
+#' @importFrom rlang .data %||% :=
+NULL
+
 
 #' \code{cqtkit} Preprocessing functions
 #'

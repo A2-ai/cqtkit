@@ -9,7 +9,7 @@
 
 A data frame with 65 rows and 10 columns:
 \describe{
-\item{ID}{Uniuqe subject identifier}
+\item{ID}{Unique subject identifier}
 \item{TRTG}{Treatment Group (Drug or Placebo)}
 \item{DOSE}{numeric value of dose}
 \item{DOSEU}{Units of DOSE}

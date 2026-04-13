@@ -16,7 +16,7 @@ compute_delta_qtcfblm(
 
 \item{id_col}{An unquoted column name for subject ID}
 
-\item{qtcfbl_col}{An unquoted column name for baseline QTCB measurements, default is QTCBBL}
+\item{qtcfbl_col}{An unquoted column name for baseline QTCF measurements, default is QTCFBL}
 
 \item{deduplicate}{Logical, whether to remove duplicate baseline values before averaging}
 }

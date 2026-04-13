@@ -1,3 +1,9 @@
+snapshot_plot <- function(plot, name, width = 8, height = 6) {
+  png_path <- file.path(tempdir(), paste0(name, ".png"))
+  ggplot2::ggsave(png_path, plot, width = width, height = height, dpi = 150)
+  testthat::expect_snapshot_file(png_path)
+}
+
 snapshot_gt <- function(table, name) {
   testthat::skip_if_not_installed("gt")
 

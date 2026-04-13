@@ -6,7 +6,7 @@
 #' @param rr_col An unquoted column name for RR measurements
 #' @param rrbl_col An unquoted column name for baseline RR measurements
 #'
-#' @importFrom rlang .data
+
 #'
 #' @return A data frame with QTCF, QTCB, QTCFBL, and QTCBBL columns added
 #' @export
@@ -132,7 +132,7 @@ compute_deltas <- function(
 #' @param deduplicate Logical, whether to remove duplicate baseline values before averaging
 #'
 #' @return A data frame with deltaHRBL column added
-#' @importFrom rlang .data
+
 #' @export
 #'
 #' @examples
@@ -176,7 +176,7 @@ compute_delta_hrblm <- function(
 #'
 #' @return A data frame with deltaQTCBBL column added
 #' @export
-#' @importFrom rlang .data
+
 #' @examples
 #' compute_delta_qtcbblm(compute_qtcb_qtcf(cqtkit_data_verapamil))
 compute_delta_qtcbblm <- function(
@@ -218,7 +218,7 @@ compute_delta_qtcbblm <- function(
 #'
 #' @return A data frame with deltaQTCFBL column added
 #' @export
-#' @importFrom rlang .data
+
 #' @examples
 #' compute_delta_qtcfblm(compute_qtcb_qtcf(cqtkit_data_verapamil))
 compute_delta_qtcfblm <- function(

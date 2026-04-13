@@ -219,8 +219,8 @@ predict_with_observations_plot <- function(
 #'
 #' @return A plot of binned observed data quantiles with model prediction line and confidence interval
 #' @export
-#' @importFrom rlang .data
-#' @importFrom rlang :=
+
+
 #'
 #' @examples
 #' data_proc <- preprocess(cqtkit_data_verapamil)
