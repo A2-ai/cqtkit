@@ -213,7 +213,7 @@ compute_delta_qtcbblm <- function(
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param id_col An unquoted column name for subject ID
-#' @param qtcfbl_col An unquoted column name for baseline QTCB measurements, default is QTCBBL
+#' @param qtcfbl_col An unquoted column name for baseline QTCF measurements, default is QTCFBL
 #' @param deduplicate Logical, whether to remove duplicate baseline values before averaging
 #'
 #' @return A data frame with deltaQTCFBL column added

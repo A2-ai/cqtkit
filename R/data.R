@@ -3,7 +3,7 @@
 #' @format ## `cqtkit_data_verapamil`
 #' A tibble: 643 × 15:
 #' \describe{
-#'   \item{ID}{Uniuqe subject identifier}
+#'   \item{ID}{Unique subject identifier}
 #'   \item{TRTG}{Treatment Group (Drug or Placebo)}
 #'   \item{DOSE}{numeric value of dose}
 #'   \item{DOSEU}{Units of DOSE}
@@ -12,9 +12,9 @@
 #'   \item{CONC}{Drug concentration}
 #'   \item{CONCU}{Drug concentration unit}
 #'   \item{RR}{RR after dose (ms)}
-#'   \item{RRBL}{Baseline RR beore dose (ms)}
+#'   \item{RRBL}{Baseline RR before dose (ms)}
 #'   \item{HR}{HR after dose (bpm)}
-#'   \item{HRBL}{Baseline HR beore dose (ms)}
+#'   \item{HRBL}{Baseline HR before dose (ms)}
 #'   \item{HRBLM}{Mean baseline HR across subjects (ms)}
 #'   \item{deltaHRBL}{Difference between baseline HR and mean baseline HR across subjects (ms)}
 #'   \item{QT}{QT after dose (ms)}
@@ -37,7 +37,7 @@
 #' @format ## `cqtkit_data_bl_verapamil`
 #' A data frame with 65 rows and 10 columns:
 #' \describe{
-#'   \item{ID}{Uniuqe subject identifier}
+#'   \item{ID}{Unique subject identifier}
 #'   \item{TRTG}{Treatment Group (Drug or Placebo)}
 #'   \item{DOSE}{numeric value of dose}
 #'   \item{DOSEU}{Units of DOSE}
@@ -55,7 +55,7 @@
 #' @format ## `cqtkit_data_dofetilide`
 #' A tibble: 643 × 15:
 #' \describe{
-#'   \item{ID}{Uniuqe subject identifier}
+#'   \item{ID}{Unique subject identifier}
 #'   \item{TRTG}{Treatment Group (Drug or Placebo)}
 #'   \item{DOSE}{numeric value of dose}
 #'   \item{DOSEU}{Units of DOSE}
@@ -64,9 +64,9 @@
 #'   \item{CONC}{Drug concentration}
 #'   \item{CONCU}{Drug concentration unit}
 #'   \item{RR}{RR after dose (ms)}
-#'   \item{RRBL}{Baseline RR beore dose (ms)}
+#'   \item{RRBL}{Baseline RR before dose (ms)}
 #'   \item{HR}{HR after dose (bpm)}
-#'   \item{HRBL}{Baseline HR beore dose (ms)}
+#'   \item{HRBL}{Baseline HR before dose (ms)}
 #'   \item{HRBLM}{Mean baseline HR across subjects (ms)}
 #'   \item{deltaHRBL}{Difference between baseline HR and mean baseline HR across subjects (ms)}
 #'   \item{QT}{QT after dose (ms)}
@@ -89,7 +89,7 @@
 #' @format ## `cqtkit_data_bl_dofetilide`
 #' A data frame with 65 rows and 10 columns:
 #' \describe{
-#'   \item{ID}{Uniuqe subject identifier}
+#'   \item{ID}{Unique subject identifier}
 #'   \item{TRTG}{Treatment Group (Drug or Placebo)}
 #'   \item{DOSE}{numeric value of dose}
 #'   \item{DOSEU}{Units of DOSE}
@@ -107,7 +107,7 @@
 #' @format ## `cqtkit_data_ranolazine`
 #' A tibble: 643 × 15:
 #' \describe{
-#'   \item{ID}{Uniuqe subject identifier}
+#'   \item{ID}{Unique subject identifier}
 #'   \item{TRTG}{Treatment Group (Drug or Placebo)}
 #'   \item{DOSE}{numeric value of dose}
 #'   \item{DOSEU}{Units of DOSE}
@@ -116,9 +116,9 @@
 #'   \item{CONC}{Drug concentration}
 #'   \item{CONCU}{Drug concentration unit}
 #'   \item{RR}{RR after dose (ms)}
-#'   \item{RRBL}{Baseline RR beore dose (ms)}
+#'   \item{RRBL}{Baseline RR before dose (ms)}
 #'   \item{HR}{HR after dose (bpm)}
-#'   \item{HRBL}{Baseline HR beore dose (ms)}
+#'   \item{HRBL}{Baseline HR before dose (ms)}
 #'   \item{HRBLM}{Mean baseline HR across subjects (ms)}
 #'   \item{deltaHRBL}{Difference between baseline HR and mean baseline HR across subjects (ms)}
 #'   \item{QT}{QT after dose (ms)}
@@ -141,7 +141,7 @@
 #' @format ## `cqtkit_data_bl_ranolazine`
 #' A data frame with 65 rows and 10 columns:
 #' \describe{
-#'   \item{ID}{Uniuqe subject identifier}
+#'   \item{ID}{Unique subject identifier}
 #'   \item{TRTG}{Treatment Group (Drug or Placebo)}
 #'   \item{DOSE}{numeric value of dose}
 #'   \item{DOSEU}{Units of DOSE}
@@ -158,7 +158,7 @@
 #' @format ## `cqtkit_data_quinidine`
 #' A tibble: 643 × 15:
 #' \describe{
-#'   \item{ID}{Uniuqe subject identifier}
+#'   \item{ID}{Unique subject identifier}
 #'   \item{TRTG}{Treatment Group (Drug or Placebo)}
 #'   \item{DOSE}{numeric value of dose}
 #'   \item{DOSEU}{Units of DOSE}
@@ -167,9 +167,9 @@
 #'   \item{CONC}{Drug concentration}
 #'   \item{CONCU}{Drug concentration unit}
 #'   \item{RR}{RR after dose (ms)}
-#'   \item{RRBL}{Baseline RR beore dose (ms)}
+#'   \item{RRBL}{Baseline RR before dose (ms)}
 #'   \item{HR}{HR after dose (bpm)}
-#'   \item{HRBL}{Baseline HR beore dose (ms)}
+#'   \item{HRBL}{Baseline HR before dose (ms)}
 #'   \item{HRBLM}{Mean baseline HR across subjects (ms)}
 #'   \item{deltaHRBL}{Difference between baseline HR and mean baseline HR across subjects (ms)}
 #'   \item{QT}{QT after dose (ms)}
@@ -192,7 +192,7 @@
 #' @format ## `cqtkit_data_bl_quinidine`
 #' A data frame with 65 rows and 10 columns:
 #' \describe{
-#'   \item{ID}{Uniuqe subject identifier}
+#'   \item{ID}{Unique subject identifier}
 #'   \item{TRTG}{Treatment Group (Drug or Placebo)}
 #'   \item{DOSE}{numeric value of dose}
 #'   \item{DOSEU}{Units of DOSE}

@@ -165,7 +165,7 @@
 #'	\item \code{\link{compute_delta_qtcbblm}} - This function computes difference between QTcB and mean baseline QTcB
 #'	\item \code{\link{compute_delta_qtcfblm}} - This function computes difference between QTcF and mean baseline QTcF
 #'	\item \code{\link{compute_delta_hrblm}} - This function computes difference between HR and mean baseline HR
-#'	\item \code{\link{compute_deltas}} - This function comptues delta ECG parameters between baseline and on treatment
+#'	\item \code{\link{compute_deltas}} - This function computes delta ECG parameters between baseline and on treatment
 #'	\item \code{\link{preprocess}} - This is a wrapper function to compute all QT corrections, delta ECG, and delta Baseline Mean values
 #' }
 #'

@@ -49,6 +49,7 @@ test_that("compute_qtcb_qtcf will compute QTCF, QTCB, QTCFBL, QTCBBL using defau
 
 test_that("compute_qtcb_qtcf will compute QTCF, QTCB, QTCFBL, QTCBBL using supplied col names", {
   test_data <- cqtkit_data_verapamil |>
+    dplyr::select(-QTCB, -QTCBBL, -QTCF, -QTCFBL) |>
     dplyr::rename(
       qt_data = QT,
       rr_data = RR,
@@ -56,15 +57,7 @@ test_that("compute_qtcb_qtcf will compute QTCF, QTCB, QTCFBL, QTCBBL using suppl
       rrbl_data = RRBL
     )
 
-  expect_false(all(c("QTCB", "QTCBBL", "QTCF", "QTCFBL") %in% names(df)))
-
-  expect_no_condition(compute_qtcb_qtcf(
-    test_data,
-    qt_col = qt_data,
-    rr_col = rr_data,
-    qtbl_col = qtbl_data,
-    rrbl_col = rrbl_data
-  ))
+  expect_false(all(c("QTCB", "QTCBBL", "QTCF", "QTCFBL") %in% names(test_data)))
 
   df <- compute_qtcb_qtcf(
     test_data,

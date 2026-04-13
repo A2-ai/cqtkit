@@ -155,7 +155,7 @@ eda_qt_rr_plot <- function(
   }
 
   if (is.null(style)) style <- list()
-  style$xlabel <- style$xlabe %||% "RR (ms)"
+  style$xlabel <- style$xlabel %||% "RR (ms)"
   style$ylabel <- style$ylabel %||% "QT (ms)"
   style$legend <- style$legend %||% "Treatment Group"
 
