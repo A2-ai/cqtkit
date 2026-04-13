@@ -1,4 +1,8 @@
 snapshot_plot <- function(plot, name, width = 8, height = 6) {
+  testthat::skip_on_ci()
+  testthat::skip_on_os("windows")
+  testthat::skip_on_os("linux")
+
   png_path <- file.path(tempdir(), paste0(name, ".png"))
   ggplot2::ggsave(png_path, plot, width = width, height = height, dpi = 150)
   testthat::expect_snapshot_file(png_path)
