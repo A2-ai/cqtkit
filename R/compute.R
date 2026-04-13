@@ -199,9 +199,10 @@ compute_pk_parameters <- function(
   checkmate::assert(all(pk_params_df$Cmax > 0))
 
   pk_params_df <- pk_params_df |>
+    dplyr::distinct(.data$id, .data$group, .keep_all = TRUE) |>
     dplyr::group_by(.data$group) |>
     dplyr::summarize(
-      N = dplyr::n_distinct(.data$id),
+      N = dplyr::n(),
       Tmax_median = stats::median(.data$Tmax, na.rm = TRUE),
       Tmax_max = max(.data$Tmax, na.rm = TRUE),
       Tmax_min = min(.data$Tmax, na.rm = TRUE),
