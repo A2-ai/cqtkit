@@ -7,7 +7,7 @@ fit <- fit_prespecified_model(
 test_that("gof_plots snapshot", {
   p <- gof_plots(data_proc, fit, deltaQTCF, CONC, NTLD, TRTG)
 
-  snapshot_plot(p, "gof-plots", width = 10, height = 10)
+  snapshot_plot(p, "gof-plots")
 })
 
 test_that("gof_concordance_plots snapshot", {
@@ -23,7 +23,7 @@ test_that("gof_residuals_plots snapshot", {
     data_proc, fit, deltaQTCF, CONC, NTLD, TRTG, legend_location = "top"
   )
 
-  snapshot_plot(p, "gof-residuals", width = 10, height = 10)
+  snapshot_plot(p, "gof-residuals")
 })
 
 test_that("gof_qq_plots snapshot", {
@@ -39,7 +39,7 @@ test_that("gof_residuals_time_boxplots snapshot", {
     data_proc, fit, deltaQTCF, CONC, NTLD, TRTG, legend_location = "top"
   )
 
-  snapshot_plot(p, "gof-residuals-time-box", width = 10, height = 8)
+  snapshot_plot(p, "gof-residuals-time-box")
 })
 
 test_that("gof_residuals_trt_boxplots snapshot", {
@@ -67,5 +67,5 @@ test_that("gof_plots with style snapshot", {
     )
   )
 
-  snapshot_plot(p, "gof-plots-styled", width = 10, height = 10)
+  snapshot_plot(p, "gof-plots-styled")
 })

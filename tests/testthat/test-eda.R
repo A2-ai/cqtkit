@@ -36,7 +36,7 @@ test_that("eda_qtc_comparison_plot snapshot", {
     remove_rr_iiv = TRUE
   )
 
-  snapshot_plot(p, "eda-qtc-comparison", width = 8, height = 12)
+  snapshot_plot(p, "eda-qtc-comparison")
 })
 
 test_that("eda_quantiles_plot default snapshot", {
@@ -237,5 +237,5 @@ test_that("eda_hysteresis_loop_plot snapshot", {
     data_proc, NTLD, deltaQTCF, CONC, DOSEF
   )
 
-  snapshot_plot(p, "eda-hysteresis-loop", width = 10, height = 6)
+  snapshot_plot(p, "eda-hysteresis-loop")
 })

@@ -35,6 +35,7 @@ Imports:
     utils
 Suggests:
     testthat (>= 3.0.0),
+    vdiffr,
     webshot2,
 Config/testthat/edition: 3
 Depends:
