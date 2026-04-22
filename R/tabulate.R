@@ -176,7 +176,7 @@ tabulate_pk_parameters <- function(
 #' @param show_standard_error Logical, whether to display standard error of fixed effects estimates
 #' @param scientific Logical, whether to use scientific notation for small values
 #' @param include_reference_levels Logical, whether to include reference factor levels with Estimate = 0 (default: FALSE)
-#' @param title Optional string for adding tab_header. It will be wrapped in gt::md()
+#' @param title Optional title for the table, it will be wrapped in gt::md()
 #' @param ... Optional additional arguments for gt::tab_options
 #'
 
@@ -511,7 +511,7 @@ tabulate_ecg_param_summary <- function(
 #' @param unit A string for the unit of measurement (default: "ms")
 #' @param qtc_thresholds Numeric vector of QTc thresholds (default: c(450, 480, 500))
 #' @param dqtc_thresholds Numeric vector of deltaQTc thresholds (default: c(30, 60))
-#' @param title Optional string to give the table a title, wrapped in gt::md()
+#' @param title Optional title for the table, it will be wrapped in gt::md()
 #' @param ... Optional additional args to gt::tab_options
 #'
 #' @return A gt table with counts of observations exceeding each threshold
@@ -608,7 +608,7 @@ tabulate_high_qtc_obs <- function(
 #' @param unit A string for the unit of measurement (default: "ms")
 #' @param qtc_thresholds Numeric vector of QTc thresholds (default: c(450, 480, 500))
 #' @param dqtc_thresholds Numeric vector of deltaQTc thresholds (default: c(30, 60))
-#' @param title Optional string to give the table a title, wrapped in gt::md()
+#' @param title Optional title for the table, it will be wrapped in gt::md()
 #' @param ... Optional additional args to gt::tab_options
 #'
 #' @return A gt table with counts of subjects with at least one observation
@@ -710,7 +710,7 @@ tabulate_high_qtc_sub <- function(
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #' @param decimals Number of decimals to format numbers to. default is 2
 #' @param scientific Logical, whether to use scientific notation
-#' @param title Optional string for table title. Wrapped in gt::md()
+#' @param title Optional title for the table, it will be wrapped in gt::md()
 #' @param ... Optional additional args to gt::tab_options
 #'
 

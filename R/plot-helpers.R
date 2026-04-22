@@ -453,8 +453,8 @@ apply_manual_scale <- function(
   if (!is.null(default_map)) final_map[names(default_map)] <- default_map
   if (!is.null(user_values)) final_map[names(user_values)] <- user_values
 
-  # Labels
-  final_labels <- stats::setNames(all_groups, all_groups)
+  # Labels (use list to support mixed types: strings, expressions, NA)
+  final_labels <- as.list(stats::setNames(all_groups, all_groups))
   if (!is.null(user_labels)) {
     overlapping <- intersect(names(user_labels), names(final_labels))
     final_labels[overlapping] <- user_labels[overlapping]
