@@ -43,7 +43,7 @@ tabulate_model_fit_parameters(
 
 \item{include_reference_levels}{Logical, whether to include reference factor levels with Estimate = 0 (default: FALSE)}
 
-\item{title}{Optional string for adding tab_header. It will be wrapped in gt::md()}
+\item{title}{Optional title for the table, it will be wrapped in gt::md()}
 
 \item{...}{Optional additional arguments for gt::tab_options}
 }

@@ -37,7 +37,7 @@ tabulate_high_qtc_obs(
 
 \item{dqtc_thresholds}{Numeric vector of deltaQTc thresholds (default: c(30, 60))}
 
-\item{title}{Optional string to give the table a title, wrapped in gt::md()}
+\item{title}{Optional title for the table, it will be wrapped in gt::md()}
 
 \item{...}{Optional additional args to gt::tab_options}
 }

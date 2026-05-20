@@ -46,7 +46,7 @@ tabulate_exposure_predictions(
 
 \item{scientific}{Logical, whether to use scientific notation}
 
-\item{title}{Optional string for table title. Wrapped in gt::md()}
+\item{title}{Optional title for the table, it will be wrapped in gt::md()}
 
 \item{...}{Optional additional args to gt::tab_options}
 }
