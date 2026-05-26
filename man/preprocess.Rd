@@ -2,58 +2,39 @@
 % Please edit documentation in R/preprocess.R
 \name{preprocess}
 \alias{preprocess}
-\title{Preprocess}
+\title{Preprocess a C-QT analysis dataset}
 \usage{
-preprocess(
-  data,
-  qt_col = QT,
-  qtbl_col = QTBL,
-  rr_col = RR,
-  rrbl_col = RRBL,
-  hr_col = HR,
-  hrbl_col = HRBL,
-  qtcf_col = QTCF,
-  qtcfbl_col = QTCFBL,
-  qtcb_col = QTCB,
-  qtcbbl_col = QTCBBL,
-  id_col = ID,
-  deduplicate = TRUE
-)
+preprocess(data, bl_data, by)
 }
 \arguments{
-\item{data}{A data frame containing C-QT analysis dataset}
+\item{data}{A data frame at analysis grain carrying the corrected QT/HR
+columns and their baselines.}
 
-\item{qt_col}{An unquoted column name for QT measurements}
+\item{bl_data}{A data frame of baseline ECG measurements, used to compute
+the population baseline means. See \code{\link[=compute_hrblm]{compute_hrblm()}}.}
 
-\item{qtbl_col}{An unquoted column name for baseline QT measurements}
-
-\item{rr_col}{An unquoted column name for RR measurements}
-
-\item{rrbl_col}{An unquoted column name for baseline RR measurements}
-
-\item{hr_col}{An unquoted column name for HR measurements, HR by default}
-
-\item{hrbl_col}{An unquoted column name for baseline HR measurements, HRBL by default}
-
-\item{qtcf_col}{An unquoted column name for QTCF measurements, QTCF by default}
-
-\item{qtcfbl_col}{An unquoted column name for baseline QTCF measurements, QTCFBL by default}
-
-\item{qtcb_col}{An unquoted column name for QTCB measurements, QTCB by default}
-
-\item{qtcbbl_col}{An unquoted column name for baseline QTCB measurements, QTCBBL by default}
-
-\item{id_col}{An unquoted column name for subject ID}
-
-\item{deduplicate}{Logical, whether to remove duplicate baseline values before averaging}
+\item{by}{Grouping columns for the population baseline means, as bare
+symbols supplied via \code{c(col1, col2, ...)}, e.g. \code{c(ID, TRTG)}.}
 }
 \value{
-A data frame with all delta columns computed from baseline
+\code{data} with the population-baseline-mean and delta columns added.
 }
 \description{
-Computes QTcB, QTcF, deltaQTcF, deltaQTcB, deltaHR, deltaQTcB Baseline Mean,
-deltaQTcF Baseline Mean, deltaHR Baseline Mean.
+Adds the population-baseline and delta columns to an analysis-grain
+dataset: the population baseline means (\code{HRBLM}/\code{QTCBBLM}/\code{QTCFBLM}), the
+baseline-from-mean deltas (\code{deltaHRBL}/\code{deltaQTCBBL}/\code{deltaQTCFBL}), and
+the row-level deltas (\code{deltaQTCB}/\code{deltaQTCF}/\code{deltaHR}/\code{deltaQT}/\code{deltaRR}).
+}
+\details{
+\code{data} must already carry the heart-rate-corrected columns
+(\code{HR}/\code{HRBL}, \code{QTCB}/\code{QTCBBL}, \code{QTCF}/\code{QTCFBL}). Those corrections are
+nonlinear in RR and should be computed per raw ECG replicate and then
+averaged (see \code{\link[=compute_qtcb_qtcf]{compute_qtcb_qtcf()}} and \code{\link[=compute_hr]{compute_hr()}} at assembly time),
+not recomputed from already-aggregated values here.
 }
 \examples{
-preprocess(cqtkit_data_verapamil)
+\dontrun{
+raw_bl <- raw |> dplyr::filter(BASELINE == "Y")
+analysis_data |> preprocess(raw_bl, by = c(ID, TRTG))
+}
 }

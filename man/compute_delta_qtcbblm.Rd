@@ -2,30 +2,33 @@
 % Please edit documentation in R/preprocess.R
 \name{compute_delta_qtcbblm}
 \alias{compute_delta_qtcbblm}
-\title{Compute Delta QTcB Baseline Mean}
+\title{Compute deltaQTCBBL from QTCBBL and QTCBBLM}
 \usage{
-compute_delta_qtcbblm(
-  data,
-  id_col = ID,
-  qtcbbl_col = QTCBBL,
-  deduplicate = TRUE
-)
+compute_delta_qtcbblm(data, qtcbbl_col = QTCBBL, qtcbblm_col = QTCBBLM)
 }
 \arguments{
-\item{data}{A data frame containing C-QT analysis dataset}
+\item{data}{A data frame with \code{qtcbbl_col} and \code{qtcbblm_col} columns.}
 
-\item{id_col}{An unquoted column name for subject ID}
+\item{qtcbbl_col}{Unquoted column name for the per-subject baseline
+Bazett-corrected QT. Default \code{QTCBBL}.}
 
-\item{qtcbbl_col}{An unquoted column name for baseline QTCB measurements, default is QTCBBL}
-
-\item{deduplicate}{Logical, whether to remove duplicate baseline values before averaging}
+\item{qtcbblm_col}{Unquoted column name for the population baseline
+Bazett-corrected QT mean. Default \code{QTCBBLM}.}
 }
 \value{
-A data frame with deltaQTCBBL column added
+\code{data} with a \code{deltaQTCBBL} column added. If \code{deltaQTCBBL}
+already exists, returns \code{data} unchanged.
 }
 \description{
-Compute Delta QTcB Baseline Mean
+Adds a \code{deltaQTCBBL} column to \code{data} computed as \code{QTCBBL - QTCBBLM}.
+Both input columns must already exist on \code{data}; use
+\code{\link[=compute_qtcbblm]{compute_qtcbblm()}} to add the \code{QTCBBLM} scalar first.
 }
 \examples{
-compute_delta_qtcbblm(compute_qtcb_qtcf(cqtkit_data_verapamil))
+\dontrun{
+raw_bl <- raw |> dplyr::filter(BASELINE == "Y")
+analysis_data |>
+  compute_qtcbblm(raw_bl, by = c(RANDID, EXTRT)) |>
+  compute_delta_qtcbblm()
+}
 }

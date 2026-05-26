@@ -2,25 +2,33 @@
 % Please edit documentation in R/preprocess.R
 \name{compute_delta_hrblm}
 \alias{compute_delta_hrblm}
-\title{Compute Delta HR Baseline Mean}
+\title{Compute deltaHRBL from HRBL and HRBLM}
 \usage{
-compute_delta_hrblm(data, id_col = ID, hrbl_col = HRBL, deduplicate = TRUE)
+compute_delta_hrblm(data, hrbl_col = HRBL, hrblm_col = HRBLM)
 }
 \arguments{
-\item{data}{A data frame containing C-QT analysis dataset}
+\item{data}{A data frame with \code{hrbl_col} and \code{hrblm_col} columns.}
 
-\item{id_col}{An unquoted column name for subject ID}
+\item{hrbl_col}{Unquoted column name for the per-subject baseline HR.
+Default \code{HRBL}.}
 
-\item{hrbl_col}{An unquoted column name for baseline HR measurements, default is HRBL}
-
-\item{deduplicate}{Logical, whether to remove duplicate baseline values before averaging}
+\item{hrblm_col}{Unquoted column name for the population baseline HR
+mean. Default \code{HRBLM}.}
 }
 \value{
-A data frame with deltaHRBL column added
+\code{data} with a \code{deltaHRBL} column added. If \code{deltaHRBL} already
+exists, returns \code{data} unchanged.
 }
 \description{
-Compute Delta HR Baseline Mean
+Adds a \code{deltaHRBL} column to \code{data} computed as \code{HRBL - HRBLM}. Both
+input columns must already exist on \code{data}; use \code{\link[=compute_hrblm]{compute_hrblm()}} to
+add the \code{HRBLM} scalar first.
 }
 \examples{
-compute_delta_hrblm(cqtkit_data_verapamil)
+\dontrun{
+raw_bl <- raw |> dplyr::filter(BASELINE == "Y")
+analysis_data |>
+  compute_hrblm(raw_bl, by = c(RANDID, EXTRT)) |>
+  compute_delta_hrblm()
+}
 }

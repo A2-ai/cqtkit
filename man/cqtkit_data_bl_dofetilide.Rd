@@ -7,16 +7,25 @@
 \format{
 \subsection{\code{cqtkit_data_bl_dofetilide}}{
 
-A data frame with 65 rows and 10 columns:
+A data frame with 132 rows and 17 columns:
 \describe{
 \item{ID}{Unique subject identifier}
+\item{SEX}{Sex either M (Male) or F (Female)}
+\item{AGE}{Age in years at screening}
+\item{HGHT}{Height in cm at screening}
+\item{WGHT}{Weight in kg at screening}
+\item{RACE}{Race as provided}
+\item{ETHNIC}{Ethnicity as provided}
+\item{VISIT}{Visit code}
 \item{TRTG}{Treatment Group (Drug or Placebo)}
 \item{DOSE}{numeric value of dose}
 \item{DOSEU}{Units of DOSE}
 \item{TPT}{Timepoint of collection relative to first dose (h)}
 \item{RR}{RR before dose (ms)}
-\item{HR}{HR before dose (bpm)}
 \item{QT}{QT before dose (ms)}
+\item{HR}{HR before dose (bpm)}
+\item{QTCB}{Bazett's corrected QT before dose (ms)}
+\item{QTCF}{Fridericia's corrected QT before dose (ms)}
 }
 }
 }

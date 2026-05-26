@@ -7,7 +7,7 @@
 \format{
 \subsection{\code{cqtkit_data_verapamil}}{
 
-A tibble: 643 × 15:
+A tibble: 657 × 30:
 \describe{
 \item{ID}{Unique subject identifier}
 \item{TRTG}{Treatment Group (Drug or Placebo)}
@@ -15,24 +15,30 @@ A tibble: 643 × 15:
 \item{DOSEU}{Units of DOSE}
 \item{DOSEF}{Factor value of dose}
 \item{NTLD}{Nominal time since last dose (h)}
+\item{TAFD}{Time after first dose (h)}
 \item{CONC}{Drug concentration}
 \item{CONCU}{Drug concentration unit}
 \item{RR}{RR after dose (ms)}
 \item{RRBL}{Baseline RR before dose (ms)}
+\item{deltaRR}{Difference between RR and baseline RR (ms)}
 \item{HR}{HR after dose (bpm)}
 \item{HRBL}{Baseline HR before dose (ms)}
 \item{HRBLM}{Mean baseline HR across subjects (ms)}
 \item{deltaHRBL}{Difference between baseline HR and mean baseline HR across subjects (ms)}
+\item{deltaHR}{Difference between HR and baseline HR (bpm)}
 \item{QT}{QT after dose (ms)}
 \item{QTBL}{Baseline QT before dose (ms)}
+\item{deltaQT}{Difference between QT and baseline QT (ms)}
 \item{QTCB}{Bazett's corrected QT after dose (ms)}
 \item{QTCBBL}{Baseline Bazett's corrected QT before dose (ms)}
 \item{QTCBBLM}{Mean baseline QTCB across subjects (ms)}
 \item{deltaQTCBBL}{Difference between baseline QTCB and mean baseline QTCB across subjects (ms)}
+\item{deltaQTCB}{Difference between QTCB and baseline QTCB (ms)}
 \item{QTCF}{Fridericia's corrected QT after dose (ms)}
 \item{QTCFBL}{Baseline Fridericia's corrected QT before dose(ms)}
 \item{QTCFBLM}{Mean baseline QTCF across subjects (ms)}
 \item{deltaQTCFBL}{Difference between baseline QTCF and mean baseline QTCF across subjects (ms)}
+\item{deltaQTCF}{Difference between QTCF and baseline QTCF (ms)}
 }
 }
 }
