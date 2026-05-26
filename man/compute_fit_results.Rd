@@ -26,10 +26,9 @@ A tibble with observed DV, concentration, time, population/individual prediction
 Computes all fitted results and residuals for GOF plots.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 
 fit <- fit_prespecified_model(
-  data_proc,
+  cqtkit_data_verapamil,
   deltaQTCF,
   ID,
   CONC,
@@ -40,5 +39,5 @@ fit <- fit_prespecified_model(
   TRUE
 )
 
-compute_fit_results(data_proc, fit, deltaQTCF, CONC, NTLD)
+compute_fit_results(cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD)
 }

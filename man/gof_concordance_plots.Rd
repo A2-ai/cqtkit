@@ -42,9 +42,8 @@ A 2-panel plot comparing population (PRED) and individual (IPRED) predictions vs
 Concordance plots between population and individual predictions.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 fit <- fit_prespecified_model(
-  data_proc,
+  cqtkit_data_verapamil,
   deltaQTCF,
   ID,
   CONC,
@@ -54,5 +53,8 @@ fit <- fit_prespecified_model(
   "REML",
   TRUE
 )
-gof_concordance_plots(data_proc, fit, deltaQTCF, CONC, NTLD, TRTG, legend_location = "top")
+gof_concordance_plots(
+  cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG,
+  legend_location = "top"
+)
 }

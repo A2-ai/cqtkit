@@ -1,6 +1,5 @@
 test_that("compute_pk_parameters warns when NA are present in data", {
   .test_data <- cqtkit_data_verapamil |>
-    preprocess() |>
     dplyr::filter(DOSE != 0)
   .test_data$CONC[[1]] <- NA
 
@@ -10,7 +9,7 @@ test_that("compute_pk_parameters warns when NA are present in data", {
 })
 
 test_that('compute_pk_paramters errors for 0 in CONC data', {
-  .test_data <- cqtkit_data_verapamil |> preprocess()
+  .test_data <- cqtkit_data_verapamil
   .test_data$CONC <- ifelse(.test_data$DOSE == 0, 0, .test_data$CONC)
 
   expect_error(
@@ -20,7 +19,6 @@ test_that('compute_pk_paramters errors for 0 in CONC data', {
 
 test_that('compute_pk_parameters works for no 0 and no NA', {
   .test_data <- cqtkit_data_verapamil |>
-    preprocess() |>
     dplyr::filter(DOSE != 0)
 
   expect_no_warning(
@@ -33,7 +31,6 @@ test_that('compute_pk_parameters computes correct geometric mean with unequal ti
   # quinidine has 12-15 rows per subject-dose, so subjects with more
   # timepoints would be overweighted without deduplication
   .test_data <- cqtkit_data_quinidine |>
-    preprocess() |>
     dplyr::filter(DOSE != 0)
 
   result <- compute_pk_parameters(.test_data, ID, DOSE, CONC, NTLD)

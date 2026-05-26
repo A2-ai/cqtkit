@@ -1,5 +1,5 @@
 test_that('compute_potential_hysteresis dose not work for multi-dose inputs', {
-  .test_data <- dplyr::filter(cqtkit_data_verapamil |> preprocess())
+  .test_data <- dplyr::filter(cqtkit_data_verapamil)
   expect_error(
     compute_potential_hysteresis(.test_data, NTLD, deltaQTCF, CONC, DOSEF),
   )
@@ -7,7 +7,7 @@ test_that('compute_potential_hysteresis dose not work for multi-dose inputs', {
 
 test_that('compute_potential_hysteresis dose not work for only two time points', {
   .test_data <- dplyr::filter(
-    cqtkit_data_verapamil |> preprocess(),
+    cqtkit_data_verapamil,
     DOSE == 250,
     NTLD %in% c(0.5, 1)
   )
@@ -54,7 +54,6 @@ test_that('compute_potential_hysteresis returns TRUE when effect lags concentrat
 
 test_that('compute_potential_hysteresis returns FALSE for verapamil (known no hysteresis)', {
   .test_data <- cqtkit_data_verapamil |>
-    preprocess() |>
     dplyr::filter(DOSE == 120)
   result <- compute_potential_hysteresis(.test_data, NTLD, deltaQTCF, CONC, DOSEF)
   expect_false(result)

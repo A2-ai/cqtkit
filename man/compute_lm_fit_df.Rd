@@ -22,7 +22,6 @@ A tibble with linear model coefficients (intercept, slope), their confidence int
 Fits a linear model of input data frame.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 
-compute_lm_fit_df(data_proc, RR, QT)
+compute_lm_fit_df(cqtkit_data_verapamil, RR, QT)
 }

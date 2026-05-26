@@ -13,9 +13,8 @@
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
-#' compute_lm_fit_df(data_proc, RR, QT)
+#' compute_lm_fit_df(cqtkit_data_verapamil, RR, QT)
 compute_lm_fit_df <- function(data, xdata_col, ydata_col, conf_int = 0.95) {
   checkmate::assertDataFrame(data)
 
@@ -70,7 +69,7 @@ compute_lm_fit_df <- function(data, xdata_col, ydata_col, conf_int = 0.95) {
 #' @export
 #'
 #' @examples
-#' df <- cqtkit_data_verapamil |> preprocess()
+#' df <- cqtkit_data_verapamil
 #'
 #' lme_mod <- df |>
 #'   fit_qtc_linear_model(
@@ -131,7 +130,7 @@ compute_lme_slope_df <- function(lme_mod, xdata_col, conf_int = 0.95) {
 #'
 #' @examples
 #' compute_pk_parameters(
-#'   preprocess(cqtkit_data_verapamil) |> dplyr::filter(DOSE != 0),
+#'   cqtkit_data_verapamil |> dplyr::filter(DOSE != 0),
 #'   ID,
 #'   DOSE,
 #'   CONC,
@@ -232,10 +231,9 @@ compute_pk_parameters <- function(
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
-#' compute_high_qtc_obs(data_proc, QTCF, deltaQTCF)
-#' compute_high_qtc_obs(data_proc, QTCF, deltaQTCF, qtc_thresholds = c(430, 450))
+#' compute_high_qtc_obs(cqtkit_data_verapamil, QTCF, deltaQTCF)
+#' compute_high_qtc_obs(cqtkit_data_verapamil, QTCF, deltaQTCF, qtc_thresholds = c(430, 450))
 compute_high_qtc_obs <- function(
   data,
   qtc_col,
@@ -308,10 +306,9 @@ names(qtc_exprs) <- paste0("n_QTc_gt_", qtc_thresholds)
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
-#' compute_high_qtc_sub(data_proc, QTCF, deltaQTCF, ID)
-#' compute_high_qtc_sub(data_proc, QTCF, deltaQTCF, ID, qtc_thresholds = c(430, 450))
+#' compute_high_qtc_sub(cqtkit_data_verapamil, QTCF, deltaQTCF, ID)
+#' compute_high_qtc_sub(cqtkit_data_verapamil, QTCF, deltaQTCF, ID, qtc_thresholds = c(430, 450))
 compute_high_qtc_sub <- function(
   data,
   qtc_col,
@@ -380,9 +377,8 @@ compute_high_qtc_sub <- function(
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
-#' compute_study_summary(data_proc, TRTG, ID)
+#' compute_study_summary(cqtkit_data_verapamil, TRTG, ID)
 compute_study_summary <- function(data, trt_col, id_col, group_col = NULL) {
   checkmate::assertDataFrame(data)
 
@@ -442,9 +438,8 @@ compute_study_summary <- function(data, trt_col, id_col, group_col = NULL) {
 #' @export
 #'
 #' @examples
-#' data_proc <- cqtkit_data_verapamil |> preprocess()
 #'
-#' compute_ecg_param_summary(data_proc, NTLD, DOSEF, QTCF, deltaQTCF)
+#' compute_ecg_param_summary(cqtkit_data_verapamil, NTLD, DOSEF, QTCF, deltaQTCF)
 compute_ecg_param_summary <- function(
   data,
   ntime_col,
@@ -548,8 +543,7 @@ compute_ecg_param_summary <- function(
 #' @export
 
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
-#' data_proc <- dplyr::mutate(data_proc, DOSEF = as.factor(DOSEF))
+#' data_proc <- dplyr::mutate(cqtkit_data_verapamil, DOSEF = as.factor(DOSEF))
 #'
 #' compute_grouped_mean_sd(
 #'   data_proc, deltaQTCF, NTLD, DOSE, reference_dose = 0
@@ -736,7 +730,7 @@ compute_grouped_mean_sd <- function(
 #' @export
 #'
 #' @examples
-#' compute_loess_linear_r_squared(cqtkit_data_verapamil |> preprocess(), deltaQTCF, CONC)
+#' compute_loess_linear_r_squared(cqtkit_data_verapamil, deltaQTCF, CONC)
 compute_loess_linear_r_squared <- function(
   data,
   deltaqtc_col,
@@ -807,8 +801,7 @@ compute_loess_linear_r_squared <- function(
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
-#' data_proc <- dplyr::filter(data_proc, DOSE == 120)
+#' data_proc <- dplyr::filter(cqtkit_data_verapamil, DOSE == 120)
 #'
 #' compute_potential_hysteresis(
 #'   data_proc,
@@ -922,8 +915,7 @@ compute_potential_hysteresis <- function(
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
-#' data_proc <- dplyr::mutate(data_proc, DOSEF = as.factor(DOSEF))
+#' data_proc <- dplyr::mutate(cqtkit_data_verapamil, DOSEF = as.factor(DOSEF))
 #'
 #' compute_hysteresis_labeller(
 #'   data_proc,
@@ -1021,7 +1013,7 @@ compute_hysteresis_labeller <- function(
 #' @export
 #'
 #' @examples
-#' compute_enGRI(preprocess(cqtkit_data_verapamil), CONC, deltaQTCF)
+#' compute_enGRI(cqtkit_data_verapamil, CONC, deltaQTCF)
 compute_enGRI <- function(data, conc_gm_col, ddqtc_col) {
   #calculate the exposure normalised Glomb-Ring Index
   checkmate::assertDataFrame(data)
@@ -1068,9 +1060,8 @@ compute_enGRI <- function(data, conc_gm_col, ddqtc_col) {
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
-#' compute_quantiles_obs_df(data_proc, CONC, deltaQTCF)
+#' compute_quantiles_obs_df(cqtkit_data_verapamil, CONC, deltaQTCF)
 compute_quantiles_obs_df <- function(
   data,
   xdata_col,
@@ -1188,14 +1179,13 @@ compute_quantiles_obs_df <- function(
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #' fit <- nlme::lme(
 #'   fixed = deltaQTCF ~ 1 + CONC,
 #'   random = ~ 1 | ID,
-#'   data = data_proc
+#'   data = cqtkit_data_verapamil
 #' )
 #'
-#' compute_dataset_simulation(data_proc, fit, CONC)
+#' compute_dataset_simulation(cqtkit_data_verapamil, fit, CONC)
 compute_dataset_simulation <- function(data, fit, xdata_col, sim_num = 0) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
@@ -1245,18 +1235,17 @@ compute_dataset_simulation <- function(data, fit, xdata_col, sim_num = 0) {
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
 #' fit <- nlme::lme(
 #'   fixed = deltaQTCF ~ 1 + CONC,
 #'   random = ~ 1 | ID,
-#'   data = data_proc,
+#'   data = cqtkit_data_verapamil,
 #'   method = "REML",
 #'   na.action = "na.exclude"
 #' )
 #'
 #' compute_summary_statistics_of_simulations(
-#'   data = data_proc,
+#'   data = cqtkit_data_verapamil,
 #'   fit = fit,
 #'   xdata_col = CONC,
 #'   conf_int = 0.9,
@@ -1374,7 +1363,7 @@ compute_summary_statistics_of_simulations <- function(
 #'
 #' @examples
 #' mod <- fit_prespecified_model(
-#'   cqtkit_data_verapamil |> preprocess(),
+#'   cqtkit_data_verapamil,
 #'   deltaQTCF,
 #'   ID,
 #'   CONC,
@@ -1385,7 +1374,7 @@ compute_summary_statistics_of_simulations <- function(
 #'   remove_conc_iiv = TRUE
 #' )
 #' compute_conc_for_upper_pred(
-#'   cqtkit_data_verapamil |> preprocess(),
+#'   cqtkit_data_verapamil,
 #'   mod,
 #'   "CONC",
 #'   "TRTG",
@@ -1469,17 +1458,16 @@ compute_conc_for_upper_pred <- function(
 
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
 #' fit <- nlme::lme(
 #'    fixed = deltaQTCF ~ 1 + CONC,
 #'    random = ~ 1 | ID,
 #'    method = "REML",
-#'    data = data_proc
+#'    data = cqtkit_data_verapamil
 #' )
 #'
 #' compute_exposure_predictions(
-#'   data_proc,
+#'   cqtkit_data_verapamil,
 #'   fit,
 #'   CONC,
 #'   list(CONC = 10)
@@ -1504,6 +1492,7 @@ compute_exposure_predictions <- function(
   checkmate::assertNames(names(data), must.include = required_cols)
 
   conc_data <- data |> dplyr::pull(!!conc)
+  conc_data <- conc_data[is.finite(conc_data)]
 
   # need to better understand lme variance matrix stuff for this.
   if (typeof(fit$apVar) == "character") {
@@ -1585,11 +1574,10 @@ compute_exposure_predictions <- function(
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
 #' # Simple case: no control group
 #' obs_data <- compute_contrast_observations(
-#'   data_proc,
+#'   cqtkit_data_verapamil,
 #'   CONC,
 #'   deltaQTCF,
 #'   treatment_predictors = list(TRTG = "Verapamil HCL")
@@ -1598,7 +1586,7 @@ compute_exposure_predictions <- function(
 #'
 #' # Matched contrast (crossover study)
 #' contrast_data <- compute_contrast_observations(
-#'   data_proc,
+#'   cqtkit_data_verapamil,
 #'   CONC,
 #'   deltaQTCF,
 #'   ID,

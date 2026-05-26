@@ -20,5 +20,5 @@ Numeric exposure-normalized Glomb-Ring Index value in ms, indicating hysteresis 
 Computes the exposure-normalized Glomb-Ring Index (enGRI).
 }
 \examples{
-compute_enGRI(preprocess(cqtkit_data_verapamil), CONC, deltaQTCF)
+compute_enGRI(cqtkit_data_verapamil, CONC, deltaQTCF)
 }

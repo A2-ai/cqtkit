@@ -1,6 +1,5 @@
-data_proc <- preprocess(cqtkit_data_verapamil)
 fit <- fit_prespecified_model(
-  data_proc, deltaQTCF, ID, CONC, deltaQTCFBL, TRTG, TAFD,
+  cqtkit_data_verapamil, deltaQTCF, ID, CONC, deltaQTCFBL, TRTG, TAFD,
   method = "REML", remove_conc_iiv = TRUE
 )
 
@@ -12,7 +11,7 @@ ctrl_pred <- list(
 )
 
 pk_df <- compute_pk_parameters(
-  data_proc |> dplyr::filter(DOSE != 0), ID, DOSEF, CONC, NTLD
+  cqtkit_data_verapamil |> dplyr::filter(DOSE != 0), ID, DOSEF, CONC, NTLD
 )
 
 test_that("predict_with_observations_plot dQTcF snapshot", {
@@ -21,7 +20,7 @@ test_that("predict_with_observations_plot dQTcF snapshot", {
   )
 
   p <- predict_with_observations_plot(
-    data_proc, fit, CONC, deltaQTCF,
+    cqtkit_data_verapamil, fit, CONC, deltaQTCF,
     treatment_predictors = trt_pred_single,
     reference_threshold = 10
   )
@@ -31,7 +30,7 @@ test_that("predict_with_observations_plot dQTcF snapshot", {
 
 test_that("predict_with_observations_plot ddQTcF snapshot", {
   p <- predict_with_observations_plot(
-    data_proc, fit, CONC, deltaQTCF,
+    cqtkit_data_verapamil, fit, CONC, deltaQTCF,
     treatment_predictors = trt_pred,
     control_predictors = ctrl_pred,
     id_col = ID, ntime_col = NTLD, trt_col = TRTG,
@@ -51,7 +50,7 @@ test_that("predict_with_quantiles_plot dQTcF snapshot", {
   )
 
   p <- predict_with_quantiles_plot(
-    data_proc, fit, CONC, deltaQTCF,
+    cqtkit_data_verapamil, fit, CONC, deltaQTCF,
     treatment_predictors = trt_pred_single,
     reference_threshold = 10
   )
@@ -68,7 +67,7 @@ test_that("predict_with_quantiles_plot ddQTcF with reference time snapshot", {
   )
 
   p <- predict_with_quantiles_plot(
-    data_proc, fit, CONC, deltaQTCF,
+    cqtkit_data_verapamil, fit, CONC, deltaQTCF,
     treatment_predictors = trt_pred_ref,
     control_predictors = ctrl_pred_ref,
     id_col = ID, ntime_col = NTLD, trt_col = TRTG,
@@ -88,7 +87,7 @@ test_that("predict_with_exposure_plot dQTcF snapshot", {
   )
 
   p <- predict_with_exposure_plot(
-    data_proc, fit, CONC,
+    cqtkit_data_verapamil, fit, CONC,
     treatment_predictors = trt_pred_single,
     cmaxes = pk_df[[1, "Cmax_gm"]],
     reference_threshold = 10
@@ -99,7 +98,7 @@ test_that("predict_with_exposure_plot dQTcF snapshot", {
 
 test_that("predict_with_exposure_plot ddQTcF snapshot", {
   p <- predict_with_exposure_plot(
-    data_proc, fit, CONC,
+    cqtkit_data_verapamil, fit, CONC,
     treatment_predictors = trt_pred,
     control_predictors = ctrl_pred,
     cmaxes = pk_df[[1, "Cmax_gm"]],

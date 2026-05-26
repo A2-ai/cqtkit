@@ -20,9 +20,8 @@
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #' fit <- fit_prespecified_model(
-#'   data_proc,
+#'   cqtkit_data_verapamil,
 #'   deltaQTCF,
 #'   ID,
 #'   CONC,
@@ -33,7 +32,7 @@
 #'   TRUE
 #' )
 #' predict_with_observations_plot(
-#'   data_proc,
+#'   cqtkit_data_verapamil,
 #'   fit,
 #'   CONC,
 #'   deltaQTCF,
@@ -223,9 +222,8 @@ predict_with_observations_plot <- function(
 
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #' fit <- fit_prespecified_model(
-#'   data_proc,
+#'   cqtkit_data_verapamil,
 #'   deltaQTCF,
 #'   ID,
 #'   CONC,
@@ -236,7 +234,7 @@ predict_with_observations_plot <- function(
 #'   TRUE
 #' )
 #' predict_with_quantiles_plot(
-#'   data_proc,
+#'   cqtkit_data_verapamil,
 #'   fit,
 #'   CONC,
 #'   deltaQTCF,
@@ -426,9 +424,8 @@ predict_with_quantiles_plot <- function(
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #' fit <- fit_prespecified_model(
-#'   data_proc,
+#'   cqtkit_data_verapamil,
 #'   deltaQTCF,
 #'   ID,
 #'   CONC,
@@ -439,10 +436,10 @@ predict_with_quantiles_plot <- function(
 #'   TRUE
 #' )
 #' pk_df <- compute_pk_parameters(
-#'   data_proc |> dplyr::filter(DOSE != 0), ID, DOSEF, CONC, NTLD)
+#'   cqtkit_data_verapamil |> dplyr::filter(DOSE != 0), ID, DOSEF, CONC, NTLD)
 #'
 #' predict_with_exposure_plot(
-#'   data_proc,
+#'   cqtkit_data_verapamil,
 #'   fit,
 #'   CONC,
 #'   treatment_predictors = list(

@@ -57,10 +57,9 @@ A gt table with predicted deltaQTc values and confidence intervals at therapeuti
 Tabulates exposure predictions at therapeutic and supratherapeutic Cmax.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 
 fit <- fit_prespecified_model(
-  data_proc,
+  cqtkit_data_verapamil,
   deltaQTCF,
   ID,
   CONC,
@@ -71,7 +70,7 @@ fit <- fit_prespecified_model(
   TRUE
 )
 pk_df <- compute_pk_parameters(
-  data_proc |> dplyr::filter(DOSE != 0),
+  cqtkit_data_verapamil |> dplyr::filter(DOSE != 0),
   ID,
   DOSEF,
   CONC,
@@ -79,7 +78,7 @@ pk_df <- compute_pk_parameters(
 )
 
 tabulate_exposure_predictions(
-  data_proc,
+  cqtkit_data_verapamil,
   fit,
   CONC,
   list(

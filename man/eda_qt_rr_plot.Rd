@@ -48,7 +48,6 @@ A scatter plot of QT vs RR with optional regression line and slope estimate capt
 Plots QT against RR.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 
-eda_qt_rr_plot(data_proc, RR, QT, ID, model_type = "lme")
+eda_qt_rr_plot(cqtkit_data_verapamil, RR, QT, ID, model_type = "lme")
 }

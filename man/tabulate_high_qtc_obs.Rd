@@ -48,8 +48,9 @@ A gt table with counts of observations exceeding each threshold
 Tabulates number of high QTc/deltaQTc observations.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 
-tabulate_high_qtc_obs(data_proc, QTCF, deltaQTCF, group_col = DOSEF, qtc_label = "QTcF")
-tabulate_high_qtc_obs(data_proc, QTCF, deltaQTCF, qtc_thresholds = c(430, 450))
+tabulate_high_qtc_obs(
+  cqtkit_data_verapamil, QTCF, deltaQTCF, group_col = DOSEF, qtc_label = "QTcF"
+)
+tabulate_high_qtc_obs(cqtkit_data_verapamil, QTCF, deltaQTCF, qtc_thresholds = c(430, 450))
 }

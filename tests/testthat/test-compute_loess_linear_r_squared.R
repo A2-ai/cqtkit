@@ -1,6 +1,5 @@
 test_that('compute_loess_linear_r_squared partial determination matches independent calc', {
   data <- cqtkit_data_verapamil |>
-    preprocess() |>
     dplyr::filter(DOSE > 0)
 
   result <- compute_loess_linear_r_squared(data, deltaQTCF, CONC, span = 0.99)

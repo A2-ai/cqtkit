@@ -18,9 +18,8 @@ A ggplot2 object with horizontal reference lines added
 Adds horizontal reference lines to plot.
 }
 \examples{
-data_proc <- cqtkit_data_verapamil |> preprocess()
 eda_mean_dv_over_time(
-  data_proc,
+  cqtkit_data_verapamil,
   deltaQTCF,
   NTLD,
   DOSEF,

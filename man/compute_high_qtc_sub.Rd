@@ -38,8 +38,7 @@ Computes the number of subjects (individuals) with at least one observation
 where QTc exceeds specified thresholds or deltaQTc exceeds specified thresholds.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 
-compute_high_qtc_sub(data_proc, QTCF, deltaQTCF, ID)
-compute_high_qtc_sub(data_proc, QTCF, deltaQTCF, ID, qtc_thresholds = c(430, 450))
+compute_high_qtc_sub(cqtkit_data_verapamil, QTCF, deltaQTCF, ID)
+compute_high_qtc_sub(cqtkit_data_verapamil, QTCF, deltaQTCF, ID, qtc_thresholds = c(430, 450))
 }

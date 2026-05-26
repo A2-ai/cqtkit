@@ -31,7 +31,6 @@
 #' @export
 #'
 #' @examples
-#' data_proc <- cqtkit_data_verapamil |> preprocess()
 #' style = set_style(
 #'   colors = c(
 #'     "0 mg Placebo" = "grey"
@@ -306,9 +305,8 @@ is_plot_label <- function(x) {
 #' @export
 #'
 #' @examples
-#' data_proc <- cqtkit_data_verapamil |> preprocess()
 #' .p <- eda_mean_dv_over_time(
-#'   data_proc,
+#'   cqtkit_data_verapamil,
 #'   deltaQTCF,
 #'   NTLD,
 #'   DOSEF,

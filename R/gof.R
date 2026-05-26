@@ -19,9 +19,8 @@
 #' @importFrom stats density
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #' fit <- fit_prespecified_model(
-#'   data_proc,
+#'   cqtkit_data_verapamil,
 #'   deltaQTCF,
 #'   ID,
 #'   CONC,
@@ -33,7 +32,7 @@
 #' )
 #'
 #' gof_plots(
-#'   data_proc,
+#'   cqtkit_data_verapamil,
 #'   fit,
 #'   deltaQTCF,
 #'   CONC,
@@ -214,9 +213,8 @@ gof_plots <- function(
 
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #' fit <- fit_prespecified_model(
-#'   data_proc,
+#'   cqtkit_data_verapamil,
 #'   deltaQTCF,
 #'   ID,
 #'   CONC,
@@ -226,7 +224,10 @@ gof_plots <- function(
 #'   "REML",
 #'   TRUE
 #' )
-#' gof_concordance_plots(data_proc, fit, deltaQTCF, CONC, NTLD, TRTG, legend_location = "top")
+#' gof_concordance_plots(
+#'   cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG,
+#'   legend_location = "top"
+#' )
 gof_concordance_plots <- function(
   data,
   fit,
@@ -335,9 +336,8 @@ gof_concordance_plots <- function(
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #' fit <- fit_prespecified_model(
-#'   data_proc,
+#'   cqtkit_data_verapamil,
 #'   deltaQTCF,
 #'   ID,
 #'   CONC,
@@ -348,7 +348,7 @@ gof_concordance_plots <- function(
 #'   TRUE
 #' )
 #' gof_residuals_plots(
-#'   data_proc,
+#'   cqtkit_data_verapamil,
 #'   fit,
 #'   deltaQTCF,
 #'   CONC,
@@ -464,9 +464,8 @@ gof_residuals_plots <- function(
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #' fit <- fit_prespecified_model(
-#'   data_proc,
+#'   cqtkit_data_verapamil,
 #'   deltaQTCF,
 #'   ID,
 #'   CONC,
@@ -477,7 +476,7 @@ gof_residuals_plots <- function(
 #'   TRUE
 #' )
 #'
-#' gof_qq_plots(data_proc, fit, deltaQTCF, CONC, NTLD, TRTG, legend_location = "top")
+#' gof_qq_plots(cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG, legend_location = "top")
 gof_qq_plots <- function(
   data,
   fit,
@@ -578,9 +577,8 @@ gof_qq_plots <- function(
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #' fit <- fit_prespecified_model(
-#'   data_proc,
+#'   cqtkit_data_verapamil,
 #'   deltaQTCF,
 #'   ID,
 #'   CONC,
@@ -592,7 +590,7 @@ gof_qq_plots <- function(
 #' )
 #'
 #' gof_residuals_time_boxplots(
-#'   data_proc,
+#'   cqtkit_data_verapamil,
 #'   fit,
 #'   deltaQTCF,
 #'   CONC,
@@ -707,9 +705,8 @@ gof_residuals_time_boxplots <- function(
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #' fit <- fit_prespecified_model(
-#'   data_proc,
+#'   cqtkit_data_verapamil,
 #'   deltaQTCF,
 #'   ID,
 #'   CONC,
@@ -719,7 +716,7 @@ gof_residuals_time_boxplots <- function(
 #'   "REML",
 #'   TRUE
 #' )
-#' gof_residuals_trt_boxplots(data_proc, fit, deltaQTCF, CONC, NTLD, TRTG)
+#' gof_residuals_trt_boxplots(cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG)
 gof_residuals_trt_boxplots <- function(
   data,
   fit,
@@ -817,9 +814,8 @@ gof_residuals_trt_boxplots <- function(
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #' fit <- fit_prespecified_model(
-#'   data_proc,
+#'   cqtkit_data_verapamil,
 #'   deltaQTCF,
 #'   ID,
 #'   CONC,
@@ -830,7 +826,7 @@ gof_residuals_trt_boxplots <- function(
 #'   TRUE
 #' )
 #'
-#' gof_vpc_plot(data_proc, fit, CONC, deltaQTCF, nruns = 2)
+#' gof_vpc_plot(cqtkit_data_verapamil, fit, CONC, deltaQTCF, nruns = 2)
 #'
 gof_vpc_plot <- function(
   data,

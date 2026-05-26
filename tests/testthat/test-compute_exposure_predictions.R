@@ -1,12 +1,11 @@
 test_that('compute_exposure_predictions returns predictions over concentration range', {
-  data_proc <- preprocess(cqtkit_data_verapamil)
   mod <- fit_prespecified_model(
-    data_proc, deltaQTCF, ID, CONC, deltaQTCFBL, TRTG, TAFD,
+    cqtkit_data_verapamil, deltaQTCF, ID, CONC, deltaQTCFBL, TRTG, TAFD,
     method = "ML", remove_conc_iiv = FALSE
   )
 
   result <- compute_exposure_predictions(
-    data_proc, mod, CONC,
+    cqtkit_data_verapamil, mod, CONC,
     treatment_predictors = list(
       CONC = 10, deltaQTCFBL = 0, TRTG = "Verapamil HCL", TAFD = "1 HR"
     ),
@@ -31,14 +30,13 @@ test_that('compute_exposure_predictions returns predictions over concentration r
 })
 
 test_that('compute_exposure_predictions does not add non-unique conc values with cmaxes', {
-  data_proc <- preprocess(cqtkit_data_dofetilide)
   mod <- fit_prespecified_model(
-    data_proc, deltaQTCF, ID, CONC, deltaQTCFBL, TRTG, TAFD,
+    cqtkit_data_dofetilide, deltaQTCF, ID, CONC, deltaQTCFBL, TRTG, TAFD,
     method = "ML", remove_conc_iiv = TRUE
   )
 
   expo_pred <- compute_exposure_predictions(
-    data_proc, mod, CONC,
+    cqtkit_data_dofetilide, mod, CONC,
     treatment_predictors = list(
       CONC = 10, deltaQTCFBL = 0, TRTG = "Dofetilide", TAFD = "1 HR"
     ),

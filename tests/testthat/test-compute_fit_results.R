@@ -1,11 +1,10 @@
 test_that("compute_fit_results returns correct predictions and residuals", {
-  data_proc <- cqtkit_data_verapamil |> preprocess()
   mod <- fit_prespecified_model(
-    data_proc, deltaQTCF, ID, CONC, deltaQTCFBL, TRTG, TAFD,
+    cqtkit_data_verapamil, deltaQTCF, ID, CONC, deltaQTCFBL, TRTG, TAFD,
     method = "REML", remove_conc_iiv = TRUE
   )
 
-  result <- compute_fit_results(data_proc, mod, deltaQTCF, CONC, NTLD, TRTG)
+  result <- compute_fit_results(cqtkit_data_verapamil, mod, deltaQTCF, CONC, NTLD, TRTG)
 
   # verify expected columns exist
   expected_cols <- c("dv", "conc", "time", "TRTG", "PRED", "IPRED", "RES", "IRES", "WRES", "IWRES")

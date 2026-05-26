@@ -18,9 +18,8 @@
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
-#' eda_qt_rr_plot(data_proc, RR, QT, ID, model_type = "lme")
+#' eda_qt_rr_plot(cqtkit_data_verapamil, RR, QT, ID, model_type = "lme")
 eda_qt_rr_plot <- function(
   data,
   rr_col,
@@ -187,10 +186,9 @@ eda_qt_rr_plot <- function(
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
 #' eda_qtc_comparison_plot(
-#'   data_proc,
+#'   cqtkit_data_verapamil,
 #'   RR,
 #'   QT,
 #'   QTCB,
@@ -299,10 +297,9 @@ eda_qtc_comparison_plot <- function(
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
 #' eda_quantiles_plot(
-#'   data_proc,
+#'   cqtkit_data_verapamil,
 #'   RR,
 #'   QTCF,
 #'   trt_col = TRTG,
@@ -421,10 +418,9 @@ eda_quantiles_plot <- function(
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
 #' eda_scatter_with_regressions(
-#'   data_proc,
+#'   cqtkit_data_verapamil,
 #'   deltaQTCF,
 #'   CONC,
 #'   TRTG,
@@ -564,10 +560,9 @@ eda_scatter_with_regressions <- function(
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
 #' eda_hysteresis_loop_plot(
-#'   data_proc,
+#'   cqtkit_data_verapamil,
 #'   NTLD,
 #'   deltaQTCF,
 #'   CONC,
@@ -761,10 +756,9 @@ eda_hysteresis_loop_plot <- function(
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
 #' eda_mean_dv_over_time(
-#'   data_proc,
+#'   cqtkit_data_verapamil,
 #'   deltaQTCF,
 #'   NTLD,
 #'   DOSEF,

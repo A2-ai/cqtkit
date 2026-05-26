@@ -34,9 +34,12 @@ Imports:
     tibble,
     utils
 Suggests:
+    knitr,
+    rmarkdown,
     testthat (>= 3.0.0),
     vdiffr,
-    webshot2,
+    webshot2
+VignetteBuilder: knitr
 Config/testthat/edition: 3
 Depends:
     R (>= 4.1.0)

@@ -45,9 +45,8 @@ A gt table displaying subject counts by treatment group with protocol number and
 Creates a gt table of study summary for number of subjects in each grouping.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 
-tabulate_study_summary(data_proc, TRTG, ID,
+tabulate_study_summary(cqtkit_data_verapamil, TRTG, ID,
 protocol_number = "A2AI201",
 title = "C-QT Analysis Study",
 study_status = "Completed")

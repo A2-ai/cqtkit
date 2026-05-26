@@ -36,18 +36,17 @@ A tibble with VPC statistics: median and 5th/95th percentile predictions with th
 Wrapper for calling compute_dataset_simulation nruns times and computing summary statistics of the simulations.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 
 fit <- nlme::lme(
   fixed = deltaQTCF ~ 1 + CONC,
   random = ~ 1 | ID,
-  data = data_proc,
+  data = cqtkit_data_verapamil,
   method = "REML",
   na.action = "na.exclude"
 )
 
 compute_summary_statistics_of_simulations(
-  data = data_proc,
+  data = cqtkit_data_verapamil,
   fit = fit,
   xdata_col = CONC,
   conf_int = 0.9,

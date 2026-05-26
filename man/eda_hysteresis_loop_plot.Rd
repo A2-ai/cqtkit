@@ -49,10 +49,9 @@ hysteresis when the time of max effect (Umax) lags max concentration (Tmax)
 by >= 1 hour and more than 3 timepoints show mean deltaQTc > 5 ms.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 
 eda_hysteresis_loop_plot(
-  data_proc,
+  cqtkit_data_verapamil,
   NTLD,
   deltaQTCF,
   CONC,

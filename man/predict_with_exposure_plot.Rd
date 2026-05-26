@@ -42,9 +42,8 @@ A plot of model predictions with confidence interval and vertical Cmax reference
 Plots model predictions with therapeutic and supra therapeutic Cmax.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 fit <- fit_prespecified_model(
-  data_proc,
+  cqtkit_data_verapamil,
   deltaQTCF,
   ID,
   CONC,
@@ -55,10 +54,10 @@ fit <- fit_prespecified_model(
   TRUE
 )
 pk_df <- compute_pk_parameters(
-  data_proc |> dplyr::filter(DOSE != 0), ID, DOSEF, CONC, NTLD)
+  cqtkit_data_verapamil |> dplyr::filter(DOSE != 0), ID, DOSEF, CONC, NTLD)
 
 predict_with_exposure_plot(
-  data_proc,
+  cqtkit_data_verapamil,
   fit,
   CONC,
   treatment_predictors = list(

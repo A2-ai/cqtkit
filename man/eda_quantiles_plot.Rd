@@ -39,10 +39,9 @@ A scatter plot of decile medians with linear regression and optional error bars
 Plots the observed decile-decile scatter plot of x-data vs y-data with linear regression.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 
 eda_quantiles_plot(
-  data_proc,
+  cqtkit_data_verapamil,
   RR,
   QTCF,
   trt_col = TRTG,

@@ -39,7 +39,6 @@ A tibble with mean QTc, deltaQTc, and optionally delta-delta QTc values with con
 Generates a tibble of summary of QTc, dQTc and ddQTc over time stratified by dose.
 }
 \examples{
-data_proc <- cqtkit_data_verapamil |> preprocess()
 
-compute_ecg_param_summary(data_proc, NTLD, DOSEF, QTCF, deltaQTCF)
+compute_ecg_param_summary(cqtkit_data_verapamil, NTLD, DOSEF, QTCF, deltaQTCF)
 }

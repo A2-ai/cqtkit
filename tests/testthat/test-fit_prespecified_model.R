@@ -16,9 +16,8 @@ test_that("fit_prespecified_model throws an error if required columns are missin
 })
 
 test_that("fit_prespecified_model correctly orders TAFD factor levels in the model", {
-  model_data <- cqtkit_data_verapamil |> preprocess()
   mod <- fit_prespecified_model(
-    model_data,
+    cqtkit_data_verapamil,
     deltaQTCF,
     ID,
     CONC,
@@ -47,10 +46,9 @@ test_that("fit_prespecified_model correctly orders TAFD factor levels in the mod
 
 
 test_that("fit_prespecified_model correctly removes inter-individual variability (IIV) when specified", {
-  model_data <- cqtkit_data_verapamil |> preprocess()
 
   mod_with_iiv <- fit_prespecified_model(
-    model_data,
+    cqtkit_data_verapamil,
     deltaQTCF,
     ID,
     CONC,
@@ -60,7 +58,7 @@ test_that("fit_prespecified_model correctly removes inter-individual variability
     remove_conc_iiv = FALSE
   )
   mod_without_iiv <- fit_prespecified_model(
-    model_data,
+    cqtkit_data_verapamil,
     deltaQTCF,
     ID,
     CONC,
@@ -79,10 +77,9 @@ test_that("fit_prespecified_model correctly removes inter-individual variability
 })
 
 test_that("fit_prespecified_model correctly applies ML and REML methods", {
-  model_data <- cqtkit_data_verapamil |> preprocess()
 
   mod_ml <- fit_prespecified_model(
-    model_data,
+    cqtkit_data_verapamil,
     deltaQTCF,
     ID,
     CONC,
@@ -93,7 +90,7 @@ test_that("fit_prespecified_model correctly applies ML and REML methods", {
     remove_conc_iiv = TRUE
   )
   mod_reml <- fit_prespecified_model(
-    model_data,
+    cqtkit_data_verapamil,
     deltaQTCF,
     ID,
     CONC,

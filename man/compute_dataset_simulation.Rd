@@ -22,12 +22,11 @@ A tibble with simulated predictions (pred), concentration values (xdata), and si
 Simulates a dataset used to fit the model.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 fit <- nlme::lme(
   fixed = deltaQTCF ~ 1 + CONC,
   random = ~ 1 | ID,
-  data = data_proc
+  data = cqtkit_data_verapamil
 )
 
-compute_dataset_simulation(data_proc, fit, CONC)
+compute_dataset_simulation(cqtkit_data_verapamil, fit, CONC)
 }

@@ -65,7 +65,6 @@ Where:
 }
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 
-fit_prespecified_model(data_proc, deltaQTCF, ID, CONC, deltaQTCFBL, TRTG, TAFD)
+fit_prespecified_model(cqtkit_data_verapamil, deltaQTCF, ID, CONC, deltaQTCFBL, TRTG, TAFD)
 }

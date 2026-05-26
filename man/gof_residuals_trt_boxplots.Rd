@@ -42,9 +42,8 @@ A 2-panel boxplot of WRES and IWRES residuals by treatment group
 Generates boxplots of residuals for treatment group.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 fit <- fit_prespecified_model(
-  data_proc,
+  cqtkit_data_verapamil,
   deltaQTCF,
   ID,
   CONC,
@@ -54,5 +53,5 @@ fit <- fit_prespecified_model(
   "REML",
   TRUE
 )
-gof_residuals_trt_boxplots(data_proc, fit, deltaQTCF, CONC, NTLD, TRTG)
+gof_residuals_trt_boxplots(cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG)
 }

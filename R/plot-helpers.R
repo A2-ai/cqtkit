@@ -109,9 +109,8 @@ add_error_bars_to_plot <- function(
 #' @export
 #'
 #' @examples
-#' data_proc <- cqtkit_data_verapamil |> preprocess()
 #' eda_mean_dv_over_time(
-#'   data_proc,
+#'   cqtkit_data_verapamil,
 #'   deltaQTCF,
 #'   NTLD,
 #'   DOSEF,

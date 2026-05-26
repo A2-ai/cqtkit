@@ -33,8 +33,7 @@ A labeller function for ggplot2 facets that appends hysteresis detection status 
 Gets labeller for hysteresis_loop_plot.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
-data_proc <- dplyr::mutate(data_proc, DOSEF = as.factor(DOSEF))
+data_proc <- dplyr::mutate(cqtkit_data_verapamil, DOSEF = as.factor(DOSEF))
 
 compute_hysteresis_labeller(
   data_proc,

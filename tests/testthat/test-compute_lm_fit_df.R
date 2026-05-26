@@ -1,20 +1,18 @@
 test_that('compute_lm_fit_df errors for invalid column inputs', {
-  data <- cqtkit_data_verapamil |> preprocess()
 
   # vector input instead of column name
-  expect_error(compute_lm_fit_df(data, data$RR, QT))
+  expect_error(compute_lm_fit_df(cqtkit_data_verapamil, cqtkit_data_verapamil$RR, QT))
 
   # string input instead of unquoted name
-  expect_error(compute_lm_fit_df(data, 'RR', 'QT'))
+  expect_error(compute_lm_fit_df(cqtkit_data_verapamil, 'RR', 'QT'))
 })
 
 test_that('compute_lm_fit_df returns correct coefficients and CIs', {
-  data <- cqtkit_data_verapamil |> preprocess()
 
-  result <- compute_lm_fit_df(data, RR, QT, conf_int = 0.9)
+  result <- compute_lm_fit_df(cqtkit_data_verapamil, RR, QT, conf_int = 0.9)
 
   # independent lm
-  ref_model <- lm(QT ~ RR, data = data)
+  ref_model <- lm(QT ~ RR, data = cqtkit_data_verapamil)
   ref_ci <- confint(ref_model, level = 0.9)
 
   expect_equal(result$intercept, unname(coef(ref_model)[1]))

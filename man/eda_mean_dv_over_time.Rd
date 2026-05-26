@@ -57,10 +57,9 @@ A line plot of mean dependent variable over time with optional error bars, refer
 Plots mean dependent variable over time.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 
 eda_mean_dv_over_time(
-  data_proc,
+  cqtkit_data_verapamil,
   deltaQTCF,
   NTLD,
   DOSEF,

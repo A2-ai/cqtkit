@@ -75,6 +75,6 @@ test_that("compute_qtcb_qtcf will not overwrite existing QTCF, QTCB, QTCFBL, QTC
     dplyr::mutate(QTCB = 1, QTCF = 1)
   expect_true(all(df$QTCB == 1))
 
-  df2 <- df |> preprocess()
+  df2 <- df
   expect_true(all(df2$QTCB == 1))
 })

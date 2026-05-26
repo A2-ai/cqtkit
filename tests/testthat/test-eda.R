@@ -1,16 +1,14 @@
 test_that("eda_qt_rr_plot default snapshot", {
-  data_proc <- preprocess(cqtkit_data_verapamil)
 
-  p <- eda_qt_rr_plot(data_proc, RR, QT, ID, model_type = "lm")
+  p <- eda_qt_rr_plot(cqtkit_data_verapamil, RR, QT, ID, model_type = "lm")
 
   snapshot_plot(p, "eda-qt-rr-default")
 })
 
 test_that("eda_qt_rr_plot with style snapshot", {
-  data_proc <- preprocess(cqtkit_data_verapamil)
 
   p <- eda_qt_rr_plot(
-    data_proc, RR, QT, ID, TRTG,
+    cqtkit_data_verapamil, RR, QT, ID, TRTG,
     model_type = "lme",
     style = set_style(
       title = "QT-RR Relationship",
@@ -26,10 +24,9 @@ test_that("eda_qt_rr_plot with style snapshot", {
 })
 
 test_that("eda_qtc_comparison_plot snapshot", {
-  data_proc <- preprocess(cqtkit_data_verapamil)
 
   p <- eda_qtc_comparison_plot(
-    data_proc, RR, QT, QTCB, QTCF,
+    cqtkit_data_verapamil, RR, QT, QTCB, QTCF,
     id_col = ID, trt_col = TRTG,
     model_type = "lme",
     show_model_results = TRUE,
@@ -40,7 +37,7 @@ test_that("eda_qtc_comparison_plot snapshot", {
 })
 
 test_that("eda_quantiles_plot default snapshot", {
-  data_proc <- preprocess(cqtkit_data_verapamil) |>
+  data_proc <- cqtkit_data_verapamil |>
     dplyr::filter(DOSE > 0)
 
   p <- eda_quantiles_plot(data_proc, CONC, deltaQTCF, trt_col = TRTG)
@@ -49,7 +46,7 @@ test_that("eda_quantiles_plot default snapshot", {
 })
 
 test_that("eda_quantiles_plot with style snapshot", {
-  data_proc <- preprocess(cqtkit_data_verapamil) |>
+  data_proc <- cqtkit_data_verapamil |>
     dplyr::filter(DOSE > 0)
 
   p <- eda_quantiles_plot(
@@ -68,10 +65,9 @@ test_that("eda_quantiles_plot with style snapshot", {
 })
 
 test_that("eda_scatter_with_regressions default snapshot", {
-  data_proc <- preprocess(cqtkit_data_verapamil)
 
   p <- eda_scatter_with_regressions(
-    data_proc, deltaQTCF, CONC, TRTG,
+    cqtkit_data_verapamil, deltaQTCF, CONC, TRTG,
     reference_threshold = 10
   )
 
@@ -79,10 +75,9 @@ test_that("eda_scatter_with_regressions default snapshot", {
 })
 
 test_that("eda_mean_dv_over_time default snapshot", {
-  data_proc <- preprocess(cqtkit_data_verapamil)
 
   p <- eda_mean_dv_over_time(
-    data_proc, deltaQTCF, NTLD, DOSEF,
+    cqtkit_data_verapamil, deltaQTCF, NTLD, DOSEF,
     group_col = TRTG,
     reference_threshold = 10
   )
@@ -91,10 +86,9 @@ test_that("eda_mean_dv_over_time default snapshot", {
 })
 
 test_that("eda_mean_dv_over_time with reference dose and style snapshot", {
-  data_proc <- preprocess(cqtkit_data_verapamil)
 
   p <- eda_mean_dv_over_time(
-    data_proc, deltaQTCF, NTLD, DOSEF,
+    cqtkit_data_verapamil, deltaQTCF, NTLD, DOSEF,
     group_col = TRTG,
     reference_dose = "0 mg",
     reference_threshold = c(-10, 10),
@@ -110,10 +104,9 @@ test_that("eda_mean_dv_over_time with reference dose and style snapshot", {
 })
 
 test_that("eda_mean_dv_over_time dQTcF with PK overlay snapshot", {
-  data_proc <- preprocess(cqtkit_data_verapamil)
 
   p <- eda_mean_dv_over_time(
-    data_proc, deltaQTCF, NTLD, DOSEF,
+    cqtkit_data_verapamil, deltaQTCF, NTLD, DOSEF,
     secondary_data_col = CONC,
     group_col = TRTG,
     reference_threshold = 10
@@ -123,10 +116,9 @@ test_that("eda_mean_dv_over_time dQTcF with PK overlay snapshot", {
 })
 
 test_that("eda_mean_dv_over_time ddQTcF with PK overlay snapshot", {
-  data_proc <- preprocess(cqtkit_data_verapamil)
 
   p <- eda_mean_dv_over_time(
-    data_proc, deltaQTCF, NTLD, DOSEF,
+    cqtkit_data_verapamil, deltaQTCF, NTLD, DOSEF,
     secondary_data_col = CONC,
     group_col = TRTG,
     reference_dose = "0 mg",
@@ -137,7 +129,7 @@ test_that("eda_mean_dv_over_time ddQTcF with PK overlay snapshot", {
 })
 
 test_that("eda_scatter_with_regressions styled snapshot", {
-  data_proc <- preprocess(cqtkit_data_verapamil) |>
+  data_proc <- cqtkit_data_verapamil |>
     dplyr::filter(DOSE > 0)
 
   p <- eda_scatter_with_regressions(
@@ -162,7 +154,7 @@ test_that("eda_scatter_with_regressions styled snapshot", {
 })
 
 test_that("eda_quantiles_plot with log axes snapshot", {
-  data_proc <- preprocess(cqtkit_data_verapamil) |>
+  data_proc <- cqtkit_data_verapamil |>
     dplyr::filter(DOSE > 0)
 
   p <- eda_quantiles_plot(
@@ -179,10 +171,9 @@ test_that("eda_quantiles_plot with log axes snapshot", {
 })
 
 test_that("eda_mean_dv_over_time SE error bars snapshot", {
-  data_proc <- preprocess(cqtkit_data_verapamil)
 
   p <- eda_mean_dv_over_time(
-    data_proc, deltaQTCF, NTLD, DOSEF,
+    cqtkit_data_verapamil, deltaQTCF, NTLD, DOSEF,
     group_col = TRTG,
     reference_dose = "0 mg",
     error_bars = "SE"
@@ -192,10 +183,9 @@ test_that("eda_mean_dv_over_time SE error bars snapshot", {
 })
 
 test_that("eda_mean_dv_over_time SE error bars dQTcF snapshot", {
-  data_proc <- preprocess(cqtkit_data_verapamil)
 
   p <- eda_mean_dv_over_time(
-    data_proc, deltaQTCF, NTLD, DOSEF,
+    cqtkit_data_verapamil, deltaQTCF, NTLD, DOSEF,
     group_col = TRTG,
     error_bars = "SE"
   )
@@ -204,10 +194,9 @@ test_that("eda_mean_dv_over_time SE error bars dQTcF snapshot", {
 })
 
 test_that("eda_mean_dv_over_time SD error bars dQTcF snapshot", {
-  data_proc <- preprocess(cqtkit_data_verapamil)
 
   p <- eda_mean_dv_over_time(
-    data_proc, deltaQTCF, NTLD, DOSEF,
+    cqtkit_data_verapamil, deltaQTCF, NTLD, DOSEF,
     group_col = TRTG,
     error_bars = "SD"
   )
@@ -216,10 +205,9 @@ test_that("eda_mean_dv_over_time SD error bars dQTcF snapshot", {
 })
 
 test_that("eda_mean_dv_over_time SD error bars ddQTcF snapshot", {
-  data_proc <- preprocess(cqtkit_data_verapamil)
 
   p <- eda_mean_dv_over_time(
-    data_proc, deltaQTCF, NTLD, DOSEF,
+    cqtkit_data_verapamil, deltaQTCF, NTLD, DOSEF,
     group_col = TRTG,
     reference_dose = "0 mg",
     error_bars = "SD"
@@ -229,7 +217,7 @@ test_that("eda_mean_dv_over_time SD error bars ddQTcF snapshot", {
 })
 
 test_that("eda_hysteresis_loop_plot snapshot", {
-  data_proc <- preprocess(cqtkit_data_verapamil) |>
+  data_proc <- cqtkit_data_verapamil |>
     dplyr::filter(DOSE > 0) |>
     droplevels()
 

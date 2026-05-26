@@ -48,9 +48,8 @@ A 4-panel plot of WRES and IWRES residuals vs predicted values and concentration
 Plots residuals vs predicted dQTCF and concentration.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 fit <- fit_prespecified_model(
-  data_proc,
+  cqtkit_data_verapamil,
   deltaQTCF,
   ID,
   CONC,
@@ -61,7 +60,7 @@ fit <- fit_prespecified_model(
   TRUE
 )
 gof_residuals_plots(
-  data_proc,
+  cqtkit_data_verapamil,
   fit,
   deltaQTCF,
   CONC,

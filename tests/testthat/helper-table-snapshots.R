@@ -3,6 +3,19 @@ snapshot_plot <- function(plot, name) {
   vdiffr::expect_doppelganger(name, plot)
 }
 
+# chromote (used by webshot2) can fail to launch headless Chrome on the
+# first attempt but succeed on a retry, so wrap flaky browser calls.
+with_retries <- function(fn, times = 5, delay = 1) {
+  for (i in seq_len(times)) {
+    res <- tryCatch(fn(), error = function(e) e)
+    if (!inherits(res, "error")) {
+      return(invisible(res))
+    }
+    if (i < times) Sys.sleep(delay)
+  }
+  stop(res)
+}
+
 snapshot_gt <- function(table, name) {
   testthat::skip_if_not_installed("gt")
 
@@ -21,15 +34,17 @@ snapshot_gt <- function(table, name) {
   png_path <- file.path(tempdir(), paste0(name, ".png"))
   gt::gtsave(table, filename = html_path)
 
-  webshot2::webshot(
-    url = html_path,
-    file = png_path,
-    selector = "table.gt_table",
-    delay = 1,
-    vwidth = 4000,
-    vheight = 3000,
-    zoom = 1
-  )
+  with_retries(function() {
+    webshot2::webshot(
+      url = html_path,
+      file = png_path,
+      selector = "table.gt_table",
+      delay = 1,
+      vwidth = 4000,
+      vheight = 3000,
+      zoom = 1
+    )
+  })
 
   testthat::expect_snapshot_file(png_path)
 }

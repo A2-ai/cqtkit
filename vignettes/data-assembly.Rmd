@@ -1,0 +1,220 @@
+---
+title: "Dataset assembly"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Dataset assembly}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+This vignette documents how the `cqtkit_data_*` and `cqtkit_data_bl_*`
+datasets shipped with the package were assembled from the raw trial
+data, and shows how cqtkit's helper functions support C-QT dataset
+assembly more generally.
+
+The raw source file is **not** redistributed with cqtkit, so the code
+chunks below are shown for reference and are not evaluated when the
+vignette is built. To reproduce the datasets, point `read.csv()` at
+your own copy of the source file.
+
+## Source
+
+The datasets in this package — the four per-drug `cqtkit_data_*` files
+and the four `cqtkit_data_bl_*` baseline files — are derived from the
+FDA ECGRDVQ trial reported in Johannesen et al., *CPT* 2014
+(<https://doi.org/10.1038/clpt.2014.155>). The assembly uses two source
+files:
+
+- `SCR-002.Clinical.Data.csv` — ECG-level measurements
+- `SCR-002.Clinical.Data.Description.txt` — column dictionary
+
+Per the dictionary, `EXTRT` carries the human-readable treatment name
+(`Ranolazine`, `Dofetilide`, `Quinidine Sulph`, `Verapamil HCL`,
+`Placebo`), and `BASELINE` is a Y/N flag identifying pre-dose ECGs.
+
+## Setup
+
+```{r, message = FALSE}
+library(dplyr)
+library(cqtkit)
+
+raw <- read.csv("SCR-002.Clinical.Data.csv", stringsAsFactors = FALSE)
+```
+
+## Baseline datasets (`cqtkit_data_bl_*`)
+
+For each drug, keep pre-dose baseline rows (`BASELINE == "Y"`,
+`TPT == -0.5`) for both the drug arm and the Placebo arm, and select
+the ECG columns plus subject-level demographics (`SEX`, `AGE`, `HGHT`,
+`WGHT`, `RACE`, `ETHNIC`, `VISIT`). Heart rate is derived from RR
+(`60000 / RR`, ms to bpm). Rows with missing `QT` are dropped. `TRTG`
+is a two-level factor (`Placebo | <drug>`), with both levels populated.
+Including the Placebo arm makes each baseline file self-contained for
+the corresponding two-arm "study", so it can be passed directly as
+`bl_data` to `compute_hrblm()` / `compute_qtcbblm()` /
+`compute_qtcfblm()` to reproduce that study's population baseline
+means.
+
+```{r}
+build_bl <- function(drug_label, raw) {
+  raw |>
+    filter(
+      BASELINE == "Y",
+      EXTRT %in% c("Placebo", drug_label),
+      !is.na(QT)
+    ) |>
+    mutate(TRTG = factor(EXTRT, levels = c("Placebo", drug_label))) |>
+    compute_hr(rrbl_col = NULL) |>
+    compute_qtcb_qtcf(qtbl_col = NULL, rrbl_col = NULL) |>
+    select(
+      ID = RANDID,
+      SEX, AGE, HGHT, WGHT, RACE, ETHNIC, VISIT,
+      TRTG,
+      DOSE = EXDOSE,
+      DOSEU = EXDOSU,
+      TPT, RR, QT, HR, QTCB, QTCF
+    ) |>
+    tibble::as_tibble()
+}
+
+cqtkit_data_bl_verapamil <- build_bl("Verapamil HCL", raw)
+cqtkit_data_bl_dofetilide <- build_bl("Dofetilide", raw)
+cqtkit_data_bl_quinidine <- build_bl("Quinidine Sulph", raw)
+cqtkit_data_bl_ranolazine <- build_bl("Ranolazine", raw)
+```
+
+A quick audit of the assembled baselines:
+
+```{r}
+bls <- list(
+  verapamil = cqtkit_data_bl_verapamil,
+  dofetilide = cqtkit_data_bl_dofetilide,
+  quinidine = cqtkit_data_bl_quinidine,
+  ranolazine = cqtkit_data_bl_ranolazine
+)
+
+for (slug in names(bls)) {
+  d <- bls[[slug]]
+  cat(sprintf(
+    "%-10s  rows = %2d   subjects = %2d   TRTG = %s\n",
+    slug, nrow(d), dplyr::n_distinct(d$ID),
+    paste(levels(d$TRTG), collapse = " | ")
+  ))
+}
+```
+
+The baseline datasets are written with `usethis::use_data()`
+
+## Analysis datasets (`cqtkit_data_*`)
+
+Each analysis dataset combines one drug arm with the placebo arm of the
+same crossover. Construction rules:
+
+- **Triplicate averaging**: post-dose rows are averaged within each
+  `(ID, EXTRT, TPT)` group. A group is dropped entirely if any of its
+  three QT values is `NA` (no NA imputation).
+- **Per-subject-per-arm baseline**: `RRBL`, `QTBL`, `HRBL`, `QTCBBL`,
+  `QTCFBL` come from the per-subject-per-arm averaged baseline rows.
+- **Derived per-row metrics computed pre-average**: `HR`, `QTCB`,
+  `QTCF` are computed per raw ECG row (`60000/RR`, `QT/sqrt(RR/1000)`,
+  `QT/(RR/1000)^(1/3)`) and then averaged across the triplicate.
+  Averaging RR and QT first and then applying the corrections gives
+  different values because the corrections are nonlinear in RR.
+- **Population baseline means (`HRBLM`, `QTCBBLM`, `QTCFBLM`)** are
+  per-drug constants computed across the baseline rows of the two arms
+  in that drug's study (drug arm + Placebo arm), via `compute_hrblm()` /
+  `compute_qtcbblm()` / `compute_qtcfblm()` with `by = c(ID, TRTG)` —
+  per-subject-per-period averaging then population mean, per the white
+  paper. Each drug's `*BLM` values differ from the other drugs'.
+- **Deltas**: the baseline-from-mean deltas (`deltaHRBL`/`deltaQTCBBL`/
+  `deltaQTCFBL`) and the row-level deltas
+  (`deltaQTCB`/`deltaQTCF`/`deltaHR`/`deltaQT`/`deltaRR`).
+
+The tail of `build_main()` below adds the population means
+(`compute_hrblm()` / `compute_qtcbblm()` / `compute_qtcfblm()`), the
+baseline-from-mean deltas (`compute_delta_hrblm()` /
+`compute_delta_qtcbblm()` / `compute_delta_qtcfblm()`), and the
+row-level deltas (`compute_deltas()`).
+
+```{r}
+build_main <- function(drug_label, raw, bl_data) {
+  bl <- bl_data |>
+    group_by(ID, TRTG) |>
+    summarise(
+      RRBL = mean(RR),
+      QTBL = mean(QT),
+      HRBL = mean(HR),
+      QTCBBL = mean(QTCB),
+      QTCFBL = mean(QTCF),
+      .groups = "drop"
+    )
+
+  post <- raw |>
+    filter(BASELINE == "N", EXTRT %in% c("Placebo", drug_label)) |>
+    compute_qtcb_qtcf(qtbl_col = NULL, rrbl_col = NULL) |>
+    compute_hr(rrbl_col = NULL) |>
+    group_by(RANDID, EXTRT, EXDOSE, EXDOSU, TPT) |>
+    filter(!any(is.na(QT))) |>
+    summarise(
+      RR = mean(RR),
+      QT = mean(QT),
+      HR = mean(HR),
+      QTCB = mean(QTCB),
+      QTCF = mean(QTCF),
+      CONC = mean(PCSTRESN, na.rm = TRUE),
+      CONCU = dplyr::first(PCSTRESU),
+      .groups = "drop"
+    )
+
+  drug_dose <- post |> filter(EXTRT == drug_label) |> dplyr::slice(1) |> pull(EXDOSE)
+  drug_unit <- post |> filter(EXTRT == drug_label) |> dplyr::slice(1) |> pull(EXDOSU)
+
+  post |>
+    inner_join(bl, by = c("RANDID" = "ID", "EXTRT" = "TRTG")) |>
+    mutate(
+      TRTG = factor(EXTRT, levels = c("Placebo", drug_label)),
+      DOSE = ifelse(EXTRT == "Placebo", 0, drug_dose),
+      DOSEU = ifelse(EXTRT == "Placebo", "mg", drug_unit),
+      DOSEF = factor(
+        paste(DOSE, DOSEU),
+        levels = c("0 mg", paste(drug_dose, drug_unit))
+      ),
+      NTLD = TPT,
+      TAFD = paste(TPT, "HR"),
+      CONC = ifelse(EXTRT == "Placebo", 0, CONC),
+      CONCU = ifelse(EXTRT == "Placebo", NA_character_, CONCU)
+    ) |>
+    compute_hrblm(bl_data, by = c(ID, TRTG)) |>
+    compute_qtcbblm(bl_data, by = c(ID, TRTG)) |>
+    compute_qtcfblm(bl_data, by = c(ID, TRTG)) |>
+    compute_delta_hrblm() |>
+    compute_delta_qtcbblm() |>
+    compute_delta_qtcfblm() |>
+    compute_deltas() |>
+    select(
+      ID = RANDID, TRTG, DOSE, DOSEU, DOSEF, NTLD, TAFD, CONC, CONCU,
+      RR, RRBL, deltaRR,
+      HR, HRBL, HRBLM, deltaHRBL, deltaHR,
+      QT, QTBL, deltaQT,
+      QTCB, QTCBBL, QTCBBLM, deltaQTCBBL, deltaQTCB,
+      QTCF, QTCFBL, QTCFBLM, deltaQTCFBL, deltaQTCF
+    ) |>
+    tibble::as_tibble() |>
+    arrange(TRTG, NTLD, ID)
+}
+
+cqtkit_data_verapamil <- build_main("Verapamil HCL", raw, cqtkit_data_bl_verapamil)
+cqtkit_data_dofetilide <- build_main("Dofetilide", raw, cqtkit_data_bl_dofetilide)
+cqtkit_data_quinidine <- build_main("Quinidine Sulph", raw, cqtkit_data_bl_quinidine)
+cqtkit_data_ranolazine <- build_main("Ranolazine", raw, cqtkit_data_bl_ranolazine)
+```
+
+The analysis datasets are written with `usethis::use_data()`

@@ -42,9 +42,8 @@ A visual predictive check plot with observed quantiles overlaid on simulated pre
 Performs a visual predictive check and plots the results.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 fit <- fit_prespecified_model(
-  data_proc,
+  cqtkit_data_verapamil,
   deltaQTCF,
   ID,
   CONC,
@@ -55,6 +54,6 @@ fit <- fit_prespecified_model(
   TRUE
 )
 
-gof_vpc_plot(data_proc, fit, CONC, deltaQTCF, nruns = 2)
+gof_vpc_plot(cqtkit_data_verapamil, fit, CONC, deltaQTCF, nruns = 2)
 
 }

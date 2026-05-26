@@ -42,9 +42,8 @@ A 2-panel boxplot of WRES and IWRES residuals by nominal time
 Plots boxplots of residuals over Nominal Times.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 fit <- fit_prespecified_model(
-  data_proc,
+  cqtkit_data_verapamil,
   deltaQTCF,
   ID,
   CONC,
@@ -56,7 +55,7 @@ fit <- fit_prespecified_model(
 )
 
 gof_residuals_time_boxplots(
-  data_proc,
+  cqtkit_data_verapamil,
   fit,
   deltaQTCF,
   CONC,

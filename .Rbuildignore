@@ -20,3 +20,4 @@
 ^\.claude$
 ^_starlightr\.yaml$
 ^\.positai$
+^data/raw-data$

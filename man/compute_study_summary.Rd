@@ -22,7 +22,6 @@ A tibble with unique subject counts per treatment group and overall total
 Creates a data frame summarizing number of subjects in each treatment group.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 
-compute_study_summary(data_proc, TRTG, ID)
+compute_study_summary(cqtkit_data_verapamil, TRTG, ID)
 }

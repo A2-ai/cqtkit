@@ -87,7 +87,6 @@ A named list of style parameters for use with style_plot()
 Creates a style list for eda graphing functions.
 }
 \examples{
-data_proc <- cqtkit_data_verapamil |> preprocess()
 style = set_style(
   colors = c(
     "0 mg Placebo" = "grey"

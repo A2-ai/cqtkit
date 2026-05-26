@@ -45,9 +45,8 @@ A 2x2 panel with concordance plots, residual distributions, Q-Q plots, and resid
 Makes goodness of fit plots.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 fit <- fit_prespecified_model(
-  data_proc,
+  cqtkit_data_verapamil,
   deltaQTCF,
   ID,
   CONC,
@@ -59,7 +58,7 @@ fit <- fit_prespecified_model(
 )
 
 gof_plots(
-  data_proc,
+  cqtkit_data_verapamil,
   fit,
   deltaQTCF,
   CONC,

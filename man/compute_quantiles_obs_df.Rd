@@ -33,7 +33,6 @@ A tibble with binned concentration medians and corresponding deltaQTc statistics
 Returns quantiles of concentrations and deltaQTc values.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 
-compute_quantiles_obs_df(data_proc, CONC, deltaQTCF)
+compute_quantiles_obs_df(cqtkit_data_verapamil, CONC, deltaQTCF)
 }

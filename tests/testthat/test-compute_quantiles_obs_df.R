@@ -1,6 +1,5 @@
 test_that("compute_quantiles_obs_df messages when NA are in CONC data", {
   .test_data <- cqtkit_data_verapamil |>
-    preprocess() |>
     dplyr::filter(DOSE > 0)
   .test_data[[1, 'CONC']] <- NA
   expect_warning(
@@ -14,7 +13,6 @@ test_that("compute_quantiles_obs_df messages when NA are in CONC data", {
 
 test_that("compute_quantiles_obs_df returns correct number of bins and statistics", {
   .test_data <- cqtkit_data_verapamil |>
-    preprocess() |>
     dplyr::filter(DOSE > 0)
 
   result <- compute_quantiles_obs_df(.test_data, CONC, deltaQTCF, nbins = 5)
@@ -37,7 +35,6 @@ test_that("compute_quantiles_obs_df returns correct number of bins and statistic
 
 test_that("compute_quantiles_obs_df messages when NA are in deltaQTC data", {
   .test_data <- cqtkit_data_verapamil |>
-    preprocess() |>
     dplyr::filter(DOSE > 0)
   .test_data[[1, 'deltaQTCF']] <- NA
   expect_warning(

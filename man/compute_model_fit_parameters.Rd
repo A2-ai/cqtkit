@@ -39,10 +39,9 @@ A tibble with fixed effect estimates, standard errors, degrees of freedom, t-val
 Converts tTable of summary(model_fit) to tibble and adds CIs.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 
 fit <- fit_prespecified_model(
-  data_proc,
+  cqtkit_data_verapamil,
   deltaQTCF,
   ID,
   CONC,

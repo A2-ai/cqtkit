@@ -54,9 +54,8 @@ A gt table with fixed effect estimates, standard errors, confidence intervals, a
 Generates table of model parameter estimates and statistics.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 fit <- fit_prespecified_model(
-  data_proc,
+  cqtkit_data_verapamil,
   deltaQTCF,
   ID,
   CONC,

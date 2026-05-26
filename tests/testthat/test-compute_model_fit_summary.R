@@ -4,7 +4,7 @@ test_that("compute_model_fit_parameters errors when fit is not lme class", {
 
 test_that("compute_model_fit_parameters includes reference levels when requested", {
   mod <- fit_prespecified_model(
-    cqtkit_data_verapamil |> preprocess(),
+    cqtkit_data_verapamil,
     deltaQTCF, ID, CONC, deltaQTCFBL, TRTG, TAFD,
     remove_conc_iiv = TRUE
   )
@@ -24,7 +24,7 @@ test_that("compute_model_fit_parameters includes reference levels when requested
 
 test_that('compute_model_fit_parameters errors for conf_int > 1', {
   mod <- fit_prespecified_model(
-    cqtkit_data_verapamil |> preprocess(),
+    cqtkit_data_verapamil,
     deltaQTCF, ID, CONC, deltaQTCFBL, TRTG, TAFD,
     remove_conc_iiv = TRUE
   )

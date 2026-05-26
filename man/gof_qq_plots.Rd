@@ -39,9 +39,8 @@ A 2-panel Q-Q plot comparing WRES and IWRES to normal distribution
 Plots QQ plot of WRES and IWRES.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 fit <- fit_prespecified_model(
-  data_proc,
+  cqtkit_data_verapamil,
   deltaQTCF,
   ID,
   CONC,
@@ -52,5 +51,5 @@ fit <- fit_prespecified_model(
   TRUE
 )
 
-gof_qq_plots(data_proc, fit, deltaQTCF, CONC, NTLD, TRTG, legend_location = "top")
+gof_qq_plots(cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG, legend_location = "top")
 }

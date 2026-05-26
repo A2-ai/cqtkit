@@ -17,9 +17,8 @@
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
-#' tabulate_study_summary(data_proc, TRTG, ID,
+#' tabulate_study_summary(cqtkit_data_verapamil, TRTG, ID,
 #' protocol_number = "A2AI201",
 #' title = "C-QT Analysis Study",
 #' study_status = "Completed")
@@ -88,9 +87,8 @@ tabulate_study_summary <- function(
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
-#' tabulate_pk_parameters(data_proc |> dplyr::filter(DOSE != 0), ID, DOSE, CONC, NTLD)
+#' tabulate_pk_parameters(cqtkit_data_verapamil |> dplyr::filter(DOSE != 0), ID, DOSE, CONC, NTLD)
 tabulate_pk_parameters <- function(
   data,
   id_col,
@@ -185,9 +183,8 @@ tabulate_pk_parameters <- function(
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #' fit <- fit_prespecified_model(
-#'   data_proc,
+#'   cqtkit_data_verapamil,
 #'   deltaQTCF,
 #'   ID,
 #'   CONC,
@@ -310,9 +307,8 @@ tabulate_model_fit_parameters <- function(
 #' @export
 #'
 #' @examples
-#' data_proc <- cqtkit_data_verapamil |> preprocess()
 #' tabulate_ecg_param_summary(
-#'  data_proc,
+#'  cqtkit_data_verapamil,
 #'  NTLD,
 #'  DOSEF,
 #'  QTCF,
@@ -518,10 +514,11 @@ tabulate_ecg_param_summary <- function(
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
-#' tabulate_high_qtc_obs(data_proc, QTCF, deltaQTCF, group_col = DOSEF, qtc_label = "QTcF")
-#' tabulate_high_qtc_obs(data_proc, QTCF, deltaQTCF, qtc_thresholds = c(430, 450))
+#' tabulate_high_qtc_obs(
+#'   cqtkit_data_verapamil, QTCF, deltaQTCF, group_col = DOSEF, qtc_label = "QTcF"
+#' )
+#' tabulate_high_qtc_obs(cqtkit_data_verapamil, QTCF, deltaQTCF, qtc_thresholds = c(430, 450))
 tabulate_high_qtc_obs <- function(
   data,
   qtc_col,
@@ -616,10 +613,11 @@ tabulate_high_qtc_obs <- function(
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
-#' tabulate_high_qtc_sub(data_proc, QTCF, deltaQTCF, ID, group_col = DOSEF, qtc_label = "QTcF")
-#' tabulate_high_qtc_sub(data_proc, QTCF, deltaQTCF, ID, qtc_thresholds = c(430, 450))
+#' tabulate_high_qtc_sub(
+#'   cqtkit_data_verapamil, QTCF, deltaQTCF, ID, group_col = DOSEF, qtc_label = "QTcF"
+#' )
+#' tabulate_high_qtc_sub(cqtkit_data_verapamil, QTCF, deltaQTCF, ID, qtc_thresholds = c(430, 450))
 tabulate_high_qtc_sub <- function(
   data,
   qtc_col,
@@ -719,10 +717,9 @@ tabulate_high_qtc_sub <- function(
 #' @export
 #'
 #' @examples
-#' data_proc <- preprocess(cqtkit_data_verapamil)
 #'
 #' fit <- fit_prespecified_model(
-#'   data_proc,
+#'   cqtkit_data_verapamil,
 #'   deltaQTCF,
 #'   ID,
 #'   CONC,
@@ -733,7 +730,7 @@ tabulate_high_qtc_sub <- function(
 #'   TRUE
 #' )
 #' pk_df <- compute_pk_parameters(
-#'   data_proc |> dplyr::filter(DOSE != 0),
+#'   cqtkit_data_verapamil |> dplyr::filter(DOSE != 0),
 #'   ID,
 #'   DOSEF,
 #'   CONC,
@@ -741,7 +738,7 @@ tabulate_high_qtc_sub <- function(
 #' )
 #'
 #' tabulate_exposure_predictions(
-#'   data_proc,
+#'   cqtkit_data_verapamil,
 #'   fit,
 #'   CONC,
 #'   list(

@@ -1,8 +1,7 @@
 test_that("compute_lme_slope_df returns correct slope and CIs", {
-  data_proc <- preprocess(cqtkit_data_verapamil)
 
   lme_mod <- fit_qtc_linear_model(
-    data_proc, QT, RR, ID, method = "REML", remove_rr_iiv = FALSE
+    cqtkit_data_verapamil, QT, RR, ID, method = "REML", remove_rr_iiv = FALSE
   )
 
   result <- compute_lme_slope_df(lme_mod, RR, conf_int = 0.9)

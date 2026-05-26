@@ -42,11 +42,10 @@ A tibble with group labels, concentration, and dependent variable values (option
 Compute Contrast Observations
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 
 # Simple case: no control group
 obs_data <- compute_contrast_observations(
-  data_proc,
+  cqtkit_data_verapamil,
   CONC,
   deltaQTCF,
   treatment_predictors = list(TRTG = "Verapamil HCL")
@@ -55,7 +54,7 @@ obs_data
 
 # Matched contrast (crossover study)
 contrast_data <- compute_contrast_observations(
-  data_proc,
+  cqtkit_data_verapamil,
   CONC,
   deltaQTCF,
   ID,

@@ -60,10 +60,9 @@ A multi-panel plot comparing QT, QTcB, QTcF, and QTcP corrections against RR
 Plots different corrections of QT against RR to compare which to use.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 
 eda_qtc_comparison_plot(
-  data_proc,
+  cqtkit_data_verapamil,
   RR,
   QT,
   QTCB,

@@ -1,12 +1,11 @@
-data_proc <- preprocess(cqtkit_data_verapamil)
 fit <- fit_prespecified_model(
-  data_proc, deltaQTCF, ID, CONC, deltaQTCFBL, TRTG, TAFD,
+  cqtkit_data_verapamil, deltaQTCF, ID, CONC, deltaQTCFBL, TRTG, TAFD,
   method = "REML", remove_conc_iiv = TRUE
 )
 
 test_that("compute_conc_for_upper_pred returns correct concentration with treatment group", {
   result <- compute_conc_for_upper_pred(
-    data_proc, fit, "CONC", "TRTG", "Verapamil HCL",
+    cqtkit_data_verapamil, fit, "CONC", "TRTG", "Verapamil HCL",
     threshold = 10, conf_int = 0.9
   )
 
@@ -40,12 +39,12 @@ test_that("compute_conc_for_upper_pred returns correct concentration with treatm
 test_that("compute_conc_for_upper_pred works without treatment group", {
   # fit a simpler model without TRT
   fit_simple <- fit_prespecified_model(
-    data_proc, deltaQTCF, ID, CONC, deltaQTCFBL,
+    cqtkit_data_verapamil, deltaQTCF, ID, CONC, deltaQTCFBL,
     method = "REML", remove_conc_iiv = TRUE
   )
 
   result <- compute_conc_for_upper_pred(
-    data_proc, fit_simple, "CONC",
+    cqtkit_data_verapamil, fit_simple, "CONC",
     threshold = 10, conf_int = 0.9
   )
 

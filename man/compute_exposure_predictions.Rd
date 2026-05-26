@@ -38,17 +38,16 @@ To help keep the predictions quick, the concentration values to predict at are
 done at an order of magnitude of concentration values, if max(conc) = 7340, then by = 100.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 
 fit <- nlme::lme(
    fixed = deltaQTCF ~ 1 + CONC,
    random = ~ 1 | ID,
    method = "REML",
-   data = data_proc
+   data = cqtkit_data_verapamil
 )
 
 compute_exposure_predictions(
-  data_proc,
+  cqtkit_data_verapamil,
   fit,
   CONC,
   list(CONC = 10)

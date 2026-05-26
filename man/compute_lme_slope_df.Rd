@@ -20,7 +20,7 @@ A tibble with the slope estimate and its lower and upper confidence bounds
 Takes the slope from a lme model and its confidence interval.
 }
 \examples{
-df <- cqtkit_data_verapamil |> preprocess()
+df <- cqtkit_data_verapamil
 
 lme_mod <- df |>
   fit_qtc_linear_model(

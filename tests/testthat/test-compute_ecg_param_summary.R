@@ -1,9 +1,8 @@
 test_that("compute_ecg_param_summary returns correct means without reference dose", {
-  data <- cqtkit_data_verapamil |> preprocess()
-  result <- compute_ecg_param_summary(data, NTLD, DOSE, QTCF, deltaQTCF)
+  result <- compute_ecg_param_summary(cqtkit_data_verapamil, NTLD, DOSE, QTCF, deltaQTCF)
 
   # verify ecg mean for DOSE==120, time==1 against manual calculation
-  subset <- data |> dplyr::filter(DOSE == 120, NTLD == 1)
+  subset <- cqtkit_data_verapamil |> dplyr::filter(DOSE == 120, NTLD == 1)
   row <- result |> dplyr::filter(dose == 120, time == 1)
 
   expect_equal(row$mean_ecg, mean(subset$QTCF), tolerance = 1e-10)
@@ -14,9 +13,8 @@ test_that("compute_ecg_param_summary returns correct means without reference dos
 })
 
 test_that("compute_ecg_param_summary returns correct delta-delta with reference dose", {
-  data <- cqtkit_data_verapamil |> preprocess()
   result <- compute_ecg_param_summary(
-    data, NTLD, DOSE, QTCF, deltaQTCF, reference_dose = 0
+    cqtkit_data_verapamil, NTLD, DOSE, QTCF, deltaQTCF, reference_dose = 0
   )
 
   # should have ddecg columns

@@ -54,9 +54,8 @@ A scatter plot of observations with model prediction line and confidence interva
 Plots predictions of the model with observed values.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 fit <- fit_prespecified_model(
-  data_proc,
+  cqtkit_data_verapamil,
   deltaQTCF,
   ID,
   CONC,
@@ -67,7 +66,7 @@ fit <- fit_prespecified_model(
   TRUE
 )
 predict_with_observations_plot(
-  data_proc,
+  cqtkit_data_verapamil,
   fit,
   CONC,
   deltaQTCF,

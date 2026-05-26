@@ -34,8 +34,7 @@ Computes the number of observations (rows) where QTc exceeds specified
 thresholds or deltaQTc exceeds specified thresholds.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 
-compute_high_qtc_obs(data_proc, QTCF, deltaQTCF)
-compute_high_qtc_obs(data_proc, QTCF, deltaQTCF, qtc_thresholds = c(430, 450))
+compute_high_qtc_obs(cqtkit_data_verapamil, QTCF, deltaQTCF)
+compute_high_qtc_obs(cqtkit_data_verapamil, QTCF, deltaQTCF, qtc_thresholds = c(430, 450))
 }

@@ -45,10 +45,9 @@ A scatter plot with linear and/or LOESS regression lines for assessing linearity
 Plots scatter plot with linear and loess regressions. Can be used to check for linearity.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 
 eda_scatter_with_regressions(
-  data_proc,
+  cqtkit_data_verapamil,
   deltaQTCF,
   CONC,
   TRTG,

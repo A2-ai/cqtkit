@@ -60,9 +60,8 @@ A plot of binned observed data quantiles with model prediction line and confiden
 Plots predictions and 90\% CI.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
 fit <- fit_prespecified_model(
-  data_proc,
+  cqtkit_data_verapamil,
   deltaQTCF,
   ID,
   CONC,
@@ -73,7 +72,7 @@ fit <- fit_prespecified_model(
   TRUE
 )
 predict_with_quantiles_plot(
-  data_proc,
+  cqtkit_data_verapamil,
   fit,
   CONC,
   deltaQTCF,

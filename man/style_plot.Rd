@@ -87,9 +87,8 @@ A ggplot2 object with applied colors, labels, shapes, and theme settings
 Styles a plot with provided colors and labels.
 }
 \examples{
-data_proc <- cqtkit_data_verapamil |> preprocess()
 .p <- eda_mean_dv_over_time(
-  data_proc,
+  cqtkit_data_verapamil,
   deltaQTCF,
   NTLD,
   DOSEF,

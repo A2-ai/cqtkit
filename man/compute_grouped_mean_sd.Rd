@@ -37,8 +37,7 @@ Computes the mean and standard deviation of the dependent variable data
 in DV_col grouped by time and dose.
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
-data_proc <- dplyr::mutate(data_proc, DOSEF = as.factor(DOSEF))
+data_proc <- dplyr::mutate(cqtkit_data_verapamil, DOSEF = as.factor(DOSEF))
 
 compute_grouped_mean_sd(
   data_proc, deltaQTCF, NTLD, DOSE, reference_dose = 0

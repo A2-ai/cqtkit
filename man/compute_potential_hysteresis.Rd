@@ -38,8 +38,7 @@ maximum concentration (Tmax)
 }
 }
 \examples{
-data_proc <- preprocess(cqtkit_data_verapamil)
-data_proc <- dplyr::filter(data_proc, DOSE == 120)
+data_proc <- dplyr::filter(cqtkit_data_verapamil, DOSE == 120)
 
 compute_potential_hysteresis(
   data_proc,

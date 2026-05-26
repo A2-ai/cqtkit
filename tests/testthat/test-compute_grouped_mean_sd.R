@@ -17,11 +17,10 @@ test_that("compute_grouped_mean_sd errors when dose grouping does not reduce siz
 })
 
 test_that('compute_grouped_mean_sd computes correct mean, SD, SE, and CI', {
-  data <- cqtkit_data_verapamil |> preprocess()
-  result <- compute_grouped_mean_sd(data, deltaQTCF, NTLD, DOSE, conf_int = 0.9)
+  result <- compute_grouped_mean_sd(cqtkit_data_verapamil, deltaQTCF, NTLD, DOSE, conf_int = 0.9)
 
   # manually compute for DOSE==120, NTLD==1
-  subset <- data |> dplyr::filter(DOSE == 120, NTLD == 1)
+  subset <- cqtkit_data_verapamil |> dplyr::filter(DOSE == 120, NTLD == 1)
   vals <- subset$deltaQTCF
 
   row <- result |> dplyr::filter(dose == 120, time == 1)
@@ -38,12 +37,11 @@ test_that('compute_grouped_mean_sd computes correct mean, SD, SE, and CI', {
 })
 
 test_that('compute_grouped_mean_sd computes correct delta values with reference dose', {
-  data <- cqtkit_data_verapamil |> preprocess()
-  result <- compute_grouped_mean_sd(data, deltaQTCF, NTLD, DOSE, reference_dose = 0, conf_int = 0.9)
+  result <- compute_grouped_mean_sd(cqtkit_data_verapamil, deltaQTCF, NTLD, DOSE, reference_dose = 0, conf_int = 0.9)
 
   # at NTLD==1: mean_delta = mean(dose120) - mean(dose0)
-  trt <- data |> dplyr::filter(DOSE == 120, NTLD == 1)
-  ref <- data |> dplyr::filter(DOSE == 0, NTLD == 1)
+  trt <- cqtkit_data_verapamil |> dplyr::filter(DOSE == 120, NTLD == 1)
+  ref <- cqtkit_data_verapamil |> dplyr::filter(DOSE == 0, NTLD == 1)
 
   row <- result |> dplyr::filter(dose == 120, time == 1)
 
