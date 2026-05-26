@@ -1,9 +1,16 @@
 #' C-QT analysis dataset for verapamil with minimal QTc effect (~8 ms prolongation)
 #'
 #' @format ## `cqtkit_data_verapamil`
-#' A tibble: 657 × 30:
+#' A tibble: 657 × 37:
 #' \describe{
 #'   \item{ID}{Unique subject identifier}
+#'   \item{SEX}{Sex either M (Male) or F (Female)}
+#'   \item{AGE}{Age in years at screening}
+#'   \item{HGHT}{Height in cm at screening}
+#'   \item{WGHT}{Weight in kg at screening}
+#'   \item{RACE}{Race as provided}
+#'   \item{ETHNIC}{Ethnicity as provided}
+#'   \item{VISIT}{Visit code}
 #'   \item{TRTG}{Treatment Group (Drug or Placebo)}
 #'   \item{DOSE}{numeric value of dose}
 #'   \item{DOSEU}{Units of DOSE}
@@ -68,9 +75,16 @@
 #' C-QT analysis dataset for dofetilide with significant QTc effect (~38 ms prolongation)
 #'
 #' @format ## `cqtkit_data_dofetilide`
-#' A tibble: 657 × 30:
+#' A tibble: 657 × 37:
 #' \describe{
 #'   \item{ID}{Unique subject identifier}
+#'   \item{SEX}{Sex either M (Male) or F (Female)}
+#'   \item{AGE}{Age in years at screening}
+#'   \item{HGHT}{Height in cm at screening}
+#'   \item{WGHT}{Weight in kg at screening}
+#'   \item{RACE}{Race as provided}
+#'   \item{ETHNIC}{Ethnicity as provided}
+#'   \item{VISIT}{Visit code}
 #'   \item{TRTG}{Treatment Group (Drug or Placebo)}
 #'   \item{DOSE}{numeric value of dose}
 #'   \item{DOSEU}{Units of DOSE}
@@ -135,9 +149,16 @@
 #' C-QT analysis dataset for ranolazine with moderate QTc effect (~14 ms prolongation)
 #'
 #' @format ## `cqtkit_data_ranolazine`
-#' A tibble: 656 × 30:
+#' A tibble: 656 × 37:
 #' \describe{
 #'   \item{ID}{Unique subject identifier}
+#'   \item{SEX}{Sex either M (Male) or F (Female)}
+#'   \item{AGE}{Age in years at screening}
+#'   \item{HGHT}{Height in cm at screening}
+#'   \item{WGHT}{Weight in kg at screening}
+#'   \item{RACE}{Race as provided}
+#'   \item{ETHNIC}{Ethnicity as provided}
+#'   \item{VISIT}{Visit code}
 #'   \item{TRTG}{Treatment Group (Drug or Placebo)}
 #'   \item{DOSE}{numeric value of dose}
 #'   \item{DOSEU}{Units of DOSE}
@@ -201,9 +222,16 @@
 #' C-QT analysis dataset for quinidine with significant QTc effect (~50 ms prolongation)
 #'
 #' @format ## `cqtkit_data_quinidine`
-#' A tibble: 639 × 30:
+#' A tibble: 639 × 37:
 #' \describe{
 #'   \item{ID}{Unique subject identifier}
+#'   \item{SEX}{Sex either M (Male) or F (Female)}
+#'   \item{AGE}{Age in years at screening}
+#'   \item{HGHT}{Height in cm at screening}
+#'   \item{WGHT}{Weight in kg at screening}
+#'   \item{RACE}{Race as provided}
+#'   \item{ETHNIC}{Ethnicity as provided}
+#'   \item{VISIT}{Visit code}
 #'   \item{TRTG}{Treatment Group (Drug or Placebo)}
 #'   \item{DOSE}{numeric value of dose}
 #'   \item{DOSEU}{Units of DOSE}

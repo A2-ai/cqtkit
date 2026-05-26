@@ -164,6 +164,13 @@ build_main <- function(drug_label, raw, bl_data) {
     group_by(RANDID, EXTRT, EXDOSE, EXDOSU, TPT) |>
     filter(!any(is.na(QT))) |>
     summarise(
+      SEX = dplyr::first(SEX),
+      AGE = dplyr::first(AGE),
+      HGHT = dplyr::first(HGHT),
+      WGHT = dplyr::first(WGHT),
+      RACE = dplyr::first(RACE),
+      ETHNIC = dplyr::first(ETHNIC),
+      VISIT = dplyr::first(VISIT),
       RR = mean(RR),
       QT = mean(QT),
       HR = mean(HR),
@@ -200,7 +207,8 @@ build_main <- function(drug_label, raw, bl_data) {
     compute_delta_qtcfblm() |>
     compute_deltas() |>
     select(
-      ID = RANDID, TRTG, DOSE, DOSEU, DOSEF, NTLD, TAFD, CONC, CONCU,
+      ID = RANDID, SEX, AGE, HGHT, WGHT, RACE, ETHNIC, VISIT,
+      TRTG, DOSE, DOSEU, DOSEF, NTLD, TAFD, CONC, CONCU,
       RR, RRBL, deltaRR,
       HR, HRBL, HRBLM, deltaHRBL, deltaHR,
       QT, QTBL, deltaQT,

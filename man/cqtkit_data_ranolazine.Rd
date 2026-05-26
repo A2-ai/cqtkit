@@ -7,9 +7,16 @@
 \format{
 \subsection{\code{cqtkit_data_ranolazine}}{
 
-A tibble: 656 × 30:
+A tibble: 656 × 37:
 \describe{
 \item{ID}{Unique subject identifier}
+\item{SEX}{Sex either M (Male) or F (Female)}
+\item{AGE}{Age in years at screening}
+\item{HGHT}{Height in cm at screening}
+\item{WGHT}{Weight in kg at screening}
+\item{RACE}{Race as provided}
+\item{ETHNIC}{Ethnicity as provided}
+\item{VISIT}{Visit code}
 \item{TRTG}{Treatment Group (Drug or Placebo)}
 \item{DOSE}{numeric value of dose}
 \item{DOSEU}{Units of DOSE}
