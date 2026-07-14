@@ -20,6 +20,131 @@ name_quo_if_not_null <- function(quo) {
 }
 
 
+#' Assert Column Names Are Syntactic
+#'
+#' Errors if any of the supplied names are non-syntactic (e.g. contain spaces),
+#' since nlme::lme cannot parse them even when backtick-quoted.
+#'
+#' @param col_names Character vector of column names to validate
+#'
+#' @return Invisibly TRUE if all names are syntactic; otherwise stops with an
+#'   actionable message.
+#'
+#' @keywords internal
+#' @noRd
+#'
+#' @examples \dontrun{
+#' assert_syntactic_names(c("CONC", "Dosing Regimen"))
+#' }
+assert_syntactic_names <- function(col_names) {
+  non_syntactic <- col_names[make.names(col_names) != col_names]
+  if (length(non_syntactic) > 0) {
+    stop(
+      "Model column name(s) must be syntactic (no spaces or special characters): ",
+      paste(sprintf('"%s"', non_syntactic), collapse = ", "),
+      ".\nRename the column(s) before fitting, e.g. `",
+      non_syntactic[1],
+      "` -> `",
+      gsub(" ", "_", non_syntactic[1]),
+      "`.",
+      call. = FALSE
+    )
+  }
+  invisible(TRUE)
+}
+
+
+#' Assert Factors Retain Multiple Levels After NA Removal
+#'
+#' Errors if any categorical column collapses to fewer than 2 levels once rows
+#' with missing values across `model_cols` are dropped (as nlme::lme does with
+#' na.action = "na.exclude"). A single-level factor triggers the cryptic
+#' "contrasts can be applied only to factors with 2 or more levels" error.
+#'
+#' @param data A data frame of model data
+#' @param model_cols Character vector of all columns used in the model, used to
+#'   determine complete cases
+#' @param factor_cols Character vector of categorical columns to check
+#'
+#' @return Invisibly TRUE if all checked factors retain >= 2 levels; otherwise
+#'   stops with an actionable message.
+#'
+#' @keywords internal
+#' @noRd
+#'
+#' @examples \dontrun{
+#' assert_multilevel_factors(data, c("deltaQTCF", "CONC", "TRTG"), "TRTG")
+#' }
+assert_multilevel_factors <- function(data, model_cols, factor_cols) {
+  complete_rows <- stats::complete.cases(data[, model_cols, drop = FALSE])
+  complete_data <- data[complete_rows, , drop = FALSE]
+
+  for (col in factor_cols) {
+    is_categorical <- is.factor(data[[col]]) || is.character(data[[col]])
+    kept_levels <- unique(as.character(complete_data[[col]]))
+    if (!is_categorical || length(kept_levels) >= 2) {
+      next
+    }
+
+    present_levels <- unique(as.character(data[[col]][!is.na(data[[col]])]))
+    dropped_levels <- setdiff(present_levels, kept_levels)
+
+    # For each dropped level, name the model column(s) that are entirely NA for it
+    # (the actual reason its rows were removed).
+    culprit_lines <- vapply(
+      dropped_levels,
+      function(lv) {
+        lv_rows <- !is.na(data[[col]]) & as.character(data[[col]]) == lv
+        always_na <- setdiff(
+          model_cols[vapply(
+            model_cols,
+            function(mc) all(is.na(data[lv_rows, mc])),
+            logical(1)
+          )],
+          col
+        )
+        if (length(always_na) > 0) {
+          paste0(
+            "  - level \"",
+            lv,
+            "\": always NA in column(s): ",
+            paste(always_na, collapse = ", ")
+          )
+        } else {
+          paste0(
+            "  - level \"",
+            lv,
+            "\": rows dropped due to missing values across model columns"
+          )
+        }
+      },
+      character(1)
+    )
+
+    kept_desc <- if (length(kept_levels) == 1) {
+      paste0("a single level (\"", kept_levels, "\")")
+    } else {
+      "no levels"
+    }
+
+    stop(
+      "Column \"",
+      col,
+      "\" collapses to ",
+      kept_desc,
+      " once rows with missing model values are dropped, so the model cannot be fit.\n",
+      "Level(s) removed: ",
+      paste(sprintf("\"%s\"", dropped_levels), collapse = ", "),
+      "\n",
+      paste(culprit_lines, collapse = "\n"),
+      "\nFix the missing values in those column(s), or remove this term from the model.",
+      call. = FALSE
+    )
+  }
+  invisible(TRUE)
+}
+
+
 #' Simple quadratic formula solver
 #'
 #' @param a X^2 coefficient

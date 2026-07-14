@@ -167,19 +167,7 @@ fit_prespecified_model <- function(
     c(dv, conc, deltaqtcbl, trt, tafd, id),
     name_quo_if_not_null
   ))
-  non_syntactic <- model_names[make.names(model_names) != model_names]
-  if (length(non_syntactic) > 0) {
-    stop(
-      "Model column name(s) must be syntactic (no spaces or special characters): ",
-      paste(sprintf('"%s"', non_syntactic), collapse = ", "),
-      ".\nRename the column(s) before fitting, e.g. `",
-      non_syntactic[1],
-      "` -> `",
-      gsub(" ", "_", non_syntactic[1]),
-      "`.",
-      call. = FALSE
-    )
-  }
+  assert_syntactic_names(model_names)
 
   #copy data to new variable to overwrite TAFD column if present in model.
   new_data <- data
@@ -218,6 +206,15 @@ fit_prespecified_model <- function(
       rlang::quo_name(id)
     ))
   }
+
+  # After rows with missing model values are dropped (na.action = "na.exclude"),
+  # a categorical predictor (treatment or time) can collapse to a single level,
+  # producing the cryptic "contrasts ... 2 or more levels" error. Detect up front.
+  cat_cols <- c(
+    if (!rlang::quo_is_null(trt)) rlang::quo_name(trt),
+    if (!rlang::quo_is_null(tafd)) rlang::quo_name(tafd)
+  )
+  assert_multilevel_factors(new_data, model_names, cat_cols)
 
   # if I make a call directly to nlme::lme, the resulting model has fixef(mod) = fixed_formula, wrapping the call in
   # do.call fixed the errors this caused when trying to do predict_with_x plot functions.
