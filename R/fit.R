@@ -161,6 +161,26 @@ fit_prespecified_model <- function(
   required_cols <- unlist(lapply(vars, name_quo_if_not_null)) #from helper.R
   checkmate::assertNames(names(data), must.include = required_cols)
 
+  # nlme::lme cannot parse non-syntactic column names (e.g. those with spaces),
+  # even when backtick-quoted. Fail early with an actionable message.
+  model_names <- unlist(lapply(
+    c(dv, conc, deltaqtcbl, trt, tafd, id),
+    name_quo_if_not_null
+  ))
+  non_syntactic <- model_names[make.names(model_names) != model_names]
+  if (length(non_syntactic) > 0) {
+    stop(
+      "Model column name(s) must be syntactic (no spaces or special characters): ",
+      paste(sprintf('"%s"', non_syntactic), collapse = ", "),
+      ".\nRename the column(s) before fitting, e.g. `",
+      non_syntactic[1],
+      "` -> `",
+      gsub(" ", "_", non_syntactic[1]),
+      "`.",
+      call. = FALSE
+    )
+  }
+
   #copy data to new variable to overwrite TAFD column if present in model.
   new_data <- data
 
