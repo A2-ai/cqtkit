@@ -337,7 +337,13 @@ extract_from_mapping <- function(mapping_entry, data) {
     var <- sub("^\\.data\\$", "", var)
   }
   if (var %in% names(data)) {
-    return(unique(as.character(data[[var]])))
+    values <- data[[var]]
+    # Honor factor level order (dropping any unused levels); fall back to
+    # appearance order for non-factor columns.
+    if (is.factor(values)) {
+      return(intersect(levels(values), as.character(values)))
+    }
+    return(unique(as.character(values)))
   }
   return(NULL)
 }
