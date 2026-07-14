@@ -66,8 +66,8 @@ assert_syntactic_names <- function(col_names) {
 #'   determine complete cases
 #' @param factor_cols Character vector of categorical columns to check
 #'
-#' @return Invisibly TRUE if all checked factors retain >= 2 levels; otherwise
-#'   stops with an actionable message.
+#' @return Invisibly TRUE. Stops if any checked factor collapses to < 2 levels;
+#'   warns if a factor loses level(s) but retains >= 2.
 #'
 #' @keywords internal
 #' @noRd
@@ -79,65 +79,81 @@ assert_multilevel_factors <- function(data, model_cols, factor_cols) {
   complete_rows <- stats::complete.cases(data[, model_cols, drop = FALSE])
   complete_data <- data[complete_rows, , drop = FALSE]
 
+  # For a dropped level of `col`, name the model column(s) entirely NA for its
+  # rows (the actual reason those rows were removed).
+  culprit_line <- function(lv, col) {
+    lv_rows <- !is.na(data[[col]]) & as.character(data[[col]]) == lv
+    always_na <- setdiff(
+      model_cols[vapply(
+        model_cols,
+        function(mc) all(is.na(data[lv_rows, mc])),
+        logical(1)
+      )],
+      col
+    )
+    if (length(always_na) > 0) {
+      paste0(
+        "  - level \"",
+        lv,
+        "\": always NA in column(s): ",
+        paste(always_na, collapse = ", ")
+      )
+    } else {
+      paste0(
+        "  - level \"",
+        lv,
+        "\": rows dropped due to missing values across model columns"
+      )
+    }
+  }
+
   for (col in factor_cols) {
     is_categorical <- is.factor(data[[col]]) || is.character(data[[col]])
-    kept_levels <- unique(as.character(complete_data[[col]]))
-    if (!is_categorical || length(kept_levels) >= 2) {
+    if (!is_categorical) {
       next
     }
 
+    kept_levels    <- unique(as.character(complete_data[[col]]))
     present_levels <- unique(as.character(data[[col]][!is.na(data[[col]])]))
     dropped_levels <- setdiff(present_levels, kept_levels)
 
-    # For each dropped level, name the model column(s) that are entirely NA for it
-    # (the actual reason its rows were removed).
-    culprit_lines <- vapply(
-      dropped_levels,
-      function(lv) {
-        lv_rows <- !is.na(data[[col]]) & as.character(data[[col]]) == lv
-        always_na <- setdiff(
-          model_cols[vapply(
-            model_cols,
-            function(mc) all(is.na(data[lv_rows, mc])),
-            logical(1)
-          )],
-          col
-        )
-        if (length(always_na) > 0) {
-          paste0(
-            "  - level \"",
-            lv,
-            "\": always NA in column(s): ",
-            paste(always_na, collapse = ", ")
-          )
-        } else {
-          paste0(
-            "  - level \"",
-            lv,
-            "\": rows dropped due to missing values across model columns"
-          )
-        }
-      },
-      character(1)
-    )
-
-    kept_desc <- if (length(kept_levels) == 1) {
-      paste0("a single level (\"", kept_levels, "\")")
-    } else {
-      "no levels"
+    if (length(dropped_levels) == 0) {
+      next
     }
 
-    stop(
+    culprit_lines <- vapply(dropped_levels, culprit_line, character(1), col = col)
+
+    if (length(kept_levels) < 2) {
+      kept_desc <- if (length(kept_levels) == 1) {
+        paste0("a single level (\"", kept_levels, "\")")
+      } else {
+        "no levels"
+      }
+      stop(
+        "Column \"",
+        col,
+        "\" collapses to ",
+        kept_desc,
+        " once rows with missing model values are dropped, so the model cannot be fit.\n",
+        "Level(s) removed: ",
+        paste(sprintf("\"%s\"", dropped_levels), collapse = ", "),
+        "\n",
+        paste(culprit_lines, collapse = "\n"),
+        "\nFix the missing values in those column(s), or remove this term from the model.",
+        call. = FALSE
+      )
+    }
+
+    warning(
       "Column \"",
       col,
-      "\" collapses to ",
-      kept_desc,
-      " once rows with missing model values are dropped, so the model cannot be fit.\n",
-      "Level(s) removed: ",
+      "\" lost level(s) once rows with missing model values are dropped: ",
       paste(sprintf("\"%s\"", dropped_levels), collapse = ", "),
       "\n",
       paste(culprit_lines, collapse = "\n"),
-      "\nFix the missing values in those column(s), or remove this term from the model.",
+      "\nThe model will be fit on the remaining ",
+      length(kept_levels),
+      " level(s).",
       call. = FALSE
     )
   }
