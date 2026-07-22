@@ -126,39 +126,21 @@ add_horizontal_references <- function(p, reference_threshold) {
     return(p)
   }
 
-  ref_labels <- paste0("Reference ", reference_threshold)
-
-  ref_data <- data.frame(
-    yintercept = reference_threshold,
-    group = ref_labels,
-    stringsAsFactors = FALSE
-  )
-
-  p <- p +
-    suppressWarnings(
-      ggplot2::geom_hline(
-        data = ref_data,
-        ggplot2::aes(
-          yintercept = .data$yintercept,
-          color = .data$group,
-          shape = .data$group # Needed for combined color/shape legend
-        ),
-        linetype = "dashed"
+  for (threshold in reference_threshold) {
+    ref_line <- ggplot2::geom_hline(
+      yintercept = threshold,
+      color = "black",
+      linetype = "dashed",
+      linewidth = 0.5
+    ) |>
+      ggstylekit::series_layer(
+        name = paste0("Reference ", threshold),
+        legend_channel = "color"
       )
-    )
+    p <- p + ref_line
+  }
 
-  attr(p, "reference_colors") <- stats::setNames(
-    rep("black", length(reference_threshold)),
-    ref_labels
-  )
-
-  # Also set reference shapes as NA so they don't appear in legend
-  attr(p, "reference_shapes") <- stats::setNames(
-    rep(NA, length(reference_threshold)),
-    ref_labels
-  )
-
-  return(p)
+  p
 }
 
 
@@ -242,16 +224,9 @@ add_secondary_data <- function(
         x = .data$time,
         y = inv_scale_function(.data[[y_data]], scale, shift),
         group = .data$grouping,
-        color = .data$grouping,
-        shape = .data$grouping
+        color = .data$grouping
       )
     )
-
-  secondary_groups <- unique(secondary_data$grouping)
-  attr(p, "secondary_shapes") <- stats::setNames(
-    rep(1, length(secondary_groups)),
-    secondary_groups
-  )
 
   p <- p +
     ggplot2::scale_y_continuous(
@@ -274,222 +249,22 @@ inv_scale_function <- function(x, scale, shift) {
   return((x + shift) / scale)
 }
 
-update_ribbon_alpha <- function(p, alpha = NULL) {
-  if (!is.null(alpha)) {
-    for (i in seq_along(p$layers)) {
-      if (inherits(p$layers[[i]]$geom, "GeomRibbon")) {
-        p$layers[[i]]$aes_params$alpha <- alpha
-      }
-    }
-
-    # Also override legend display for fill transparency
-    p <- p +
-      ggplot2::guides(
-        fill = ggplot2::guide_legend(override.aes = list(alpha = alpha))
-      )
-  }
-
-  return(p)
-}
-
-get_color_groups <- function(p) {
-  extract_groups(p, "colour")
-}
-
-get_fill_groups <- function(p) {
-  extract_groups(p, "fill")
-}
-
-get_shape_groups <- function(p) {
-  extract_groups(p, "shape")
-}
-
-get_linetype_groups <- function(p) {
-  extract_groups(p, "linetype")
-}
-
-extract_groups <- function(p, aesthetic) {
-  all_groups <- c()
-
-  # global mappings
-  if (!is.null(p$mapping[[aesthetic]])) {
-    groups <- extract_from_mapping(p$mapping[[aesthetic]], p$data)
-    all_groups <- c(all_groups, groups)
-  }
-
-  # layer mappings
-  for (layer in p$layers) {
-    data <- layer$data
-    if (is.null(data) || inherits(data, "waiver")) data <- p$data
-
-    if (!is.null(layer$mapping[[aesthetic]])) {
-      groups <- extract_from_mapping(layer$mapping[[aesthetic]], data)
-      all_groups <- c(all_groups, groups)
-    }
-  }
-
-  unique(all_groups)
-}
-
-extract_from_mapping <- function(mapping_entry, data) {
-  var <- rlang::as_label(mapping_entry)
-  if (startsWith(var, ".data$")) {
-    var <- sub("^\\.data\\$", "", var)
-  }
-  if (var %in% names(data)) {
-    values <- data[[var]]
-    # Honor factor level order (dropping any unused levels); fall back to
-    # appearance order for non-factor columns.
-    if (is.factor(values)) {
-      return(intersect(levels(values), as.character(values)))
-    }
-    return(unique(as.character(values)))
-  }
-  return(NULL)
-}
-
-
-get_current_colors <- function(p) {
-  built <- ggplot2::ggplot_build(p)
-
-  color_mapping <- list()
-
-  for (i in seq_along(built$data)) {
-    layer_data <- built$data[[i]]
-    if ("colour" %in% names(layer_data) && "group" %in% names(layer_data)) {
-      unique_pairs <- unique(layer_data[, c("colour", "group")])
-
-      if (!is.null(built$layout$panel_scales_y[[1]]$range$range)) {
-        for (j in seq_len(nrow(unique_pairs))) {
-          color_mapping[[as.character(unique_pairs$group[
-            j
-          ])]] <- unique_pairs$colour[j]
-        }
-      }
-    }
-  }
-
-  return(color_mapping)
-}
-
-make_default_palette <- function(aesthetic, groups) {
-  if (length(groups) == 0) return(character(0))
-
-  switch(
-    aesthetic,
-    "shape" = {
-      shape_val <- 16 # solid circle
-      vals <- rep(shape_val, length(groups))
-      names(vals) <- groups
-      vals
-    },
-    "color" = {
-      # Filter out reference groups to avoid affecting data group colors
-      data_groups <- groups[!grepl("^Reference ", groups)]
-      if (length(data_groups) > 0) {
-        # Generate palette based only on data groups
-        data_vals <- scales::hue_pal()(length(data_groups))
-        names(data_vals) <- data_groups
-
-        # Add any remaining groups (references) with default colors
-        remaining_groups <- setdiff(groups, data_groups)
-        if (length(remaining_groups) > 0) {
-          remaining_vals <- rep("black", length(remaining_groups))
-          names(remaining_vals) <- remaining_groups
-          vals <- c(data_vals, remaining_vals)
-        } else {
-          vals <- data_vals
-        }
-      } else {
-        vals <- scales::hue_pal()(length(groups))
-        names(vals) <- groups
-      }
-      vals
-    },
-    "fill" = {
-      vals <- scales::hue_pal()(length(groups)) # <- restore hue palette
-      names(vals) <- groups
-      vals
-    },
-    "linetype" = {
-      linetype_val <- "solid" # default linetype
-      vals <- rep(linetype_val, length(groups))
-      names(vals) <- groups
-      vals
-    },
-    character(0)
-  )
-}
-
-apply_manual_scale <- function(
-  p,
-  aesthetic,
-  groups,
-  default_map = NULL,
-  user_values = NULL,
-  user_labels = NULL,
-  scale_fn = NULL,
-  alpha = NULL
+combine_panels <- function(
+  plots,
+  nrow = NULL,
+  ncol = NULL,
+  legend_position = "right",
+  title = NULL
 ) {
-  # Skip if nothing to map
-  if (length(groups) == 0 && is.null(user_values)) return(p)
-
-  # Use correct zero-length vector type
-  default_map <- default_map %||%
-    switch(
-      aesthetic,
-      "shape" = integer(0),
-      character(0)
-    )
-
-  # Build unified set of all groups to account for default/user inputs
-  all_groups <- unique(c(
-    groups,
-    names(user_values %||% NULL),
-    names(default_map)
-  ))
-  all_groups <- all_groups[!is.na(all_groups)]
-
-  # Default palettes
-  default_palette <- make_default_palette(aesthetic, groups)
-
-  # Merge default, then user overrides
-  final_map <- default_palette
-  if (!is.null(default_map)) final_map[names(default_map)] <- default_map
-  if (!is.null(user_values)) final_map[names(user_values)] <- user_values
-
-  # Labels (use list to support mixed types: strings, expressions, NA)
-  final_labels <- as.list(stats::setNames(all_groups, all_groups))
-  if (!is.null(user_labels)) {
-    overlapping <- intersect(names(user_labels), names(final_labels))
-    final_labels[overlapping] <- user_labels[overlapping]
+  combined <- patchwork::wrap_plots(
+    plots,
+    nrow = nrow,
+    ncol = ncol,
+    guides = "collect"
+  ) &
+    ggplot2::theme(legend.position = legend_position)
+  if (!is.null(title)) {
+    combined <- combined + patchwork::plot_annotation(title = title)
   }
-
-  # Drop NA-labeled groups from legend but keep their colors in the scale
-  valid_groups <- names(final_labels)[!is.na(final_labels)]
-  final_labels <- final_labels[valid_groups]
-  # Keep all colors in final_map, don't filter by valid_groups
-
-  # Use master order from style_plot (colors → labels → shapes → remaining)
-  master_order <- attr(p, "master_order")
-  breaks <- intersect(master_order, names(final_labels))
-  labels <- final_labels[breaks]
-  # Keep all values in final_map for aesthetic consistency (like colors)
-
-  # Apply the scale
-  if (!is.null(scale_fn)) {
-    p <- p +
-      suppressWarnings(scale_fn(
-        values = final_map,
-        breaks = breaks,
-        labels = labels
-      ))
-  }
-
-  # Optional alpha control
-  if (!is.null(alpha) && aesthetic == "fill") {
-    p <- update_ribbon_alpha(p, alpha)
-  }
-
-  return(p)
+  combined
 }

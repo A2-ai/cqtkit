@@ -492,23 +492,22 @@ compute_fit_results <- function(
   required_cols <- unlist(lapply(c(dv, conc, time, trt), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
-  fit_results_df <- tibble::tibble(
-    dv = data |> dplyr::pull(!!dv),
-    conc = data |> dplyr::pull(!!conc),
-    time = data |> dplyr::pull(!!time),
-    PRED = stats::fitted(fit, level = 0),
-    IPRED = stats::fitted(fit, level = 1),
-    RES = stats::residuals(fit, level = 0),
-    IRES = stats::residuals(fit, level = 1),
-    WRES = stats::residuals(fit, level = 0, type = "pearson"),
-    IWRES = stats::residuals(fit, level = 1, type = "pearson")
-  )
+  fit_results_df <- data |>
+    dplyr::mutate(
+      dv = !!dv,
+      conc = !!conc,
+      time = !!time,
+      PRED = stats::fitted(fit, level = 0),
+      IPRED = stats::fitted(fit, level = 1),
+      RES = stats::residuals(fit, level = 0),
+      IRES = stats::residuals(fit, level = 1),
+      WRES = stats::residuals(fit, level = 0, type = "pearson"),
+      IWRES = stats::residuals(fit, level = 1, type = "pearson")
+    )
   if (!rlang::quo_is_null(trt)) {
-    fit_results_df <- fit_results_df |>
-      dplyr::mutate(TRTG = data |> dplyr::pull(!!trt))
+    fit_results_df <- fit_results_df |> dplyr::mutate(TRTG = !!trt)
   } else {
-    fit_results_df <- fit_results_df |>
-      dplyr::mutate(TRTG = "")
+    fit_results_df <- fit_results_df |> dplyr::mutate(TRTG = "")
   }
   return(fit_results_df)
 }

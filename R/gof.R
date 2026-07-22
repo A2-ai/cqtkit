@@ -87,31 +87,27 @@ gof_plots <- function(
       y = .data$dv,
     )) +
     ggplot2::geom_point(
-      ggplot2::aes(
-        color = .data$.trt_group,
-        shape = .data$.trt_group
-      )
+      ggplot2::aes(color = .data$.trt_group)
     ) +
-    ggplot2::theme_bw() +
-    ggplot2::geom_abline(slope = 1, color = "black") +
+    ggplot2::geom_abline(slope = 1, color = "black") |>
+      ggstylekit::series_layer(name = "identity") +
     ggplot2::geom_smooth(
       method = "loess",
       span = 0.99,
       color = "red",
       formula = y ~ x,
       se = FALSE
-    ) +
+    ) |>
+      ggstylekit::series_layer(name = "loess") +
     ggplot2::labs(
       x = bquote("Predicted " ~ .(dv_label)),
       y = bquote("Observed " ~ .(dv_label))
     ) +
-    ggplot2::theme(aspect.ratio = 1) +
     ggplot2::coord_equal(xlim = p1_axis_limits, ylim = p1_axis_limits)
 
   if (is.null(style)) style <- list()
-  style$legend <- style$legend %||% "Treatment Group"
 
-  p1 <- do.call(style_plot, c(list(p = p1), style))
+  p1 <- cqtkit_style_plot(p1, style, theme = cqtkit_square_theme())
 
   #qq plot
   p2_all_values <- c(fit_results_df$IWRES)
@@ -120,17 +116,15 @@ gof_plots <- function(
   p2 <- fit_results_df |>
     ggplot2::ggplot(ggplot2::aes(
       sample = .data$IWRES,
-      shape = .data$.trt_group,
       color = .data$.trt_group
     )) +
     ggplot2::stat_qq() +
-    ggplot2::theme_bw() +
     ggplot2::labs(x = "Theoretical Quantiles", y = "Standardized Residuals") +
-    ggplot2::theme(aspect.ratio = 1) +
-    ggplot2::geom_abline(slope = 1, color = "black") +
+    ggplot2::geom_abline(slope = 1, color = "black") |>
+      ggstylekit::series_layer(name = "identity") +
     ggplot2::coord_equal(xlim = p2_axis_limits, ylim = p2_axis_limits)
 
-  p2 <- do.call(style_plot, c(list(p = p2), style))
+  p2 <- cqtkit_style_plot(p2, style, theme = cqtkit_square_theme())
 
   #residuals vs concentration
   p3 <- fit_results_df |>
@@ -140,22 +134,18 @@ gof_plots <- function(
     ))
 
   p3 <- p3 +
-    ggplot2::geom_point(ggplot2::aes(
-      shape = .data$.trt_group,
-      color = .data$.trt_group
-    )) +
+    ggplot2::geom_point(ggplot2::aes(color = .data$.trt_group)) +
     ggplot2::geom_smooth(
       method = "loess",
       span = 0.99,
       color = "red",
       formula = y ~ x,
       se = FALSE
-    ) +
-    ggplot2::theme_bw() +
-    ggplot2::labs(x = conc_xlabel, y = "Standardized Residuals") +
-    ggplot2::theme(aspect.ratio = 1)
+    ) |>
+      ggstylekit::series_layer(name = "loess") +
+    ggplot2::labs(x = conc_xlabel, y = "Standardized Residuals")
 
-  p3 <- do.call(style_plot, c(list(p = p3), style))
+  p3 <- cqtkit_style_plot(p3, style, theme = cqtkit_square_theme())
 
   p4 <- fit_results_df |>
     ggplot2::ggplot(ggplot2::aes(x = .data$IWRES)) +
@@ -175,20 +165,13 @@ gof_plots <- function(
     ggplot2::theme_bw() +
     ggplot2::theme(aspect.ratio = 1)
 
-  .p <- ggpubr::ggarrange(
-    p1,
-    p2,
-    p3,
-    p4,
+  .p <- combine_panels(
+    list(p1, p2, p3, p4),
     nrow = 2,
     ncol = 2,
-    common.legend = TRUE,
-    legend = legend_location
+    legend_position = legend_location,
+    title = style$title
   )
-
-  if (!is.null(style$title)) {
-    .p <- ggpubr::annotate_figure(.p, top = style$title)
-  }
 
   return(.p)
 }
@@ -279,39 +262,31 @@ gof_concordance_plots <- function(
       ggplot2::ggplot(
         ggplot2::aes(x = .data[[xdata[[i]]]], y = .data$dv)
       ) +
-      ggplot2::geom_point(ggplot2::aes(
-        color = .data$.trt_group,
-        shape = .data$.trt_group
-      )) +
-      ggplot2::theme_bw() +
-      ggplot2::theme(aspect.ratio = 1) +
-      ggplot2::geom_abline(slope = 1) +
+      ggplot2::geom_point(ggplot2::aes(color = .data$.trt_group)) +
+      ggplot2::geom_abline(slope = 1) |>
+        ggstylekit::series_layer(name = "identity") +
       ggplot2::geom_smooth(
         method = "lm",
         se = FALSE,
         formula = y ~ x,
         color = "red",
         linetype = "dashed"
-      )
+      ) |>
+        ggstylekit::series_layer(name = "regression")
 
     this_style <- style
     this_style$xlabel <- this_style$xlabel %||% xlabels[[i]]
     this_style$ylabel <- this_style$ylabel %||%
       bquote("Observed  " ~ .(dv_label))
-    this_style$legend <- this_style$legend %||% "Treatment Group"
 
-    .p <- do.call(style_plot, c(list(p = .p), this_style))
+    .p <- cqtkit_style_plot(.p, this_style, theme = cqtkit_square_theme())
   })
 
-  .p <- ggpubr::ggarrange(
-    plotlist = plots,
-    common.legend = TRUE,
-    legend = legend_location
+  .p <- combine_panels(
+    plots,
+    legend_position = legend_location,
+    title = style$title
   )
-
-  if (!is.null(style$title)) {
-    .p <- ggpubr::annotate_figure(.p, top = style$title)
-  }
 
   return(.p)
 }
@@ -408,11 +383,7 @@ gof_residuals_plots <- function(
       ggplot2::ggplot(
         ggplot2::aes(x = .data[[xdata[[i]]]], y = .data[[ydata[[i]]]])
       ) +
-      ggplot2::geom_point(ggplot2::aes(
-        color = .data$.trt_group,
-        shape = .data$.trt_group
-      )) +
-      ggplot2::theme_bw()
+      ggplot2::geom_point(ggplot2::aes(color = .data$.trt_group))
 
     if (!is.null(residual_references)) {
       .p <- add_horizontal_references(.p, residual_references)
@@ -421,28 +392,17 @@ gof_residuals_plots <- function(
     this_style <- style
     this_style$xlabel <- this_style$xlabel %||% xlabel[[i]]
     this_style$ylabel <- this_style$ylabel %||% ydata[[i]]
-    this_style$legend <- this_style$legend %||% "Treatment Group"
 
-    .p <- do.call(style_plot, c(list(p = .p), this_style))
+    .p <- cqtkit_style_plot(.p, this_style)
   })
 
   # Arrange plots
-  if (!rlang::quo_is_null(trt)) {
-    .p <- ggpubr::ggarrange(
-      plotlist = plots,
-      common.legend = TRUE,
-      legend = legend_location
-    )
-  } else {
-    .p <- ggpubr::ggarrange(
-      plotlist = plots,
-      common.legend = TRUE,
-      legend = "none"
-    )
-  }
-
-  if (!is.null(style$title))
-    .p <- ggpubr::annotate_figure(.p, top = style$title)
+  legend_pos <- if (!rlang::quo_is_null(trt)) legend_location else "none"
+  .p <- combine_panels(
+    plots,
+    legend_position = legend_pos,
+    title = style$title
+  )
 
   return(.p)
 }
@@ -521,41 +481,27 @@ gof_qq_plots <- function(
       ggplot2::ggplot(
         ggplot2::aes(sample = .data[[r]])
       ) +
-      ggplot2::stat_qq(ggplot2::aes(
-        color = .data$.trt_group,
-        shape = .data$.trt_group
-      )) +
-      ggplot2::geom_abline(slope = 1, linetype = "dashed") +
-      ggplot2::theme_bw()
+      ggplot2::stat_qq(ggplot2::aes(color = .data$.trt_group)) +
+      ggplot2::geom_abline(slope = 1, linetype = "dashed") |>
+        ggstylekit::series_layer(name = "identity")
 
     this_style <- style
-    this_style$legend <- this_style$legend %||% "Treatment Group"
     this_style$xlabel <- this_style$xlabel %||% "Theoretical Quantiles"
     this_style$ylabel <- this_style$ylabel %||% paste0("Quantiles of ", r)
     this_style$xlims <- this_style$xlims %||% axis_limits
     this_style$ylims <- this_style$ylims %||% axis_limits
 
-    .qqp <- do.call(style_plot, c(list(p = .qqp), this_style))
+    .qqp <- cqtkit_style_plot(.qqp, this_style)
 
     plots[[r]] <- .qqp
   }
 
-  if (!rlang::quo_is_null(trt)) {
-    .p <- ggpubr::ggarrange(
-      plotlist = plots,
-      common.legend = TRUE,
-      legend = legend_location
-    )
-  } else {
-    .p <- ggpubr::ggarrange(
-      plotlist = plots,
-      common.legend = TRUE,
-      legend = "none"
-    )
-  }
-
-  if (!is.null(style$title))
-    .p <- ggpubr::annotate_figure(.p, top = style$title)
+  legend_pos <- if (!rlang::quo_is_null(trt)) legend_location else "none"
+  .p <- combine_panels(
+    plots,
+    legend_position = legend_pos,
+    title = style$title
+  )
   return(.p)
 }
 
@@ -636,8 +582,7 @@ gof_residuals_time_boxplots <- function(
           x = as.factor(.data$time),
           y = .data[[ydata[[i]]]]
         )
-      ) +
-      ggplot2::theme_bw()
+      )
 
     if (!rlang::quo_is_null(trt)) {
       .rbp <- .rbp +
@@ -651,38 +596,31 @@ gof_residuals_time_boxplots <- function(
       .rbp <- add_horizontal_references(.rbp, residual_references)
     }
 
-    this_style <- style
-    this_style$xlabel <- this_style$xlabel %||%
-      "Nominal Time Since Last Dose (h)"
-    this_style$ylabel <- this_style$ylabel %||% ydata[[i]]
-    this_style$fill_legend <- this_style$legend %||% "Treatment Group"
-    this_style$legend <- ""
-    this_style$color_order <- this_style$color_order %||% 2
-    this_style$fill_order <- this_style$fill_order %||% 1
-
-    .rbp <- do.call(style_plot, c(list(p = .rbp), this_style))
+    .rbp <- cqtkit_style_plot(
+      .rbp,
+      style,
+      xlabel = "Nominal Time Since Last Dose (h)",
+      ylabel = ydata[[i]],
+      legends = list(
+        ggstylekit::legend_spec(
+          channel = "fill",
+          title = "Treatment Group",
+          order = 1
+        ),
+        ggstylekit::legend_spec(channel = "color", title = "", order = 2)
+      )
+    )
 
     time_plots[[i]] <- .rbp
   }
 
-  if (!rlang::quo_is_null(trt)) {
-    .p <- ggpubr::ggarrange(
-      plotlist = time_plots,
-      ncol = 1,
-      common.legend = TRUE,
-      legend = legend_location
-    )
-  } else {
-    .p <- ggpubr::ggarrange(
-      plotlist = time_plots,
-      ncol = 1,
-      common.legend = TRUE,
-      legend = "none"
-    )
-  }
-
-  if (!is.null(style$title))
-    .p <- ggpubr::annotate_figure(.p, top = style$title)
+  legend_pos <- if (!rlang::quo_is_null(trt)) legend_location else "none"
+  .p <- combine_panels(
+    time_plots,
+    ncol = 1,
+    legend_position = legend_pos,
+    title = style$title
+  )
 
   return(.p)
 }
@@ -762,36 +700,36 @@ gof_residuals_trt_boxplots <- function(
           ggplot2::aes(y = .data[[ydata[[i]]]])
         }
       ) +
-      ggplot2::geom_boxplot() +
-      ggplot2::theme_bw()
+      ggplot2::geom_boxplot()
 
     if (!is.null(residual_references)) {
       .rbpt <- add_horizontal_references(.rbpt, residual_references)
     }
 
-    this_style <- style
-    this_style$xlabel <- this_style$xlabel %||% "Treatment Group"
-    this_style$ylabel <- this_style$ylabel %||% ydata[[i]]
-    this_style$fill_legend <- this_style$fill_legend %||% "Treatment Group"
-    this_style$legend <- this_style$legend %||% ""
-    this_style$color_order <- this_style$color_order %||% 2
-    this_style$fill_order <- this_style$fill_order %||% 1
-
-    .rbpt <- do.call(style_plot, c(list(p = .rbpt), this_style))
+    .rbpt <- cqtkit_style_plot(
+      .rbpt,
+      style,
+      xlabel = "Treatment Group",
+      ylabel = ydata[[i]],
+      legends = list(
+        ggstylekit::legend_spec(
+          channel = "fill",
+          title = "Treatment Group",
+          order = 1
+        ),
+        ggstylekit::legend_spec(channel = "color", title = "", order = 2)
+      )
+    )
 
     trtg_plots[[i]] <- .rbpt
   }
 
-  trt_plot <- ggpubr::ggarrange(
-    plotlist = trtg_plots,
+  trt_plot <- combine_panels(
+    trtg_plots,
     ncol = 1,
-    common.legend = TRUE,
-    legend = legend_location
+    legend_position = legend_location,
+    title = style$title
   )
-
-  if (!is.null(style$title)) {
-    trt_plot <- ggpubr::annotate_figure(trt_plot, top = style$title)
-  }
 
   return(trt_plot)
 }
@@ -921,10 +859,7 @@ gof_vpc_plot <- function(
 
   .p <- ggplot2::ggplot(data, ggplot2::aes(x = !!xdata, y = !!dv)) +
     ggplot2::geom_point(
-      ggplot2::aes(
-        color = .data$.group,
-        shape = .data$.group
-      ),
+      ggplot2::aes(color = .data$.group)
     ) +
     ggplot2::geom_ribbon(
       data = stat_cs_long,
@@ -943,32 +878,37 @@ gof_vpc_plot <- function(
         ggplot2::aes(
           x = .data$xdata,
           y = .data$ydata,
-          color = .data$.group,
-          shape = .data$.group
+          color = .data$.group
         )
       )
-    ) +
-
-    ggplot2::theme_bw()
-
-  # Apply styling
-  if (is.null(style)) style <- list()
-  style$xlabel <- style$xlabel %||% "Concentration (ng/mL)"
-  style$ylabel <- style$ylabel %||% bquote(Delta ~ "QTc (ms)")
-  style$fill_legend <- style$fill_legend %||%
-    paste0(conf_int * 100, "% Confidence Intervals")
-  style$legend <- style$legend %||% "Observations"
-  style$colors <- style$colors %||%
-    c(
-      "Observations" = "grey",
-      "95th percentile" = "darkseagreen",
-      "Median" = "cornflowerblue",
-      "5th percentile" = "darkseagreen"
     )
-  style$color_order <- style$color_order %||% 1
-  style$shape_order <- style$shape_order %||% 1
-  style$fill_order <- style$fill_order %||% 2
-  style$fill_alpha <- style$fill_alpha %||% 0.5
-  .p <- do.call(style_plot, c(list(p = .p), style))
+
+  vpc_colors <- c(
+    "Observations" = "grey",
+    "95th percentile" = "darkseagreen",
+    "Median" = "cornflowerblue",
+    "5th percentile" = "darkseagreen"
+  )
+  .p <- cqtkit_style_plot(
+    .p,
+    style,
+    xlabel = "Concentration (ng/mL)",
+    ylabel = bquote(Delta ~ "QTc (ms)"),
+    fill_alpha = 0.5,
+    colors = vpc_colors,
+    fill = vpc_colors,
+    legends = list(
+      ggstylekit::legend_spec(
+        channel = "color",
+        title = "Observations",
+        order = 1
+      ),
+      ggstylekit::legend_spec(
+        channel = "fill",
+        title = paste0(conf_int * 100, "% Confidence Intervals"),
+        order = 2
+      )
+    )
+  )
   return(.p)
 }

@@ -62,11 +62,7 @@ eda_qt_rr_plot <- function(
 
   qt_rr_plot <- plot_data |>
     ggplot2::ggplot(ggplot2::aes(x = !!rr, y = !!qt)) +
-    ggplot2::geom_point(ggplot2::aes(
-      color = .data$.trt_group,
-      shape = .data$.trt_group
-    )) +
-    ggplot2::theme_bw()
+    ggplot2::geom_point(ggplot2::aes(color = .data$.trt_group))
 
   if (model_type == "lm" && show_model_results) {
     lm_results <- compute_lm_fit_df(
@@ -153,12 +149,12 @@ eda_qt_rr_plot <- function(
       ggplot2::labs(caption = label)
   }
 
-  if (is.null(style)) style <- list()
-  style$xlabel <- style$xlabel %||% "RR (ms)"
-  style$ylabel <- style$ylabel %||% "QT (ms)"
-  style$legend <- style$legend %||% "Treatment Group"
-
-  qt_rr_plot <- do.call(style_plot, c(list(p = qt_rr_plot), style))
+  qt_rr_plot <- cqtkit_style_plot(
+    qt_rr_plot,
+    style,
+    xlabel = "RR (ms)",
+    ylabel = "QT (ms)"
+  )
   return(qt_rr_plot)
 }
 
@@ -267,16 +263,8 @@ eda_qtc_comparison_plot <- function(
     return(p)
   })
 
-  if (rlang::quo_is_null(trt)) {
-    ggpubr::ggarrange(plotlist = plots, ncol = 1, legend = "none")
-  } else {
-    ggpubr::ggarrange(
-      plotlist = plots,
-      ncol = 1,
-      common.legend = TRUE,
-      legend = legend_location
-    )
-  }
+  legend_pos <- if (rlang::quo_is_null(trt)) "none" else legend_location
+  combine_panels(plots, ncol = 1, legend_position = legend_pos)
 }
 
 #' EDA Quantiles Plot
@@ -368,13 +356,8 @@ eda_quantiles_plot <- function(
   }
 
   p <- p +
-      ggplot2::geom_point(
-      ggplot2::aes(
-        shape = .data$.trt_group
-      )
-    ) +
-    ggplot2::geom_smooth(method = "lm", formula = y ~ x, level = conf_int) +
-    ggplot2::theme_bw()
+    ggplot2::geom_point() +
+    ggplot2::geom_smooth(method = "lm", formula = y ~ x, level = conf_int)
 
 
 
@@ -392,10 +375,7 @@ eda_quantiles_plot <- function(
       caption = caption
     )
 
-  if (is.null(style)) style <- list()
-  style$legend <- style$legend %||% "Treatment Group"
-
-  p <- do.call(style_plot, c(list(p = p), style))
+  p <- cqtkit_style_plot(p, style)
   return(p)
 }
 
@@ -447,31 +427,20 @@ eda_scatter_with_regressions <- function(
   required_cols <- unlist(lapply(c(ydata, xdata, trt), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
-  dqtcf_conc_df <- tibble::tibble(
-    ydata = data |> dplyr::pull(!!ydata),
-    xdata = data |> dplyr::pull(!!xdata)
-  )
-
-  if (!rlang::quo_is_null(trt)) {
-    dqtcf_conc_df$trt <- data |> dplyr::pull(!!trt)
+  plot_data <- data
+  plot_data$.trt_group <- if (!rlang::quo_is_null(trt)) {
+    as.factor(rlang::eval_tidy(trt, data))
   } else {
-    dqtcf_conc_df$trt <- as.factor("Treatment")
+    as.factor("Treatment")
   }
 
-  p <- dqtcf_conc_df |>
+  p <- plot_data |>
     ggplot2::ggplot(
-      ggplot2::aes(
-        x = .data$xdata,
-        y = .data$ydata,
-      )
+      ggplot2::aes(x = !!xdata, y = !!ydata)
     ) +
     ggplot2::geom_point(
-      ggplot2::aes(
-        color = .data$trt,
-        shape = .data$trt
-      )
-    ) +
-    ggplot2::theme_bw()
+      ggplot2::aes(color = .data$.trt_group)
+    )
 
   if (loess_line) {
     p <- p +
@@ -482,8 +451,11 @@ eda_scatter_with_regressions <- function(
         formula = y ~ x,
         color = "blue",
         fill = "lightblue",
-        ggplot2::aes(linetype = "LOESS Regression"),
         linewidth = 0.5
+      ) |>
+      ggstylekit::series_layer(
+        name = "LOESS Regression",
+        legend_channel = "linetype"
       )
   }
 
@@ -491,25 +463,18 @@ eda_scatter_with_regressions <- function(
     p <- p +
       ggplot2::geom_smooth(
         method = "lm",
-        ggplot2::aes(linetype = "Linear Regression"),
         formula = y ~ x,
         color = "black",
         level = conf_int
+      ) |>
+      ggstylekit::series_layer(
+        name = "Linear Regression",
+        legend_channel = "linetype"
       )
   }
 
   # Add horizontal references
   p <- p |> add_horizontal_references(reference_threshold)
-
-  # Set linetype attribute for styling
-  linetype_values <- c()
-  if (linear_line) linetype_values["Linear Regression"] <- "dashed"
-  if (loess_line) linetype_values["LOESS Regression"] <- "dashed"
-
-  if (length(linetype_values) > 0) {
-    attr(p, "linetype_values") <- linetype_values
-  }
-  #https://stackoverflow.com/questions/39119917/how-to-add-a-legend-to-hline
 
   caption <- paste0("Shaded region represents ", round(conf_int * 100), "% CI")
   if (loess_line) {
@@ -520,15 +485,35 @@ eda_scatter_with_regressions <- function(
     ggplot2::labs(
       caption = caption
     )
-  if (is.null(style)) style <- list()
-  style$xlabel <- style$xlabel %||% "Concentration (ng/mL)"
-  style$ylabel <- style$ylabel %||% bquote(Delta ~ "QTc (ms)")
-  style$legend <- style$legend %||% "Treatment Group"
-  style$color_order <- style$color_order %||% 1
-  style$shape_order <- style$shape_order %||% 1
-  style$linetype_order <- style$linetype_order %||% 2
 
-  p <- do.call(style_plot, c(list(p = p), style))
+  fit_names <- c(
+    if (loess_line) "LOESS Regression",
+    if (linear_line) "Linear Regression"
+  )
+  legends <- list(
+    ggstylekit::legend_spec(
+      channel = "color",
+      title = "Treatment Group",
+      order = 1
+    )
+  )
+  linetypes <- NULL
+  if (length(fit_names) > 0) {
+    linetypes <- stats::setNames(rep("dashed", length(fit_names)), fit_names)
+    legends <- c(
+      legends,
+      list(ggstylekit::legend_spec(channel = "linetype", title = "", order = 2))
+    )
+  }
+
+  p <- cqtkit_style_plot(
+    p,
+    style,
+    xlabel = "Concentration (ng/mL)",
+    ylabel = bquote(Delta ~ "QTc (ms)"),
+    linetypes = linetypes,
+    legends = legends
+  )
 
   return(p)
 }
@@ -686,8 +671,7 @@ eda_hysteresis_loop_plot <- function(
         x = .data$meanCONC,
         y = .data$meandQTC,
         color = .data$group,
-        label = .data$time,
-        shape = .data$group
+        label = .data$time
       )
     ) +
     ggplot2::geom_point() +
@@ -705,22 +689,21 @@ eda_hysteresis_loop_plot <- function(
       ggplot2::aes(label = .data$time),
       vjust = 1.5,
       size = 3
-    ) +
-    ggplot2::theme_bw()
+    )
 
-  if (is.null(style)) style <- list()
-
-  style$xlabel <- style$xlabel %||% "Mean Plasma Concentration (ng/mL)"
-  style$legend <- style$legend %||% "Dose"
-
-  if (!(is.null(reference_dose))) {
-    style$ylabel <- style$ylabel %||%
-      bquote("Mean " ~ Delta ~ Delta ~ "QTc (ms)")
+  ylabel <- if (!is.null(reference_dose)) {
+    bquote("Mean " ~ Delta ~ Delta ~ "QTc (ms)")
   } else {
-    style$ylabel <- style$ylabel %||% bquote("Mean " ~ Delta ~ "QTc (ms)")
+    bquote("Mean " ~ Delta ~ "QTc (ms)")
   }
 
-  .p <- do.call(style_plot, c(list(p = .p), style))
+  .p <- cqtkit_style_plot(
+    .p,
+    style,
+    xlabel = "Mean Plasma Concentration (ng/mL)",
+    ylabel = ylabel,
+    legends = ggstylekit::legend_spec(channel = "color", title = "Dose")
+  )
 
   if (show_hysteresis_warning) {
     .p <- .p +
@@ -876,7 +859,6 @@ eda_mean_dv_over_time <- function(
       x = .data$time,
       y = .data[[y_data]],
       color = .data$grouping,
-      shape = .data$grouping,
       group = .data$grouping
     ))
 
@@ -884,7 +866,6 @@ eda_mean_dv_over_time <- function(
 
   p <- p +
     ggplot2::geom_point() +
-    ggplot2::theme_bw() +
     ggplot2::geom_line()
 
   p <- add_error_bars_to_plot(
@@ -896,7 +877,7 @@ eda_mean_dv_over_time <- function(
   )
 
   if (is.null(style)) style <- list()
-  style$ylabel <- style$ylabel %||% bquote("Mean " ~ Delta ~ "QTc (ms)")
+  ylabel <- style$ylabel %||% bquote("Mean " ~ Delta ~ "QTc (ms)")
 
   if (!rlang::quo_is_null(sec_dv)) {
     p <- add_secondary_data(
@@ -909,17 +890,17 @@ eda_mean_dv_over_time <- function(
       scale_factor,
       shift_factor,
       sec_ylabel,
-      style$ylabel
+      ylabel
     )
   }
 
-  style$xlabel <- style$xlabel %||% "Nominal time since last dose (h)"
-  style$legend <- style$legend %||% "Legend"
-  style$color_order <- style$color_order %||% 1
-  style$shape_order <- style$shape_order %||% 1
-  style$linetype_order <- style$linetype_order %||% 2
-
-  p <- do.call(style_plot, c(list(p = p), style))
+  p <- cqtkit_style_plot(
+    p,
+    style,
+    xlabel = "Nominal time since last dose (h)",
+    ylabel = ylabel,
+    legends = ggstylekit::legend_spec(channel = "color", title = "Legend")
+  )
 
   return(p)
 }

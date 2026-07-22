@@ -177,7 +177,7 @@ NULL
 #' @rdname cqtkit-preprocessing
 NULL
 
-#' \code{cqtkit} Exploratory Data Analysis (EDA
+#' \code{cqtkit} Exploratory Data Analysis (EDA)
 #'
 #' There are several eda_ functions that generate various EDA plots for a C-QTc analysis.
 #'

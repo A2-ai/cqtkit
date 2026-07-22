@@ -113,8 +113,7 @@ predict_with_observations_plot <- function(
     ggplot2::ggplot(ggplot2::aes(
       x = .data$conc,
       y = .data$dv,
-      color = .data$group,
-      shape = .data$group
+      color = .data$group
     )) +
     ggplot2::geom_ribbon(
       data = prediction_df,
@@ -129,8 +128,7 @@ predict_with_observations_plot <- function(
     ggplot2::geom_line(
       data = prediction_df |> dplyr::select("conc", dv = "pred", "group")
     ) +
-    ggplot2::geom_point(data = observed_df) +
-    ggplot2::theme_bw()
+    ggplot2::geom_point(data = observed_df)
 
   # Styling attributes for scale functions
   attr(p, "fill_colors") <- stats::setNames("grey", ci_label)
@@ -172,25 +170,29 @@ predict_with_observations_plot <- function(
 
   p <- p + ggplot2::labs(caption = caption)
 
-  # Final styling
-  if (is.null(style)) style <- list()
-
-  style$xlabel <- style$xlabel %||% "Concentration (ng/mL)"
-  style$ylabel <- style$ylabel %||% bquote(Delta ~ "QTcF (ms)")
-  style$colors <- style$colors %||% c("Predictions" = "black")
-  style$labels <- style$labels %||%
-    c(
-      "Predictions" = "Population Predicted dQTcF (ms)",
-      "Observations" = "Observations"
+  p <- cqtkit_style_plot(
+    p,
+    style,
+    xlabel = "Concentration (ng/mL)",
+    ylabel = bquote(Delta ~ "QTcF (ms)"),
+    fill_alpha = 0.5,
+    legends = list(
+      ggstylekit::legend_spec(
+        channel = "color",
+        title = "Legend",
+        order = 1,
+        labels = list(
+          "Predictions" = bquote("Population Predicted " ~ Delta ~ "QTcF (ms)"),
+          "Observations" = "Observations"
+        )
+      ),
+      ggstylekit::legend_spec(
+        channel = "fill",
+        title = "Confidence Interval",
+        order = 2
+      )
     )
-  style$fill_alpha <- style$fill_alpha %||% 0.5
-  style$fill_legend <- style$fill_legend %||% "Confidence Interval"
-  style$legend <- style$legend %||% "Legend"
-  style$fill_order <- style$fill_order %||% 2
-  style$color_order <- style$color_order %||% 1
-  style$shape_order <- style$shape_order %||% 1 # ensures legend stays unified
-
-  p <- do.call(style_plot, c(list(p = p), style))
+  )
 
   return(p)
 }
@@ -323,8 +325,7 @@ predict_with_quantiles_plot <- function(
     ggplot2::aes(
       x = .data$xdata,
       y = .data$mean_dv,
-      color = .data$group,
-      shape = .data$group
+      color = .data$group
     )
   ) +
     ggplot2::geom_ribbon(
@@ -350,7 +351,7 @@ predict_with_quantiles_plot <- function(
     ) +
     ggplot2::geom_point(
       data = obs,
-      ggplot2::aes(shape = .data$group, color = .data$group)
+      ggplot2::aes(color = .data$group)
     )
 
   # Error bars
@@ -386,21 +387,23 @@ predict_with_quantiles_plot <- function(
   attr(p, "prediction_colors") <- stats::setNames("black", "Predictions")
 
   p <- add_horizontal_references(p, reference_threshold)
-  p <- p + ggplot2::theme_bw() + ggplot2::labs(caption = caption)
+  p <- p + ggplot2::labs(caption = caption)
 
-  # Style
-  if (is.null(style)) style <- list()
-  style$xlabel <- style$xlabel %||% "Concentration (ng/mL)"
-  style$ylabel <- style$ylabel %||% bquote(Delta ~ "QTc (ms)")
-  style$fill_alpha <- style$fill_alpha %||% 0.5
-  style$legend <- style$legend %||% "Legend"
-  style$fill_legend <- style$fill_legend %||% "Confidence Interval"
-  style$colors <- style$colors %||% c("Predictions" = "black")
-  style$color_order <- style$color_order %||% 1
-  style$shape_order <- style$shape_order %||% 1
-  style$fill_order <- style$fill_order %||% 2
-
-  p <- do.call(style_plot, c(list(p = p), style))
+  p <- cqtkit_style_plot(
+    p,
+    style,
+    xlabel = "Concentration (ng/mL)",
+    ylabel = bquote(Delta ~ "QTc (ms)"),
+    fill_alpha = 0.5,
+    legends = list(
+      ggstylekit::legend_spec(channel = "color", title = "Legend", order = 1),
+      ggstylekit::legend_spec(
+        channel = "fill",
+        title = "Confidence Interval",
+        order = 2
+      )
+    )
+  )
 
   return(p)
 }
@@ -504,8 +507,7 @@ predict_with_exposure_plot <- function(
     ggplot2::geom_line() +
     ggplot2::geom_ribbon(
       ggplot2::aes(ymin = .data$lower, ymax = .data$upper, fill = .data$fill)
-    ) +
-    ggplot2::theme_bw()
+    )
 
   attr(p, "fill_colors") <- stats::setNames("grey", ci_label)
 
@@ -550,19 +552,11 @@ predict_with_exposure_plot <- function(
       )
   }
 
-  if (is.null(style)) style <- list()
-  style$xlabel <- style$xlabel %||% "Concentration (ng/mL)"
-  style$ylabel <- style$ylabel %||%
-    if (!is.null(control_predictors)) {
-      bquote(Delta ~ Delta ~ "QTc (ms)")
-    } else {
-      bquote(Delta ~ "QTc (ms)")
-    }
-  style$fill_alpha <- style$fill_alpha %||% 0.5
-  style$fill_legend <- style$fill_legend %||% "Confidence Interval"
-  style$color_order <- style$color_order %||% 1
-  style$fill_order <- style$fill_order %||% 2
-  style$legend <- style$legend %||% "Exposure"
+  ylabel <- if (!is.null(control_predictors)) {
+    bquote(Delta ~ Delta ~ "QTc (ms)")
+  } else {
+    bquote(Delta ~ "QTc (ms)")
+  }
 
   caption <- paste0(
     "Shaded region represents ",
@@ -591,7 +585,21 @@ predict_with_exposure_plot <- function(
     }
   }
 
-  p <- do.call(style_plot, c(list(p = p), style))
+  p <- cqtkit_style_plot(
+    p,
+    style,
+    xlabel = "Concentration (ng/mL)",
+    ylabel = ylabel,
+    fill_alpha = 0.5,
+    legends = list(
+      ggstylekit::legend_spec(channel = "color", title = "Exposure", order = 1),
+      ggstylekit::legend_spec(
+        channel = "fill",
+        title = "Confidence Interval",
+        order = 2
+      )
+    )
+  )
   p <- p + ggplot2::labs(caption = caption)
 
   return(p)

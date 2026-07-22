@@ -358,206 +358,147 @@ style_plot <- function(
     stop("Must provide a ggplot object")
   }
 
-  # Unified group collection
-  color_groups <- get_color_groups(p)
-  shape_groups <- get_shape_groups(p)
-  fill_groups <- get_fill_groups(p)
-  linetype_groups <- get_linetype_groups(p)
-
-  all_groups <- unique(c(
-    color_groups,
-    shape_groups,
-    fill_groups,
-    linetype_groups
-  ))
-
-  # Create master order: user-supplied values first, then all detected
-  master_order <- c()
-  if (!is.null(labels)) master_order <- c(master_order, names(labels))
-  if (!is.null(colors)) master_order <- c(master_order, names(colors))
-  if (!is.null(shapes)) master_order <- c(master_order, names(shapes))
-
-  remaining_groups <- setdiff(all_groups, master_order)
-  master_order <- unique(c(master_order, remaining_groups))
-
-  attr(p, "master_order") <- master_order
-
-  # Color scale
-  p <- apply_manual_scale(
-    p,
-    aesthetic = "color",
-    groups = color_groups,
-    default_map = c(
-      attr(p, "reference_colors") %||% character(0),
-      attr(p, "prediction_colors") %||% character(0)
+  spec <- style_list_to_spec(
+    list(
+      title = title,
+      xlabel = xlabel,
+      ylabel = ylabel,
+      xlims = xlims,
+      ylims = ylims,
+      colors = colors,
+      labels = labels,
+      shapes = shapes,
+      legend = legend,
+      shape_legend = shape_legend,
+      color_order = color_order,
+      shape_order = shape_order,
+      linetype_order = linetype_order,
+      legend.position = legend.position,
+      legend.title.position = legend.title.position,
+      legend.title.hjust = legend.title.hjust,
+      logx = logx,
+      logy = logy,
+      fill_alpha = fill_alpha,
+      fill_legend = fill_legend,
+      fill_order = fill_order,
+      caption_hjust = caption_hjust,
+      legend_nrow = legend_nrow
     ),
-    user_values = colors,
-    user_labels = labels,
-    scale_fn = ggplot2::scale_color_manual
+    colors_default = attr(p, "prediction_colors") %||% character(0),
+    fill_default = attr(p, "fill_colors") %||% character(0),
+    shapes_default = attr(p, "secondary_shapes") %||% integer(0)
   )
 
-  # Fill scale
-  if (length(fill_groups) > 0) {
-    p <- apply_manual_scale(
-      p,
-      aesthetic = "fill",
-      groups = fill_groups,
-      default_map = attr(p, "fill_colors") %||% character(0),
-      user_values = colors,
-      user_labels = labels,
-      scale_fn = ggplot2::scale_fill_manual,
-      alpha = fill_alpha
+  ggstylekit::style_plot(p, spec)
+}
+
+style_list_to_spec <- function(
+  style,
+  colors_default = NULL,
+  fill_default = NULL,
+  shapes_default = NULL,
+  linetypes_default = NULL
+) {
+  g <- function(key) style[[key]]
+  merge_named <- function(defaults, overrides) {
+    out <- defaults
+    if (length(overrides) > 0) out[names(overrides)] <- overrides
+    if (length(out) == 0) NULL else out
+  }
+
+  colors_map <- merge_named(colors_default, g("colors"))
+  fill_map <- merge_named(fill_default, g("colors"))
+  shapes_map <- merge_named(shapes_default, g("shapes"))
+  linetypes_map <- merge_named(linetypes_default, NULL)
+
+  legends <- list()
+  add_legend <- function(channel, title = NULL, order = NULL, labels = NULL) {
+    if (is.null(title) && is.null(order) && is.null(labels)) {
+      return(invisible())
+    }
+    legends[[length(legends) + 1L]] <<- ggstylekit::legend_spec(
+      channel = channel,
+      title = title,
+      order = order,
+      labels = labels
     )
   }
-
-  # Shape scale
-  full_shape_groups <- unique(c(shape_groups, color_groups))
-  if (length(full_shape_groups) > 0) {
-    expanded_shapes <- shapes %||% integer(0)
-
-    # Fill in missing shape values
-    missing_groups <- setdiff(full_shape_groups, names(expanded_shapes))
-    if (length(missing_groups) > 0) {
-      secondary_groups <- names(attr(p, "secondary_shapes") %||% integer(0))
-
-      missing_shapes <- integer(0)
-      for (group in missing_groups) {
-        missing_shapes[group] <- if (group %in% secondary_groups) 1 else 16
-      }
-
-      expanded_shapes <- c(expanded_shapes, missing_shapes)
-    }
-
-    # Store final shape map if needed elsewhere
-    attr(p, "final_shape_map") <- expanded_shapes
-
-    p <- apply_manual_scale(
-      p,
-      aesthetic = "shape",
-      groups = full_shape_groups,
-      default_map = integer(0),
-      user_values = expanded_shapes,
-      user_labels = labels,
-      scale_fn = ggplot2::scale_shape_manual
-    )
+  add_legend(
+    "color",
+    title = g("legend"),
+    order = g("color_order"),
+    labels = g("labels")
+  )
+  add_legend(
+    "shape",
+    title = g("shape_legend"),
+    order = g("shape_order"),
+    labels = g("labels")
+  )
+  add_legend(
+    "fill",
+    title = g("fill_legend"),
+    order = g("fill_order"),
+    labels = g("labels")
+  )
+  linetype_title <- if (
+    !is.null(g("linetype_order")) || !is.null(g("legend_nrow"))
+  ) {
+    ""
   }
+  add_legend(
+    "linetype",
+    title = linetype_title,
+    order = g("linetype_order"),
+    labels = g("labels")
+  )
 
-  # Linetype scale
-  if (length(linetype_groups) > 0) {
-    p <- apply_manual_scale(
-      p,
-      aesthetic = "linetype",
-      groups = linetype_groups,
-      default_map = attr(p, "linetype_values") %||% character(0),
-      user_values = NULL,
-      user_labels = labels,
-      scale_fn = ggplot2::scale_linetype_manual
-    )
-  }
+  ggstylekit::style_spec(
+    colors = colors_map,
+    fill = fill_map,
+    shapes = shapes_map,
+    linetypes = linetypes_map,
+    title = g("title"),
+    xlabel = g("xlabel"),
+    ylabel = g("ylabel"),
+    xlims = g("xlims"),
+    ylims = g("ylims"),
+    logx = g("logx"),
+    logy = g("logy"),
+    fill_alpha = g("fill_alpha"),
+    legends = if (length(legends) > 0) legends else NULL,
+    legend.position = g("legend.position"),
+    legend.title.position = g("legend.title.position") %||% "top",
+    legend.title.hjust = g("legend.title.hjust"),
+    caption_hjust = g("caption_hjust"),
+    legend_nrow = g("legend_nrow")
+  )
+}
 
-  # Axis labels and legend titles
-  if (!is.null(legend)) {
-    p <- p + ggplot2::labs(color = legend)
+cqtkit_style_defaults <- function() {
+  ggstylekit::style_spec(
+    theme = ggplot2::theme_bw(),
+    legends = ggstylekit::legend_spec(channel = "color", title = "Treatment Group"),
+    line_linewidth = 1
+  )
+}
 
-    if (
-      length(full_shape_groups) > 0 && all(full_shape_groups %in% color_groups)
-    ) {
-      p <- p + ggplot2::labs(shape = legend)
-    }
-  }
+cqtkit_square_theme <- function() {
+  ggplot2::theme_bw() + ggplot2::theme(aspect.ratio = 1)
+}
 
-  if (!is.null(fill_legend)) p <- p + ggplot2::labs(fill = fill_legend)
-  if (!is.null(legend.position)) {
-    p <- p + ggplot2::theme(legend.position = legend.position)
-  }
-  if (!is.null(legend.title.position)) {
-    p <- p + ggplot2::theme(legend.title.position = legend.title.position)
-  }
-  if (!is.null(legend.title.hjust)) {
-    if (is.character(legend.title.hjust)) {
-      hjust_value <- switch(
-        legend.title.hjust,
-        "left" = 0,
-        "center" = 0.5,
-        "right" = 1,
-        stop(
-          "legend.title.hjust must be 'left', 'center', 'right', or a numeric value between 0 and 1"
-        )
-      )
-    } else if (is.numeric(legend.title.hjust)) {
-      hjust_value <- legend.title.hjust
-    } else {
-      stop(
-        "legend.title.hjust must be 'left', 'center', 'right', or a numeric value between 0 and 1"
-      )
-    }
-    p <- p +
-      ggplot2::theme(legend.title = ggplot2::element_text(hjust = hjust_value))
-  }
-
-  # Legend ordering
-  guide_list <- list()
-  if (!is.null(color_order) || !is.null(legend_nrow)) {
-    guide_args <- list()
-    if (!is.null(color_order)) guide_args$order <- color_order
-    if (!is.null(legend_nrow)) guide_args$nrow <- legend_nrow
-    guide_list$color <- do.call(ggplot2::guide_legend, guide_args)
-  }
-  if (!is.null(shape_order) || !is.null(legend_nrow)) {
-    guide_args <- list()
-    if (!is.null(shape_order)) guide_args$order <- shape_order
-    if (!is.null(legend_nrow)) guide_args$nrow <- legend_nrow
-    guide_list$shape <- do.call(ggplot2::guide_legend, guide_args)
-  }
-  if (!is.null(fill_order) || !is.null(legend_nrow)) {
-    guide_args <- list()
-    if (!is.null(fill_order)) guide_args$order <- fill_order
-    if (!is.null(legend_nrow)) guide_args$nrow <- legend_nrow
-    guide_list$fill <- do.call(ggplot2::guide_legend, guide_args)
-  }
-  if (!is.null(linetype_order) || !is.null(legend_nrow)) {
-    guide_args <- list(title = "")
-    if (!is.null(linetype_order)) guide_args$order <- linetype_order
-    if (!is.null(legend_nrow)) guide_args$nrow <- legend_nrow
-    guide_list$linetype <- do.call(ggplot2::guide_legend, guide_args)
-  }
-
-  if (length(guide_list) > 0) {
-    p <- p + do.call(ggplot2::guides, guide_list)
-  }
-
-  # Axes and scales
-  if (!is.null(xlims) || !is.null(ylims)) {
-    p <- p + ggplot2::coord_cartesian(xlim = xlims, ylim = ylims)
-  }
-  if (!is.null(xlabel)) p <- p + ggplot2::labs(x = xlabel)
-  if (!is.null(ylabel)) p <- p + ggplot2::labs(y = ylabel)
-  if (!is.null(title)) p <- p + ggplot2::labs(title = title)
-  if (!is.null(logx) && logx) p <- p + ggplot2::scale_x_log10()
-  if (!is.null(logy) && logy) p <- p + ggplot2::scale_y_log10()
-  if (!is.null(caption_hjust)) {
-    if (is.character(caption_hjust)) {
-      hjust_value <- switch(
-        caption_hjust,
-        "left" = 0,
-        "center" = 0.5,
-        "right" = 1,
-        stop(
-          "caption_hjust must be 'left', 'center', 'right', or a numeric value between 0 and 1"
-        )
-      )
-    } else if (is.numeric(caption_hjust)) {
-      hjust_value <- caption_hjust
-    } else {
-      stop(
-        "caption_hjust must be 'left', 'center', 'right', or a numeric value between 0 and 1"
-      )
-    }
-    p <- p +
-      ggplot2::theme(
-        plot.caption = ggplot2::element_text(hjust = hjust_value)
-      )
-  }
-
-  return(p)
+cqtkit_style_plot <- function(p, style = list(), ...) {
+  if (is.null(style)) style <- list()
+  house <- ggstylekit::with_defaults(
+    ggstylekit::style_spec(...),
+    cqtkit_style_defaults()
+  )
+  user_spec <- style_list_to_spec(
+    style,
+    colors_default = attr(p, "prediction_colors") %||% character(0),
+    fill_default = attr(p, "fill_colors") %||% character(0),
+    shapes_default = attr(p, "secondary_shapes") %||% integer(0)
+  )
+  final <- ggstylekit::with_defaults(user_spec, house)
+  ggstylekit::style_plot(p, final)
 }
