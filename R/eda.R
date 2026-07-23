@@ -12,7 +12,7 @@
 #' @param show_model_results Logical, whether to show regression slope on plot
 #' @param method Method for nlme::lme fitting (ML or REML)
 #' @param remove_rr_iiv Logical, whether to remove IIV on RR slope
-#' @param style A named list of arguments passed to style_plot()
+#' @param style A ggstylekit::style_spec() object
 #'
 #' @return A scatter plot of QT vs RR with optional regression line and slope estimate caption
 #' @export
@@ -31,7 +31,7 @@ eda_qt_rr_plot <- function(
   show_model_results = TRUE,
   method = "REML",
   remove_rr_iiv = FALSE,
-  style = list()
+  style = ggstylekit::style_spec()
 ) {
   checkmate::assertDataFrame(data)
 
@@ -176,7 +176,7 @@ eda_qt_rr_plot <- function(
 #' @param method Method for nlme::lme fitting (ML or REML)
 #' @param remove_rr_iiv Logical, whether to remove IIV on RR slope
 #' @param conf_int Numeric confidence interval level (default: 0.9)
-#' @param style A named list of arguments passed to style_plot()
+#' @param style A ggstylekit::style_spec() object
 #'
 #' @return A multi-panel plot comparing QT, QTcB, QTcF, and QTcP corrections against RR
 #' @export
@@ -210,7 +210,7 @@ eda_qtc_comparison_plot <- function(
   method = "REML",
   remove_rr_iiv = FALSE,
   conf_int = 0.90,
-  style = list()
+  style = ggstylekit::style_spec()
 ) {
   checkmate::assertDataFrame(data)
 
@@ -240,7 +240,7 @@ eda_qtc_comparison_plot <- function(
   qtcs_quos <- c(qt, qtcb, qtcf, qtcp)
   qtcs <- unlist(sapply(qtcs_quos, name_quo_if_not_null))
 
-  if (is.null(style)) style <- list()
+  if (is.null(style)) style <- ggstylekit::style_spec()
   if (is.null(style$xlabel)) style$xlabel <- "RR (ms)"
 
   plots <- lapply(qtcs, function(qtc) {
@@ -278,7 +278,7 @@ eda_qtc_comparison_plot <- function(
 #' @param plot_observations Logical, whether to include raw individual data points as background (default: FALSE)
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #' @param error_bars A string for setting which errorbars are shown, CI, SE, SD
-#' @param style A named list of arguments passed to style_plot()
+#' @param style A ggstylekit::style_spec() object
 #'
 #' @return A scatter plot of decile medians with linear regression and optional error bars
 #'
@@ -291,13 +291,13 @@ eda_qtc_comparison_plot <- function(
 #'   RR,
 #'   QTCF,
 #'   trt_col = TRTG,
-#'	 style = set_style(
-#'	  legend = "Treatment Group",
-#'	  ylims = c(300, 500),
-#'	  xlabel = "RR (ms)",
-#'	  ylabel = "QTcF (ms)",
-#'	  legend.position = "top"
-#'	 )
+#'   style = ggstylekit::style_spec(
+#'     ylims = c(300, 500),
+#'     xlabel = "RR (ms)",
+#'     ylabel = "QTcF (ms)",
+#'     legends = ggstylekit::legend_spec(channel = "color", title = "Treatment Group"),
+#'     legend.position = "top"
+#'   )
 #' )
 eda_quantiles_plot <- function(
   data,
@@ -307,7 +307,7 @@ eda_quantiles_plot <- function(
   plot_observations = FALSE,
   conf_int = 0.90,
   error_bars = "CI",
-  style = list()
+  style = ggstylekit::style_spec()
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assertNumeric(conf_int, lower = 0, upper = 1)
@@ -392,7 +392,7 @@ eda_quantiles_plot <- function(
 #' @param linear_line Logical, whether to add linear regression line
 #' @param span A fractional value for LOESS span parameter in geom_smooth if LOESS is used, default 0.99
 #' @param conf_int Numeric confidence interval level (default: 0.9)
-#' @param style A named list of arguments passed to style_plot(). Shapes are mapped to treatment groups and can be controlled via the shapes parameter in style
+#' @param style A ggstylekit::style_spec() object.
 #'
 #' @return A scatter plot with linear and/or LOESS regression lines for assessing linearity
 #' @export
@@ -415,7 +415,7 @@ eda_scatter_with_regressions <- function(
   linear_line = TRUE,
   span = 0.99,
   conf_int = 0.90,
-  style = list()
+  style = ggstylekit::style_spec()
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assertNumeric(conf_int, lower = 0, upper = 1)
@@ -536,7 +536,7 @@ eda_scatter_with_regressions <- function(
 #' @param group_col An unquoted column name for additional grouping column
 #' @param reference_dose Reference dose value for comparison calculations
 #' @param show_hysteresis_warning Logical, whether to add "Hysteresis Detected" to facet labels for affected groups
-#' @param style A named list of arguments passed to style_plot()
+#' @param style A ggstylekit::style_spec() object
 #'
 #' @return A faceted plot showing concentration vs deltaQTc trajectories over time with directional arrows
 #'
@@ -553,7 +553,7 @@ eda_scatter_with_regressions <- function(
 #'   CONC,
 #'   DOSEF,
 #'   reference_dose = "0 mg",
-#'   style = set_style(
+#'   style = ggstylekit::style_spec(
 #'     ylabel = bquote(Delta~Delta~"QTcF (ms)")
 #'   )
 #' )
@@ -566,7 +566,7 @@ eda_hysteresis_loop_plot <- function(
   group_col = NULL,
   reference_dose = NULL,
   show_hysteresis_warning = TRUE,
-  style = list()
+  style = ggstylekit::style_spec()
 ) {
   checkmate::assertDataFrame(data)
   time <- rlang::enquo(ntime_col)
@@ -733,7 +733,7 @@ eda_hysteresis_loop_plot <- function(
 #' @param shift_factor Optional additive factor for shifting secondary data
 #' @param error_bars A string for setting which errorbars are shown, CI, SE, SD
 #' @param sec_ylabel A string for secondary ylabel, default is Concentration (ng/mL)
-#' @param style A named list of arguments passed to style_plot(). Shapes are mapped to grouping variables and can be controlled via the shapes parameter in style
+#' @param style A ggstylekit::style_spec() object.
 #'
 #' @return A line plot of mean dependent variable over time with optional error bars, reference lines, and secondary axis
 #' @export
@@ -748,7 +748,7 @@ eda_hysteresis_loop_plot <- function(
 #'   group_col = TRTG,
 #'   reference_dose = "0 mg",
 #'   reference_threshold = 10,
-#'   style = set_style(ylabel = bquote('Mean '~Delta~Delta~'QTc (ms)')))
+#'   style = ggstylekit::style_spec(ylabel = bquote('Mean '~Delta~Delta~'QTc (ms)')))
 eda_mean_dv_over_time <- function(
   data,
   dv_col,
@@ -763,7 +763,7 @@ eda_mean_dv_over_time <- function(
   shift_factor = NULL,
   error_bars = "CI",
   sec_ylabel = "Concentration (ng/mL)",
-  style = list()
+  style = ggstylekit::style_spec()
 ) {
   # Check inputs
   checkmate::assertDataFrame(data)
@@ -876,7 +876,7 @@ eda_mean_dv_over_time <- function(
     conf_int
   )
 
-  if (is.null(style)) style <- list()
+  if (is.null(style)) style <- ggstylekit::style_spec()
   ylabel <- style$ylabel %||% bquote("Mean " ~ Delta ~ "QTc (ms)")
 
   if (!rlang::quo_is_null(sec_dv)) {

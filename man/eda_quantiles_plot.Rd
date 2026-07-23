@@ -12,7 +12,7 @@ eda_quantiles_plot(
   plot_observations = FALSE,
   conf_int = 0.9,
   error_bars = "CI",
-  style = list()
+  style = ggstylekit::style_spec()
 )
 }
 \arguments{
@@ -30,7 +30,7 @@ eda_quantiles_plot(
 
 \item{error_bars}{A string for setting which errorbars are shown, CI, SE, SD}
 
-\item{style}{A named list of arguments passed to style_plot()}
+\item{style}{A ggstylekit::style_spec() object}
 }
 \value{
 A scatter plot of decile medians with linear regression and optional error bars
@@ -45,12 +45,12 @@ eda_quantiles_plot(
   RR,
   QTCF,
   trt_col = TRTG,
- style = set_style(
-  legend = "Treatment Group",
-  ylims = c(300, 500),
-  xlabel = "RR (ms)",
-  ylabel = "QTcF (ms)",
-  legend.position = "top"
- )
+  style = ggstylekit::style_spec(
+    ylims = c(300, 500),
+    xlabel = "RR (ms)",
+    ylabel = "QTcF (ms)",
+    legends = ggstylekit::legend_spec(channel = "color", title = "Treatment Group"),
+    legend.position = "top"
+  )
 )
 }

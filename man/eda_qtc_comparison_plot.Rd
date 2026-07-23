@@ -19,7 +19,7 @@ eda_qtc_comparison_plot(
   method = "REML",
   remove_rr_iiv = FALSE,
   conf_int = 0.9,
-  style = list()
+  style = ggstylekit::style_spec()
 )
 }
 \arguments{
@@ -51,7 +51,7 @@ eda_qtc_comparison_plot(
 
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
 
-\item{style}{A named list of arguments passed to style_plot()}
+\item{style}{A ggstylekit::style_spec() object}
 }
 \value{
 A multi-panel plot comparing QT, QTcB, QTcF, and QTcP corrections against RR

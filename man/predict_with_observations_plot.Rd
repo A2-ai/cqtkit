@@ -17,7 +17,7 @@ predict_with_observations_plot(
   reference_threshold = c(10),
   conf_int = 0.9,
   contrast_method = c("matched", "group"),
-  style = list()
+  style = ggstylekit::style_spec()
 )
 }
 \arguments{
@@ -45,7 +45,7 @@ predict_with_observations_plot(
 
 \item{contrast_method}{A string specifying contrast method when using control_predictors: "matched" for individual ID+time matching (crossover studies), "group" for group-wise subtraction (parallel studies)}
 
-\item{style}{A named list of arguments passed to style_plot()}
+\item{style}{A ggstylekit::style_spec() object}
 }
 \value{
 A scatter plot of observations with model prediction line and confidence interval ribbon

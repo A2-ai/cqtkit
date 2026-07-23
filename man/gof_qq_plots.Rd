@@ -12,7 +12,7 @@ gof_qq_plots(
   ntime_col,
   trt_col = NULL,
   legend_location = c("top", "bottom", "left", "right", "none"),
-  style = list()
+  style = ggstylekit::style_spec()
 )
 }
 \arguments{
@@ -30,7 +30,7 @@ gof_qq_plots(
 
 \item{legend_location}{String for legend position (top, bottom, left, right)}
 
-\item{style}{A named list of arguments passed to style_plot()}
+\item{style}{A ggstylekit::style_spec() object}
 }
 \value{
 A 2-panel Q-Q plot comparing WRES and IWRES to normal distribution

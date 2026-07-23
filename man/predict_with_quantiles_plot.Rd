@@ -19,7 +19,7 @@ predict_with_quantiles_plot(
   nbins = 10,
   error_bars = "CI",
   contrast_method = c("matched", "group"),
-  style = list()
+  style = ggstylekit::style_spec()
 )
 }
 \arguments{
@@ -51,7 +51,7 @@ predict_with_quantiles_plot(
 
 \item{contrast_method}{A string specifying contrast method when using control_predictors: "matched" for individual ID+time matching (crossover studies), "group" for group-wise subtraction (parallel studies)}
 
-\item{style}{A named list of arguments passed to style_plot()}
+\item{style}{A ggstylekit::style_spec() object}
 }
 \value{
 A plot of binned observed data quantiles with model prediction line and confidence interval

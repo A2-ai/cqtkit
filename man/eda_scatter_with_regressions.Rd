@@ -14,7 +14,7 @@ eda_scatter_with_regressions(
   linear_line = TRUE,
   span = 0.99,
   conf_int = 0.9,
-  style = list()
+  style = ggstylekit::style_spec()
 )
 }
 \arguments{
@@ -36,7 +36,7 @@ eda_scatter_with_regressions(
 
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
 
-\item{style}{A named list of arguments passed to style_plot(). Shapes are mapped to treatment groups and can be controlled via the shapes parameter in style}
+\item{style}{A ggstylekit::style_spec() object.}
 }
 \value{
 A scatter plot with linear and/or LOESS regression lines for assessing linearity

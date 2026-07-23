@@ -13,7 +13,7 @@ predict_with_exposure_plot(
   reference_threshold = c(10),
   cmaxes = NULL,
   conf_int = 0.9,
-  style = list()
+  style = ggstylekit::style_spec()
 )
 }
 \arguments{
@@ -33,7 +33,7 @@ predict_with_exposure_plot(
 
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
 
-\item{style}{A named list of arguments passed to style_plot()}
+\item{style}{A ggstylekit::style_spec() object}
 }
 \value{
 A plot of model predictions with confidence interval and vertical Cmax reference lines

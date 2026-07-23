@@ -10,12 +10,12 @@ test_that("eda_qt_rr_plot with style snapshot", {
   p <- eda_qt_rr_plot(
     cqtkit_data_verapamil, RR, QT, ID, TRTG,
     model_type = "lme",
-    style = set_style(
+    style = ggstylekit::style_spec(
       title = "QT-RR Relationship",
       xlabel = "RR Interval (ms)",
       ylabel = "QT Interval (ms)",
-      legend = "Treatment",
       colors = c("Placebo" = "grey", "Verapamil HCL" = "steelblue"),
+      legends = ggstylekit::legend_spec(channel = "color", title = "Treatment"),
       legend.position = "bottom"
     )
   )
@@ -52,11 +52,11 @@ test_that("eda_quantiles_plot with style snapshot", {
   p <- eda_quantiles_plot(
     data_proc, CONC, deltaQTCF, trt_col = TRTG,
     plot_observations = TRUE,
-    style = set_style(
+    style = ggstylekit::style_spec(
       xlabel = "Concentration (ng/mL)",
       ylabel = "deltaQTcF (ms)",
       ylims = c(-40, 40),
-      legend = "Treatment",
+      legends = ggstylekit::legend_spec(channel = "color", title = "Treatment"),
       legend.position = "top"
     )
   )
@@ -92,10 +92,10 @@ test_that("eda_mean_dv_over_time with reference dose and style snapshot", {
     group_col = TRTG,
     reference_dose = "0 mg",
     reference_threshold = c(-10, 10),
-    style = set_style(
+    style = ggstylekit::style_spec(
       ylabel = bquote("Mean " ~ Delta ~ Delta ~ "QTcF (ms)"),
       xlabel = "Time (hr)",
-      legend = "Treatment",
+      legends = ggstylekit::legend_spec(channel = "color", title = "Treatment"),
       legend.position = "bottom"
     )
   )
@@ -135,18 +135,18 @@ test_that("eda_scatter_with_regressions styled snapshot", {
   p <- eda_scatter_with_regressions(
     data_proc, deltaQTCF, CONC, TRTG,
     reference_threshold = c(-10, 10),
-    style = set_style(
+    style = ggstylekit::style_spec(
       title = "Concentration-QTc Relationship",
       xlabel = "Concentration (ng/mL)",
       ylabel = "deltaQTcF (ms)",
       colors = c("Placebo" = "grey", "Verapamil HCL" = "steelblue"),
-      shapes = c("Verapamil HCL" = 17),
       legend_nrow = 1,
       legend.title.hjust = "center",
       caption_hjust = "right",
-      color_order = 1,
-      shape_order = 1,
-      linetype_order = 2
+      legends = list(
+        ggstylekit::legend_spec(channel = "color", order = 1),
+        ggstylekit::legend_spec(channel = "linetype", order = 2)
+      )
     )
   )
 
@@ -159,7 +159,7 @@ test_that("eda_quantiles_plot with log axes snapshot", {
 
   p <- eda_quantiles_plot(
     data_proc, CONC, QTCF, trt_col = TRTG,
-    style = set_style(
+    style = ggstylekit::style_spec(
       logx = TRUE,
       logy = TRUE,
       xlabel = "Concentration (ng/mL, log)",

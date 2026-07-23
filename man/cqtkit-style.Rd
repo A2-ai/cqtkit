@@ -10,8 +10,6 @@ These functions customize the style of plots
 
 \itemize{
 \item \code{\link{add_horizontal_references}} - Adds dashed horizontal reference lines to plots
-\item \code{\link{set_style}} - Creates a valid style list object to use in style_plot
-\item \code{\link{style_plot}} - Updates a ggplot with the styling provided via style
 }
 }
 

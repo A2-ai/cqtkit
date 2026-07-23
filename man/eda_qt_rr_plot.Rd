@@ -15,7 +15,7 @@ eda_qt_rr_plot(
   show_model_results = TRUE,
   method = "REML",
   remove_rr_iiv = FALSE,
-  style = list()
+  style = ggstylekit::style_spec()
 )
 }
 \arguments{
@@ -39,7 +39,7 @@ eda_qt_rr_plot(
 
 \item{remove_rr_iiv}{Logical, whether to remove IIV on RR slope}
 
-\item{style}{A named list of arguments passed to style_plot()}
+\item{style}{A ggstylekit::style_spec() object}
 }
 \value{
 A scatter plot of QT vs RR with optional regression line and slope estimate caption

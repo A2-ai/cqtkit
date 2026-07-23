@@ -14,7 +14,7 @@
 #' @param reference_threshold Optional vector of numbers to add as horizontal dashed lines
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #' @param contrast_method A string specifying contrast method when using control_predictors: "matched" for individual ID+time matching (crossover studies), "group" for group-wise subtraction (parallel studies)
-#' @param style A named list of arguments passed to style_plot()
+#' @param style A ggstylekit::style_spec() object
 #'
 #' @return A scatter plot of observations with model prediction line and confidence interval ribbon
 #' @export
@@ -57,7 +57,7 @@ predict_with_observations_plot <- function(
   reference_threshold = c(10),
   conf_int = 0.9,
   contrast_method = c("matched", "group"),
-  style = list()
+  style = ggstylekit::style_spec()
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
@@ -130,14 +130,6 @@ predict_with_observations_plot <- function(
     ) +
     ggplot2::geom_point(data = observed_df)
 
-  # Styling attributes for scale functions
-  attr(p, "fill_colors") <- stats::setNames("grey", ci_label)
-  # default open circle for line group
-  attr(p, "secondary_shapes") <- stats::setNames(1, "Predictions")
-  # default black color for predictions line
-  attr(p, "prediction_colors") <- stats::setNames("black", "Predictions")
-
-  # Add reference line(s)
   p <- add_horizontal_references(p, reference_threshold)
 
   # Caption
@@ -176,6 +168,8 @@ predict_with_observations_plot <- function(
     xlabel = "Concentration (ng/mL)",
     ylabel = bquote(Delta ~ "QTcF (ms)"),
     fill_alpha = 0.5,
+    colors = c(Predictions = "black"),
+    fill = stats::setNames("grey", ci_label),
     legends = list(
       ggstylekit::legend_spec(
         channel = "color",
@@ -216,7 +210,7 @@ predict_with_observations_plot <- function(
 #' @param nbins Number of bins for quantiles, or vector of cut points for computing average
 #' @param error_bars A string to denote which errorbars to show, CI, SE, SD or none.
 #' @param contrast_method A string specifying contrast method when using control_predictors: "matched" for individual ID+time matching (crossover studies), "group" for group-wise subtraction (parallel studies)
-#' @param style A named list of arguments passed to style_plot()
+#' @param style A ggstylekit::style_spec() object
 #'
 #' @return A plot of binned observed data quantiles with model prediction line and confidence interval
 #' @export
@@ -262,7 +256,7 @@ predict_with_quantiles_plot <- function(
   nbins = 10,
   error_bars = "CI",
   contrast_method = c("matched", "group"),
-  style = list()
+  style = ggstylekit::style_spec()
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
@@ -380,12 +374,6 @@ predict_with_quantiles_plot <- function(
     }
   }
 
-  # Add attributes for styling
-  attr(p, "fill_colors") <- stats::setNames("grey", ci_label)
-  attr(p, "secondary_shapes") <- stats::setNames(1, "Predictions")
-  # default black color for predictions line
-  attr(p, "prediction_colors") <- stats::setNames("black", "Predictions")
-
   p <- add_horizontal_references(p, reference_threshold)
   p <- p + ggplot2::labs(caption = caption)
 
@@ -395,6 +383,8 @@ predict_with_quantiles_plot <- function(
     xlabel = "Concentration (ng/mL)",
     ylabel = bquote(Delta ~ "QTc (ms)"),
     fill_alpha = 0.5,
+    colors = c(Predictions = "black"),
+    fill = stats::setNames("grey", ci_label),
     legends = list(
       ggstylekit::legend_spec(channel = "color", title = "Legend", order = 1),
       ggstylekit::legend_spec(
@@ -421,7 +411,7 @@ predict_with_quantiles_plot <- function(
 #' @param reference_threshold Optional vector of numbers to add as horizontal dashed lines
 #' @param cmaxes Optional - numeric vector of Cmax values to add as reference lines
 #' @param conf_int Numeric confidence interval level (default: 0.9)
-#' @param style A named list of arguments passed to style_plot()
+#' @param style A ggstylekit::style_spec() object
 #'
 #' @return A plot of model predictions with confidence interval and vertical Cmax reference lines
 #' @export
@@ -468,7 +458,7 @@ predict_with_exposure_plot <- function(
   reference_threshold = c(10),
   cmaxes = NULL,
   conf_int = 0.90,
-  style = list()
+  style = ggstylekit::style_spec()
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
@@ -508,8 +498,6 @@ predict_with_exposure_plot <- function(
     ggplot2::geom_ribbon(
       ggplot2::aes(ymin = .data$lower, ymax = .data$upper, fill = .data$fill)
     )
-
-  attr(p, "fill_colors") <- stats::setNames("grey", ci_label)
 
   p <- add_horizontal_references(p, reference_threshold)
 
@@ -591,6 +579,7 @@ predict_with_exposure_plot <- function(
     xlabel = "Concentration (ng/mL)",
     ylabel = ylabel,
     fill_alpha = 0.5,
+    fill = stats::setNames("grey", ci_label),
     legends = list(
       ggstylekit::legend_spec(channel = "color", title = "Exposure", order = 1),
       ggstylekit::legend_spec(

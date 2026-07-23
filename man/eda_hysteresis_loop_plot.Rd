@@ -13,7 +13,7 @@ eda_hysteresis_loop_plot(
   group_col = NULL,
   reference_dose = NULL,
   show_hysteresis_warning = TRUE,
-  style = list()
+  style = ggstylekit::style_spec()
 )
 }
 \arguments{
@@ -33,7 +33,7 @@ eda_hysteresis_loop_plot(
 
 \item{show_hysteresis_warning}{Logical, whether to add "Hysteresis Detected" to facet labels for affected groups}
 
-\item{style}{A named list of arguments passed to style_plot()}
+\item{style}{A ggstylekit::style_spec() object}
 }
 \value{
 A faceted plot showing concentration vs deltaQTc trajectories over time with directional arrows
@@ -57,7 +57,7 @@ eda_hysteresis_loop_plot(
   CONC,
   DOSEF,
   reference_dose = "0 mg",
-  style = set_style(
+  style = ggstylekit::style_spec(
     ylabel = bquote(Delta~Delta~"QTcF (ms)")
   )
 )

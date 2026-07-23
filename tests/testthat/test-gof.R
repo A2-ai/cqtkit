@@ -59,9 +59,9 @@ test_that("gof_vpc_plot snapshot", {
 test_that("gof_plots with style snapshot", {
   p <- gof_plots(
     cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG,
-    style = set_style(
+    style = ggstylekit::style_spec(
       colors = c("Placebo" = "grey", "Verapamil HCL" = "steelblue"),
-      legend = "Treatment",
+      legends = ggstylekit::legend_spec(channel = "color", title = "Treatment"),
       legend.position = "bottom"
     )
   )

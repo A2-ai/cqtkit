@@ -35,7 +35,7 @@ test_that("predict_with_observations_plot ddQTcF snapshot", {
     control_predictors = ctrl_pred,
     id_col = ID, ntime_col = NTLD, trt_col = TRTG,
     reference_threshold = c(-10, 10),
-    style = set_style(
+    style = ggstylekit::style_spec(
       ylabel = bquote(Delta ~ Delta ~ "QTcF (ms)"),
       legend.position = "bottom"
     )
@@ -72,7 +72,7 @@ test_that("predict_with_quantiles_plot ddQTcF with reference time snapshot", {
     control_predictors = ctrl_pred_ref,
     id_col = ID, ntime_col = NTLD, trt_col = TRTG,
     reference_threshold = 10,
-    style = set_style(
+    style = ggstylekit::style_spec(
       ylabel = bquote(Delta ~ Delta ~ "QTcF (ms)"),
       xlabel = "Concentration (ng/mL)"
     )
@@ -103,7 +103,7 @@ test_that("predict_with_exposure_plot ddQTcF snapshot", {
     control_predictors = ctrl_pred,
     cmaxes = pk_df[[1, "Cmax_gm"]],
     reference_threshold = c(-10, 10),
-    style = set_style(
+    style = ggstylekit::style_spec(
       ylabel = bquote(Delta ~ Delta ~ "QTcF (ms)"),
       legend.position = "bottom"
     )

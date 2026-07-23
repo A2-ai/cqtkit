@@ -11,7 +11,7 @@
 #' @param conc_xlabel A string for concentration plot xlabel
 #' @param dv_label A string of dv label (default: bquote(Delta ~ 'QTc (ms)'))
 #' @param legend_location String for legend position (top, bottom, left, right)
-#' @param style A named list of arguments passed to style_plot()
+#' @param style A ggstylekit::style_spec() object
 #'
 #' @return A 2x2 panel with concordance plots, residual distributions, Q-Q plots, and residual histograms
 #' @export
@@ -48,7 +48,7 @@ gof_plots <- function(
   conc_xlabel = "Concentration ng/mL",
   dv_label = bquote(Delta ~ "QTc (ms)"),
   legend_location = c("top", "bottom", "left", "right", "none"),
-  style = list()
+  style = ggstylekit::style_spec()
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
@@ -105,7 +105,7 @@ gof_plots <- function(
     ) +
     ggplot2::coord_equal(xlim = p1_axis_limits, ylim = p1_axis_limits)
 
-  if (is.null(style)) style <- list()
+  if (is.null(style)) style <- ggstylekit::style_spec()
 
   p1 <- cqtkit_style_plot(p1, style, theme = cqtkit_square_theme())
 
@@ -188,7 +188,7 @@ gof_plots <- function(
 #' @param trt_col An unquoted column name for treatment group"
 #' @param dv_label A string of dv label (default: bquote(Delta ~ 'QTc (ms)'))
 #' @param legend_location String for legend position (top, bottom, left, right)
-#' @param style A named list of arguments passed to style_plot()
+#' @param style A ggstylekit::style_spec() object
 #'
 #' @return A 2-panel plot comparing population (PRED) and individual (IPRED) predictions vs observed values
 #' @export
@@ -220,7 +220,7 @@ gof_concordance_plots <- function(
   trt_col = NULL,
   dv_label = bquote(Delta ~ "QTc (ms)"),
   legend_location = c("top", "bottom", "left", "right", "none"),
-  style = list()
+  style = ggstylekit::style_spec()
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
@@ -253,7 +253,7 @@ gof_concordance_plots <- function(
   all_values <- c(fit_results_df$PRED, fit_results_df$IPRED, fit_results_df$dv)
   axis_limits <- range(all_values, na.rm = TRUE)
 
-  if (is.null(style)) style <- list()
+  if (is.null(style)) style <- ggstylekit::style_spec()
   if (is.null(style$xlims)) style$xlims <- axis_limits
   if (is.null(style$ylims)) style$ylims <- axis_limits
 
@@ -305,7 +305,7 @@ gof_concordance_plots <- function(
 #' @param dv_label A string of dv label (default: bquote(Delta ~ 'QTc (ms)'))
 #' @param residual_references Numeric vector of reference residual lines to add, default -2 and 2
 #' @param legend_location String for legend position (top, bottom, left, right)
-#' @param style A named list of arguments passed to style_plot()
+#' @param style A ggstylekit::style_spec() object
 #'
 #' @return A 4-panel plot of WRES and IWRES residuals vs predicted values and concentration
 #' @export
@@ -341,7 +341,7 @@ gof_residuals_plots <- function(
   dv_label = bquote(Delta ~ "QTc (ms)"),
   residual_references = c(-2, 2),
   legend_location = c("top", "bottom", "left", "right", "none"),
-  style = list()
+  style = ggstylekit::style_spec()
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
@@ -376,7 +376,7 @@ gof_residuals_plots <- function(
     conc_xlabel
   )
 
-  if (is.null(style)) style <- list()
+  if (is.null(style)) style <- ggstylekit::style_spec()
 
   plots <- lapply(seq_along(xdata), function(i) {
     .p <- fit_results_df |>
@@ -418,7 +418,7 @@ gof_residuals_plots <- function(
 #' @param ntime_col An unquoted column name for nominal time since dose
 #' @param trt_col An unquoted column name for treatment group"
 #' @param legend_location String for legend position (top, bottom, left, right)
-#' @param style A named list of arguments passed to style_plot()
+#' @param style A ggstylekit::style_spec() object
 #'
 #' @return A 2-panel Q-Q plot comparing WRES and IWRES to normal distribution
 #' @export
@@ -445,7 +445,7 @@ gof_qq_plots <- function(
   ntime_col,
   trt_col = NULL,
   legend_location = c("top", "bottom", "left", "right", "none"),
-  style = list()
+  style = ggstylekit::style_spec()
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
@@ -471,7 +471,7 @@ gof_qq_plots <- function(
   sample_data <- list("WRES", "IWRES")
   plots <- list()
 
-  if (is.null(style)) style <- list()
+  if (is.null(style)) style <- ggstylekit::style_spec()
 
   for (r in sample_data) {
     all_values <- c(fit_results_df$WRES, fit_results_df$IWRES)
@@ -517,7 +517,7 @@ gof_qq_plots <- function(
 #' @param trt_col An unquoted column name for treatment group" will use for filling boxplots
 #' @param residual_references Numeric vector of reference residual lines to add, default -2 and 2
 #' @param legend_location String for legend position (top, bottom, left, right)
-#' @param style A named list of arguments passed to style_plot()
+#' @param style A ggstylekit::style_spec() object
 #'
 #' @return A 2-panel boxplot of WRES and IWRES residuals by nominal time
 #' @export
@@ -552,7 +552,7 @@ gof_residuals_time_boxplots <- function(
   trt_col = NULL,
   residual_references = c(-2, 2),
   legend_location = c("top", "bottom", "left", "right", "none"),
-  style = list()
+  style = ggstylekit::style_spec()
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
@@ -573,7 +573,7 @@ gof_residuals_time_boxplots <- function(
   time_plots <- list()
   ydata <- c("WRES", "IWRES")
 
-  if (is.null(style)) style <- list()
+  if (is.null(style)) style <- ggstylekit::style_spec()
 
   for (i in seq_along(ydata)) {
     .rbp <- fit_results_df |>
@@ -637,7 +637,7 @@ gof_residuals_time_boxplots <- function(
 #' @param trt_col An unquoted column name for treatment group"
 #' @param residual_references Numeric vector of reference residual lines to add, default -2 and 2
 #' @param legend_location String for legend position (top, bottom, left, right)
-#' @param style A named list of arguments passed to style_plot()
+#' @param style A ggstylekit::style_spec() object
 #'
 #' @return A 2-panel boxplot of WRES and IWRES residuals by treatment group
 #' @export
@@ -664,7 +664,7 @@ gof_residuals_trt_boxplots <- function(
   trt_col = NULL,
   residual_references = c(-2, 2),
   legend_location = c("top", "bottom", "left", "right", "none"),
-  style = list()
+  style = ggstylekit::style_spec()
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
@@ -685,7 +685,7 @@ gof_residuals_trt_boxplots <- function(
   trtg_plots <- list()
   ydata <- c("WRES", "IWRES")
 
-  if (is.null(style)) style <- list()
+  if (is.null(style)) style <- ggstylekit::style_spec()
 
   for (i in seq_along(ydata)) {
     .rbpt <- fit_results_df |>
@@ -746,7 +746,7 @@ gof_residuals_trt_boxplots <- function(
 #' @param nruns Integer number of simulations to run
 #' @param nbins Integer number of bins to break independent variable into - OR - a user specified vector for non-uniform binning
 #' @param type Integer for type parameter of stats::quantile
-#' @param style A named list of arguments passed to style_plot()
+#' @param style A ggstylekit::style_spec() object
 #'
 #' @return A visual predictive check plot with observed quantiles overlaid on simulated prediction intervals
 #' @export
@@ -775,7 +775,7 @@ gof_vpc_plot <- function(
   nruns = 500,
   nbins = 10,
   type = 2,
-  style = list()
+  style = ggstylekit::style_spec()
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))

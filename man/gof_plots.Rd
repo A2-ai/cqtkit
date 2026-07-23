@@ -14,7 +14,7 @@ gof_plots(
   conc_xlabel = "Concentration ng/mL",
   dv_label = bquote(Delta ~ "QTc (ms)"),
   legend_location = c("top", "bottom", "left", "right", "none"),
-  style = list()
+  style = ggstylekit::style_spec()
 )
 }
 \arguments{
@@ -36,7 +36,7 @@ gof_plots(
 
 \item{legend_location}{String for legend position (top, bottom, left, right)}
 
-\item{style}{A named list of arguments passed to style_plot()}
+\item{style}{A ggstylekit::style_spec() object}
 }
 \value{
 A 2x2 panel with concordance plots, residual distributions, Q-Q plots, and residual histograms

@@ -13,7 +13,7 @@ gof_residuals_trt_boxplots(
   trt_col = NULL,
   residual_references = c(-2, 2),
   legend_location = c("top", "bottom", "left", "right", "none"),
-  style = list()
+  style = ggstylekit::style_spec()
 )
 }
 \arguments{
@@ -33,7 +33,7 @@ gof_residuals_trt_boxplots(
 
 \item{legend_location}{String for legend position (top, bottom, left, right)}
 
-\item{style}{A named list of arguments passed to style_plot()}
+\item{style}{A ggstylekit::style_spec() object}
 }
 \value{
 A 2-panel boxplot of WRES and IWRES residuals by treatment group

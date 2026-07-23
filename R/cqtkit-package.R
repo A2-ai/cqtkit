@@ -124,10 +124,10 @@
 #' cqtkit also has plot manipulation functions:
 #'
 #' @section Style:
-#' These functions style a ggplot object:
+#' Plots are styled with \pkg{ggstylekit}. Pass a
+#' \code{ggstylekit::style_spec()} to any plotting function's \code{style}
+#' argument. This helper adds reference lines:
 #' \itemize{
-#'   \item \code{\link{set_style}}: Set global plot style options
-#'   \item \code{\link{style_plot}}: Apply styling to a ggplot object
 #'   \item \code{\link{add_horizontal_references}}: Add reference lines to plots
 #' }
 #'
@@ -302,8 +302,6 @@ NULL
 #' @section style:
 #' \itemize{
 #' 	\item \code{\link{add_horizontal_references}} - Adds dashed horizontal reference lines to plots
-#' 	\item \code{\link{set_style}} - Creates a valid style list object to use in style_plot
-#' 	\item \code{\link{style_plot}} - Updates a ggplot with the styling provided via style
 #' }
 #'
 #' @seealso \code{\link{cqtkit-package}}

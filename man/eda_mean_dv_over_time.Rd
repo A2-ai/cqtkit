@@ -18,7 +18,7 @@ eda_mean_dv_over_time(
   shift_factor = NULL,
   error_bars = "CI",
   sec_ylabel = "Concentration (ng/mL)",
-  style = list()
+  style = ggstylekit::style_spec()
 )
 }
 \arguments{
@@ -48,7 +48,7 @@ eda_mean_dv_over_time(
 
 \item{sec_ylabel}{A string for secondary ylabel, default is Concentration (ng/mL)}
 
-\item{style}{A named list of arguments passed to style_plot(). Shapes are mapped to grouping variables and can be controlled via the shapes parameter in style}
+\item{style}{A ggstylekit::style_spec() object.}
 }
 \value{
 A line plot of mean dependent variable over time with optional error bars, reference lines, and secondary axis
@@ -66,5 +66,5 @@ eda_mean_dv_over_time(
   group_col = TRTG,
   reference_dose = "0 mg",
   reference_threshold = 10,
-  style = set_style(ylabel = bquote('Mean '~Delta~Delta~'QTc (ms)')))
+  style = ggstylekit::style_spec(ylabel = bquote('Mean '~Delta~Delta~'QTc (ms)')))
 }
