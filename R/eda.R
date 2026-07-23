@@ -84,11 +84,13 @@ eda_qt_rr_plot <- function(
       "]"
     )
 
+    plot_data$predictions <- lm_results$intercept +
+      lm_results$slope * rlang::eval_tidy(rr, plot_data)
+
     qt_rr_plot <- qt_rr_plot +
-      ggplot2::geom_smooth(
-        method = "lm",
-        se = FALSE,
-        formula = y ~ x,
+      ggplot2::geom_line(
+        data = plot_data,
+        ggplot2::aes(y = .data$predictions),
         color = "black"
       )
   } else if ((model_type == "lme") && show_model_results) {
@@ -170,7 +172,6 @@ eda_qt_rr_plot <- function(
 #' @param qtcp_col An unquoted column name for QTc measurements
 #' @param id_col An unquoted column name for subject ID
 #' @param trt_col An unquoted column name for treatment group data
-#' @param legend_location String for legend position (top, bottom, left, right)
 #' @param model_type Lm or lme, which model to fit for showing on plot
 #' @param show_model_results Logical, whether to show regression slope on plot
 #' @param method Method for nlme::lme fitting (ML or REML)
@@ -193,8 +194,7 @@ eda_qt_rr_plot <- function(
 #'   trt_col = TRTG,
 #'   model_type = "lme",
 #'   show_model_results = TRUE,
-#'   remove_rr_iiv = TRUE,
-#'   legend_location = 'top')
+#'   remove_rr_iiv = TRUE)
 eda_qtc_comparison_plot <- function(
   data,
   rr_col,
@@ -204,7 +204,6 @@ eda_qtc_comparison_plot <- function(
   qtcp_col = NULL,
   id_col = NULL,
   trt_col = NULL,
-  legend_location = "top",
   model_type = c("lm", "lme"),
   show_model_results = TRUE,
   method = "REML",
@@ -229,10 +228,6 @@ eda_qtc_comparison_plot <- function(
     )
   }
 
-  legend_location <- match.arg(
-    legend_location,
-    c("top", "bottom", "right", "left")
-  )
   vars <- c(rr, qt, id, qtcb, qtcf, qtcp, trt)
   required_cols <- unlist(lapply(vars, name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
@@ -263,7 +258,11 @@ eda_qtc_comparison_plot <- function(
     return(p)
   })
 
-  legend_pos <- if (rlang::quo_is_null(trt)) "none" else legend_location
+  legend_pos <- if (rlang::quo_is_null(trt)) {
+    "none"
+  } else {
+    style$legend.position %||% "top"
+  }
   combine_panels(plots, ncol = 1, legend_position = legend_pos)
 }
 

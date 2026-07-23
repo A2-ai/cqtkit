@@ -12,7 +12,6 @@ gof_concordance_plots(
   ntime_col,
   trt_col = NULL,
   dv_label = bquote(Delta ~ "QTc (ms)"),
-  legend_location = c("top", "bottom", "left", "right", "none"),
   style = ggstylekit::style_spec()
 )
 }
@@ -30,8 +29,6 @@ gof_concordance_plots(
 \item{trt_col}{An unquoted column name for treatment group"}
 
 \item{dv_label}{A string of dv label (default: bquote(Delta ~ 'QTc (ms)'))}
-
-\item{legend_location}{String for legend position (top, bottom, left, right)}
 
 \item{style}{A ggstylekit::style_spec() object}
 }
@@ -54,7 +51,6 @@ fit <- fit_prespecified_model(
   TRUE
 )
 gof_concordance_plots(
-  cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG,
-  legend_location = "top"
+  cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG
 )
 }

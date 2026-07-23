@@ -13,7 +13,6 @@ gof_plots(
   trt_col = NULL,
   conc_xlabel = "Concentration ng/mL",
   dv_label = bquote(Delta ~ "QTc (ms)"),
-  legend_location = c("top", "bottom", "left", "right", "none"),
   style = ggstylekit::style_spec()
 )
 }
@@ -33,8 +32,6 @@ gof_plots(
 \item{conc_xlabel}{A string for concentration plot xlabel}
 
 \item{dv_label}{A string of dv label (default: bquote(Delta ~ 'QTc (ms)'))}
-
-\item{legend_location}{String for legend position (top, bottom, left, right)}
 
 \item{style}{A ggstylekit::style_spec() object}
 }

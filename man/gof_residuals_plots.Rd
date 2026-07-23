@@ -14,7 +14,6 @@ gof_residuals_plots(
   conc_xlabel = "Concentration (ng/mL)",
   dv_label = bquote(Delta ~ "QTc (ms)"),
   residual_references = c(-2, 2),
-  legend_location = c("top", "bottom", "left", "right", "none"),
   style = ggstylekit::style_spec()
 )
 }
@@ -36,8 +35,6 @@ gof_residuals_plots(
 \item{dv_label}{A string of dv label (default: bquote(Delta ~ 'QTc (ms)'))}
 
 \item{residual_references}{Numeric vector of reference residual lines to add, default -2 and 2}
-
-\item{legend_location}{String for legend position (top, bottom, left, right)}
 
 \item{style}{A ggstylekit::style_spec() object}
 }
@@ -65,6 +62,5 @@ gof_residuals_plots(
   deltaQTCF,
   CONC,
   NTLD,
-  TRTG,
-  legend_location = "top")
+  TRTG)
 }

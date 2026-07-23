@@ -1,0 +1,148 @@
+---
+title: "Styling plots"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Styling plots}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 6,
+  fig.height = 4
+)
+```
+
+```{r setup, message = FALSE}
+library(cqtkit)
+library(ggstylekit)
+```
+
+Every cqtkit plotting function returns a `ggplot` object and takes a
+`style` argument. Styling is handled by
+[ggstylekit](https://github.com/a2-ai/ggstylekit): pass a
+`ggstylekit::style_spec()` to control labels, limits, colors, and
+legends.
+
+## The `style` argument
+
+`style_spec()` fields cover the common adjustments. Unset fields fall
+back to cqtkit's house defaults.
+
+```{r style-basic}
+eda_qt_rr_plot(
+  cqtkit_data_verapamil, RR, QT, ID, TRTG,
+  model_type = "lm",
+  style = style_spec(
+    xlabel = "RR (ms)",
+    ylabel = "QT (ms)",
+    colors = c("Placebo" = "grey", "Verapamil HCL" = "steelblue")
+  )
+)
+```
+
+## Legends
+
+Control a legend with `legend_spec()`, naming the aesthetic `channel`
+it applies to (`"color"`, `"fill"`, `"shape"`, ...).
+
+```{r style-legend}
+eda_qt_rr_plot(
+  cqtkit_data_verapamil, RR, QT, ID, TRTG,
+  model_type = "lm",
+  style = style_spec(
+    colors = c("Placebo" = "grey", "Verapamil HCL" = "steelblue"),
+    legends = legend_spec(channel = "color", title = "Treatment"),
+    legend.position = "bottom"
+  )
+)
+```
+
+## Revealing a covariate
+
+cqtkit plots carry the full dataset, so `ggstylekit::reveal()` can map a
+covariate the plot doesn't already show onto a free aesthetic. Name a
+channel with `as`, or supply values directly.
+
+```{r reveal}
+p <- eda_qt_rr_plot(
+  cqtkit_data_verapamil, RR, QT, ID, TRTG,
+  model_type = "lm",
+  style = style_spec(
+    colors = c("Placebo" = "grey", "Verapamil HCL" = "steelblue")
+  )
+)
+
+reveal(p, SEX, as = "color", on = 'point', colors = c(F = 'pink', M = 'steelblue')) |>
+  reveal(SEX, as = 'facet')
+```
+
+## Styling model diagnostics
+
+The `style` argument works the same way on goodness-of-fit plots. Fit a
+model first, then pass a `style_spec()` to any `gof_*` function.
+
+```{r fit}
+fit <- fit_prespecified_model(
+  cqtkit_data_verapamil,
+  deltaQTCF, ID, CONC, deltaQTCFBL, TRTG, TAFD,
+  method = "REML", remove_conc_iiv = TRUE
+)
+```
+
+`gof_plots()` returns a multi-panel `patchwork`; one `style_spec()`
+applies across every panel and the legends are collected.
+
+```{r gof-plots, fig.width = 7, fig.height = 5}
+gof_plots(
+  cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG,
+  style = style_spec(
+    colors = c("Placebo" = "grey", "Verapamil HCL" = "steelblue"),
+    legends = legend_spec(channel = "color", title = "Treatment", order = 1),
+    legend.position = "bottom"
+  )
+) |>
+  reveal(SEX, as = "shapes",
+         legends = legend_spec(channel = "shape", title = "Sex", order = 2)) |>
+  reveal(SEX, as = "fill", on = "bar", fill = c(F = "pink", M = "steelblue"),
+         legends = legend_spec(channel = "fill", title = "Sex", order = 3))
+```
+
+The same `style_spec()` styles any other `gof_*` function. Concordance
+plots compare population and individual predictions:
+
+```{r gof-concordance,  fig.width = 6, fig.height = 7}
+gof_concordance_plots(
+  cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG,
+  style = style_spec(
+    colors = c("Placebo" = "grey", "Verapamil HCL" = "steelblue"),
+    legends = legend_spec(channel = "color", title = "Treatment"),
+    legend.position = "bottom",
+    facet_nrow = 2
+  )
+) |>
+  reveal(SEX, as = 'facet')
+```
+
+Residual boxplots over time map treatment to `fill`, so name that
+channel in the legend:
+
+```{r gof-resid-box, fig.width = 7, fig.height = 4}
+gof_residuals_time_boxplots(
+  cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG,
+  style = style_spec(
+    legends = legend_spec(channel = "fill", title = "Treatment"),
+    legend.position = "bottom"
+  )
+)
+```
+
+The VPC plot is a single panel:
+
+```{r gof-vpc}
+set.seed(804831)
+gof_vpc_plot(cqtkit_data_verapamil, fit, CONC, deltaQTCF, nruns = 10)
+```

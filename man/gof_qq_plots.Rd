@@ -11,7 +11,6 @@ gof_qq_plots(
   conc_col,
   ntime_col,
   trt_col = NULL,
-  legend_location = c("top", "bottom", "left", "right", "none"),
   style = ggstylekit::style_spec()
 )
 }
@@ -27,8 +26,6 @@ gof_qq_plots(
 \item{ntime_col}{An unquoted column name for nominal time since dose}
 
 \item{trt_col}{An unquoted column name for treatment group"}
-
-\item{legend_location}{String for legend position (top, bottom, left, right)}
 
 \item{style}{A ggstylekit::style_spec() object}
 }
@@ -51,5 +48,5 @@ fit <- fit_prespecified_model(
   TRUE
 )
 
-gof_qq_plots(cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG, legend_location = "top")
+gof_qq_plots(cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG)
 }

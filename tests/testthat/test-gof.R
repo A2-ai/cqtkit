@@ -11,7 +11,7 @@ test_that("gof_plots snapshot", {
 
 test_that("gof_concordance_plots snapshot", {
   p <- gof_concordance_plots(
-    cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG, legend_location = "top"
+    cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG
   )
 
   snapshot_plot(p, "gof-concordance")
@@ -19,7 +19,7 @@ test_that("gof_concordance_plots snapshot", {
 
 test_that("gof_residuals_plots snapshot", {
   p <- gof_residuals_plots(
-    cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG, legend_location = "top"
+    cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG
   )
 
   snapshot_plot(p, "gof-residuals")
@@ -27,7 +27,7 @@ test_that("gof_residuals_plots snapshot", {
 
 test_that("gof_qq_plots snapshot", {
   p <- gof_qq_plots(
-    cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG, legend_location = "top"
+    cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG
   )
 
   snapshot_plot(p, "gof-qq")
@@ -35,7 +35,7 @@ test_that("gof_qq_plots snapshot", {
 
 test_that("gof_residuals_time_boxplots snapshot", {
   p <- gof_residuals_time_boxplots(
-    cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG, legend_location = "top"
+    cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG
   )
 
   snapshot_plot(p, "gof-residuals-time-box")

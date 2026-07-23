@@ -10,7 +10,6 @@
 #' @param trt_col An unquoted column name for treatment group"
 #' @param conc_xlabel A string for concentration plot xlabel
 #' @param dv_label A string of dv label (default: bquote(Delta ~ 'QTc (ms)'))
-#' @param legend_location String for legend position (top, bottom, left, right)
 #' @param style A ggstylekit::style_spec() object
 #'
 #' @return A 2x2 panel with concordance plots, residual distributions, Q-Q plots, and residual histograms
@@ -47,13 +46,11 @@ gof_plots <- function(
   trt_col = NULL,
   conc_xlabel = "Concentration ng/mL",
   dv_label = bquote(Delta ~ "QTc (ms)"),
-  legend_location = c("top", "bottom", "left", "right", "none"),
   style = ggstylekit::style_spec()
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
 
-  legend_location <- match.arg(legend_location)
 
   dv <- rlang::enquo(dv_col)
   conc <- rlang::enquo(conc_col)
@@ -161,15 +158,15 @@ gof_plots <- function(
       color = "black"
     ) +
     ggplot2::stat_density(geom = "line", color = "red") +
-    ggplot2::labs(x = "Standardized residuals", y = "Density") +
-    ggplot2::theme_bw() +
-    ggplot2::theme(aspect.ratio = 1)
+    ggplot2::labs(x = "Standardized residuals", y = "Density")
+
+  p4 <- cqtkit_style_plot(p4, style, theme = cqtkit_square_theme())
 
   .p <- combine_panels(
     list(p1, p2, p3, p4),
     nrow = 2,
     ncol = 2,
-    legend_position = legend_location,
+    legend_position = style$legend.position %||% "top",
     title = style$title
   )
 
@@ -187,7 +184,6 @@ gof_plots <- function(
 #' @param ntime_col An unquoted column name for nominal time since dose
 #' @param trt_col An unquoted column name for treatment group"
 #' @param dv_label A string of dv label (default: bquote(Delta ~ 'QTc (ms)'))
-#' @param legend_location String for legend position (top, bottom, left, right)
 #' @param style A ggstylekit::style_spec() object
 #'
 #' @return A 2-panel plot comparing population (PRED) and individual (IPRED) predictions vs observed values
@@ -208,8 +204,7 @@ gof_plots <- function(
 #'   TRUE
 #' )
 #' gof_concordance_plots(
-#'   cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG,
-#'   legend_location = "top"
+#'   cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG
 #' )
 gof_concordance_plots <- function(
   data,
@@ -219,13 +214,11 @@ gof_concordance_plots <- function(
   ntime_col,
   trt_col = NULL,
   dv_label = bquote(Delta ~ "QTc (ms)"),
-  legend_location = c("top", "bottom", "left", "right", "none"),
   style = ggstylekit::style_spec()
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
 
-  legend_location <- match.arg(legend_location)
   dv <- rlang::enquo(dv_col)
   conc <- rlang::enquo(conc_col)
   time <- rlang::enquo(ntime_col)
@@ -284,7 +277,7 @@ gof_concordance_plots <- function(
 
   .p <- combine_panels(
     plots,
-    legend_position = legend_location,
+    legend_position = style$legend.position %||% "top",
     title = style$title
   )
 
@@ -304,7 +297,6 @@ gof_concordance_plots <- function(
 #' @param conc_xlabel A string of concentration xlabel
 #' @param dv_label A string of dv label (default: bquote(Delta ~ 'QTc (ms)'))
 #' @param residual_references Numeric vector of reference residual lines to add, default -2 and 2
-#' @param legend_location String for legend position (top, bottom, left, right)
 #' @param style A ggstylekit::style_spec() object
 #'
 #' @return A 4-panel plot of WRES and IWRES residuals vs predicted values and concentration
@@ -328,8 +320,7 @@ gof_concordance_plots <- function(
 #'   deltaQTCF,
 #'   CONC,
 #'   NTLD,
-#'   TRTG,
-#'   legend_location = "top")
+#'   TRTG)
 gof_residuals_plots <- function(
   data,
   fit,
@@ -340,14 +331,12 @@ gof_residuals_plots <- function(
   conc_xlabel = "Concentration (ng/mL)",
   dv_label = bquote(Delta ~ "QTc (ms)"),
   residual_references = c(-2, 2),
-  legend_location = c("top", "bottom", "left", "right", "none"),
   style = ggstylekit::style_spec()
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
   checkmate::assert_numeric(residual_references, null.ok = TRUE)
 
-  legend_location <- match.arg(legend_location)
 
   dv <- rlang::enquo(dv_col)
   conc <- rlang::enquo(conc_col)
@@ -397,7 +386,7 @@ gof_residuals_plots <- function(
   })
 
   # Arrange plots
-  legend_pos <- if (!rlang::quo_is_null(trt)) legend_location else "none"
+  legend_pos <- if (!rlang::quo_is_null(trt)) style$legend.position %||% "top" else "none"
   .p <- combine_panels(
     plots,
     legend_position = legend_pos,
@@ -417,7 +406,6 @@ gof_residuals_plots <- function(
 #' @param conc_col An unquoted column name for drug concentration measurements
 #' @param ntime_col An unquoted column name for nominal time since dose
 #' @param trt_col An unquoted column name for treatment group"
-#' @param legend_location String for legend position (top, bottom, left, right)
 #' @param style A ggstylekit::style_spec() object
 #'
 #' @return A 2-panel Q-Q plot comparing WRES and IWRES to normal distribution
@@ -436,7 +424,7 @@ gof_residuals_plots <- function(
 #'   TRUE
 #' )
 #'
-#' gof_qq_plots(cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG, legend_location = "top")
+#' gof_qq_plots(cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG)
 gof_qq_plots <- function(
   data,
   fit,
@@ -444,12 +432,10 @@ gof_qq_plots <- function(
   conc_col,
   ntime_col,
   trt_col = NULL,
-  legend_location = c("top", "bottom", "left", "right", "none"),
   style = ggstylekit::style_spec()
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
-  legend_location <- match.arg(legend_location)
 
   dv <- rlang::enquo(dv_col)
   conc <- rlang::enquo(conc_col)
@@ -496,7 +482,7 @@ gof_qq_plots <- function(
     plots[[r]] <- .qqp
   }
 
-  legend_pos <- if (!rlang::quo_is_null(trt)) legend_location else "none"
+  legend_pos <- if (!rlang::quo_is_null(trt)) style$legend.position %||% "top" else "none"
   .p <- combine_panels(
     plots,
     legend_position = legend_pos,
@@ -516,7 +502,6 @@ gof_qq_plots <- function(
 #' @param ntime_col An unquoted column name for nominal time since dose
 #' @param trt_col An unquoted column name for treatment group" will use for filling boxplots
 #' @param residual_references Numeric vector of reference residual lines to add, default -2 and 2
-#' @param legend_location String for legend position (top, bottom, left, right)
 #' @param style A ggstylekit::style_spec() object
 #'
 #' @return A 2-panel boxplot of WRES and IWRES residuals by nominal time
@@ -541,8 +526,7 @@ gof_qq_plots <- function(
 #'   deltaQTCF,
 #'   CONC,
 #'   NTLD,
-#'   TRTG,
-#'   legend_location = "top")
+#'   TRTG)
 gof_residuals_time_boxplots <- function(
   data,
   fit,
@@ -551,14 +535,12 @@ gof_residuals_time_boxplots <- function(
   ntime_col,
   trt_col = NULL,
   residual_references = c(-2, 2),
-  legend_location = c("top", "bottom", "left", "right", "none"),
   style = ggstylekit::style_spec()
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
   checkmate::assert_numeric(residual_references, null.ok = TRUE)
 
-  legend_location <- match.arg(legend_location)
 
   dv <- rlang::enquo(dv_col)
   conc <- rlang::enquo(conc_col)
@@ -614,7 +596,7 @@ gof_residuals_time_boxplots <- function(
     time_plots[[i]] <- .rbp
   }
 
-  legend_pos <- if (!rlang::quo_is_null(trt)) legend_location else "none"
+  legend_pos <- if (!rlang::quo_is_null(trt)) style$legend.position %||% "top" else "none"
   .p <- combine_panels(
     time_plots,
     ncol = 1,
@@ -636,7 +618,6 @@ gof_residuals_time_boxplots <- function(
 #' @param ntime_col An unquoted column name for nominal time since dose
 #' @param trt_col An unquoted column name for treatment group"
 #' @param residual_references Numeric vector of reference residual lines to add, default -2 and 2
-#' @param legend_location String for legend position (top, bottom, left, right)
 #' @param style A ggstylekit::style_spec() object
 #'
 #' @return A 2-panel boxplot of WRES and IWRES residuals by treatment group
@@ -663,14 +644,12 @@ gof_residuals_trt_boxplots <- function(
   ntime_col,
   trt_col = NULL,
   residual_references = c(-2, 2),
-  legend_location = c("top", "bottom", "left", "right", "none"),
   style = ggstylekit::style_spec()
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
   checkmate::assert_numeric(residual_references, null.ok = TRUE)
 
-  legend_location <- match.arg(legend_location)
 
   dv <- rlang::enquo(dv_col)
   conc <- rlang::enquo(conc_col)
@@ -727,7 +706,7 @@ gof_residuals_trt_boxplots <- function(
   trt_plot <- combine_panels(
     trtg_plots,
     ncol = 1,
-    legend_position = legend_location,
+    legend_position = style$legend.position %||% "top",
     title = style$title
   )
 

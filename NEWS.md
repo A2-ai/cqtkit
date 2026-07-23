@@ -1,15 +1,24 @@
 # cqtkit 1.2.0
 
 ### Breaking Changes
-* **BREAKING**: `compute_high_qtc_sub()` and `tabulate_high_qtc_sub()` have been renamed to `compute_high_qtc_obs()` and `tabulate_high_qtc_obs()` respectively, since these functions count observations (rows), not subjects.
+* Plot styling now uses **ggstylekit**. Pass a `ggstylekit::style_spec()` to any plotting function's `style` argument. `set_style()` and `style_plot()` have been removed.
+* The `legend_location` argument has been removed from the `eda_*` and `gof_*` plotting functions. Set the legend position with `legend.position` in the `style` instead.
+* `preprocess()` now takes `(data, bl_data, by)`, joining baseline values from a separate baseline dataset instead of computing them from an `id_col`.
+* `compute_delta_hrblm()`, `compute_delta_qtcbblm()`, and `compute_delta_qtcfblm()` now expect the baseline-mean column to already exist on the data. Add it first with the new `compute_hrblm()`, `compute_qtcbblm()`, or `compute_qtcfblm()`.
+* `compute_high_qtc_sub()` and `tabulate_high_qtc_sub()` have been renamed to `compute_high_qtc_obs()` and `tabulate_high_qtc_obs()` respectively, since these functions count observations (rows), not subjects.
 * New `compute_high_qtc_sub()` and `tabulate_high_qtc_sub()` functions now count distinct subjects with at least one observation exceeding thresholds. These require an `id_col` argument.
 
 ### Enhanced
 * All high QTc functions now support configurable `qtc_thresholds` and `dqtc_thresholds` arguments (defaults: `c(450, 480, 500)` and `c(30, 60)`).
+* New `compute_hr()` derives `HR`/`HRBL` from RR.
+* New `compute_hrblm()`, `compute_qtcbblm()`, and `compute_qtcfblm()` add population baseline-mean columns from a baseline dataset.
+* Example datasets now include subject covariates.
+* New "Data Assembly" vignette covering how to build an analysis-ready dataset.
 
 ### Migration Guide
 * If you were using `compute_high_qtc_sub()` or `tabulate_high_qtc_sub()` for observation-level counts, rename to `compute_high_qtc_obs()` or `tabulate_high_qtc_obs()`.
 * If you need subject-level counts (distinct individuals), use the new `compute_high_qtc_sub()` or `tabulate_high_qtc_sub()` with the required `id_col` argument.
+* See the new "Data Assembly" vignette for the updated `preprocess()` workflow.
 
 # cqtkit 1.1.0
 

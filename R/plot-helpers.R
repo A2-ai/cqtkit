@@ -256,15 +256,13 @@ combine_panels <- function(
   legend_position = "right",
   title = NULL
 ) {
-  combined <- patchwork::wrap_plots(
-    plots,
-    nrow = nrow,
-    ncol = ncol,
-    guides = "collect"
-  ) &
-    ggplot2::theme(legend.position = legend_position)
-  if (!is.null(title)) {
-    combined <- combined + patchwork::plot_annotation(title = title)
-  }
-  combined
+  combined <- do.call(
+    ggstylekit::combine_styled_plots,
+    c(plots, list(nrow = nrow, ncol = ncol))
+  )
+  combined +
+    patchwork::plot_annotation(
+      title = title,
+      theme = ggplot2::theme(legend.position = legend_position)
+    )
 }
