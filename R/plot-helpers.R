@@ -102,9 +102,13 @@ add_error_bars_to_plot <- function(
 #'
 #' @param p A ggplot object
 #' @param reference_threshold Numeric/vector of numerics for horizontal lines
+#' @param legend_channel Aesthetic channel the reference lines key to. Use
+#'   the default "linetype" so the reference lines get their own legend and
+#'   the color channel stays free (for data groupings and covariate reveals).
+#'   Use "color" only on aggregated single-legend plots, where merging the
+#'   references into the color legend avoids a lonely standalone legend.
 #'
 #' @return A ggplot2 object with horizontal reference lines added
-
 #'
 #' @export
 #'
@@ -121,7 +125,11 @@ add_error_bars_to_plot <- function(
 #'   add_horizontal_references(
 #'     reference_threshold = c(-10, 10)
 #'   )
-add_horizontal_references <- function(p, reference_threshold) {
+add_horizontal_references <- function(
+  p,
+  reference_threshold,
+  legend_channel = "linetype"
+) {
   if (is.null(reference_threshold) || length(reference_threshold) == 0) {
     return(p)
   }
@@ -135,12 +143,29 @@ add_horizontal_references <- function(p, reference_threshold) {
     ) |>
       ggstylekit::series_layer(
         name = paste0("Reference ", threshold),
-        legend_channel = "color"
+        legend_channel = legend_channel
       )
     p <- p + ref_line
   }
 
   p
+}
+
+#' Treatment-group color mapping
+#'
+#' Returns the color aesthetic for the treatment grouping, or `NULL` when
+#' `trt` is absent. With no grouping the color channel is left unmapped so
+#' it carries no meaningless single-group legend and stays free for
+#' `ggstylekit::reveal()` to map a covariate onto.
+#'
+#' @param trt A quosure for the treatment column (possibly null).
+#' @return An `aes()` mapping color to `.trt_group`, or `NULL`.
+#' @noRd
+trt_color_mapping <- function(trt) {
+  if (rlang::quo_is_null(trt)) {
+    return(NULL)
+  }
+  ggplot2::aes(color = .data$.trt_group)
 }
 
 

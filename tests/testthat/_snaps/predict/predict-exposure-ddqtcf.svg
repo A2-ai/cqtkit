@@ -79,23 +79,24 @@
 <text transform='translate(13.45,279.19) rotate(-90)' style='font-size: 11.00px; font-family: sans;' textLength='6.45px' lengthAdjust='spacingAndGlyphs'>Δ</text>
 <text transform='translate(13.45,272.74) rotate(-90)' style='font-size: 11.00px; font-family: sans;' textLength='2.75px' lengthAdjust='spacingAndGlyphs'> </text>
 <text transform='translate(13.45,269.99) rotate(-90)' style='font-size: 11.00px; font-family: sans;' textLength='52.56px' lengthAdjust='spacingAndGlyphs'>QTcF (ms)</text>
-<rect x='136.77' y='519.42' width='305.58' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<text x='142.25' y='537.32' style='font-size: 11.00px; font-family: sans;' textLength='46.48px' lengthAdjust='spacingAndGlyphs'>Exposure</text>
-<rect x='194.21' y='524.89' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<line x1='195.94' y1='533.53' x2='209.77' y2='533.53' style='stroke-width: 2.13; stroke: #F8766D; stroke-dasharray: 11.38,11.38; stroke-linecap: butt;' />
-<line x1='195.94' y1='533.53' x2='209.77' y2='533.53' style='stroke-width: 2.13; stroke: #F8766D; stroke-dasharray: 11.38,11.38; stroke-linecap: butt;' />
-<rect x='277.25' y='524.89' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<line x1='278.98' y1='533.53' x2='292.81' y2='533.53' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
-<rect x='361.27' y='524.89' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<line x1='362.99' y1='533.53' x2='376.82' y2='533.53' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
-<text x='216.97' y='536.56' style='font-size: 8.80px; font-family: sans;' textLength='54.80px' lengthAdjust='spacingAndGlyphs'>Cmax_113.59</text>
-<text x='300.01' y='536.56' style='font-size: 8.80px; font-family: sans;' textLength='55.77px' lengthAdjust='spacingAndGlyphs'>Reference -10</text>
-<text x='384.02' y='536.56' style='font-size: 8.80px; font-family: sans;' textLength='52.84px' lengthAdjust='spacingAndGlyphs'>Reference 10</text>
-<rect x='453.31' y='519.42' width='162.85' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<text x='458.78' y='537.32' style='font-size: 11.00px; font-family: sans;' textLength='94.79px' lengthAdjust='spacingAndGlyphs'>Confidence Interval</text>
-<rect x='559.05' y='524.89' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<rect x='559.76' y='525.60' width='15.86' height='15.86' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; fill: #BEBEBE; fill-opacity: 0.50;' />
-<text x='581.81' y='536.56' style='font-size: 8.80px; font-family: sans;' textLength='28.86px' lengthAdjust='spacingAndGlyphs'>90% CI</text>
+<rect x='125.81' y='519.42' width='140.48' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<text x='131.29' y='537.32' style='font-size: 11.00px; font-family: sans;' textLength='46.48px' lengthAdjust='spacingAndGlyphs'>Exposure</text>
+<rect x='183.25' y='524.89' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<line x1='184.98' y1='533.53' x2='198.81' y2='533.53' style='stroke-width: 2.13; stroke: #F8766D; stroke-dasharray: 11.38,11.38; stroke-linecap: butt;' />
+<line x1='184.98' y1='533.53' x2='198.81' y2='533.53' style='stroke-width: 2.13; stroke: #F8766D; stroke-dasharray: 11.38,11.38; stroke-linecap: butt;' />
+<text x='206.01' y='536.56' style='font-size: 8.80px; font-family: sans;' textLength='54.80px' lengthAdjust='spacingAndGlyphs'>Cmax_113.59</text>
+<rect x='277.25' y='519.42' width='162.85' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<text x='282.73' y='537.32' style='font-size: 11.00px; font-family: sans;' textLength='94.79px' lengthAdjust='spacingAndGlyphs'>Confidence Interval</text>
+<rect x='383.00' y='524.89' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<rect x='383.71' y='525.60' width='15.86' height='15.86' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; fill: #BEBEBE; fill-opacity: 0.50;' />
+<text x='405.76' y='536.56' style='font-size: 8.80px; font-family: sans;' textLength='28.86px' lengthAdjust='spacingAndGlyphs'>90% CI</text>
+<rect x='451.06' y='519.42' width='176.05' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<rect x='462.02' y='524.89' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<line x1='463.75' y1='533.53' x2='477.57' y2='533.53' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
+<rect x='546.03' y='524.89' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<line x1='547.76' y1='533.53' x2='561.58' y2='533.53' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
+<text x='484.78' y='536.56' style='font-size: 8.80px; font-family: sans;' textLength='55.77px' lengthAdjust='spacingAndGlyphs'>Reference -10</text>
+<text x='568.79' y='536.56' style='font-size: 8.80px; font-family: sans;' textLength='52.84px' lengthAdjust='spacingAndGlyphs'>Reference 10</text>
 <text x='38.40' y='14.56' style='font-size: 13.20px; font-family: sans;' textLength='138.70px' lengthAdjust='spacingAndGlyphs'>predict-exposure-ddqtcf</text>
 <text x='714.52' y='559.19' text-anchor='end' style='font-size: 8.80px; font-family: sans;' textLength='132.59px' lengthAdjust='spacingAndGlyphs'>Shaded region represents 90% CI</text>
 <text x='714.52' y='568.69' text-anchor='end' style='font-size: 8.80px; font-family: sans;' textLength='0.00px' lengthAdjust='spacingAndGlyphs'></text>

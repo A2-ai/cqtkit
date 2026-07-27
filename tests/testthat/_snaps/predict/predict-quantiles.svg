@@ -115,23 +115,24 @@
 <text transform='translate(13.45,290.53) rotate(-90)' style='font-size: 11.00px; font-family: sans;' textLength='6.45px' lengthAdjust='spacingAndGlyphs'>Δ</text>
 <text transform='translate(13.45,284.08) rotate(-90)' style='font-size: 11.00px; font-family: sans;' textLength='2.75px' lengthAdjust='spacingAndGlyphs'> </text>
 <text transform='translate(13.45,281.33) rotate(-90)' style='font-size: 11.00px; font-family: sans;' textLength='45.84px' lengthAdjust='spacingAndGlyphs'>QTc (ms)</text>
-<rect x='608.77' y='196.68' width='86.56' height='78.13' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<text x='614.25' y='210.87' style='font-size: 11.00px; font-family: sans;' textLength='36.71px' lengthAdjust='spacingAndGlyphs'>Legend</text>
-<rect x='614.25' y='217.49' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<line x1='615.98' y1='226.13' x2='629.80' y2='226.13' style='stroke-width: 2.13; stroke-linecap: butt;' />
-<rect x='614.25' y='234.77' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<circle cx='622.89' cy='243.41' r='1.95' style='stroke-width: 0.71; stroke: #F8766D; fill: #F8766D;' />
-<line x1='615.98' y1='243.41' x2='629.80' y2='243.41' style='stroke-width: 1.07; stroke: #F8766D; stroke-linecap: butt;' />
-<rect x='614.25' y='252.05' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<line x1='615.98' y1='260.69' x2='629.80' y2='260.69' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
-<text x='637.01' y='229.16' style='font-size: 8.80px; font-family: sans;' textLength='43.54px' lengthAdjust='spacingAndGlyphs'>Predictions</text>
-<text x='637.01' y='246.44' style='font-size: 8.80px; font-family: sans;' textLength='37.18px' lengthAdjust='spacingAndGlyphs'>Quantiles</text>
-<text x='637.01' y='263.72' style='font-size: 8.80px; font-family: sans;' textLength='52.84px' lengthAdjust='spacingAndGlyphs'>Reference 10</text>
-<rect x='608.77' y='285.77' width='105.75' height='43.57' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<text x='614.25' y='299.96' style='font-size: 11.00px; font-family: sans;' textLength='94.79px' lengthAdjust='spacingAndGlyphs'>Confidence Interval</text>
-<rect x='614.25' y='306.58' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<rect x='614.96' y='307.29' width='15.86' height='15.86' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; fill: #BEBEBE; fill-opacity: 0.50;' />
-<text x='637.01' y='318.25' style='font-size: 8.80px; font-family: sans;' textLength='28.86px' lengthAdjust='spacingAndGlyphs'>90% CI</text>
+<rect x='608.77' y='178.05' width='77.26' height='60.85' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<text x='614.25' y='192.25' style='font-size: 11.00px; font-family: sans;' textLength='36.71px' lengthAdjust='spacingAndGlyphs'>Legend</text>
+<rect x='614.25' y='198.87' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<circle cx='622.89' cy='207.51' r='1.95' style='stroke-width: 0.71; stroke: #F8766D; fill: #F8766D;' />
+<line x1='615.98' y1='207.51' x2='629.80' y2='207.51' style='stroke-width: 1.07; stroke: #F8766D; stroke-linecap: butt;' />
+<rect x='614.25' y='216.15' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<line x1='615.98' y1='224.79' x2='629.80' y2='224.79' style='stroke-width: 2.13; stroke-linecap: butt;' />
+<text x='637.01' y='210.53' style='font-size: 8.80px; font-family: sans;' textLength='37.18px' lengthAdjust='spacingAndGlyphs'>Quantiles</text>
+<text x='637.01' y='227.81' style='font-size: 8.80px; font-family: sans;' textLength='43.54px' lengthAdjust='spacingAndGlyphs'>Predictions</text>
+<rect x='608.77' y='249.86' width='105.75' height='43.57' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<text x='614.25' y='264.06' style='font-size: 11.00px; font-family: sans;' textLength='94.79px' lengthAdjust='spacingAndGlyphs'>Confidence Interval</text>
+<rect x='614.25' y='270.68' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<rect x='614.96' y='271.39' width='15.86' height='15.86' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; fill: #BEBEBE; fill-opacity: 0.50;' />
+<text x='637.01' y='282.35' style='font-size: 8.80px; font-family: sans;' textLength='28.86px' lengthAdjust='spacingAndGlyphs'>90% CI</text>
+<rect x='608.77' y='304.40' width='86.56' height='43.57' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<rect x='614.25' y='325.21' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<line x1='615.98' y1='333.85' x2='629.80' y2='333.85' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
+<text x='637.01' y='336.88' style='font-size: 8.80px; font-family: sans;' textLength='52.84px' lengthAdjust='spacingAndGlyphs'>Reference 10</text>
 <text x='38.40' y='14.56' style='font-size: 13.20px; font-family: sans;' textLength='96.86px' lengthAdjust='spacingAndGlyphs'>predict-quantiles</text>
 <text x='597.81' y='540.18' text-anchor='end' style='font-size: 8.80px; font-family: sans;' textLength='109.08px' lengthAdjust='spacingAndGlyphs'>errorbars represent 90% CI </text>
 <text x='597.81' y='549.69' text-anchor='end' style='font-size: 8.80px; font-family: sans;' textLength='159.71px' lengthAdjust='spacingAndGlyphs'>Predictions made with: deltaQTCFBL = 0</text>

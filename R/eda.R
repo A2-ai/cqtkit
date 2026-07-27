@@ -62,7 +62,7 @@ eda_qt_rr_plot <- function(
 
   qt_rr_plot <- plot_data |>
     ggplot2::ggplot(ggplot2::aes(x = !!rr, y = !!qt)) +
-    ggplot2::geom_point(ggplot2::aes(color = .data$.trt_group))
+    ggplot2::geom_point(trt_color_mapping(trt))
 
   if (model_type == "lm" && show_model_results) {
     lm_results <- compute_lm_fit_df(
@@ -331,27 +331,32 @@ eda_quantiles_plot <- function(
     dplyr::group_modify(~ compute_quantiles_obs_df(.x, !!xdata, !!ydata)) |>
     dplyr::ungroup()
 
-  p <- obs |>
-    ggplot2::ggplot(
-      ggplot2::aes(
-        x = .data$xdata,
-        y = .data$mean_dv,
-        group = .data$.trt_group,
-        color = .data$.trt_group
-      )
+  quantile_aes <- if (rlang::quo_is_null(trt)) {
+    ggplot2::aes(
+      x = .data$xdata,
+      y = .data$mean_dv,
+      group = .data$.trt_group
     )
+  } else {
+    ggplot2::aes(
+      x = .data$xdata,
+      y = .data$mean_dv,
+      group = .data$.trt_group,
+      color = .data$.trt_group
+    )
+  }
+
+  p <- obs |>
+    ggplot2::ggplot(quantile_aes)
 
   if (plot_observations) {
+    obs_aes <- if (rlang::quo_is_null(trt)) {
+      ggplot2::aes(x = !!xdata, y = !!ydata)
+    } else {
+      ggplot2::aes(x = !!xdata, y = !!ydata, color = !!trt)
+    }
     p <- p +
-      ggplot2::geom_point(
-        data = data,
-        ggplot2::aes(
-          x = !!xdata,
-          y = !!ydata,
-          color = !!trt,
-        ),
-        alpha = 0.25
-      )
+      ggplot2::geom_point(data = data, obs_aes, alpha = 0.25)
   }
 
   p <- p +
@@ -437,9 +442,7 @@ eda_scatter_with_regressions <- function(
     ggplot2::ggplot(
       ggplot2::aes(x = !!xdata, y = !!ydata)
     ) +
-    ggplot2::geom_point(
-      ggplot2::aes(color = .data$.trt_group)
-    )
+    ggplot2::geom_point(trt_color_mapping(trt))
 
   if (loess_line) {
     p <- p +
@@ -861,7 +864,11 @@ eda_mean_dv_over_time <- function(
       group = .data$grouping
     ))
 
-  p <- add_horizontal_references(p, reference_threshold)
+  p <- add_horizontal_references(
+    p,
+    reference_threshold,
+    legend_channel = "color"
+  )
 
   p <- p +
     ggplot2::geom_point() +

@@ -174,11 +174,7 @@ predict_with_observations_plot <- function(
       ggstylekit::legend_spec(
         channel = "color",
         title = "Legend",
-        order = 1,
-        labels = list(
-          "Predictions" = bquote("Population Predicted " ~ Delta ~ "QTcF (ms)"),
-          "Observations" = "Observations"
-        )
+        order = 1
       ),
       ggstylekit::legend_spec(
         channel = "fill",

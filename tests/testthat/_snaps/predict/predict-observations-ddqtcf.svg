@@ -401,25 +401,26 @@
 <text transform='translate(13.45,279.19) rotate(-90)' style='font-size: 11.00px; font-family: sans;' textLength='6.45px' lengthAdjust='spacingAndGlyphs'>Δ</text>
 <text transform='translate(13.45,272.74) rotate(-90)' style='font-size: 11.00px; font-family: sans;' textLength='2.75px' lengthAdjust='spacingAndGlyphs'> </text>
 <text transform='translate(13.45,269.99) rotate(-90)' style='font-size: 11.00px; font-family: sans;' textLength='52.56px' lengthAdjust='spacingAndGlyphs'>QTcF (ms)</text>
-<rect x='35.69' y='519.42' width='507.73' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<text x='41.17' y='537.32' style='font-size: 11.00px; font-family: sans;' textLength='36.71px' lengthAdjust='spacingAndGlyphs'>Legend</text>
-<rect x='83.36' y='524.89' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<circle cx='92.00' cy='533.53' r='1.95' style='stroke-width: 0.71; stroke: #F8766D; fill: #F8766D;' />
-<rect x='171.27' y='524.89' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<line x1='173.00' y1='533.53' x2='186.83' y2='533.53' style='stroke-width: 2.13; stroke-linecap: butt;' />
-<rect x='378.33' y='524.89' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<line x1='380.06' y1='533.53' x2='393.88' y2='533.53' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
-<rect x='462.34' y='524.89' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<line x1='464.07' y1='533.53' x2='477.90' y2='533.53' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
-<text x='106.12' y='536.56' style='font-size: 8.80px; font-family: sans;' textLength='59.67px' lengthAdjust='spacingAndGlyphs'>Verapamil HCL</text>
-<text x='194.03' y='536.56' style='font-size: 8.80px; font-family: sans;' textLength='178.82px' lengthAdjust='spacingAndGlyphs'>"Population Predicted " ~ Delta ~ "QTcF (ms)"</text>
-<text x='401.09' y='536.56' style='font-size: 8.80px; font-family: sans;' textLength='55.77px' lengthAdjust='spacingAndGlyphs'>Reference -10</text>
-<text x='485.10' y='536.56' style='font-size: 8.80px; font-family: sans;' textLength='52.84px' lengthAdjust='spacingAndGlyphs'>Reference 10</text>
-<rect x='554.38' y='519.42' width='162.85' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<text x='559.86' y='537.32' style='font-size: 11.00px; font-family: sans;' textLength='94.79px' lengthAdjust='spacingAndGlyphs'>Confidence Interval</text>
-<rect x='660.13' y='524.89' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<rect x='660.84' y='525.60' width='15.86' height='15.86' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; fill: #BEBEBE; fill-opacity: 0.50;' />
-<text x='682.89' y='536.56' style='font-size: 8.80px; font-family: sans;' textLength='28.86px' lengthAdjust='spacingAndGlyphs'>90% CI</text>
+<rect x='92.37' y='519.42' width='207.36' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<text x='97.85' y='537.32' style='font-size: 11.00px; font-family: sans;' textLength='36.71px' lengthAdjust='spacingAndGlyphs'>Legend</text>
+<rect x='140.04' y='524.89' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<circle cx='148.68' cy='533.53' r='1.95' style='stroke-width: 0.71; stroke: #F8766D; fill: #F8766D;' />
+<rect x='227.96' y='524.89' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<line x1='229.68' y1='533.53' x2='243.51' y2='533.53' style='stroke-width: 2.13; stroke-linecap: butt;' />
+<text x='162.80' y='536.56' style='font-size: 8.80px; font-family: sans;' textLength='59.67px' lengthAdjust='spacingAndGlyphs'>Verapamil HCL</text>
+<text x='250.71' y='536.56' style='font-size: 8.80px; font-family: sans;' textLength='43.54px' lengthAdjust='spacingAndGlyphs'>Predictions</text>
+<rect x='310.69' y='519.42' width='162.85' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<text x='316.17' y='537.32' style='font-size: 11.00px; font-family: sans;' textLength='94.79px' lengthAdjust='spacingAndGlyphs'>Confidence Interval</text>
+<rect x='416.44' y='524.89' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<rect x='417.15' y='525.60' width='15.86' height='15.86' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; fill: #BEBEBE; fill-opacity: 0.50;' />
+<text x='439.20' y='536.56' style='font-size: 8.80px; font-family: sans;' textLength='28.86px' lengthAdjust='spacingAndGlyphs'>90% CI</text>
+<rect x='484.50' y='519.42' width='176.05' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<rect x='495.46' y='524.89' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<line x1='497.19' y1='533.53' x2='511.01' y2='533.53' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
+<rect x='579.47' y='524.89' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<line x1='581.20' y1='533.53' x2='595.02' y2='533.53' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
+<text x='518.22' y='536.56' style='font-size: 8.80px; font-family: sans;' textLength='55.77px' lengthAdjust='spacingAndGlyphs'>Reference -10</text>
+<text x='602.23' y='536.56' style='font-size: 8.80px; font-family: sans;' textLength='52.84px' lengthAdjust='spacingAndGlyphs'>Reference 10</text>
 <text x='38.40' y='14.56' style='font-size: 13.20px; font-family: sans;' textLength='159.24px' lengthAdjust='spacingAndGlyphs'>predict-observations-ddqtcf</text>
 <text x='714.52' y='559.19' text-anchor='end' style='font-size: 8.80px; font-family: sans;' textLength='132.59px' lengthAdjust='spacingAndGlyphs'>Shaded region represents 90% CI</text>
 <text x='714.52' y='568.69' text-anchor='end' style='font-size: 8.80px; font-family: sans;' textLength='0.00px' lengthAdjust='spacingAndGlyphs'></text>

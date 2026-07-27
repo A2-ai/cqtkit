@@ -12,7 +12,7 @@ repositories = [
 
 dependencies = [
 	"devtools",
-	{ name = "ggstylekit", git = "https://github.com/a2-ai/ggstylekit", branch = "with_defaults-fix" },
+	{ name = "ggstylekit", path = '../ggstylekit/'},# git = "https://github.com/a2-ai/ggstylekit", branch = "with_defaults-fix" },
 	{ name = "covr", install_suggestions = true },
 	{ name = "cqtkit", path = ".", dependencies_only = false, install_suggestions = true },
 ]

@@ -83,9 +83,7 @@ gof_plots <- function(
       x = .data$PRED,
       y = .data$dv,
     )) +
-    ggplot2::geom_point(
-      ggplot2::aes(color = .data$.trt_group)
-    ) +
+    ggplot2::geom_point(trt_color_mapping(trt)) +
     ggplot2::geom_abline(slope = 1, color = "black") |>
       ggstylekit::series_layer(name = "identity") +
     ggplot2::geom_smooth(
@@ -112,10 +110,9 @@ gof_plots <- function(
 
   p2 <- fit_results_df |>
     ggplot2::ggplot(ggplot2::aes(
-      sample = .data$IWRES,
-      color = .data$.trt_group
+      sample = .data$IWRES
     )) +
-    ggplot2::stat_qq() +
+    ggplot2::stat_qq(trt_color_mapping(trt)) +
     ggplot2::labs(x = "Theoretical Quantiles", y = "Standardized Residuals") +
     ggplot2::geom_abline(slope = 1, color = "black") |>
       ggstylekit::series_layer(name = "identity") +
@@ -131,7 +128,7 @@ gof_plots <- function(
     ))
 
   p3 <- p3 +
-    ggplot2::geom_point(ggplot2::aes(color = .data$.trt_group)) +
+    ggplot2::geom_point(trt_color_mapping(trt)) +
     ggplot2::geom_smooth(
       method = "loess",
       span = 0.99,
@@ -255,7 +252,7 @@ gof_concordance_plots <- function(
       ggplot2::ggplot(
         ggplot2::aes(x = .data[[xdata[[i]]]], y = .data$dv)
       ) +
-      ggplot2::geom_point(ggplot2::aes(color = .data$.trt_group)) +
+      ggplot2::geom_point(trt_color_mapping(trt)) +
       ggplot2::geom_abline(slope = 1) |>
         ggstylekit::series_layer(name = "identity") +
       ggplot2::geom_smooth(
@@ -372,7 +369,7 @@ gof_residuals_plots <- function(
       ggplot2::ggplot(
         ggplot2::aes(x = .data[[xdata[[i]]]], y = .data[[ydata[[i]]]])
       ) +
-      ggplot2::geom_point(ggplot2::aes(color = .data$.trt_group))
+      ggplot2::geom_point(trt_color_mapping(trt))
 
     if (!is.null(residual_references)) {
       .p <- add_horizontal_references(.p, residual_references)
@@ -455,11 +452,10 @@ gof_qq_plots <- function(
   }
 
   sample_data <- list("WRES", "IWRES")
-  plots <- list()
 
   if (is.null(style)) style <- ggstylekit::style_spec()
 
-  for (r in sample_data) {
+  plots <- lapply(sample_data, function(r) {
     all_values <- c(fit_results_df$WRES, fit_results_df$IWRES)
     axis_limits <- range(all_values, na.rm = TRUE)
 
@@ -467,7 +463,7 @@ gof_qq_plots <- function(
       ggplot2::ggplot(
         ggplot2::aes(sample = .data[[r]])
       ) +
-      ggplot2::stat_qq(ggplot2::aes(color = .data$.trt_group)) +
+      ggplot2::stat_qq(trt_color_mapping(trt)) +
       ggplot2::geom_abline(slope = 1, linetype = "dashed") |>
         ggstylekit::series_layer(name = "identity")
 
@@ -477,10 +473,8 @@ gof_qq_plots <- function(
     this_style$xlims <- this_style$xlims %||% axis_limits
     this_style$ylims <- this_style$ylims %||% axis_limits
 
-    .qqp <- cqtkit_style_plot(.qqp, this_style)
-
-    plots[[r]] <- .qqp
-  }
+    cqtkit_style_plot(.qqp, this_style)
+  })
 
   legend_pos <- if (!rlang::quo_is_null(trt)) style$legend.position %||% "top" else "none"
   .p <- combine_panels(
@@ -583,13 +577,10 @@ gof_residuals_time_boxplots <- function(
       style,
       xlabel = "Nominal Time Since Last Dose (h)",
       ylabel = ydata[[i]],
-      legends = list(
-        ggstylekit::legend_spec(
-          channel = "fill",
-          title = "Treatment Group",
-          order = 1
-        ),
-        ggstylekit::legend_spec(channel = "color", title = "", order = 2)
+      legends = ggstylekit::legend_spec(
+        channel = "fill",
+        title = "Treatment Group",
+        order = 1
       )
     )
 
@@ -690,13 +681,10 @@ gof_residuals_trt_boxplots <- function(
       style,
       xlabel = "Treatment Group",
       ylabel = ydata[[i]],
-      legends = list(
-        ggstylekit::legend_spec(
-          channel = "fill",
-          title = "Treatment Group",
-          order = 1
-        ),
-        ggstylekit::legend_spec(channel = "color", title = "", order = 2)
+      legends = ggstylekit::legend_spec(
+        channel = "fill",
+        title = "Treatment Group",
+        order = 1
       )
     )
 

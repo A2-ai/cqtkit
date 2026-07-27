@@ -1,9 +1,13 @@
 cqtkit_style_defaults <- function() {
   ggstylekit::style_spec(
     theme = ggplot2::theme_bw(),
-    legends = ggstylekit::legend_spec(
-      channel = "color",
-      title = "Treatment Group"
+    legends = list(
+      ggstylekit::legend_spec(
+        channel = "color",
+        title = "Treatment Group",
+        order = 1
+      ),
+      ggstylekit::legend_spec(channel = "linetype", title = "")
     ),
     line_linewidth = 1
   )

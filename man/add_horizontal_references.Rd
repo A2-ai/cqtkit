@@ -4,12 +4,18 @@
 \alias{add_horizontal_references}
 \title{Add Horizontal References}
 \usage{
-add_horizontal_references(p, reference_threshold)
+add_horizontal_references(p, reference_threshold, legend_channel = "linetype")
 }
 \arguments{
 \item{p}{A ggplot object}
 
 \item{reference_threshold}{Numeric/vector of numerics for horizontal lines}
+
+\item{legend_channel}{Aesthetic channel the reference lines key to. Use
+the default "linetype" so the reference lines get their own legend and
+the color channel stays free (for data groupings and covariate reveals).
+Use "color" only on aggregated single-legend plots, where merging the
+references into the color legend avoids a lonely standalone legend.}
 }
 \value{
 A ggplot2 object with horizontal reference lines added

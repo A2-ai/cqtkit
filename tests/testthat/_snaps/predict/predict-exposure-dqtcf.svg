@@ -76,20 +76,21 @@
 <text transform='translate(13.45,300.04) rotate(-90)' style='font-size: 11.00px; font-family: sans;' textLength='6.45px' lengthAdjust='spacingAndGlyphs'>Δ</text>
 <text transform='translate(13.45,293.58) rotate(-90)' style='font-size: 11.00px; font-family: sans;' textLength='2.75px' lengthAdjust='spacingAndGlyphs'> </text>
 <text transform='translate(13.45,290.83) rotate(-90)' style='font-size: 11.00px; font-family: sans;' textLength='45.84px' lengthAdjust='spacingAndGlyphs'>QTc (ms)</text>
-<rect x='608.77' y='214.82' width='88.52' height='60.85' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<text x='614.25' y='229.01' style='font-size: 11.00px; font-family: sans;' textLength='46.48px' lengthAdjust='spacingAndGlyphs'>Exposure</text>
-<rect x='614.25' y='235.64' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<line x1='615.98' y1='244.28' x2='629.80' y2='244.28' style='stroke-width: 2.13; stroke: #F8766D; stroke-dasharray: 11.38,11.38; stroke-linecap: butt;' />
-<line x1='615.98' y1='244.28' x2='629.80' y2='244.28' style='stroke-width: 2.13; stroke: #F8766D; stroke-dasharray: 11.38,11.38; stroke-linecap: butt;' />
-<rect x='614.25' y='252.92' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<line x1='615.98' y1='261.56' x2='629.80' y2='261.56' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
-<text x='637.01' y='247.30' style='font-size: 8.80px; font-family: sans;' textLength='54.80px' lengthAdjust='spacingAndGlyphs'>Cmax_113.59</text>
-<text x='637.01' y='264.58' style='font-size: 8.80px; font-family: sans;' textLength='52.84px' lengthAdjust='spacingAndGlyphs'>Reference 10</text>
-<rect x='608.77' y='286.63' width='105.75' height='43.57' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<text x='614.25' y='300.83' style='font-size: 11.00px; font-family: sans;' textLength='94.79px' lengthAdjust='spacingAndGlyphs'>Confidence Interval</text>
-<rect x='614.25' y='307.45' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<rect x='614.96' y='308.16' width='15.86' height='15.86' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; fill: #BEBEBE; fill-opacity: 0.50;' />
-<text x='637.01' y='319.11' style='font-size: 8.80px; font-family: sans;' textLength='28.86px' lengthAdjust='spacingAndGlyphs'>90% CI</text>
+<rect x='608.77' y='196.20' width='88.52' height='43.57' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<text x='614.25' y='210.39' style='font-size: 11.00px; font-family: sans;' textLength='46.48px' lengthAdjust='spacingAndGlyphs'>Exposure</text>
+<rect x='614.25' y='217.01' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<line x1='615.98' y1='225.65' x2='629.80' y2='225.65' style='stroke-width: 2.13; stroke: #F8766D; stroke-dasharray: 11.38,11.38; stroke-linecap: butt;' />
+<line x1='615.98' y1='225.65' x2='629.80' y2='225.65' style='stroke-width: 2.13; stroke: #F8766D; stroke-dasharray: 11.38,11.38; stroke-linecap: butt;' />
+<text x='637.01' y='228.68' style='font-size: 8.80px; font-family: sans;' textLength='54.80px' lengthAdjust='spacingAndGlyphs'>Cmax_113.59</text>
+<rect x='608.77' y='250.73' width='105.75' height='43.57' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<text x='614.25' y='264.92' style='font-size: 11.00px; font-family: sans;' textLength='94.79px' lengthAdjust='spacingAndGlyphs'>Confidence Interval</text>
+<rect x='614.25' y='271.54' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<rect x='614.96' y='272.25' width='15.86' height='15.86' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; fill: #BEBEBE; fill-opacity: 0.50;' />
+<text x='637.01' y='283.21' style='font-size: 8.80px; font-family: sans;' textLength='28.86px' lengthAdjust='spacingAndGlyphs'>90% CI</text>
+<rect x='608.77' y='305.26' width='86.56' height='43.57' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<rect x='614.25' y='326.07' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<line x1='615.98' y1='334.71' x2='629.80' y2='334.71' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
+<text x='637.01' y='337.74' style='font-size: 8.80px; font-family: sans;' textLength='52.84px' lengthAdjust='spacingAndGlyphs'>Reference 10</text>
 <text x='38.40' y='14.56' style='font-size: 13.20px; font-family: sans;' textLength='131.35px' lengthAdjust='spacingAndGlyphs'>predict-exposure-dqtcf</text>
 <text x='597.81' y='559.19' text-anchor='end' style='font-size: 8.80px; font-family: sans;' textLength='132.59px' lengthAdjust='spacingAndGlyphs'>Shaded region represents 90% CI</text>
 <text x='597.81' y='568.69' text-anchor='end' style='font-size: 8.80px; font-family: sans;' textLength='323.56px' lengthAdjust='spacingAndGlyphs'>Predictions made with: deltaQTCFBL = 0, TRTG = Verapamil HCL, TAFD = 0.5 HR</text>
