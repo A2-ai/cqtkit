@@ -46,7 +46,8 @@ eda_qt_rr_plot(
     point_size = 1.5,
     theme = ggplot2::theme_minimal()
   )
-)
+) |>
+  reveal(SEX, as = c("shapes", "facet"))
 ```
 
 ## Legends
@@ -175,7 +176,7 @@ eda_scatter_with_regressions(
     legends = list(
       legend_spec(channel = "color", title = "Treatment", order = 1),
       legend_spec(
-        channel = "linetype", title = "Lines", order = 2,
+        channel = "linetype", title = "Regresions", order = 2,
         labels = c("Reference -10" = "+/-10 ms", "Reference 10" = NA)
       )
     )
