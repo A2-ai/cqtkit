@@ -450,10 +450,7 @@ eda_scatter_with_regressions <- function(
         method = "loess",
         span = span,
         level = conf_int,
-        formula = y ~ x,
-        color = "blue",
-        fill = "lightblue",
-        linewidth = 0.5
+        formula = y ~ x
       ) |>
       ggstylekit::series_layer(
         name = "LOESS Regression",
@@ -466,7 +463,6 @@ eda_scatter_with_regressions <- function(
       ggplot2::geom_smooth(
         method = "lm",
         formula = y ~ x,
-        color = "black",
         level = conf_int
       ) |>
       ggstylekit::series_layer(
@@ -513,6 +509,12 @@ eda_scatter_with_regressions <- function(
     style,
     xlabel = "Concentration (ng/mL)",
     ylabel = bquote(Delta ~ "QTc (ms)"),
+    colors = c(
+      if (loess_line) c("LOESS Regression" = "blue"),
+      if (linear_line) c("Linear Regression" = "black")
+    ),
+    fill = if (loess_line) c("LOESS Regression" = "lightblue"),
+    linewidths = if (loess_line) c("LOESS Regression" = 0.5),
     linetypes = linetypes,
     legends = legends
   )

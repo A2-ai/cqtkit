@@ -84,16 +84,15 @@ gof_plots <- function(
       y = .data$dv,
     )) +
     ggplot2::geom_point(trt_color_mapping(trt)) +
-    ggplot2::geom_abline(slope = 1, color = "black") |>
+    ggplot2::geom_abline(slope = 1) |>
       ggstylekit::series_layer(name = "identity") +
     ggplot2::geom_smooth(
       method = "loess",
       span = 0.99,
-      color = "red",
       formula = y ~ x,
       se = FALSE
     ) |>
-      ggstylekit::series_layer(name = "loess") +
+      ggstylekit::series_layer(name = "LOESS Regression") +
     ggplot2::labs(
       x = bquote("Predicted " ~ .(dv_label)),
       y = bquote("Observed " ~ .(dv_label))
@@ -102,7 +101,12 @@ gof_plots <- function(
 
   if (is.null(style)) style <- ggstylekit::style_spec()
 
-  p1 <- cqtkit_style_plot(p1, style, theme = cqtkit_square_theme())
+  p1 <- cqtkit_style_plot(
+    p1,
+    style,
+    theme = cqtkit_square_theme(),
+    colors = c("LOESS Regression" = "red")
+  )
 
   #qq plot
   p2_all_values <- c(fit_results_df$IWRES)
@@ -114,7 +118,7 @@ gof_plots <- function(
     )) +
     ggplot2::stat_qq(trt_color_mapping(trt)) +
     ggplot2::labs(x = "Theoretical Quantiles", y = "Standardized Residuals") +
-    ggplot2::geom_abline(slope = 1, color = "black") |>
+    ggplot2::geom_abline(slope = 1) |>
       ggstylekit::series_layer(name = "identity") +
     ggplot2::coord_equal(xlim = p2_axis_limits, ylim = p2_axis_limits)
 
@@ -132,14 +136,18 @@ gof_plots <- function(
     ggplot2::geom_smooth(
       method = "loess",
       span = 0.99,
-      color = "red",
       formula = y ~ x,
       se = FALSE
     ) |>
-      ggstylekit::series_layer(name = "loess") +
+      ggstylekit::series_layer(name = "LOESS Regression") +
     ggplot2::labs(x = conc_xlabel, y = "Standardized Residuals")
 
-  p3 <- cqtkit_style_plot(p3, style, theme = cqtkit_square_theme())
+  p3 <- cqtkit_style_plot(
+    p3,
+    style,
+    theme = cqtkit_square_theme(),
+    colors = c("LOESS Regression" = "red")
+  )
 
   p4 <- fit_results_df |>
     ggplot2::ggplot(ggplot2::aes(x = .data$IWRES)) +
@@ -258,18 +266,22 @@ gof_concordance_plots <- function(
       ggplot2::geom_smooth(
         method = "lm",
         se = FALSE,
-        formula = y ~ x,
-        color = "red",
-        linetype = "dashed"
+        formula = y ~ x
       ) |>
-        ggstylekit::series_layer(name = "regression")
+        ggstylekit::series_layer(name = "Linear Regression")
 
     this_style <- style
     this_style$xlabel <- this_style$xlabel %||% xlabels[[i]]
     this_style$ylabel <- this_style$ylabel %||%
       bquote("Observed  " ~ .(dv_label))
 
-    .p <- cqtkit_style_plot(.p, this_style, theme = cqtkit_square_theme())
+    .p <- cqtkit_style_plot(
+      .p,
+      this_style,
+      theme = cqtkit_square_theme(),
+      colors = c("Linear Regression" = "red"),
+      linetypes = c("Linear Regression" = "dashed")
+    )
   })
 
   .p <- combine_panels(
@@ -464,7 +476,7 @@ gof_qq_plots <- function(
         ggplot2::aes(sample = .data[[r]])
       ) +
       ggplot2::stat_qq(trt_color_mapping(trt)) +
-      ggplot2::geom_abline(slope = 1, linetype = "dashed") |>
+      ggplot2::geom_abline(slope = 1) |>
         ggstylekit::series_layer(name = "identity")
 
     this_style <- style
@@ -473,7 +485,7 @@ gof_qq_plots <- function(
     this_style$xlims <- this_style$xlims %||% axis_limits
     this_style$ylims <- this_style$ylims %||% axis_limits
 
-    cqtkit_style_plot(.qqp, this_style)
+    cqtkit_style_plot(.qqp, this_style, linetypes = c(identity = "dashed"))
   })
 
   legend_pos <- if (!rlang::quo_is_null(trt)) style$legend.position %||% "top" else "none"
