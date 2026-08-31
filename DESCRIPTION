@@ -15,7 +15,6 @@ Description: Provides an end-to-end toolkit for C-QTc analysis, including
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 Imports: 
     checkmate,
     contrast,
@@ -45,3 +44,4 @@ Depends:
     R (>= 4.1.0)
 LazyData: true
 URL: https://a2-ai.github.io/cqtkit-docs
+Config/roxygen2/version: 8.0.0

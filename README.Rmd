@@ -34,6 +34,7 @@ The documentation site for cqtkit can be found [here](https://a2-ai.github.io/cq
 
 ```{r loading-cqtkit, results='hide', message=FALSE, warning=FALSE}
 library(cqtkit)
+library(ggstylekit)
 library(dplyr)
 library(gt)
 ```
@@ -41,18 +42,24 @@ library(gt)
 
 ## Preprocessing of C-QT datasets
 
-`cqtkit` provides preprocessing functions to help compute derived ECG parameters during data assembly. The `preprocess` function can be used to compute baseline corrected ECG parameter values as well as mean baseline values from the following raw column names:
+`cqtkit` provides preprocessing functions to help compute derived ECG parameters during data assembly. `preprocess(data, bl_data, by)` takes an analysis-grain dataset plus a separate dataset of baseline ECG measurements and adds:
 
-- QT, QTBL
-- RR, RRBL  
-- HR, HRBL
+- the population baseline means: HRBLM, QTCBBLM, QTCFBLM
+- the baseline-from-mean deltas: deltaHRBL, deltaQTCBBL, deltaQTCFBL
+- the row-level deltas: deltaQT, deltaRR, deltaHR, deltaQTCB, deltaQTCF
 
-The included `cqtkit_data_<drug>` datasets already contain preprocessed data that have been averaged across replicates, so they include many of the derived columns that `preprocess()` would typically create. However, `preprocess()` can still be useful to compute any missing derived parameters.
+`data` must already carry the heart-rate-corrected columns (HR/HRBL, QTCB/QTCBBL, QTCF/QTCFBL), since those corrections are nonlinear in RR and should be computed per raw ECG replicate before averaging. See `compute_qtcb_qtcf()`, `compute_hr()`, and the "Data Assembly" vignette.
+
+The included `cqtkit_data_<drug>` datasets ship fully preprocessed, so to show what `preprocess()` adds we drop the derived columns and rebuild them from the matching `cqtkit_data_bl_<drug>` baseline dataset:
 
 ```{r data-preprocessing}
-data_proc <- cqtkit_data_verapamil |> preprocess()
-new_cols <- setdiff(names(data_proc), names(cqtkit_data_verapamil))
-cat(paste(new_cols, collapse = ", "), "\n")
+data_raw <- cqtkit_data_verapamil |>
+  select(-HRBLM, -QTCBBLM, -QTCFBLM, -starts_with("delta"))
+
+data_proc <- data_raw |>
+  preprocess(cqtkit_data_bl_verapamil, by = c(ID, TRTG))
+
+cat(paste(setdiff(names(data_proc), names(data_raw)), collapse = ", "), "\n")
 ```
 
 ## Exploratory Data Analysis with cqtkit
@@ -70,18 +77,21 @@ eda_mean_dv_over_time(
   secondary_data_col = CONC,
   group_col = TRTG,
   conf_int = 0.9,
-  style = set_style(
+  style = style_spec(
     ylabel = bquote(Delta ~ Delta ~ "HR (bpm)"),
-    legend = "Verapamil 120 mg Dose",
-    labels = c(
-      "120 mg Verapamil HCL deltaHR" = "ddHR",
-      "120 mg Verapamil HCL CONC" = "Concentration",
-      "Reference -10" = "+/- 10 bpm ddHR",
-      "Reference 10" = NA
-    ),
     legend.position = "top",
     legend.title.position = "left",
-    legend_nrow = 2
+    legend_nrow = 2,
+    legends = legend_spec(
+      channel = "color",
+      title = "Verapamil 120 mg Dose",
+      labels = c(
+        "120 mg Verapamil HCL deltaHR" = "ddHR",
+        "120 mg Verapamil HCL CONC" = "Concentration",
+        "Reference -10" = "+/- 10 bpm ddHR",
+        "Reference 10" = NA
+      )
+    )
   )
 )
 ```
@@ -95,7 +105,7 @@ eda_qtc_comparison_plot(
   qt_col = QT,
   qtcb_col = QTCB,
   qtcf_col = QTCF,
-  style = set_style(
+  style = style_spec(
     caption_hjust = "left"
   )
 )
@@ -111,7 +121,7 @@ eda_hysteresis_loop_plot(
   CONC,
   DOSEF,
   reference_dose = "0 mg",
-  style = set_style(
+  style = style_spec(
     ylabel = bquote(Delta ~ Delta ~ "QTcF (ms)"),
     xlabel = "Verapamil Plasma Concentration (ng/mL)",
     legend.position = "none"
@@ -130,15 +140,16 @@ eda_scatter_with_regressions(
   linear_line = TRUE,
   span = 0.90,
   trt_col = TRTG,
-  style = set_style(
+  style = style_spec(
     ylabel = bquote(Delta ~ "QTcF (ms)"),
     xlabel = "Verapamil Concentration (ng/mL)",
-    labels = c(
-      "Verapamil HCL" = "Verapamil"
-    ),
     legend.position = "top",
     legend.title.position = "left",
-    legend_nrow = 2
+    legend_nrow = 2,
+    legends = legend_spec(
+      channel = "color",
+      labels = c("Verapamil HCL" = "Verapamil")
+    )
   )
 )
 ```
@@ -184,12 +195,13 @@ gof_plots(
   ntime_col = NTLD,
   trt_col = TRTG,
   conc_xlabel = "Verapamil Concentration (ng/mL)",
-  legend_location = "top",
-  style = set_style(
-    labels = c(
-      "Verapamil HCL" = "Verapamil"
-    ),
-    legend.title.position = "left"
+  style = style_spec(
+    legend.position = "top",
+    legend.title.position = "left",
+    legends = legend_spec(
+      channel = "color",
+      labels = c("Verapamil HCL" = "Verapamil")
+    )
   )
 )
 ```
@@ -202,15 +214,19 @@ gof_concordance_plots(
   ntime_col = NTLD,
   trt_col = TRTG,
   dv_label = "QTcF (ms)",
-  legend_location = "top",
-  style = set_style(
-    labels = c(
-      "Verapamil HCL" = "Verapamil",
-      "Placebo" = "Placebo",
-      "Reference 2" = "+/- 2 Residual",
-      "Reference -2" = NA
-    ),
-    legend.title.position = "left"
+  style = style_spec(
+    legend.position = "top",
+    legend.title.position = "left",
+    legends = list(
+      legend_spec(
+        channel = "color",
+        labels = c("Verapamil HCL" = "Verapamil", "Placebo" = "Placebo")
+      ),
+      legend_spec(
+        channel = "linetype",
+        labels = c("Reference 2" = "+/- 2 Residual", "Reference -2" = NA)
+      )
+    )
   )
 )
 ```
@@ -225,15 +241,19 @@ gof_residuals_plots(
   trt_col = TRTG,
   dv_label = "QTcF (ms)",
   conc_xlabel = "Verapamil Concentration (ng/mL)",
-  legend_location = "top",
-  style = set_style(
-    labels = c(
-      "Verapamil HCL" = "Verapamil",
-      "Placebo" = "Placebo",
-      "Reference 2" = "+/- 2 Residual",
-      "Reference -2" = NA
-    ),
-    legend.title.position = "left"
+  style = style_spec(
+    legend.position = "top",
+    legend.title.position = "left",
+    legends = list(
+      legend_spec(
+        channel = "color",
+        labels = c("Verapamil HCL" = "Verapamil", "Placebo" = "Placebo")
+      ),
+      legend_spec(
+        channel = "linetype",
+        labels = c("Reference 2" = "+/- 2 Residual", "Reference -2" = NA)
+      )
+    )
   )
 )
 ```
@@ -243,7 +263,7 @@ gof_vpc_plot(
   dqtc_model,
   CONC,
   deltaQTCF,
-  style = set_style(
+  style = style_spec(
     xlabel = "Verapamil Concentration (ng/mL)"
   )
 )
@@ -259,7 +279,7 @@ conc_for_10_ms <- compute_conc_for_upper_pred(
   "CONC",
   "TRTG",
   "Verapamil HCL"
-)$lower_conc
+)
 
 
 stpx_cmax <- max(compute_pk_parameters(
@@ -270,6 +290,13 @@ stpx_cmax <- max(compute_pk_parameters(
   NTLD,
   TRTG
 )[, "Cmax_gm"])
+
+cmax_levels <- c(
+  "2 x Supratherapeutic dose exposure" = 2 * stpx_cmax,
+  "Supratherapeutic dose exposure" = stpx_cmax,
+  "Exposure for predicted 10 ms" = conc_for_10_ms
+)
+cmax_series <- paste0("Cmax_", round(cmax_levels, 2))
 ```
 
 ```{r Exposure-prediction-plot}
@@ -289,24 +316,26 @@ predict_with_exposure_plot(
     deltaQTCFBL = 0
   ),
   conf_int = 0.9,
-  cmaxes = c(2 * stpx_cmax, stpx_cmax, conc_for_10_ms),
+  cmaxes = unname(cmax_levels),
   reference_threshold = 10,
-  style = set_style(
+  style = style_spec(
     xlabel = "Verapamil Plasma Concentration (ng/mL)",
     ylabel = bquote(Delta ~ Delta ~ "QTcF (ms)"),
-    colors = c(
-      "Cmax_228.46" = "red",
-      "Cmax_152.19" = "brown",
-      "Cmax_114.23" = "skyblue"
-    ),
-    labels = c(
-      "Cmax_228.46" = "2 x Supratherapeutic dose exposure",
-      "Cmax_114.23" = "Supratherapeutic dose exposure",
-      "Cmax_152.19" = "Exposure for predicted 10 ms",
-      "Reference 10" = "10 ms ddQTcF",
-      "90% CI" = "Model derived 90% CI"
-    ),
-    fill_legend = ""
+    colors = setNames(c("red", "brown", "skyblue"), cmax_series),
+    legends = list(
+      legend_spec(
+        channel = "color",
+        labels = c(
+          setNames(names(cmax_levels), cmax_series),
+          "Reference 10" = "10 ms ddQTcF"
+        )
+      ),
+      legend_spec(
+        channel = "fill",
+        title = "",
+        labels = c("90% CI" = "Model derived 90% CI")
+      )
+    )
   )
 )
 ```
