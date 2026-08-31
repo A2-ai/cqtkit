@@ -5,14 +5,14 @@ name = "cqtkit"
 r_version = "4.5"
 
 repositories = [
-	{ alias = "prism-current", url = "https://prism.dev.a2-ai.cloud/rpkgs/stratus/2026-04-30/" },
+	{ alias = "prism-current", url = "https://prism.dev.a2-ai.cloud/rpkgs/stratus/2026-06-30/" },
 	# has rms 6.7.1 for R4.3 compatibility
 	{ alias = "prism-old", url = "https://prism.dev.a2-ai.cloud/rpkgs/stratus/2025-05-09/" },
+	{ alias = "ggstylekit", url = "https://prism.dev.a2-ai.cloud/rpkgs/ggstylekit/0.2.1/" },
 ]
 
 dependencies = [
 	"devtools",
-	{ name = "ggstylekit", git = "https://github.com/a2-ai/ggstylekit", branch = "series_layer-fix" },
 	{ name = "covr", install_suggestions = true },
 	{ name = "cqtkit", path = ".", dependencies_only = false, install_suggestions = true },
 ]

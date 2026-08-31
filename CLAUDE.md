@@ -44,26 +44,30 @@ Rscript -e "devtools::document()"
 
 The package is organized into logical modules in the `R/` directory:
 
-- **`preprocess.R`**: Data preprocessing functions for computing baseline-corrected ECG parameters (QTcB, QTcF, deltaQTcF, deltaQTcB, deltaHR)
+- **`preprocess.R`**: Data preprocessing functions for computing baseline-corrected ECG parameters (QTCB, QTCF, deltaQTCF, deltaQTCB, deltaHR) and population baseline-mean columns (HRBLM, QTCBBLM, QTCFBLM)
 - **`eda.R`**: Exploratory data analysis functions for C-QT analyses including drug effect plots, QTc correction comparison, hysteresis detection, and linearity assessment
 - **`fit.R`**: Model fitting functions, particularly the prespecified linear mixed-effects model from the scientific white paper
 - **`compute.R`**: Core computation functions for statistics, parameters, and data transformations 
 - **`gof.R`**: Goodness-of-fit evaluation functions including residual plots, VPC plots, and concordance plots
 - **`predict.R`**: Exposure-response prediction functions for computing QTc predictions at different concentrations
 - **`tabulate.R`**: Table generation functions using the `gt` package for formatted output
-- **`style.R`**: Plot styling and theming functions for consistent visualization
+- **`style.R`**: cqtkit's `ggstylekit` style defaults and the internal plot styling wrapper
 - **`plot-helpers.R`**: Helper functions for plot generation and customization
 - **`data.R`**: Data documentation and example datasets
-- **`helper.R`**: General utility functions
-- **`utils-pipe.R`**: Pipe operator utilities
+- **`helper.R`**: General utility functions and model input assertions
+- **`cqtkit-package.R`**: Package-level documentation and roxygen imports
+- **`zzz.R`**: `globalVariables()` registration for the standard column names
 
 ### Key Dependencies
 
-- **Core R packages**: `dplyr`, `ggplot2`, `gt`, `nlme`, `MASS`
+- **Core R packages**: `dplyr`, `ggplot2` (>= 3.5), `gt`, `nlme`, `MASS`
 - **Statistical modeling**: `nlme` for mixed-effects models, `contrast` for contrasts
-- **Visualization**: `ggplot2`, `ggpubr`, `scales` for plotting
-- **Data manipulation**: `dplyr`, `purrr`, `tibble`, `forcats`
+- **Visualization**: `ggplot2` for plotting, `ggstylekit` for styling, `patchwork` for plot composition
+- **Data manipulation**: `dplyr`, `purrr`, `tibble`, `forcats`, `rlang`
 - **Tables**: `gt` for formatted table output
+- **Validation**: `checkmate` for argument assertions
+
+The package uses the base R pipe (`|>`) and requires R >= 4.1.0.
 
 ### Testing Framework
 
@@ -78,5 +82,11 @@ Uses `testthat` framework with tests organized in `tests/testthat/`. Test files 
 
 Functions expect datasets with standard C-QT column names:
 - ECG parameters: `QT`, `QTBL`, `RR`, `RRBL`, `HR`, `HRBL`
-- Study design: `ID`, `TRTG`, `DOSE`, `DOSEF`, `NTLD`, `TAFD`, `CONC`
-- Computed: `QTcB`, `QTcF`, `deltaQTcF`, `deltaQTcB`, `deltaHR`
+- Study design: `ID`, `TRTG`, `DOSE`, `DOSEU`, `DOSEF`, `NTLD`, `TAFD`, `CONC`, `CONCU`
+- Covariates: `SEX`, `AGE`, `HGHT`, `WGHT`, `RACE`, `ETHNIC`, `VISIT`
+- Computed: `QTCB`, `QTCF`, `deltaQTCF`, `deltaQTCB`, `deltaHR`
+- Baseline means: `HRBLM`, `QTCBBLM`, `QTCFBLM`, and the corresponding `deltaHRBL`, `deltaQTCBBL`, `deltaQTCFBL`
+
+Analysis datasets are assembled from a timepoint dataset plus a separate baseline
+dataset: `preprocess(data, bl_data, by)` joins baseline values rather than
+computing them from an `id_col`. See the "Data Assembly" vignette.

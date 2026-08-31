@@ -1,4 +1,4 @@
-# cqtkit 1.2.0
+# cqtkit 2.0.0
 
 ### Breaking Changes
 * Plot styling now uses **ggstylekit**. Pass a `ggstylekit::style_spec()` to any plotting function's `style` argument. `set_style()` and `style_plot()` have been removed.
@@ -13,7 +13,15 @@
 * New `compute_hr()` derives `HR`/`HRBL` from RR.
 * New `compute_hrblm()`, `compute_qtcbblm()`, and `compute_qtcfblm()` add population baseline-mean columns from a baseline dataset.
 * Example datasets now include subject covariates.
+* `fit_prespecified_model()` now errors early with an actionable message when a model column has a non-syntactic name, naming the offending columns.
+* `fit_prespecified_model()` now checks categorical model columns after rows with missing values are dropped: it errors if a factor collapses to fewer than 2 levels, and warns if a factor loses level(s) but retains 2 or more, naming the columns responsible.
+* Legend and grouping order in plots now honors factor level order rather than order of appearance.
 * New "Data Assembly" vignette covering how to build an analysis-ready dataset.
+* New "Styling" vignette covering plot styling with **ggstylekit**.
+
+### Fixed
+* Fixed `compute_pk_parameters()` computing Cmax summary statistics over repeated per-observation rows instead of one Cmax per subject, which biased the geometric mean and other summaries.
+* Fixed a `tidyselect` `.data` pronoun deprecation warning.
 
 ### Migration Guide
 * If you were using `compute_high_qtc_sub()` or `tabulate_high_qtc_sub()` for observation-level counts, rename to `compute_high_qtc_obs()` or `tabulate_high_qtc_obs()`.

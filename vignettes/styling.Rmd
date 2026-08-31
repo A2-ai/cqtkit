@@ -186,6 +186,27 @@ eda_scatter_with_regressions(
          legends = legend_spec(title = "Sex"))
 ```
 
+The fit and reference lines are named series (`"LOESS Regression"`,
+`"Linear Regression"`, `"Reference <threshold>"`), so the per-series
+maps restyle them by name just like data series:
+
+```{r eda-scatter-series}
+eda_scatter_with_regressions(
+  cqtkit_data_verapamil, deltaQTCF, CONC, TRTG,
+  reference_threshold = c(-10, 10),
+  style = style_spec(
+    colors = c(
+      "LOESS Regression" = "firebrick",
+      "Linear Regression" = "grey40",
+      "Reference 10" = "orange",
+      "Reference -10" = "orange"
+    ),
+    fill = c("LOESS Regression" = "mistyrose"),
+    linetypes = c("LOESS Regression" = "solid")
+  )
+)
+```
+
 ## `eda_mean_dv_over_time()`
 
 Aggregated with a PK overlay (secondary axis) and error bars. The
@@ -248,7 +269,9 @@ fit <- fit_prespecified_model(
 
 Three legends collected across a 2x2 patchwork: treatment on color, and
 SEX revealed onto both point shapes and the histogram fill, with
-explicit ordering.
+explicit ordering. The loess smooths here are the same
+`"LOESS Regression"` series as in the eda plots, so one
+`colors = c("LOESS Regression" = ...)` entry recolors them too.
 
 ```{r gof-plots, fig.width = 8, fig.height = 6}
 gof_plots(

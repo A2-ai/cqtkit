@@ -20,11 +20,11 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macos-latest,   r: '4.5'}
-          - {os: windows-latest, r: '4.5'}
+          - {os: macos-latest,   r: '4.6'}
+          - {os: windows-latest, r: '4.6'}
+          - {os: ubuntu-latest,  r: '4.6'
           - {os: ubuntu-latest,  r: '4.5'}
           - {os: ubuntu-latest,  r: '4.4'}
-          - {os: ubuntu-latest,  r: '4.3'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
