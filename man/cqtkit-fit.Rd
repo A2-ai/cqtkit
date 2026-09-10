@@ -2,7 +2,7 @@
 % Please edit documentation in R/cqtkit-package.R
 \name{fit}
 \alias{fit}
-\title{\code{cqtkit} Fit Functions}
+\title{cqtkit Fit Functions}
 \description{
 These functions are focused on generating and working with mixed-effects models for various aspects of C-QTc analyses
 }

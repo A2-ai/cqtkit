@@ -18,6 +18,8 @@
 
 ^CLAUDE\.md$
 ^\.claude$
-^_starlightr\.yaml$
+^_starlightr\.toml$
 ^\.positai$
 ^data/raw-data$
+^doc$
+^Meta$

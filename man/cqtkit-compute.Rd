@@ -2,7 +2,7 @@
 % Please edit documentation in R/cqtkit-package.R
 \name{compute}
 \alias{compute}
-\title{\code{cqtkit} Computation Functions}
+\title{cqtkit Computation Functions}
 \description{
 These functions return tibbles of various computations done for C-QT analyses.
 }
@@ -12,7 +12,8 @@ These functions return tibbles of various computations done for C-QT analyses.
 \item \code{\link{compute_grouped_mean_sd}} - This function computes averaged dependent variable grouped by time.
 \item \code{\link{compute_pk_parameters}} - This function computes pharmacokinetic parameters.
 \item \code{\link{compute_ecg_param_summary}} - This function computes summary stastics of ECG parameters.
-\item \code{\link{compute_high_qtc_sub}} - This function computes the number of subjects with high QTc observations.
+\item \code{\link{compute_high_qtc_obs}} - This function computes the number of observations with high QTc values.
+\item \code{\link{compute_high_qtc_sub}} - This function computes the number of subjects with at least one high QTc observation.
 \item \code{\link{compute_quantiles_obs_df}} - This function computes the average dependent variable within bins of independent variable.
 \item \code{\link{compute_potential_hysteresis}} - This function computes if hysteresis is detected within a dose group.
 \item \code{\link{compute_hysteresis_labeller}} - This function computes a labeller function to show potential hysteresis results in facet labels.

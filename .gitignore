@@ -11,3 +11,4 @@ inst/doc
 data/raw-data/
 *.otter.R
 .positai
+/Meta/

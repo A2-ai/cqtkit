@@ -2,7 +2,7 @@
 % Please edit documentation in R/cqtkit-package.R
 \name{datasets}
 \alias{datasets}
-\title{\code{cqtkit} Included Datasets}
+\title{cqtkit Included Datasets}
 \description{
 cqtkit has datasets from four different drugs included in the packge. These data was originally made available in the following publication and obtained from Physionet.
 Each drug has been filtered into its own dataset and is ready to use with cqtkit.

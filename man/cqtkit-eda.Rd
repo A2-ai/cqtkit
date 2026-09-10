@@ -2,7 +2,7 @@
 % Please edit documentation in R/cqtkit-package.R
 \name{eda}
 \alias{eda}
-\title{\code{cqtkit} Exploratory Data Analysis (EDA)}
+\title{cqtkit Exploratory Data Analysis (EDA)}
 \description{
 There are several eda_ functions that generate various EDA plots for a C-QTc analysis.
 }

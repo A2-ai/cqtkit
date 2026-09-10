@@ -1,0 +1,143 @@
+[site]
+title = "cqtkit"
+description = "Provides an end-to-end toolkit for C-QTc analysis"
+logo = "man/figures/logo.png"
+favicon = "man/figures/logo.png"
+
+[output]
+dir = "../Docs/cqtkit-docs"
+include_build_files = true
+
+[home]
+hero = { tagline = "Comprehensive C-QT Analysis From Data to Deliverables", actions = [
+	{ text = "Get Started", link = "./articles/readme/", icon = "right-arrow", variant = "primary" },
+	{ text = "Explore the cqtkit repository", link = "https://github.com/a2-ai/cqtkit", icon = "external", variant = "minimal" },
+] }
+cards = [
+	{ icon = "pen", title = "Data Preprocessing Functions", description = "Reference of preprocessing functions", link = "./reference/cqtkit-preprocessing/" },
+	{ icon = "seti:code-search", title = "Exploratory Data Analysis Functions", description = "Reference of EDA functions", link = "./reference/cqtkit-eda/" },
+	{ icon = "laptop", title = "Compute Functions", description = "Reference of Computational functions", link = "./reference/cqtkit-compute/" },
+	{ icon = "list-format", title = "Tabling Functions", description = "Reference of Table functions", link = "./reference/cqtkit-tabulate/" },
+	{ icon = "approve-check", title = "Goodness of Fit Functions", description = "Reference of GoF functions", link = "./reference/cqtkit-gof/" },
+	{ icon = "information", title = "Predict Functions", description = "Reference of Prediction functions", link = "./reference/cqtkit-predict/" },
+]
+
+[sidebar]
+articles = [{ label = "Getting Started", contents = [{ slug = "README", label = "Welcome" }, "data-assembly", "styling"] }]
+reference = [
+	{ label = "Overview", contents = [
+		{ slug = "cqtkit-package", label = "cqtkit" },
+	] },
+	{ label = "Preprocessing", collapsed = true, contents = [
+		{ slug = "cqtkit-preprocessing", label = "Preprocessing Functions" },
+		"compute_hr",
+		"compute_qtcb_qtcf",
+		"compute_hrblm",
+		"compute_qtcbblm",
+		"compute_qtcfblm",
+		"compute_delta_hrblm",
+		"compute_delta_qtcbblm",
+		"compute_delta_qtcfblm",
+		"compute_deltas",
+		"preprocess",
+	] },
+	{ label = "Exploratory Data Analysis", collapsed = true, contents = [
+		{ slug = "cqtkit-eda", label = "EDA Functions" },
+		"eda_mean_dv_over_time",
+		"eda_qtc_comparison_plot",
+		"eda_hysteresis_loop_plot",
+		"eda_scatter_with_regressions",
+		"eda_quantiles_plot",
+		"eda_qt_rr_plot",
+	] },
+	{ label = "Compute", collapsed = true, contents = [
+		{ slug = "cqtkit-compute", label = "Compute Functions" },
+		"compute_grouped_mean_sd",
+		"compute_pk_parameters",
+		"compute_ecg_param_summary",
+		"compute_high_qtc_obs",
+		"compute_high_qtc_sub",
+		"compute_study_summary",
+		"compute_quantiles_obs_df",
+		"compute_potential_hysteresis",
+		"compute_hysteresis_labeller",
+		"compute_contrast_observations",
+		"compute_exposure_predictions",
+		"compute_conc_for_upper_pred",
+		"compute_dataset_simulation",
+		"compute_summary_statistics_of_simulations",
+		"compute_lm_fit_df",
+		"compute_lme_slope_df",
+		"compute_enGRI",
+		"compute_loess_linear_r_squared",
+	] },
+	{ label = "Tabulate", collapsed = true, contents = [
+		{ slug = "cqtkit-tabulate", label = "Tabulate Functions" },
+		"tabulate_study_summary",
+		"tabulate_ecg_param_summary",
+		"tabulate_high_qtc_obs",
+		"tabulate_high_qtc_sub",
+		"tabulate_pk_parameters",
+		"tabulate_model_fit_parameters",
+		"tabulate_exposure_predictions",
+	] },
+	{ label = "Fit", collapsed = true, contents = [
+		{ slug = "cqtkit-fit", label = "Fit Functions" },
+		"fit_prespecified_model",
+		"fit_qtc_linear_model",
+		"compute_model_fit_parameters",
+		"compute_fit_results",
+	] },
+	{ label = "Goodness of Fit", collapsed = true, contents = [
+		{ slug = "cqtkit-gof", label = "GoF Functions" },
+		"gof_plots",
+		"gof_concordance_plots",
+		"gof_residuals_plots",
+		"gof_qq_plots",
+		"gof_residuals_time_boxplots",
+		"gof_residuals_trt_boxplots",
+		"gof_vpc_plot",
+	] },
+	{ label = "Prediction", collapsed = true, contents = [
+		{ slug = "cqtkit-predict", label = "Predict Functions" },
+		"predict_with_observations_plot",
+		"predict_with_quantiles_plot",
+		"predict_with_exposure_plot",
+	] },
+	{ label = "Style", collapsed = true, contents = [
+		{ slug = "cqtkit-style", label = "Style Functions" },
+		"add_horizontal_references",
+	] },
+	{ label = "Datasets", collapsed = true, contents = [
+		{ slug = "cqtkit-datasets", label = "Datasets" },
+		"cqtkit_data_verapamil",
+		"cqtkit_data_bl_verapamil",
+		"cqtkit_data_dofetilide",
+		"cqtkit_data_bl_dofetilide",
+		"cqtkit_data_quinidine",
+		"cqtkit_data_bl_quinidine",
+		"cqtkit_data_ranolazine",
+		"cqtkit_data_bl_ranolazine",
+	] },
+]
+news = { label = "Changelog", source = "NEWS.md" }
+
+[versions]
+enabled = true
+list = [
+	{ tag = "2.0.0", label = "v2.0.0", default = true },
+	{ tag = "1.1.0", label = "v1.1.0" },
+	{ tag = "1.0.2", label = "v1.0.2" },
+	{ tag = "1.0.1", label = "v1.0.1" },
+	{ tag = "1.0.0", label = "v1.0.0" },
+]
+workflow = { generate = true, node_version = "20" }
+
+[theme]
+color_mode = "auto"
+
+[reference]
+skip_sections = ["title", "name", "alias", "doc type", "keyword"]
+section_order = ["Description", "Details"]
+include_pagefind = true
+include_internal = true

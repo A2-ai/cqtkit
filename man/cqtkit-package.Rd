@@ -4,7 +4,7 @@
 \name{cqtkit-package}
 \alias{cqtkit}
 \alias{cqtkit-package}
-\title{\code{cqtkit}: Comprehensive C-QT Analysis From Data to Deliverables}
+\title{cqtkit: Comprehensive C-QT Analysis From Data to Deliverables}
 \description{
 An end-to-end toolkit for concentration-QT (C-QT) analysis in clinical
 pharmacology. Provides functions for ECG data preprocessing, exploratory
@@ -21,8 +21,16 @@ These functions compute QT corrections and baseline means:
 \itemize{
 \item \code{\link{preprocess}}: Main preprocessing function that computes
 QTc corrections and baseline-corrected parameters
+\item \code{\link{compute_hr}}: Derive HR and baseline HR from RR
+intervals
 \item \code{\link{compute_qtcb_qtcf}}: Compute Bazett's and Fridericia's
 QT corrections
+\item \code{\link{compute_hrblm}}: Add population baseline-mean HR from a
+baseline dataset
+\item \code{\link{compute_qtcbblm}}: Add population baseline-mean QTcB
+from a baseline dataset
+\item \code{\link{compute_qtcfblm}}: Add population baseline-mean QTcF
+from a baseline dataset
 \item \code{\link{compute_deltas}}: Compute change from baseline for ECG
 parameters
 \item \code{\link{compute_delta_qtcfblm}}: Compute mean baseline QTcF
@@ -61,8 +69,10 @@ standard deviations
 \item \code{\link{compute_ecg_param_summary}}: Summarize ECG parameters
 \item \code{\link{compute_pk_parameters}}: Compute PK parameters (Cmax,
 Tmax, etc.)
-\item \code{\link{compute_high_qtc_sub}}: Count observations exceeding QTc
+\item \code{\link{compute_high_qtc_obs}}: Count observations exceeding QTc
 thresholds
+\item \code{\link{compute_high_qtc_sub}}: Count subjects with at least one
+observation exceeding QTc thresholds
 \item \code{\link{compute_study_summary}}: Summarize study population
 \item \code{\link{compute_fit_results}}: Extract model fit results
 \item \code{\link{compute_model_fit_parameters}}: Extract model parameters
@@ -95,8 +105,9 @@ These functions generate summary and analysis tables:
 \item \code{\link{tabulate_study_summary}}: Study population summary table
 \item \code{\link{tabulate_ecg_param_summary}}: ECG parameter summary table
 \item \code{\link{tabulate_pk_parameters}}: PK parameter summary table
-\item \code{\link{tabulate_high_qtc_sub}}: High QTc observation counts
+\item \code{\link{tabulate_high_qtc_obs}}: High QTc observation counts
 table
+\item \code{\link{tabulate_high_qtc_sub}}: High QTc subject counts table
 \item \code{\link{tabulate_model_fit_parameters}}: Model parameter
 estimates table
 \item \code{\link{tabulate_exposure_predictions}}: Exposure-response

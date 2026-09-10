@@ -2,7 +2,7 @@
 % Please edit documentation in R/cqtkit-package.R
 \name{style}
 \alias{style}
-\title{\code{cqtkit} Plot Styling Functions}
+\title{cqtkit Plot Styling Functions}
 \description{
 These functions customize the style of plots
 }

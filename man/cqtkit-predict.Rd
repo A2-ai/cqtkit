@@ -2,7 +2,7 @@
 % Please edit documentation in R/cqtkit-package.R
 \name{predict}
 \alias{predict}
-\title{\code{cqtkit} Prediction Functions}
+\title{cqtkit Prediction Functions}
 \description{
 These functions use a fitted model to make plots of model predictions.
 }

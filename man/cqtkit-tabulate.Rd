@@ -2,7 +2,7 @@
 % Please edit documentation in R/cqtkit-package.R
 \name{tabulate}
 \alias{tabulate}
-\title{\code{cqtkit} Table Functions}
+\title{cqtkit Table Functions}
 \description{
 These functions generate gt tables of various analyses.
 }
@@ -11,7 +11,8 @@ These functions generate gt tables of various analyses.
 \itemize{
 \item \code{\link{tabulate_study_summary}} - This function generates a table of the C-QT study status.
 \item \code{\link{tabulate_ecg_param_summary}} - This function generates central tendency tables for a ECG parameter (QTc, HR).
-\item \code{\link{tabulate_high_qtc_sub}} - This function generates a table of the number of subjects with high QTc values.
+\item \code{\link{tabulate_high_qtc_obs}} - This function generates a table of the number of observations with high QTc values.
+\item \code{\link{tabulate_high_qtc_sub}} - This function generates a table of the number of subjects with at least one high QTc observation.
 \item \code{\link{tabulate_pk_parameters}} - This function generates a table of Pharmacokinetic parameters (\eqn{C_max}, \eqn{T_max})
 \item \code{\link{tabulate_model_fit_parameters}} - This function generates a table of estimated fixed effect parameters with confidence intervals.
 \item \code{\link{tabulate_exposure_predictions}} - This function generates a table of predicted dependent variable (\eqn{(\Delta) \Delta }QTc, \eqn{(\Delta) \Delta}HR) at drug exposure levels of interest.

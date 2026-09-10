@@ -2,14 +2,18 @@
 % Please edit documentation in R/cqtkit-package.R
 \name{preprocessing}
 \alias{preprocessing}
-\title{\code{cqtkit} Preprocessing functions}
+\title{cqtkit Preprocessing functions}
 \description{
 Overview of data preprocessing function in \pkg{cqtkit}
 }
 \section{preprocessing}{
 
 \itemize{
+\item \code{\link{compute_hr}} - This function derives HR and baseline HR from RR intervals
 \item \code{\link{compute_qtcb_qtcf}} - This function computes Bazette’s and Fridericia’s QT correction
+\item \code{\link{compute_hrblm}} - This function adds the population baseline-mean HR from a baseline dataset
+\item \code{\link{compute_qtcbblm}} - This function adds the population baseline-mean QTcB from a baseline dataset
+\item \code{\link{compute_qtcfblm}} - This function adds the population baseline-mean QTcF from a baseline dataset
 \item \code{\link{compute_delta_qtcbblm}} - This function computes difference between QTcB and mean baseline QTcB
 \item \code{\link{compute_delta_qtcfblm}} - This function computes difference between QTcF and mean baseline QTcF
 \item \code{\link{compute_delta_hrblm}} - This function computes difference between HR and mean baseline HR

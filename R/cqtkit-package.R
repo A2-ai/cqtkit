@@ -1,4 +1,4 @@
-#' \code{cqtkit}: Comprehensive C-QT Analysis From Data to Deliverables
+#' cqtkit: Comprehensive C-QT Analysis From Data to Deliverables
 #'
 #' An end-to-end toolkit for concentration-QT (C-QT) analysis in clinical
 #' pharmacology. Provides functions for ECG data preprocessing, exploratory
@@ -13,8 +13,16 @@
 #' \itemize{
 #'   \item \code{\link{preprocess}}: Main preprocessing function that computes
 #'     QTc corrections and baseline-corrected parameters
+#'   \item \code{\link{compute_hr}}: Derive HR and baseline HR from RR
+#'     intervals
 #'   \item \code{\link{compute_qtcb_qtcf}}: Compute Bazett's and Fridericia's
 #'     QT corrections
+#'   \item \code{\link{compute_hrblm}}: Add population baseline-mean HR from a
+#'     baseline dataset
+#'   \item \code{\link{compute_qtcbblm}}: Add population baseline-mean QTcB
+#'     from a baseline dataset
+#'   \item \code{\link{compute_qtcfblm}}: Add population baseline-mean QTcF
+#'     from a baseline dataset
 #'   \item \code{\link{compute_deltas}}: Compute change from baseline for ECG
 #'     parameters
 #'   \item \code{\link{compute_delta_qtcfblm}}: Compute mean baseline QTcF
@@ -49,8 +57,10 @@
 #'   \item \code{\link{compute_ecg_param_summary}}: Summarize ECG parameters
 #'   \item \code{\link{compute_pk_parameters}}: Compute PK parameters (Cmax,
 #'     Tmax, etc.)
-#'   \item \code{\link{compute_high_qtc_sub}}: Count observations exceeding QTc
+#'   \item \code{\link{compute_high_qtc_obs}}: Count observations exceeding QTc
 #'     thresholds
+#'   \item \code{\link{compute_high_qtc_sub}}: Count subjects with at least one
+#'     observation exceeding QTc thresholds
 #'   \item \code{\link{compute_study_summary}}: Summarize study population
 #'   \item \code{\link{compute_fit_results}}: Extract model fit results
 #'   \item \code{\link{compute_model_fit_parameters}}: Extract model parameters
@@ -81,8 +91,9 @@
 #'   \item \code{\link{tabulate_study_summary}}: Study population summary table
 #'   \item \code{\link{tabulate_ecg_param_summary}}: ECG parameter summary table
 #'   \item \code{\link{tabulate_pk_parameters}}: PK parameter summary table
-#'   \item \code{\link{tabulate_high_qtc_sub}}: High QTc observation counts
+#'   \item \code{\link{tabulate_high_qtc_obs}}: High QTc observation counts
 #'     table
+#'   \item \code{\link{tabulate_high_qtc_sub}}: High QTc subject counts table
 #'   \item \code{\link{tabulate_model_fit_parameters}}: Model parameter
 #'     estimates table
 #'   \item \code{\link{tabulate_exposure_predictions}}: Exposure-response
@@ -158,13 +169,17 @@
 NULL
 
 
-#' \code{cqtkit} Preprocessing functions
+#' cqtkit Preprocessing functions
 #'
 #' Overview of data preprocessing function in \pkg{cqtkit}
 #'
 #' @section preprocessing:
 #' \itemize{
+#'	\item \code{\link{compute_hr}} - This function derives HR and baseline HR from RR intervals
 #'	\item \code{\link{compute_qtcb_qtcf}} - This function computes Bazette’s and Fridericia’s QT correction
+#'	\item \code{\link{compute_hrblm}} - This function adds the population baseline-mean HR from a baseline dataset
+#'	\item \code{\link{compute_qtcbblm}} - This function adds the population baseline-mean QTcB from a baseline dataset
+#'	\item \code{\link{compute_qtcfblm}} - This function adds the population baseline-mean QTcF from a baseline dataset
 #'	\item \code{\link{compute_delta_qtcbblm}} - This function computes difference between QTcB and mean baseline QTcB
 #'	\item \code{\link{compute_delta_qtcfblm}} - This function computes difference between QTcF and mean baseline QTcF
 #'	\item \code{\link{compute_delta_hrblm}} - This function computes difference between HR and mean baseline HR
@@ -177,7 +192,7 @@ NULL
 #' @rdname cqtkit-preprocessing
 NULL
 
-#' \code{cqtkit} Exploratory Data Analysis (EDA)
+#' cqtkit Exploratory Data Analysis (EDA)
 #'
 #' There are several eda_ functions that generate various EDA plots for a C-QTc analysis.
 #'
@@ -196,7 +211,7 @@ NULL
 #' @rdname cqtkit-eda
 NULL
 
-#' \code{cqtkit} Computation Functions
+#' cqtkit Computation Functions
 #'
 #' These functions return tibbles of various computations done for C-QT analyses.
 #'
@@ -205,7 +220,8 @@ NULL
 #' 	\item \code{\link{compute_grouped_mean_sd}} - This function computes averaged dependent variable grouped by time.
 #' 	\item \code{\link{compute_pk_parameters}} - This function computes pharmacokinetic parameters.
 #' 	\item \code{\link{compute_ecg_param_summary}} - This function computes summary stastics of ECG parameters.
-#' 	\item \code{\link{compute_high_qtc_sub}} - This function computes the number of subjects with high QTc observations.
+#' 	\item \code{\link{compute_high_qtc_obs}} - This function computes the number of observations with high QTc values.
+#' 	\item \code{\link{compute_high_qtc_sub}} - This function computes the number of subjects with at least one high QTc observation.
 #' 	\item \code{\link{compute_quantiles_obs_df}} - This function computes the average dependent variable within bins of independent variable.
 #' 	\item \code{\link{compute_potential_hysteresis}} - This function computes if hysteresis is detected within a dose group.
 #' 	\item \code{\link{compute_hysteresis_labeller}} - This function computes a labeller function to show potential hysteresis results in facet labels.
@@ -222,7 +238,7 @@ NULL
 #' @rdname cqtkit-compute
 NULL
 
-#' \code{cqtkit} Table Functions
+#' cqtkit Table Functions
 #'
 #' These functions generate gt tables of various analyses.
 #'
@@ -230,7 +246,8 @@ NULL
 #' \itemize{
 #' 	\item \code{\link{tabulate_study_summary}} - This function generates a table of the C-QT study status.
 #' 	\item \code{\link{tabulate_ecg_param_summary}} - This function generates central tendency tables for a ECG parameter (QTc, HR).
-#' 	\item \code{\link{tabulate_high_qtc_sub}} - This function generates a table of the number of subjects with high QTc values.
+#' 	\item \code{\link{tabulate_high_qtc_obs}} - This function generates a table of the number of observations with high QTc values.
+#' 	\item \code{\link{tabulate_high_qtc_sub}} - This function generates a table of the number of subjects with at least one high QTc observation.
 #' 	\item \code{\link{tabulate_pk_parameters}} - This function generates a table of Pharmacokinetic parameters (\eqn{C_max}, \eqn{T_max})
 #' 	\item \code{\link{tabulate_model_fit_parameters}} - This function generates a table of estimated fixed effect parameters with confidence intervals.
 #' 	\item \code{\link{tabulate_exposure_predictions}} - This function generates a table of predicted dependent variable (\eqn{(\Delta) \Delta }QTc, \eqn{(\Delta) \Delta}HR) at drug exposure levels of interest.
@@ -242,7 +259,7 @@ NULL
 NULL
 
 
-#' \code{cqtkit} Fit Functions
+#' cqtkit Fit Functions
 #'
 #' These functions are focused on generating and working with mixed-effects models for various aspects of C-QTc analyses
 #'
@@ -259,7 +276,7 @@ NULL
 #' @rdname cqtkit-fit
 NULL
 
-#' \code{cqtkit} Goodness-of-Fit Functions
+#' cqtkit Goodness-of-Fit Functions
 #'
 #' These functions generate plots for validating the fitted model to the data.
 #'
@@ -279,7 +296,7 @@ NULL
 #' @rdname cqtkit-gof
 NULL
 
-#' \code{cqtkit} Prediction Functions
+#' cqtkit Prediction Functions
 #'
 #' These functions use a fitted model to make plots of model predictions.
 #'
@@ -295,7 +312,7 @@ NULL
 #' @rdname cqtkit-predict
 NULL
 
-#' \code{cqtkit} Plot Styling Functions
+#' cqtkit Plot Styling Functions
 #'
 #' These functions customize the style of plots
 #'
@@ -309,7 +326,7 @@ NULL
 #' @rdname cqtkit-style
 NULL
 
-#' \code{cqtkit} Included Datasets
+#' cqtkit Included Datasets
 #'
 #' cqtkit has datasets from four different drugs included in the packge. These data was originally made available in the following publication and obtained from Physionet.
 #' Each drug has been filtered into its own dataset and is ready to use with cqtkit.

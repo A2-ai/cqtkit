@@ -2,7 +2,7 @@
 % Please edit documentation in R/cqtkit-package.R
 \name{gof}
 \alias{gof}
-\title{\code{cqtkit} Goodness-of-Fit Functions}
+\title{cqtkit Goodness-of-Fit Functions}
 \description{
 These functions generate plots for validating the fitted model to the data.
 }
