@@ -25,6 +25,7 @@
 ### Fixed
 * Fixed `compute_pk_parameters()` computing Cmax summary statistics over repeated per-observation rows instead of one Cmax per subject, which biased the geometric mean and other summaries.
 * Fixed a `tidyselect` `.data` pronoun deprecation warning.
+* Fixed `eda_mean_dv_over_time()`, `compute_study_summary()`, and `compute_pk_parameters()` ordering groups alphabetically instead of by factor level order.
 
 ### Migration Guide
 * If you were using `compute_high_qtc_sub()` or `tabulate_high_qtc_sub()` for observation-level counts, rename to `compute_high_qtc_obs()` or `tabulate_high_qtc_obs()`.

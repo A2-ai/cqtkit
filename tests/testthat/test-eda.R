@@ -289,3 +289,30 @@ test_that("eda_qtc_comparison_plot passes the spec through", {
   )
   expect_match(p$labels$caption, "Slope p-value")
 })
+
+test_that("eda_mean_dv_over_time keeps dose factor level order in the legend", {
+  lvls <- c("2.4 mg", "7.2 mg", "10 mg")
+  dat <- cqtkit_data_verapamil |>
+    dplyr::mutate(DOSEF = factor(lvls[(as.integer(factor(ID)) %% 3) + 1], levels = lvls))
+
+  p <- eda_mean_dv_over_time(
+    dat, deltaQTCF, NTLD, DOSEF,
+    reference_threshold = c(-10, 10)
+  )
+
+  expect_s3_class(p$data$grouping, "factor")
+  expect_equal(levels(p$data$grouping), lvls)
+
+  legend <- function(p) ggplot2::get_guide_data(p, "colour")$.label
+  expect_equal(legend(p), c(lvls, "Reference -10", "Reference 10"))
+
+  # secondary DV: both series keep dose order, references trail
+  p2 <- eda_mean_dv_over_time(
+    dat, deltaQTCF, NTLD, DOSEF,
+    secondary_data_col = CONC, reference_threshold = c(-10, 10)
+  )
+  expect_equal(
+    legend(p2),
+    c(paste(lvls, "deltaQTCF"), paste(lvls, "CONC"), "Reference -10", "Reference 10")
+  )
+})

@@ -46,3 +46,16 @@ test_that('compute_pk_parameters computes correct geometric mean with unequal ti
   expect_equal(result$Cmax_gm, expected_gm, tolerance = 1e-6)
   expect_equal(result$Cmax_cv, expected_cv, tolerance = 1e-6)
 })
+
+test_that("compute_pk_parameters keeps factor level order with group_col", {
+  tl <- c("Placebo", "Low", "High")
+  lvls <- c("2.4 mg", "7.2 mg", "10 mg")
+  dat <- cqtkit_data_verapamil |>
+    dplyr::mutate(
+      TRTG = factor(tl[(as.integer(factor(ID)) %% 3) + 1], levels = tl),
+      DOSEF = factor(lvls[(as.integer(factor(ID)) %% 3) + 1], levels = lvls)
+    )
+
+  res <- compute_pk_parameters(dat, ID, DOSEF, CONC, NTLD, group_col = TRTG)
+  expect_equal(as.character(res$group), paste(tl, lvls))
+})

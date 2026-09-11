@@ -261,3 +261,29 @@ format_model_results <- function(label, estimate, lower, upper, pvalue, spec) {
   }
   paste(lines, collapse = "\n")
 }
+
+#' Paste grouping values together while keeping factor level order
+#'
+#' `paste()` returns character, which then sorts lexically in legends and in
+#' `summarise()` output. This returns a factor whose levels follow the level
+#' order of `x` (and, when `y` is a vector, of `y` within each level of `x`).
+#'
+#' @param x Factor or character grouping values
+#' @param y Either a single string appended to every value, or a second
+#'   grouping vector the same length as `x`
+#' @param sep Separator passed to `paste()`
+#' @return A factor
+#' @keywords internal
+#' @noRd
+paste_grouping <- function(x, y, sep = " ") {
+  x <- as.factor(x)
+  if (length(y) == 1L) {
+    return(factor(
+      paste(x, y, sep = sep),
+      levels = paste(levels(x), y, sep = sep)
+    ))
+  }
+  y <- as.factor(y)
+  lvls <- as.vector(t(outer(levels(x), levels(y), paste, sep = sep)))
+  droplevels(factor(paste(x, y, sep = sep), levels = lvls))
+}

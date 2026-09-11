@@ -183,7 +183,7 @@ compute_pk_parameters <- function(
   if (rlang::quo_is_null(group)) {
     pk_df$group <- pk_df$dose
   } else {
-    pk_df$group <- paste(pk_df$group, pk_df$dose)
+    pk_df$group <- paste_grouping(pk_df$group, pk_df$dose)
   }
 
   pk_params_df <- pk_df |>
@@ -400,12 +400,12 @@ compute_study_summary <- function(data, trt_col, id_col, group_col = NULL) {
   if (!rlang::quo_is_null(group)) {
     df <- df |>
       dplyr::mutate(
-        grouping = paste(.data$trt, .data$group)
+        grouping = paste_grouping(.data$trt, .data$group)
       )
   } else {
     df <- df |>
       dplyr::mutate(
-        grouping = paste(.data$trt)
+        grouping = as.factor(.data$trt)
       )
   }
 
