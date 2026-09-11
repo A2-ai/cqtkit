@@ -13,6 +13,7 @@ gof_vpc_plot(
   nruns = 500,
   nbins = 10,
   type = 2,
+  seed = NULL,
   style = ggstylekit::style_spec()
 )
 }
@@ -32,6 +33,9 @@ gof_vpc_plot(
 \item{nbins}{Integer number of bins to break independent variable into - OR - a user specified vector for non-uniform binning}
 
 \item{type}{Integer for type parameter of stats::quantile}
+
+\item{seed}{Optional integer seed for reproducible simulations. The RNG state
+is restored on exit. Default (NULL) leaves the RNG untouched.}
 
 \item{style}{A ggstylekit::style_spec() object}
 }

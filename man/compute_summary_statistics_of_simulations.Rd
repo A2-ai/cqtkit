@@ -11,7 +11,8 @@ compute_summary_statistics_of_simulations(
   conf_int,
   nruns,
   nbins,
-  type = 2
+  type = 2,
+  seed = NULL
 )
 }
 \arguments{
@@ -28,6 +29,10 @@ compute_summary_statistics_of_simulations(
 \item{nbins}{Integer number of bins to break independent variable into - OR - a user specified vector for non-uniform binning}
 
 \item{type}{Algorithm for quantile. Default (2), is SAS quantile algorithm}
+
+\item{seed}{Optional integer seed for reproducible simulations. The RNG state
+is restored on exit, so setting a seed here does not affect the caller's
+random number stream. Default (NULL) leaves the RNG untouched.}
 }
 \value{
 A tibble with VPC statistics: median and 5th/95th percentile predictions with their confidence bounds across simulation runs

@@ -725,6 +725,8 @@ gof_residuals_trt_boxplots <- function(
 #' @param nruns Integer number of simulations to run
 #' @param nbins Integer number of bins to break independent variable into - OR - a user specified vector for non-uniform binning
 #' @param type Integer for type parameter of stats::quantile
+#' @param seed Optional integer seed for reproducible simulations. The RNG state
+#'   is restored on exit. Default (NULL) leaves the RNG untouched.
 #' @param style A ggstylekit::style_spec() object
 #'
 #' @return A visual predictive check plot with observed quantiles overlaid on simulated prediction intervals
@@ -754,6 +756,7 @@ gof_vpc_plot <- function(
   nruns = 500,
   nbins = 10,
   type = 2,
+  seed = NULL,
   style = ggstylekit::style_spec()
 ) {
   checkmate::assertDataFrame(data)
@@ -794,7 +797,8 @@ gof_vpc_plot <- function(
     conf_int,
     nruns,
     nbins,
-    type
+    type,
+    seed = seed
   )
 
   upper_caption <- "95th percentile"

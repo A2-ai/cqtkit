@@ -1230,6 +1230,9 @@ compute_dataset_simulation <- function(data, fit, xdata_col, sim_num = 0) {
 #' @param nruns Integer number of simulations to run
 #' @param nbins Integer number of bins to break independent variable into - OR - a user specified vector for non-uniform binning
 #' @param type Algorithm for quantile. Default (2), is SAS quantile algorithm
+#' @param seed Optional integer seed for reproducible simulations. The RNG state
+#'   is restored on exit, so setting a seed here does not affect the caller's
+#'   random number stream. Default (NULL) leaves the RNG untouched.
 #'
 #' @return A tibble with VPC statistics: median and 5th/95th percentile predictions with their confidence bounds across simulation runs
 #' @export
@@ -1259,7 +1262,8 @@ compute_summary_statistics_of_simulations <- function(
   conf_int,
   nruns,
   nbins,
-  type = 2
+  type = 2,
+  seed = NULL
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
@@ -1267,6 +1271,11 @@ compute_summary_statistics_of_simulations <- function(
   checkmate::assertIntegerish(nruns)
   checkmate::assertNumeric(nbins)
   checkmate::assertIntegerish(type, lower = 1, upper = 9)
+
+  if (!is.null(seed)) {
+    checkmate::assertIntegerish(seed, len = 1)
+    withr::local_seed(seed)
+  }
 
   xdata <- rlang::enquo(xdata_col)
 

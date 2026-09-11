@@ -11,6 +11,7 @@
 ### Enhanced
 * All high QTc functions now support configurable `qtc_thresholds` and `dqtc_thresholds` arguments (defaults: `c(450, 480, 500)` and `c(30, 60)`).
 * New `compute_hr()` derives `HR`/`HRBL` from RR.
+* `gof_vpc_plot()` and `compute_summary_statistics_of_simulations()` gain a `seed` argument.
 * New `compute_hrblm()`, `compute_qtcbblm()`, and `compute_qtcfblm()` add population baseline-mean columns from a baseline dataset.
 * Example datasets now include subject covariates.
 * `fit_prespecified_model()` now errors early with an actionable message when a model column has a non-syntactic name, naming the offending columns.

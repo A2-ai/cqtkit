@@ -263,6 +263,7 @@ gof_vpc_plot(
   dqtc_model,
   CONC,
   deltaQTCF,
+	seed = 804831,
   style = style_spec(
     xlabel = "Verapamil Concentration (ng/mL)"
   )

@@ -31,7 +31,8 @@ Imports:
     rlang,
     stats,
     tibble,
-    utils
+    utils,
+    withr
 Suggests:
     knitr,
     rmarkdown,

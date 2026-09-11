@@ -68,3 +68,29 @@ test_that("gof_plots with style snapshot", {
 
   snapshot_plot(p, "gof-plots-styled")
 })
+
+test_that("gof_vpc_plot seed makes simulations reproducible", {
+  sims <- function(seed) {
+    suppressWarnings(compute_summary_statistics_of_simulations(
+      cqtkit_data_verapamil, fit, CONC, 0.9, nruns = 5, nbins = 10, seed = seed
+    ))
+  }
+  expect_identical(sims(42), sims(42))
+  expect_false(identical(sims(42), sims(43)))
+
+  vpc <- function(seed) {
+    suppressWarnings(gof_vpc_plot(
+      cqtkit_data_verapamil, fit, CONC, deltaQTCF, nruns = 5, seed = seed
+    ))
+  }
+  expect_identical(vpc(42)$data, vpc(42)$data)
+})
+
+test_that("gof_vpc_plot seed does not disturb the caller's RNG stream", {
+  set.seed(1)
+  before <- .Random.seed
+  invisible(suppressWarnings(gof_vpc_plot(
+    cqtkit_data_verapamil, fit, CONC, deltaQTCF, nruns = 2, seed = 99
+  )))
+  expect_identical(.Random.seed, before)
+})
