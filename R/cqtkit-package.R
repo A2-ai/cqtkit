@@ -39,6 +39,8 @@
 #'   \item \code{\link{eda_scatter_with_regressions}}: Scatter plot with linear
 #'     and loess regression lines
 #'   \item \code{\link{eda_qt_rr_plot}}: QT vs RR relationship plot
+#'   \item \code{\link{model_results_spec}}: Control the slope, CI, p-value, and
+#'     digits reported in QT vs RR plot captions
 #'   \item \code{\link{eda_qtc_comparison_plot}}: Compare QTcB and QTcF
 #'     corrections
 #'   \item \code{\link{eda_mean_dv_over_time}}: Mean dependent variable over
@@ -204,6 +206,7 @@ NULL
 #' 	\item \code{\link{eda_scatter_with_regressions}} - This function generates a scatter plot of dQTc values plotted against time-matched concentrations overlaid with linear and LOESS regression lines.
 #' 	\item \code{\link{eda_quantiles_plot}} - This function generates a plot of binned dependent variables (Concentration) with mean independent variabl (QTc) at each bin with a linear regression line.
 #' 	\item \code{\link{eda_qt_rr_plot}} - This function generates a scatter plot of QT vs RR with a linear and LOESS regression line. (It generates a single panel of the eda_qtc_comparison_plot figure)
+#' 	\item \code{\link{model_results_spec}} - This function builds the spec controlling the slope, CI, p-value, and digits shown in QT vs RR plot captions.
 #' }
 #'
 #' @seealso \code{\link{cqtkit-package}}

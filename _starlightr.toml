@@ -49,6 +49,7 @@ reference = [
 		"eda_scatter_with_regressions",
 		"eda_quantiles_plot",
 		"eda_qt_rr_plot",
+		"model_results_spec",
 	] },
 	{ label = "Compute", collapsed = true, contents = [
 		{ slug = "cqtkit-compute", label = "Compute Functions" },

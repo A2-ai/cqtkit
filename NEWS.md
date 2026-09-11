@@ -7,11 +7,13 @@
 * `compute_delta_hrblm()`, `compute_delta_qtcbblm()`, and `compute_delta_qtcfblm()` now expect the baseline-mean column to already exist on the data. Add it first with the new `compute_hrblm()`, `compute_qtcbblm()`, or `compute_qtcfblm()`.
 * `compute_high_qtc_sub()` and `tabulate_high_qtc_sub()` have been renamed to `compute_high_qtc_obs()` and `tabulate_high_qtc_obs()` respectively, since these functions count observations (rows), not subjects.
 * New `compute_high_qtc_sub()` and `tabulate_high_qtc_sub()` functions now count distinct subjects with at least one observation exceeding thresholds. These require an `id_col` argument.
+* `eda_qt_rr_plot()` and `eda_qtc_comparison_plot()`: `conf_int` is removed and `show_model_results` now takes a `model_results_spec()`. `TRUE`/`FALSE` still work.
 
 ### Enhanced
 * All high QTc functions now support configurable `qtc_thresholds` and `dqtc_thresholds` arguments (defaults: `c(450, 480, 500)` and `c(30, 60)`).
 * New `compute_hr()` derives `HR`/`HRBL` from RR.
 * `gof_vpc_plot()` and `compute_summary_statistics_of_simulations()` gain a `seed` argument.
+* New `model_results_spec()` controls the slope, CI level, p-value, and digits in QT vs RR plot captions.
 * New `compute_hrblm()`, `compute_qtcbblm()`, and `compute_qtcfblm()` add population baseline-mean columns from a baseline dataset.
 * Example datasets now include subject covariates.
 * `fit_prespecified_model()` now errors early with an actionable message when a model column has a non-syntactic name, naming the offending columns.

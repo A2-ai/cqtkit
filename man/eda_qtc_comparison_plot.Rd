@@ -14,10 +14,9 @@ eda_qtc_comparison_plot(
   id_col = NULL,
   trt_col = NULL,
   model_type = c("lm", "lme"),
-  show_model_results = TRUE,
+  show_model_results = model_results_spec(),
   method = "REML",
   remove_rr_iiv = FALSE,
-  conf_int = 0.9,
   style = ggstylekit::style_spec()
 )
 }
@@ -40,13 +39,13 @@ eda_qtc_comparison_plot(
 
 \item{model_type}{Lm or lme, which model to fit for showing on plot}
 
-\item{show_model_results}{Logical, whether to show regression slope on plot}
+\item{show_model_results}{A \code{model_results_spec()} controlling the slope,
+CI level, p-value, and digits shown in the caption. \code{TRUE} uses the
+default spec, \code{FALSE} shows no model results}
 
 \item{method}{Method for nlme::lme fitting (ML or REML)}
 
 \item{remove_rr_iiv}{Logical, whether to remove IIV on RR slope}
-
-\item{conf_int}{Numeric confidence interval level (default: 0.9)}
 
 \item{style}{A ggstylekit::style_spec() object}
 }

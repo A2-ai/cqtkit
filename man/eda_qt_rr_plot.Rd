@@ -10,9 +10,8 @@ eda_qt_rr_plot(
   qt_col,
   id_col = NULL,
   trt_col = NULL,
-  conf_int = 0.9,
   model_type = c("lm", "lme"),
-  show_model_results = TRUE,
+  show_model_results = model_results_spec(),
   method = "REML",
   remove_rr_iiv = FALSE,
   style = ggstylekit::style_spec()
@@ -29,11 +28,11 @@ eda_qt_rr_plot(
 
 \item{trt_col}{An unquoted column name for treatment group}
 
-\item{conf_int}{Numeric confidence interval level (default: 0.9)}
-
 \item{model_type}{Lm or lme, which model to fit for showing on plot}
 
-\item{show_model_results}{Logical, whether to show regression slope on plot}
+\item{show_model_results}{A \code{model_results_spec()} controlling the slope,
+CI level, p-value, and digits shown in the caption. \code{TRUE} uses the
+default spec, \code{FALSE} shows no model results}
 
 \item{method}{Method for nlme::lme fitting (ML or REML)}
 

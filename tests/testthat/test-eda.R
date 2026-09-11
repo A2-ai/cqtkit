@@ -5,6 +5,16 @@ test_that("eda_qt_rr_plot default snapshot", {
   snapshot_plot(p, "eda-qt-rr-default")
 })
 
+test_that("eda_qt_rr_plot with slope p-value snapshot", {
+  p <- eda_qt_rr_plot(
+    cqtkit_data_verapamil, RR, QT, ID,
+    model_type = "lm",
+    show_model_results = model_results_spec(pvalue = TRUE)
+  )
+
+  snapshot_plot(p, "eda-qt-rr-pvalue")
+})
+
 test_that("eda_qt_rr_plot with style snapshot", {
 
   p <- eda_qt_rr_plot(
@@ -226,4 +236,56 @@ test_that("eda_hysteresis_loop_plot snapshot", {
   )
 
   snapshot_plot(p, "eda-hysteresis-loop")
+})
+
+test_that("model_results_spec validates and defaults", {
+  s <- model_results_spec()
+  expect_s3_class(s, "cqtkit_model_results_spec")
+  expect_equal(unclass(s), list(slope = TRUE, ci = 0.90, pvalue = FALSE, eps = 0.001, digits = 3))
+  expect_error(model_results_spec(ci = 2))
+  expect_error(model_results_spec(digits = -1))
+  expect_error(model_results_spec(pvalue = "yes"))
+})
+
+test_that("format_model_results honours the spec", {
+  fmt <- function(...) format_model_results("LM", 0.12345, 0.1, 0.15, 0.0423, model_results_spec(...))
+  expect_equal(fmt(), "LM Slope [90% CI]: 0.123 [0.100, 0.150]")
+  expect_equal(fmt(pvalue = TRUE), "LM Slope [90% CI]: 0.123 [0.100, 0.150]\nSlope p-value: 0.042")
+  expect_equal(fmt(pvalue = TRUE, eps = 0.05), "LM Slope [90% CI]: 0.123 [0.100, 0.150]\nSlope p-value: < 0.05")
+  expect_equal(fmt(slope = FALSE, pvalue = TRUE), "Slope p-value: 0.042")
+  expect_equal(fmt(ci = 0.95, digits = 2), "LM Slope [95% CI]: 0.12 [0.10, 0.15]")
+  expect_equal(fmt(digits = 0), "LM Slope [90% CI]: 0 [0, 0]")
+  expect_null(fmt(slope = FALSE))
+})
+
+test_that("eda_qt_rr_plot show_model_results accepts TRUE, FALSE, and a spec", {
+  base <- eda_qt_rr_plot(cqtkit_data_verapamil, RR, QT, ID, model_type = "lm")
+  expect_match(base$labels$caption, "^Linear Regression Slope \\[90% CI\\]")
+  expect_no_match(base$labels$caption, "p-value")
+
+  as_true <- eda_qt_rr_plot(cqtkit_data_verapamil, RR, QT, ID, model_type = "lm", show_model_results = TRUE)
+  expect_identical(as_true$labels$caption, base$labels$caption)
+
+  none <- eda_qt_rr_plot(cqtkit_data_verapamil, RR, QT, ID, model_type = "lm", show_model_results = FALSE)
+  expect_null(none$labels$caption)
+
+  with_p <- eda_qt_rr_plot(
+    cqtkit_data_verapamil, RR, QT, ID, model_type = "lm",
+    show_model_results = model_results_spec(pvalue = TRUE, ci = 0.95)
+  )
+  expect_match(with_p$labels$caption, "\\[95% CI\\]")
+  expect_match(with_p$labels$caption, "\nSlope p-value: ")
+
+  expect_error(
+    eda_qt_rr_plot(cqtkit_data_verapamil, RR, QT, ID, show_model_results = "yes"),
+    "model_results_spec"
+  )
+})
+
+test_that("eda_qtc_comparison_plot passes the spec through", {
+  p <- eda_qtc_comparison_plot(
+    cqtkit_data_verapamil, RR, QT, QTCB, QTCF, ID, model_type = "lm",
+    show_model_results = model_results_spec(pvalue = TRUE)
+  )
+  expect_match(p$labels$caption, "Slope p-value")
 })

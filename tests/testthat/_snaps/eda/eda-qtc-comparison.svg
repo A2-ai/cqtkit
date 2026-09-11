@@ -2171,7 +2171,7 @@
 <text x='376.10' y='549.40' text-anchor='middle' style='font-size: 11.00px; font-family: sans;' textLength='40.95px' lengthAdjust='spacingAndGlyphs'>RR (ms)</text>
 <text transform='translate(18.53,480.47) rotate(-90)' text-anchor='middle' style='font-size: 11.00px; font-family: sans;' textLength='55.00px' lengthAdjust='spacingAndGlyphs'>QTCF (ms)</text>
 <text x='43.17' y='426.44' style='font-size: 13.20px; font-family: sans;' textLength='35.93px' lengthAdjust='spacingAndGlyphs'>QTCF</text>
-<text x='709.04' y='563.21' text-anchor='end' style='font-size: 8.80px; font-family: sans;' textLength='225.03px' lengthAdjust='spacingAndGlyphs'>Linear Mixed Effects Slope [90% CI]: -0.004 [-0.01, 0.002]</text>
+<text x='709.04' y='563.21' text-anchor='end' style='font-size: 8.80px; font-family: sans;' textLength='229.93px' lengthAdjust='spacingAndGlyphs'>Linear Mixed Effects Slope [90% CI]: -0.004 [-0.010, 0.002]</text>
 <rect x='328.74' y='45.57' width='94.73' height='60.85' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
 <text x='334.22' y='59.76' style='font-size: 11.00px; font-family: sans;' textLength='83.77px' lengthAdjust='spacingAndGlyphs'>Treatment Group</text>
 <rect x='334.22' y='66.38' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />

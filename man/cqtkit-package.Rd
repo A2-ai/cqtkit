@@ -49,6 +49,8 @@ These functions generate exploratory data analysis plots:
 \item \code{\link{eda_scatter_with_regressions}}: Scatter plot with linear
 and loess regression lines
 \item \code{\link{eda_qt_rr_plot}}: QT vs RR relationship plot
+\item \code{\link{model_results_spec}}: Control the slope, CI, p-value, and
+digits reported in QT vs RR plot captions
 \item \code{\link{eda_qtc_comparison_plot}}: Compare QTcB and QTcF
 corrections
 \item \code{\link{eda_mean_dv_over_time}}: Mean dependent variable over

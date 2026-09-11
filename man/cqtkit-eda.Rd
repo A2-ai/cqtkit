@@ -15,6 +15,7 @@ There are several eda_ functions that generate various EDA plots for a C-QTc ana
 \item \code{\link{eda_scatter_with_regressions}} - This function generates a scatter plot of dQTc values plotted against time-matched concentrations overlaid with linear and LOESS regression lines.
 \item \code{\link{eda_quantiles_plot}} - This function generates a plot of binned dependent variables (Concentration) with mean independent variabl (QTc) at each bin with a linear regression line.
 \item \code{\link{eda_qt_rr_plot}} - This function generates a scatter plot of QT vs RR with a linear and LOESS regression line. (It generates a single panel of the eda_qtc_comparison_plot figure)
+\item \code{\link{model_results_spec}} - This function builds the spec controlling the slope, CI, p-value, and digits shown in QT vs RR plot captions.
 }
 }
 

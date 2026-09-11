@@ -724,6 +724,6 @@
 <text x='376.10' y='554.87' text-anchor='middle' style='font-size: 11.00px; font-family: sans;' textLength='40.95px' lengthAdjust='spacingAndGlyphs'>RR (ms)</text>
 <text transform='translate(13.05,277.27) rotate(-90)' text-anchor='middle' style='font-size: 11.00px; font-family: sans;' textLength='40.33px' lengthAdjust='spacingAndGlyphs'>QT (ms)</text>
 <text x='37.69' y='14.56' style='font-size: 13.20px; font-family: sans;' textLength='94.64px' lengthAdjust='spacingAndGlyphs'>eda-qt-rr-default</text>
-<text x='714.52' y='568.69' text-anchor='end' style='font-size: 8.80px; font-family: sans;' textLength='205.97px' lengthAdjust='spacingAndGlyphs'>Linear Regression Slope [90% CI]: 0.108 [0.1, 0.116]</text>
+<text x='714.52' y='568.69' text-anchor='end' style='font-size: 8.80px; font-family: sans;' textLength='215.76px' lengthAdjust='spacingAndGlyphs'>Linear Regression Slope [90% CI]: 0.108 [0.100, 0.116]</text>
 </g>
 </svg>

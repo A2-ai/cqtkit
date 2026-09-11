@@ -1,3 +1,39 @@
+#' Model results caption spec
+#'
+#' Controls what `eda_qt_rr_plot()` and `eda_qtc_comparison_plot()` report in
+#' the plot caption about the fitted QT vs RR slope.
+#'
+#' @param slope Logical, show the slope estimate with its confidence interval
+#' @param ci Numeric confidence interval level for the slope (default: 0.90)
+#' @param pvalue Logical, show the slope p-value on a second caption line
+#' @param eps Numeric, p-values below this are shown as "< eps"
+#' @param digits Integer, decimal places for the slope, CI, and p-value
+#'   (zero-padded, so 0.1 prints as 0.100 with the default of 3)
+#'
+#' @return A list of class `cqtkit_model_results_spec`
+#' @export
+#'
+#' @examples
+#' model_results_spec(pvalue = TRUE)
+#' model_results_spec(ci = 0.95, digits = 4)
+model_results_spec <- function(
+  slope = TRUE,
+  ci = 0.90,
+  pvalue = FALSE,
+  eps = 0.001,
+  digits = 3
+) {
+  checkmate::assertFlag(slope)
+  checkmate::assertNumber(ci, lower = 0, upper = 1)
+  checkmate::assertFlag(pvalue)
+  checkmate::assertNumber(eps, lower = 0, upper = 1)
+  checkmate::assertInt(digits, lower = 0)
+  structure(
+    list(slope = slope, ci = ci, pvalue = pvalue, eps = eps, digits = digits),
+    class = "cqtkit_model_results_spec"
+  )
+}
+
 #' EDA QT RR Plot
 #'
 #' Plots QT against RR.
@@ -7,9 +43,10 @@
 #' @param qt_col An unquoted column name for QT measurements
 #' @param id_col An unquoted column name for subject ID
 #' @param trt_col An unquoted column name for treatment group
-#' @param conf_int Numeric confidence interval level (default: 0.9)
 #' @param model_type Lm or lme, which model to fit for showing on plot
-#' @param show_model_results Logical, whether to show regression slope on plot
+#' @param show_model_results A `model_results_spec()` controlling the slope,
+#'   CI level, p-value, and digits shown in the caption. `TRUE` uses the
+#'   default spec, `FALSE` shows no model results
 #' @param method Method for nlme::lme fitting (ML or REML)
 #' @param remove_rr_iiv Logical, whether to remove IIV on RR slope
 #' @param style A ggstylekit::style_spec() object
@@ -26,14 +63,14 @@ eda_qt_rr_plot <- function(
   qt_col,
   id_col = NULL,
   trt_col = NULL,
-  conf_int = 0.90,
   model_type = c("lm", "lme"),
-  show_model_results = TRUE,
+  show_model_results = model_results_spec(),
   method = "REML",
   remove_rr_iiv = FALSE,
   style = ggstylekit::style_spec()
 ) {
   checkmate::assertDataFrame(data)
+  spec <- as_model_results_spec(show_model_results)
 
   qt <- rlang::enquo(qt_col)
   rr <- rlang::enquo(rr_col)
@@ -44,7 +81,7 @@ eda_qt_rr_plot <- function(
   checkmate::assertNames(names(data), must.include = required_cols)
 
   model_type <- match.arg(model_type)
-  if (rlang::quo_is_null(id) && (model_type == "lme") && show_model_results) {
+  if (rlang::quo_is_null(id) && (model_type == "lme") && !is.null(spec)) {
     stop(
       "Must supply id_col if fitting LME model. Otherwise use model_type = 'lm'"
     )
@@ -64,24 +101,21 @@ eda_qt_rr_plot <- function(
     ggplot2::ggplot(ggplot2::aes(x = !!rr, y = !!qt)) +
     ggplot2::geom_point(trt_color_mapping(trt))
 
-  if (model_type == "lm" && show_model_results) {
+  if (model_type == "lm" && !is.null(spec)) {
     lm_results <- compute_lm_fit_df(
       data,
       xdata_col = !!rr,
       ydata_col = !!qt,
-      conf_int = conf_int
+      conf_int = spec$ci
     )
 
-    label <- paste0(
-      "Linear Regression Slope [",
-      round(conf_int * 100),
-      "% CI]: ",
-      round(lm_results$slope, 3),
-      " [",
-      round(lm_results$slope_ci_lower, 3),
-      ", ",
-      round(lm_results$slope_ci_upper, 3),
-      "]"
+    label <- format_model_results(
+      "Linear Regression",
+      lm_results$slope,
+      lm_results$slope_ci_lower,
+      lm_results$slope_ci_upper,
+      lm_results$p_value_slope,
+      spec
     )
 
     plot_data$predictions <- lm_results$intercept +
@@ -93,7 +127,7 @@ eda_qt_rr_plot <- function(
         ggplot2::aes(y = .data$predictions),
         color = "black"
       )
-  } else if ((model_type == "lme") && show_model_results) {
+  } else if ((model_type == "lme") && !is.null(spec)) {
     lme_mod <- fit_qtc_linear_model(
       data,
       qt_col = !!qt,
@@ -105,7 +139,7 @@ eda_qt_rr_plot <- function(
 
     estimates <- compute_model_fit_parameters(
       lme_mod,
-      conf_int = conf_int,
+      conf_int = spec$ci,
       trt_col_name = name_quo_if_not_null(trt),
       id_col_name = name_quo_if_not_null(id)
     )
@@ -122,16 +156,17 @@ eda_qt_rr_plot <- function(
       dplyr::filter(.data$Parameters == rlang::quo_name(rr)) |>
       dplyr::pull(.data$CIu)
 
-    label <- paste0(
-      "Linear Mixed Effects Slope [",
-      round(conf_int * 100),
-      "% CI]: ",
-      round(slope, 3),
-      " [",
-      round(slope_ci_lower, 3),
-      ", ",
-      round(slope_ci_upper, 3),
-      "]"
+    slope_p_value <- estimates |>
+      dplyr::filter(.data$Parameters == rlang::quo_name(rr)) |>
+      dplyr::pull(.data$`p-value`)
+
+    label <- format_model_results(
+      "Linear Mixed Effects",
+      slope,
+      slope_ci_lower,
+      slope_ci_upper,
+      slope_p_value,
+      spec
     )
 
     plot_data$predictions <- stats::predict(lme_mod, level = 0)
@@ -173,10 +208,11 @@ eda_qt_rr_plot <- function(
 #' @param id_col An unquoted column name for subject ID
 #' @param trt_col An unquoted column name for treatment group data
 #' @param model_type Lm or lme, which model to fit for showing on plot
-#' @param show_model_results Logical, whether to show regression slope on plot
+#' @param show_model_results A `model_results_spec()` controlling the slope,
+#'   CI level, p-value, and digits shown in the caption. `TRUE` uses the
+#'   default spec, `FALSE` shows no model results
 #' @param method Method for nlme::lme fitting (ML or REML)
 #' @param remove_rr_iiv Logical, whether to remove IIV on RR slope
-#' @param conf_int Numeric confidence interval level (default: 0.9)
 #' @param style A ggstylekit::style_spec() object
 #'
 #' @return A multi-panel plot comparing QT, QTcB, QTcF, and QTcP corrections against RR
@@ -205,13 +241,13 @@ eda_qtc_comparison_plot <- function(
   id_col = NULL,
   trt_col = NULL,
   model_type = c("lm", "lme"),
-  show_model_results = TRUE,
+  show_model_results = model_results_spec(),
   method = "REML",
   remove_rr_iiv = FALSE,
-  conf_int = 0.90,
   style = ggstylekit::style_spec()
 ) {
   checkmate::assertDataFrame(data)
+  spec <- as_model_results_spec(show_model_results)
 
   rr <- rlang::enquo(rr_col)
   qt <- rlang::enquo(qt_col)
@@ -222,7 +258,7 @@ eda_qtc_comparison_plot <- function(
   trt <- rlang::enquo(trt_col)
 
   model_type <- match.arg(model_type)
-  if (rlang::quo_is_null(id) && (model_type == "lme") && show_model_results) {
+  if (rlang::quo_is_null(id) && (model_type == "lme") && !is.null(spec)) {
     stop(
       "Must supply id_col if fitting LME model. Otherwise use show_lm_results = TRUE"
     )
@@ -248,12 +284,11 @@ eda_qtc_comparison_plot <- function(
       qt_col = !!dplyr::sym(qtc),
       id_col = !!id,
       trt_col = !!trt,
-      conf_int,
-      model_type,
-      show_model_results,
-      method,
-      remove_rr_iiv,
-      style
+      model_type = model_type,
+      show_model_results = spec,
+      method = method,
+      remove_rr_iiv = remove_rr_iiv,
+      style = style
     )
     return(p)
   })

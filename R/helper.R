@@ -183,3 +183,81 @@ quad_form <- function(a, b, c) {
     upper_conc = x1
   ))
 }
+
+#' Normalise the `show_model_results` argument
+#'
+#' @param x TRUE, FALSE, NULL, or a `model_results_spec()`
+#' @return A `cqtkit_model_results_spec`, or NULL when results are not shown
+#' @keywords internal
+#' @noRd
+as_model_results_spec <- function(x) {
+  if (is.null(x) || isFALSE(x)) {
+    return(NULL)
+  }
+  if (isTRUE(x)) {
+    return(model_results_spec())
+  }
+  if (inherits(x, "cqtkit_model_results_spec")) {
+    return(x)
+  }
+  stop(
+    "`show_model_results` must be TRUE, FALSE, or a `model_results_spec()`",
+    call. = FALSE
+  )
+}
+
+#' Format a number to a fixed number of decimal places, zero-padded
+#'
+#' @param x Numeric
+#' @param digits Integer decimal places
+#' @return Character, e.g. `fmt_fixed(0.1, 3)` is "0.100"
+#' @keywords internal
+#' @noRd
+fmt_fixed <- function(x, digits) {
+  formatC(x, format = "f", digits = digits)
+}
+
+#' Format a slope estimate, CI, and p-value for a plot caption
+#'
+#' @param label Model label prefix, e.g. "Linear Regression"
+#' @param estimate Numeric slope estimate
+#' @param lower,upper Numeric confidence bounds
+#' @param pvalue Numeric slope p-value
+#' @param spec A `model_results_spec()`
+#' @return A caption string, or NULL if the spec shows nothing
+#' @keywords internal
+#' @noRd
+format_model_results <- function(label, estimate, lower, upper, pvalue, spec) {
+  lines <- character()
+  if (spec$slope) {
+    lines <- c(
+      lines,
+      paste0(
+        label,
+        " Slope [",
+        round(spec$ci * 100),
+        "% CI]: ",
+        fmt_fixed(estimate, spec$digits),
+        " [",
+        fmt_fixed(lower, spec$digits),
+        ", ",
+        fmt_fixed(upper, spec$digits),
+        "]"
+      )
+    )
+  }
+  if (spec$pvalue) {
+    p_str <- if (is.na(pvalue)) {
+      "NA"
+    } else if (pvalue < spec$eps) {
+      paste0("< ", format(spec$eps, scientific = FALSE))
+    } else {
+      fmt_fixed(pvalue, spec$digits)
+    }
+    lines <- c(lines, paste0("Slope p-value: ", p_str))
+  }
+  if (length(lines) == 0) {
+    return(NULL)
+  }
+  paste(lines, collapse = "\n")
+}
