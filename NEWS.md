@@ -1,3 +1,8 @@
+# cqtkit 1.1.1
+
+### Fixed
+* `compute_pk_parameters()` now takes one Cmax per subject before summarizing, so subjects with more timepoints no longer contribute repeated Cmax values to `Cmax_gm` and `Cmax_cv`.
+
 # cqtkit 1.1.0
 
 ### Enhanced
