@@ -63,3 +63,24 @@ test_that("compute_delta_qtcfblm computes deltaQTCFBL from QTCFBL and QTCFBLM", 
   expect_equal(result$deltaQTCFBL, data$QTCFBL - data$QTCFBLM, tolerance = 1e-10)
   expect_equal(result$deltaQTCFBL, cqtkit_data_verapamil$deltaQTCFBL, tolerance = 1e-10)
 })
+
+test_that("compute_delta_*blm() name the fix when the BLM column is missing", {
+  expect_error(
+    compute_delta_hrblm(dplyr::select(cqtkit_data_verapamil, -HRBLM)),
+    "compute_hrblm(data, bl_data, by)", fixed = TRUE
+  )
+  expect_error(
+    compute_delta_qtcbblm(dplyr::select(cqtkit_data_verapamil, -QTCBBLM)),
+    "compute_qtcbblm(data, bl_data, by)", fixed = TRUE
+  )
+  expect_error(
+    compute_delta_qtcfblm(dplyr::select(cqtkit_data_verapamil, -QTCFBLM)),
+    "compute_qtcfblm(data, bl_data, by)", fixed = TRUE
+  )
+})
+
+test_that("compute_delta_*blm() reject a varying column passed as the BLM", {
+  raw <- dplyr::select(cqtkit_data_verapamil, -QTCFBLM)
+  # v1.1.0 positional call: (data, id_col, qtcfbl_col)
+  expect_error(compute_delta_qtcfblm(raw, ID, QTCFBL), "varies across rows")
+})

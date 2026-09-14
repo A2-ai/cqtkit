@@ -9,7 +9,7 @@ compute_high_qtc_sub(
   qtc_col,
   deltaqtc_col,
   id_col,
-  group_col = NULL,
+  group_col,
   qtc_thresholds = c(450, 480, 500),
   dqtc_thresholds = c(30, 60)
 )
@@ -21,9 +21,9 @@ compute_high_qtc_sub(
 
 \item{deltaqtc_col}{An unquoted column name for deltaQTc data}
 
-\item{id_col}{An unquoted column name for subject ID (required)}
+\item{id_col}{An unquoted column name for subject ID}
 
-\item{group_col}{An optional column name for grouping data}
+\item{group_col}{A column name for grouping data, or \code{NULL} for an ungrouped total}
 
 \item{qtc_thresholds}{Numeric vector of QTc thresholds (default: c(450, 480, 500))}
 
@@ -39,6 +39,9 @@ where QTc exceeds specified thresholds or deltaQTc exceeds specified thresholds.
 }
 \examples{
 
-compute_high_qtc_sub(cqtkit_data_verapamil, QTCF, deltaQTCF, ID)
-compute_high_qtc_sub(cqtkit_data_verapamil, QTCF, deltaQTCF, ID, qtc_thresholds = c(430, 450))
+compute_high_qtc_sub(cqtkit_data_verapamil, QTCF, deltaQTCF, ID, DOSEF)
+compute_high_qtc_sub(
+  cqtkit_data_verapamil, QTCF, deltaQTCF, ID, group_col = NULL,
+  qtc_thresholds = c(430, 450)
+)
 }

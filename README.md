@@ -29,7 +29,6 @@ The documentation site for cqtkit can be found
 
 ``` r
 library(cqtkit)
-library(ggstylekit)
 library(dplyr)
 library(gt)
 ```

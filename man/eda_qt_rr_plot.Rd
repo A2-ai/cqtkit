@@ -10,6 +10,7 @@ eda_qt_rr_plot(
   qt_col,
   id_col = NULL,
   trt_col = NULL,
+  conf_int = lifecycle::deprecated(),
   model_type = c("lm", "lme"),
   show_model_results = model_results_spec(),
   method = "REML",
@@ -27,6 +28,8 @@ eda_qt_rr_plot(
 \item{id_col}{An unquoted column name for subject ID}
 
 \item{trt_col}{An unquoted column name for treatment group}
+
+\item{conf_int}{Deprecated. Set \code{ci} in \code{model_results_spec()} instead.}
 
 \item{model_type}{Lm or lme, which model to fit for showing on plot}
 

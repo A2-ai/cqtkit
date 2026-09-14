@@ -50,6 +50,7 @@ model_results_spec <- function(
 #' @param method Method for nlme::lme fitting (ML or REML)
 #' @param remove_rr_iiv Logical, whether to remove IIV on RR slope
 #' @param style A ggstylekit::style_spec() object
+#' @param conf_int Deprecated. Set `ci` in `model_results_spec()` instead.
 #'
 #' @return A scatter plot of QT vs RR with optional regression line and slope estimate caption
 #' @export
@@ -63,14 +64,19 @@ eda_qt_rr_plot <- function(
   qt_col,
   id_col = NULL,
   trt_col = NULL,
+  conf_int = lifecycle::deprecated(),
   model_type = c("lm", "lme"),
   show_model_results = model_results_spec(),
   method = "REML",
   remove_rr_iiv = FALSE,
   style = ggstylekit::style_spec()
 ) {
+  style <- as_style_spec(style, "eda_qt_rr_plot")
   checkmate::assertDataFrame(data)
   spec <- as_model_results_spec(show_model_results)
+  if (lifecycle::is_present(conf_int)) {
+    spec <- legacy_conf_int(spec, conf_int, "eda_qt_rr_plot")
+  }
 
   qt <- rlang::enquo(qt_col)
   rr <- rlang::enquo(rr_col)
@@ -214,6 +220,8 @@ eda_qt_rr_plot <- function(
 #' @param method Method for nlme::lme fitting (ML or REML)
 #' @param remove_rr_iiv Logical, whether to remove IIV on RR slope
 #' @param style A ggstylekit::style_spec() object
+#' @param legend_location Deprecated. Set `legend.position` in `style` instead.
+#' @param conf_int Deprecated. Set `ci` in `model_results_spec()` instead.
 #'
 #' @return A multi-panel plot comparing QT, QTcB, QTcF, and QTcP corrections against RR
 #' @export
@@ -240,14 +248,23 @@ eda_qtc_comparison_plot <- function(
   qtcp_col = NULL,
   id_col = NULL,
   trt_col = NULL,
+  legend_location = lifecycle::deprecated(),
   model_type = c("lm", "lme"),
   show_model_results = model_results_spec(),
   method = "REML",
   remove_rr_iiv = FALSE,
+  conf_int = lifecycle::deprecated(),
   style = ggstylekit::style_spec()
 ) {
+  style <- as_style_spec(style, "eda_qtc_comparison_plot")
   checkmate::assertDataFrame(data)
+  if (lifecycle::is_present(legend_location)) {
+    style <- legacy_legend_location(style, legend_location, "eda_qtc_comparison_plot")
+  }
   spec <- as_model_results_spec(show_model_results)
+  if (lifecycle::is_present(conf_int)) {
+    spec <- legacy_conf_int(spec, conf_int, "eda_qtc_comparison_plot")
+  }
 
   rr <- rlang::enquo(rr_col)
   qt <- rlang::enquo(qt_col)
@@ -343,6 +360,7 @@ eda_quantiles_plot <- function(
   error_bars = "CI",
   style = ggstylekit::style_spec()
 ) {
+  style <- as_style_spec(style, "eda_quantiles_plot")
   checkmate::assertDataFrame(data)
   checkmate::assertNumeric(conf_int, lower = 0, upper = 1)
   checkmate::assert_choice(error_bars, c("CI", "SE", "SD"), null.ok = TRUE)
@@ -456,6 +474,7 @@ eda_scatter_with_regressions <- function(
   conf_int = 0.90,
   style = ggstylekit::style_spec()
 ) {
+  style <- as_style_spec(style, "eda_scatter_with_regressions")
   checkmate::assertDataFrame(data)
   checkmate::assertNumeric(conf_int, lower = 0, upper = 1)
 
@@ -607,6 +626,7 @@ eda_hysteresis_loop_plot <- function(
   show_hysteresis_warning = TRUE,
   style = ggstylekit::style_spec()
 ) {
+  style <- as_style_spec(style, "eda_hysteresis_loop_plot")
   checkmate::assertDataFrame(data)
   time <- rlang::enquo(ntime_col)
   deltaqtc <- rlang::enquo(deltaqtc_col)
@@ -804,6 +824,7 @@ eda_mean_dv_over_time <- function(
   sec_ylabel = "Concentration (ng/mL)",
   style = ggstylekit::style_spec()
 ) {
+  style <- as_style_spec(style, "eda_mean_dv_over_time")
   # Check inputs
   checkmate::assertDataFrame(data)
   checkmate::assertNumeric(conf_int, lower = 0, upper = 1)

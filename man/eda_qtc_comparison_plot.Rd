@@ -13,10 +13,12 @@ eda_qtc_comparison_plot(
   qtcp_col = NULL,
   id_col = NULL,
   trt_col = NULL,
+  legend_location = lifecycle::deprecated(),
   model_type = c("lm", "lme"),
   show_model_results = model_results_spec(),
   method = "REML",
   remove_rr_iiv = FALSE,
+  conf_int = lifecycle::deprecated(),
   style = ggstylekit::style_spec()
 )
 }
@@ -37,6 +39,8 @@ eda_qtc_comparison_plot(
 
 \item{trt_col}{An unquoted column name for treatment group data}
 
+\item{legend_location}{Deprecated. Set \code{legend.position} in \code{style} instead.}
+
 \item{model_type}{Lm or lme, which model to fit for showing on plot}
 
 \item{show_model_results}{A \code{model_results_spec()} controlling the slope,
@@ -46,6 +50,8 @@ default spec, \code{FALSE} shows no model results}
 \item{method}{Method for nlme::lme fitting (ML or REML)}
 
 \item{remove_rr_iiv}{Logical, whether to remove IIV on RR slope}
+
+\item{conf_int}{Deprecated. Set \code{ci} in \code{model_results_spec()} instead.}
 
 \item{style}{A ggstylekit::style_spec() object}
 }

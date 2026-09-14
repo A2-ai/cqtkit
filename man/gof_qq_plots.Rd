@@ -11,6 +11,7 @@ gof_qq_plots(
   conc_col,
   ntime_col,
   trt_col = NULL,
+  legend_location = lifecycle::deprecated(),
   style = ggstylekit::style_spec()
 )
 }
@@ -26,6 +27,8 @@ gof_qq_plots(
 \item{ntime_col}{An unquoted column name for nominal time since dose}
 
 \item{trt_col}{An unquoted column name for treatment group"}
+
+\item{legend_location}{Deprecated. Set \code{legend.position} in \code{style} instead.}
 
 \item{style}{A ggstylekit::style_spec() object}
 }

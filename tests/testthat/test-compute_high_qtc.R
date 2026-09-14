@@ -25,11 +25,31 @@ test_that('compute_high_qtc_obs respects grouping column', {
 
 test_that('compute_high_qtc_sub counts subjects correctly', {
 
-  result <- compute_high_qtc_sub(cqtkit_data_verapamil, QTCF, deltaQTCF, ID, qtc_thresholds = c(450), dqtc_thresholds = c(30))
+  result <- compute_high_qtc_sub(cqtkit_data_verapamil, QTCF, deltaQTCF, ID, NULL, qtc_thresholds = c(450), dqtc_thresholds = c(30))
 
   expected_sub_qtc <- dplyr::n_distinct(cqtkit_data_verapamil$ID[cqtkit_data_verapamil$QTCF > 450])
   expected_sub_dqtc <- dplyr::n_distinct(cqtkit_data_verapamil$ID[cqtkit_data_verapamil$deltaQTCF > 30])
 
   expect_equal(result$n_QTc_gt_450, expected_sub_qtc)
   expect_equal(result$n_dQTc_gt_30, expected_sub_dqtc)
+})
+
+test_that("compute_high_qtc_sub() errors clearly when id_col is missing", {
+  expect_error(
+    compute_high_qtc_sub(cqtkit_data_verapamil, QTCF, deltaQTCF),
+    "compute_high_qtc_obs()", fixed = TRUE
+  )
+})
+
+test_that("compute_high_qtc_sub() requires an explicit group_col", {
+  # a pre-2.0.0 positional call binds its group column to `id_col` and stops
+  # here rather than silently counting distinct treatment groups
+  expect_error(
+    compute_high_qtc_sub(cqtkit_data_verapamil, QTCF, deltaQTCF, TRTG),
+    "`group_col` is required", fixed = TRUE
+  )
+  expect_error(
+    compute_high_qtc_sub(cqtkit_data_verapamil, QTCF, deltaQTCF, id_col = ID),
+    "`group_col` is required", fixed = TRUE
+  )
 })

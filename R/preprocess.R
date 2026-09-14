@@ -197,6 +197,7 @@ compute_delta_hrblm <- function(
   hrbl  <- rlang::enquo(hrbl_col)
   hrblm <- rlang::enquo(hrblm_col)
 
+  assert_blm_column(data, hrblm, "compute_hrblm")
   required_cols <- unlist(lapply(c(hrbl, hrblm), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
@@ -236,6 +237,7 @@ compute_delta_qtcbblm <- function(
   qtcbbl  <- rlang::enquo(qtcbbl_col)
   qtcbblm <- rlang::enquo(qtcbblm_col)
 
+  assert_blm_column(data, qtcbblm, "compute_qtcbblm")
   required_cols <- unlist(lapply(c(qtcbbl, qtcbblm), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
@@ -275,6 +277,7 @@ compute_delta_qtcfblm <- function(
   qtcfbl  <- rlang::enquo(qtcfbl_col)
   qtcfblm <- rlang::enquo(qtcfblm_col)
 
+  assert_blm_column(data, qtcfblm, "compute_qtcfblm")
   required_cols <- unlist(lapply(c(qtcfbl, qtcfblm), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
@@ -311,6 +314,33 @@ compute_delta_qtcfblm <- function(
 #' analysis_data |> preprocess(raw_bl, by = c(ID, TRTG))
 #' }
 preprocess <- function(data, bl_data, by) {
+  bl_quo <- rlang::enquo(bl_data)
+  bl_data <- if (rlang::quo_is_missing(bl_quo)) {
+    NULL
+  } else {
+    tryCatch(rlang::eval_tidy(bl_quo), error = function(e) e)
+  }
+  if (!is.data.frame(bl_data)) {
+    msg <- paste0(
+      "`preprocess()` now takes `(data, bl_data, by)` and joins population ",
+      "baseline means from a separate baseline dataset instead of computing ",
+      "them from `id_col`. See `vignette('data-assembly', package = 'cqtkit')`."
+    )
+    if (inherits(bl_data, "error")) {
+      msg <- paste0(
+        msg, "\nEvaluating `bl_data` failed: ", conditionMessage(bl_data)
+      )
+    }
+    stop(msg, call. = FALSE)
+  }
+  if (missing(by)) {
+    stop(
+      "`by` is required: the column(s) identifying a subject in both `data` ",
+      "and `bl_data`, e.g. `preprocess(data, bl_data, by = ID)`.",
+      call. = FALSE
+    )
+  }
+
   data |>
     compute_hrblm(bl_data, by = {{ by }}) |>
     compute_qtcbblm(bl_data, by = {{ by }}) |>

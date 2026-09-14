@@ -50,7 +50,7 @@ test_that("tabulate_high_qtc_obs snapshot", {
 
 test_that("tabulate_high_qtc_sub snapshot", {
 
-  table <- tabulate_high_qtc_sub(cqtkit_data_verapamil, QTCF, deltaQTCF, ID, qtc_label = "QTcF")
+  table <- tabulate_high_qtc_sub(cqtkit_data_verapamil, QTCF, deltaQTCF, ID, NULL, qtc_label = "QTcF")
 
   snapshot_gt(table, "tab-high-qtc-sub")
 })
@@ -74,4 +74,22 @@ test_that("tabulate_exposure_predictions snapshot", {
   )
 
   snapshot_gt(table, "tab-exposure-pred")
+})
+
+test_that("tabulate_high_qtc_sub() errors clearly when id_col is missing", {
+  expect_error(
+    tabulate_high_qtc_sub(cqtkit_data_verapamil, QTCF, deltaQTCF),
+    "tabulate_high_qtc_obs()", fixed = TRUE
+  )
+})
+
+test_that("tabulate_high_qtc_sub() requires an explicit group_col", {
+  expect_error(
+    tabulate_high_qtc_sub(cqtkit_data_verapamil, QTCF, deltaQTCF, TRTG),
+    "`group_col` is required", fixed = TRUE
+  )
+  expect_error(
+    tabulate_high_qtc_sub(cqtkit_data_verapamil, QTCF, deltaQTCF, id_col = ID),
+    "`group_col` is required", fixed = TRUE
+  )
 })

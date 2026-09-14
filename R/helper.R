@@ -287,3 +287,99 @@ paste_grouping <- function(x, y, sep = " ") {
   lvls <- as.vector(t(outer(levels(x), levels(y), paste, sep = sep)))
   droplevels(factor(paste(x, y, sep = sep), levels = lvls))
 }
+
+# Apply a deprecated `legend_location` argument onto the style's
+# `legend.position`, warning once per session.
+legacy_legend_location <- function(
+  style,
+  legend_location,
+  fn,
+  env = rlang::caller_env(),
+  user_env = rlang::caller_env(2)
+) {
+  lifecycle::deprecate_warn(
+    when = "2.0.0",
+    what = paste0(fn, "(legend_location)"),
+    with = paste0(fn, "(style)"),
+    details = "Set `legend.position` in the `style_spec()` instead.",
+    env = env,
+    user_env = user_env
+  )
+  legend_location <- match.arg(
+    legend_location,
+    c("top", "bottom", "left", "right", "none")
+  )
+  if (is.null(style)) style <- ggstylekit::style_spec()
+  style$legend.position <- legend_location
+  style
+}
+
+# Apply a deprecated `conf_int` argument onto the model results spec's `ci`,
+# warning once per session.
+legacy_conf_int <- function(
+  spec,
+  conf_int,
+  fn,
+  env = rlang::caller_env(),
+  user_env = rlang::caller_env(2)
+) {
+  lifecycle::deprecate_warn(
+    when = "2.0.0",
+    what = paste0(fn, "(conf_int)"),
+    with = paste0(fn, "(show_model_results)"),
+    details = "Set `ci` in `model_results_spec()` instead.",
+    env = env,
+    user_env = user_env
+  )
+  checkmate::assertNumber(conf_int, lower = 0, upper = 1)
+  if (is.null(spec)) {
+    return(NULL)
+  }
+  spec$ci <- conf_int
+  spec
+}
+
+# Normalise a plotting function's `style` argument to a
+# ggstylekit::style_spec(). Plain lists (the pre-2.0.0 form) are an error.
+as_style_spec <- function(style, fn) {
+  if (is.null(style)) {
+    return(ggstylekit::style_spec())
+  }
+  if (inherits(style, "ggstylekit_style_spec")) {
+    return(style)
+  }
+  stop(
+    "`", fn, "(style = )` must be a `ggstylekit::style_spec()`. Plain lists ",
+    "were removed in cqtkit 2.0.0; build the style with `style_spec()`. ",
+    'See `vignette("styling", package = "cqtkit")`.',
+    call. = FALSE
+  )
+}
+
+# Error early, and helpfully, when a compute_delta_*blm() function is called
+# on data that lacks the population baseline mean column it now expects.
+assert_blm_column <- function(data, blm_quo, blm_fn) {
+  if (rlang::quo_is_null(blm_quo)) {
+    return(invisible(NULL))
+  }
+  blm_name <- rlang::as_name(blm_quo)
+  fix <- paste0(
+    "add it with `", blm_fn, "(data, bl_data, by)` or run `preprocess()`."
+  )
+  if (!blm_name %in% names(data)) {
+    stop(
+      "`", blm_name, "` not found in `data`. Since cqtkit 2.0.0 the population ",
+      "baseline mean must already be on `data`; ", fix,
+      call. = FALSE
+    )
+  }
+  if (length(unique(stats::na.omit(data[[blm_name]]))) > 1) {
+    stop(
+      "`", blm_name, "` varies across rows, so it is not a population baseline ",
+      "mean. Since cqtkit 2.0.0 the arguments are `(data, <bl_col>, <blm_col>)`; ",
+      fix,
+      call. = FALSE
+    )
+  }
+  invisible(NULL)
+}

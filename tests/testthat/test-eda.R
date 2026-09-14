@@ -316,3 +316,35 @@ test_that("eda_mean_dv_over_time keeps dose factor level order in the legend", {
     c(paste(lvls, "deltaQTCF"), paste(lvls, "CONC"), "Reference -10", "Reference 10")
   )
 })
+
+test_that("conf_int is deprecated but still sets the CI level", {
+  lifecycle::expect_deprecated(
+    p <- eda_qt_rr_plot(cqtkit_data_verapamil, RR, QT, conf_int = 0.95)
+  )
+  expect_match(ggplot2::get_labs(p)$caption, "Slope [95% CI]", fixed = TRUE)
+
+  withr::local_options(lifecycle_verbosity = "quiet")
+  p2 <- eda_qt_rr_plot(
+    cqtkit_data_verapamil, RR, QT,
+    show_model_results = FALSE, conf_int = 0.95
+  )
+  expect_null(ggplot2::get_labs(p2)$caption)
+})
+
+test_that("eda_qtc_comparison_plot() accepts deprecated legend_location and conf_int", {
+  withr::local_options(lifecycle_verbosity = "quiet")
+  p <- eda_qtc_comparison_plot(
+    cqtkit_data_verapamil, RR, QT, QTCB, QTCF,
+    id_col = ID, trt_col = TRTG,
+    legend_location = "bottom", conf_int = 0.95
+  )
+  expect_equal(p$patches$annotation$theme$legend.position, "bottom")
+  expect_match(ggplot2::get_labs(p[[1]])$caption, "Slope [95% CI]", fixed = TRUE)
+})
+
+test_that("conf_int keeps its v1.1.0 position for positional calls", {
+  lifecycle::expect_deprecated(
+    p <- eda_qt_rr_plot(cqtkit_data_verapamil, RR, QT, ID, TRTG, 0.95)
+  )
+  expect_match(ggplot2::get_labs(p)$caption, "Slope [95% CI]", fixed = TRUE)
+})

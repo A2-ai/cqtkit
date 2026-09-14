@@ -108,6 +108,9 @@ reference = [
 	{ label = "Style", collapsed = true, contents = [
 		{ slug = "cqtkit-style", label = "Style Functions" },
 		"add_horizontal_references",
+		"set_style",
+		"style_plot",
+		"reexports",
 	] },
 	{ label = "Datasets", collapsed = true, contents = [
 		{ slug = "cqtkit-datasets", label = "Datasets" },

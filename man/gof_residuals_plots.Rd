@@ -14,6 +14,7 @@ gof_residuals_plots(
   conc_xlabel = "Concentration (ng/mL)",
   dv_label = bquote(Delta ~ "QTc (ms)"),
   residual_references = c(-2, 2),
+  legend_location = lifecycle::deprecated(),
   style = ggstylekit::style_spec()
 )
 }
@@ -35,6 +36,8 @@ gof_residuals_plots(
 \item{dv_label}{A string of dv label (default: bquote(Delta ~ 'QTc (ms)'))}
 
 \item{residual_references}{Numeric vector of reference residual lines to add, default -2 and 2}
+
+\item{legend_location}{Deprecated. Set \code{legend.position} in \code{style} instead.}
 
 \item{style}{A ggstylekit::style_spec() object}
 }

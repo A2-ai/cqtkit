@@ -598,8 +598,8 @@ tabulate_high_qtc_obs <- function(
 #' @param data A data frame containing C-QT analysis dataset
 #' @param qtc_col An unquoted column name for QTc data
 #' @param deltaqtc_col An unquoted column name for deltaQTc data
-#' @param id_col An unquoted column name for subject ID (required)
-#' @param group_col An optional unquoted column name of grouping column
+#' @param id_col An unquoted column name for subject ID
+#' @param group_col An unquoted column name of grouping column, or `NULL` for an ungrouped total
 #' @param group_label An optional label to use for group column
 #' @param qtc_label A string label for the QTc parameter (default: "QTc")
 #' @param unit A string for the unit of measurement (default: "ms")
@@ -615,15 +615,18 @@ tabulate_high_qtc_obs <- function(
 #' @examples
 #'
 #' tabulate_high_qtc_sub(
-#'   cqtkit_data_verapamil, QTCF, deltaQTCF, ID, group_col = DOSEF, qtc_label = "QTcF"
+#'   cqtkit_data_verapamil, QTCF, deltaQTCF, ID, DOSEF, qtc_label = "QTcF"
 #' )
-#' tabulate_high_qtc_sub(cqtkit_data_verapamil, QTCF, deltaQTCF, ID, qtc_thresholds = c(430, 450))
+#' tabulate_high_qtc_sub(
+#'   cqtkit_data_verapamil, QTCF, deltaQTCF, ID, group_col = NULL,
+#'   qtc_thresholds = c(430, 450)
+#' )
 tabulate_high_qtc_sub <- function(
   data,
   qtc_col,
   deltaqtc_col,
   id_col,
-  group_col = NULL,
+  group_col,
   group_label = NULL,
   qtc_label = "QTc",
   unit = "ms",
@@ -639,12 +642,26 @@ tabulate_high_qtc_sub <- function(
   qtc <- rlang::enquo(qtc_col)
   deltaqtc <- rlang::enquo(deltaqtc_col)
   id <- rlang::enquo(id_col)
+  if (rlang::quo_is_missing(id)) {
+    stop(
+      "`id_col` is required. Since cqtkit 2.0.0 `tabulate_high_qtc_sub()` counts ",
+      "subjects, not observations. For the observation counts it used to ",
+      "return, use `tabulate_high_qtc_obs()`.",
+      call. = FALSE
+    )
+  }
   group <- rlang::enquo(group_col)
+  if (rlang::quo_is_missing(group)) {
+    stop(
+      "`group_col` is required. Pass `group_col = NULL` for an ungrouped total.",
+      call. = FALSE
+    )
+  }
 
   required_cols <- unlist(lapply(c(qtc, deltaqtc, id, group), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
-  n_gt <- compute_high_qtc_sub(data, !!qtc, !!deltaqtc, !!id, !!group,
+  n_gt <- compute_high_qtc_sub(data, !!qtc, !!deltaqtc, group_col = !!group, id_col = !!id,
                                qtc_thresholds = qtc_thresholds,
                                dqtc_thresholds = dqtc_thresholds)
 

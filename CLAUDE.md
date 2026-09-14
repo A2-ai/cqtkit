@@ -51,7 +51,7 @@ The package is organized into logical modules in the `R/` directory:
 - **`gof.R`**: Goodness-of-fit evaluation functions including residual plots, VPC plots, and concordance plots
 - **`predict.R`**: Exposure-response prediction functions for computing QTc predictions at different concentrations
 - **`tabulate.R`**: Table generation functions using the `gt` package for formatted output
-- **`style.R`**: cqtkit's `ggstylekit` style defaults and the internal plot styling wrapper
+- **`style.R`**: cqtkit's `ggstylekit` style defaults, the internal plot styling wrapper, and the deprecated `set_style()`/`style_plot()` shims
 - **`plot-helpers.R`**: Helper functions for plot generation and customization
 - **`data.R`**: Data documentation and example datasets
 - **`helper.R`**: General utility functions and model input assertions

@@ -13,6 +13,7 @@ gof_plots(
   trt_col = NULL,
   conc_xlabel = "Concentration ng/mL",
   dv_label = bquote(Delta ~ "QTc (ms)"),
+  legend_location = lifecycle::deprecated(),
   style = ggstylekit::style_spec()
 )
 }
@@ -32,6 +33,8 @@ gof_plots(
 \item{conc_xlabel}{A string for concentration plot xlabel}
 
 \item{dv_label}{A string of dv label (default: bquote(Delta ~ 'QTc (ms)'))}
+
+\item{legend_location}{Deprecated. Set \code{legend.position} in \code{style} instead.}
 
 \item{style}{A ggstylekit::style_spec() object}
 }

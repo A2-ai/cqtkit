@@ -164,6 +164,8 @@ Plots are styled with \pkg{ggstylekit}. Pass a
 argument. This helper adds reference lines:
 \itemize{
 \item \code{\link{add_horizontal_references}}: Add reference lines to plots
+\item \code{\link[ggstylekit]{style_spec}}, \code{\link[ggstylekit]{legend_spec}}, \code{\link[ggstylekit]{reveal}}, \code{\link[ggstylekit]{restyle_plot}}: Re-exported from \pkg{ggstylekit}
+\item \code{\link{set_style}}, \code{\link{style_plot}}: Removed in 2.0.0; use \code{style_spec()} and \code{restyle_plot()}
 }
 
 cqtkit also has included datasets:

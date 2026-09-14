@@ -11,6 +11,7 @@
 #' @param conc_xlabel A string for concentration plot xlabel
 #' @param dv_label A string of dv label (default: bquote(Delta ~ 'QTc (ms)'))
 #' @param style A ggstylekit::style_spec() object
+#' @param legend_location Deprecated. Set `legend.position` in `style` instead.
 #'
 #' @return A 2x2 panel with concordance plots, residual distributions, Q-Q plots, and residual histograms
 #' @export
@@ -46,9 +47,14 @@ gof_plots <- function(
   trt_col = NULL,
   conc_xlabel = "Concentration ng/mL",
   dv_label = bquote(Delta ~ "QTc (ms)"),
+  legend_location = lifecycle::deprecated(),
   style = ggstylekit::style_spec()
 ) {
+  style <- as_style_spec(style, "gof_plots")
   checkmate::assertDataFrame(data)
+  if (lifecycle::is_present(legend_location)) {
+    style <- legacy_legend_location(style, legend_location, "gof_plots")
+  }
   checkmate::assert(checkmate::check_class(fit, "lme"))
 
 
@@ -190,6 +196,7 @@ gof_plots <- function(
 #' @param trt_col An unquoted column name for treatment group"
 #' @param dv_label A string of dv label (default: bquote(Delta ~ 'QTc (ms)'))
 #' @param style A ggstylekit::style_spec() object
+#' @param legend_location Deprecated. Set `legend.position` in `style` instead.
 #'
 #' @return A 2-panel plot comparing population (PRED) and individual (IPRED) predictions vs observed values
 #' @export
@@ -219,9 +226,14 @@ gof_concordance_plots <- function(
   ntime_col,
   trt_col = NULL,
   dv_label = bquote(Delta ~ "QTc (ms)"),
+  legend_location = lifecycle::deprecated(),
   style = ggstylekit::style_spec()
 ) {
+  style <- as_style_spec(style, "gof_concordance_plots")
   checkmate::assertDataFrame(data)
+  if (lifecycle::is_present(legend_location)) {
+    style <- legacy_legend_location(style, legend_location, "gof_concordance_plots")
+  }
   checkmate::assert(checkmate::check_class(fit, "lme"))
 
   dv <- rlang::enquo(dv_col)
@@ -307,6 +319,7 @@ gof_concordance_plots <- function(
 #' @param dv_label A string of dv label (default: bquote(Delta ~ 'QTc (ms)'))
 #' @param residual_references Numeric vector of reference residual lines to add, default -2 and 2
 #' @param style A ggstylekit::style_spec() object
+#' @param legend_location Deprecated. Set `legend.position` in `style` instead.
 #'
 #' @return A 4-panel plot of WRES and IWRES residuals vs predicted values and concentration
 #' @export
@@ -340,9 +353,14 @@ gof_residuals_plots <- function(
   conc_xlabel = "Concentration (ng/mL)",
   dv_label = bquote(Delta ~ "QTc (ms)"),
   residual_references = c(-2, 2),
+  legend_location = lifecycle::deprecated(),
   style = ggstylekit::style_spec()
 ) {
+  style <- as_style_spec(style, "gof_residuals_plots")
   checkmate::assertDataFrame(data)
+  if (lifecycle::is_present(legend_location)) {
+    style <- legacy_legend_location(style, legend_location, "gof_residuals_plots")
+  }
   checkmate::assert(checkmate::check_class(fit, "lme"))
   checkmate::assert_numeric(residual_references, null.ok = TRUE)
 
@@ -416,6 +434,7 @@ gof_residuals_plots <- function(
 #' @param ntime_col An unquoted column name for nominal time since dose
 #' @param trt_col An unquoted column name for treatment group"
 #' @param style A ggstylekit::style_spec() object
+#' @param legend_location Deprecated. Set `legend.position` in `style` instead.
 #'
 #' @return A 2-panel Q-Q plot comparing WRES and IWRES to normal distribution
 #' @export
@@ -441,9 +460,14 @@ gof_qq_plots <- function(
   conc_col,
   ntime_col,
   trt_col = NULL,
+  legend_location = lifecycle::deprecated(),
   style = ggstylekit::style_spec()
 ) {
+  style <- as_style_spec(style, "gof_qq_plots")
   checkmate::assertDataFrame(data)
+  if (lifecycle::is_present(legend_location)) {
+    style <- legacy_legend_location(style, legend_location, "gof_qq_plots")
+  }
   checkmate::assert(checkmate::check_class(fit, "lme"))
 
   dv <- rlang::enquo(dv_col)
@@ -509,6 +533,7 @@ gof_qq_plots <- function(
 #' @param trt_col An unquoted column name for treatment group" will use for filling boxplots
 #' @param residual_references Numeric vector of reference residual lines to add, default -2 and 2
 #' @param style A ggstylekit::style_spec() object
+#' @param legend_location Deprecated. Set `legend.position` in `style` instead.
 #'
 #' @return A 2-panel boxplot of WRES and IWRES residuals by nominal time
 #' @export
@@ -541,9 +566,14 @@ gof_residuals_time_boxplots <- function(
   ntime_col,
   trt_col = NULL,
   residual_references = c(-2, 2),
+  legend_location = lifecycle::deprecated(),
   style = ggstylekit::style_spec()
 ) {
+  style <- as_style_spec(style, "gof_residuals_time_boxplots")
   checkmate::assertDataFrame(data)
+  if (lifecycle::is_present(legend_location)) {
+    style <- legacy_legend_location(style, legend_location, "gof_residuals_time_boxplots")
+  }
   checkmate::assert(checkmate::check_class(fit, "lme"))
   checkmate::assert_numeric(residual_references, null.ok = TRUE)
 
@@ -622,6 +652,7 @@ gof_residuals_time_boxplots <- function(
 #' @param trt_col An unquoted column name for treatment group"
 #' @param residual_references Numeric vector of reference residual lines to add, default -2 and 2
 #' @param style A ggstylekit::style_spec() object
+#' @param legend_location Deprecated. Set `legend.position` in `style` instead.
 #'
 #' @return A 2-panel boxplot of WRES and IWRES residuals by treatment group
 #' @export
@@ -647,9 +678,14 @@ gof_residuals_trt_boxplots <- function(
   ntime_col,
   trt_col = NULL,
   residual_references = c(-2, 2),
+  legend_location = lifecycle::deprecated(),
   style = ggstylekit::style_spec()
 ) {
+  style <- as_style_spec(style, "gof_residuals_trt_boxplots")
   checkmate::assertDataFrame(data)
+  if (lifecycle::is_present(legend_location)) {
+    style <- legacy_legend_location(style, legend_location, "gof_residuals_trt_boxplots")
+  }
   checkmate::assert(checkmate::check_class(fit, "lme"))
   checkmate::assert_numeric(residual_references, null.ok = TRUE)
 
@@ -759,6 +795,7 @@ gof_vpc_plot <- function(
   seed = NULL,
   style = ggstylekit::style_spec()
 ) {
+  style <- as_style_spec(style, "gof_vpc_plot")
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
   checkmate::assertNumeric(conf_int, lower = 0, upper = 1)

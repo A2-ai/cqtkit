@@ -94,3 +94,29 @@ test_that("gof_vpc_plot seed does not disturb the caller's RNG stream", {
   )))
   expect_identical(.Random.seed, before)
 })
+
+test_that("legend_location is deprecated but still positions the legend", {
+  lifecycle::expect_deprecated(
+    p <- gof_qq_plots(
+      cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG,
+      legend_location = "left"
+    )
+  )
+  expect_equal(p$patches$annotation$theme$legend.position, "left")
+
+  withr::local_options(lifecycle_verbosity = "quiet")
+  expect_error(
+    gof_qq_plots(
+      cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG,
+      legend_location = "middle"
+    ),
+    "should be one of"
+  )
+})
+
+test_that("legend_location keeps its v1.1.0 position for positional calls", {
+  lifecycle::expect_deprecated(
+    p <- gof_qq_plots(cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG, "bottom")
+  )
+  expect_equal(p$patches$annotation$theme$legend.position, "bottom")
+})

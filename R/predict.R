@@ -59,6 +59,7 @@ predict_with_observations_plot <- function(
   contrast_method = c("matched", "group"),
   style = ggstylekit::style_spec()
 ) {
+  style <- as_style_spec(style, "predict_with_observations_plot")
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
   checkmate::assertList(treatment_predictors)
@@ -254,6 +255,7 @@ predict_with_quantiles_plot <- function(
   contrast_method = c("matched", "group"),
   style = ggstylekit::style_spec()
 ) {
+  style <- as_style_spec(style, "predict_with_quantiles_plot")
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
   checkmate::assertList(treatment_predictors)
@@ -456,6 +458,7 @@ predict_with_exposure_plot <- function(
   conf_int = 0.90,
   style = ggstylekit::style_spec()
 ) {
+  style <- as_style_spec(style, "predict_with_exposure_plot")
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
   checkmate::assertList(treatment_predictors)

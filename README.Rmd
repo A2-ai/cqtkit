@@ -34,7 +34,6 @@ The documentation site for cqtkit can be found [here](https://a2-ai.github.io/cq
 
 ```{r loading-cqtkit, results='hide', message=FALSE, warning=FALSE}
 library(cqtkit)
-library(ggstylekit)
 library(dplyr)
 library(gt)
 ```

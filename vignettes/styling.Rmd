@@ -18,7 +18,6 @@ knitr::opts_chunk$set(
 
 ```{r setup, message = FALSE}
 library(cqtkit)
-library(ggstylekit)
 ```
 
 Every cqtkit plotting function returns a `ggplot` object and takes a
@@ -252,7 +251,7 @@ p2 <- eda_hysteresis_loop_plot(
   )
 )
 
-combine_styled_plots(p1, p2, axes = "collect_x")
+ggstylekit::combine_styled_plots(p1, p2, axes = "collect_x")
 ```
 
 # Goodness-of-fit plots
@@ -456,3 +455,25 @@ predict_with_exposure_plot(
   style = style_spec(ylabel = bquote(Delta ~ "QTcF (ms)"))
 )
 ```
+
+# Migrating from `set_style()`
+
+cqtkit 2.0.0 removes `set_style()`, `style_plot()`, and plain-list `style`
+arguments; calling them errors with a pointer to the replacement.
+`legend_location` and `conf_int` are deprecated and still work with a warning.
+`style_spec()`, `legend_spec()`, `reveal()`, and `restyle_plot()` are
+re-exported from ggstylekit, so nothing here needs `library(ggstylekit)`.
+
+| Before 2.0.0 | From 2.0.0 |
+|---|---|
+| `set_style(title, xlabel, ylabel, xlims, ylims, colors, shapes, logx, logy, legend.position, legend.title.position, legend.title.hjust, caption_hjust, fill_alpha, legend_nrow)` | `style_spec()` with the same argument names |
+| `style = list(title = "...")` | `style = style_spec(title = "...")` |
+| `set_style(labels = c(A = "a", B = NA))` | `legend_spec(channel = "color", labels = c(A = "a", B = NA))`; an `NA` label still hides the entry |
+| `set_style(legend = "Treatment")` | `legend_spec(channel = "color", title = "Treatment")` |
+| `set_style(shape_legend = , fill_legend = )` | `legend_spec(channel = "shape", title = )`, `legend_spec(channel = "fill", title = )` |
+| `set_style(color_order = , shape_order = , fill_order = , linetype_order = )` | `legend_spec(channel = , order = )` |
+| `style_plot(p, ...)` | `restyle_plot(p, ...)` with `style_spec()` field names |
+| `legend_location = "bottom"` | `style_spec(legend.position = "bottom")` |
+| `conf_int = 0.95` | `show_model_results = model_results_spec(ci = 0.95)` |
+
+Legend specs go in `style_spec(legends = list(...))`, one per channel.

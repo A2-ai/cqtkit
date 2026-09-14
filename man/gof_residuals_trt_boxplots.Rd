@@ -12,6 +12,7 @@ gof_residuals_trt_boxplots(
   ntime_col,
   trt_col = NULL,
   residual_references = c(-2, 2),
+  legend_location = lifecycle::deprecated(),
   style = ggstylekit::style_spec()
 )
 }
@@ -29,6 +30,8 @@ gof_residuals_trt_boxplots(
 \item{trt_col}{An unquoted column name for treatment group"}
 
 \item{residual_references}{Numeric vector of reference residual lines to add, default -2 and 2}
+
+\item{legend_location}{Deprecated. Set \code{legend.position} in \code{style} instead.}
 
 \item{style}{A ggstylekit::style_spec() object}
 }

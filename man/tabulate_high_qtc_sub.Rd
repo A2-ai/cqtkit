@@ -9,7 +9,7 @@ tabulate_high_qtc_sub(
   qtc_col,
   deltaqtc_col,
   id_col,
-  group_col = NULL,
+  group_col,
   group_label = NULL,
   qtc_label = "QTc",
   unit = "ms",
@@ -26,9 +26,9 @@ tabulate_high_qtc_sub(
 
 \item{deltaqtc_col}{An unquoted column name for deltaQTc data}
 
-\item{id_col}{An unquoted column name for subject ID (required)}
+\item{id_col}{An unquoted column name for subject ID}
 
-\item{group_col}{An optional unquoted column name of grouping column}
+\item{group_col}{An unquoted column name of grouping column, or \code{NULL} for an ungrouped total}
 
 \item{group_label}{An optional label to use for group column}
 
@@ -54,7 +54,10 @@ Tabulates number of subjects with high QTc/deltaQTc observations.
 \examples{
 
 tabulate_high_qtc_sub(
-  cqtkit_data_verapamil, QTCF, deltaQTCF, ID, group_col = DOSEF, qtc_label = "QTcF"
+  cqtkit_data_verapamil, QTCF, deltaQTCF, ID, DOSEF, qtc_label = "QTcF"
 )
-tabulate_high_qtc_sub(cqtkit_data_verapamil, QTCF, deltaQTCF, ID, qtc_thresholds = c(430, 450))
+tabulate_high_qtc_sub(
+  cqtkit_data_verapamil, QTCF, deltaQTCF, ID, group_col = NULL,
+  qtc_thresholds = c(430, 450)
+)
 }

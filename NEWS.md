@@ -1,36 +1,29 @@
 # cqtkit 2.0.0
 
 ### Breaking Changes
-* Plot styling now uses **ggstylekit**. Pass a `ggstylekit::style_spec()` to any plotting function's `style` argument. `set_style()` and `style_plot()` have been removed.
-* The `legend_location` argument has been removed from the `eda_*` and `gof_*` plotting functions. Set the legend position with `legend.position` in the `style` instead.
-* `preprocess()` now takes `(data, bl_data, by)`, joining baseline values from a separate baseline dataset instead of computing them from an `id_col`.
-* `compute_delta_hrblm()`, `compute_delta_qtcbblm()`, and `compute_delta_qtcfblm()` now expect the baseline-mean column to already exist on the data. Add it first with the new `compute_hrblm()`, `compute_qtcbblm()`, or `compute_qtcfblm()`.
-* `compute_high_qtc_sub()` and `tabulate_high_qtc_sub()` have been renamed to `compute_high_qtc_obs()` and `tabulate_high_qtc_obs()` respectively, since these functions count observations (rows), not subjects.
-* New `compute_high_qtc_sub()` and `tabulate_high_qtc_sub()` functions now count distinct subjects with at least one observation exceeding thresholds. These require an `id_col` argument.
-* `eda_qt_rr_plot()` and `eda_qtc_comparison_plot()`: `conf_int` is removed and `show_model_results` now takes a `model_results_spec()`. `TRUE`/`FALSE` still work.
+* `preprocess()` now takes `(data, bl_data, by)`. The population baseline means (`HRBLM`, `QTCBBLM`, `QTCFBLM`) are computed from a separate baseline dataset as the mean of per-`by` means instead of from `id_col`, and `preprocess()` no longer derives `QTCB`/`QTCF` when they are absent; compute those at assembly time with `compute_qtcb_qtcf()`. On `cqtkit_data_verapamil` the baseline means change by less than 0.01 ms. See `vignette("data-assembly")`.
+* `compute_delta_hrblm()`, `compute_delta_qtcbblm()`, and `compute_delta_qtcfblm()` no longer compute the population baseline mean. Add it first with `compute_hrblm()`, `compute_qtcbblm()`, or `compute_qtcfblm()`.
+* `compute_high_qtc_sub()` and `tabulate_high_qtc_sub()` now count subjects rather than observations, and require both `id_col` and `group_col` (pass `group_col = NULL` for an ungrouped total). Use the new `compute_high_qtc_obs()` and `tabulate_high_qtc_obs()` for observation counts.
+* Plots are styled with [ggstylekit](https://github.com/a2-ai/ggstylekit) through the `style` argument. `set_style()` and `style_plot()` are removed in favour of `style_spec()` and `restyle_plot()`, and passing a plain list to `style` is an error. `style_spec()`, `legend_spec()`, `reveal()`, and `restyle_plot()` are re-exported so ggstylekit need not be attached. See `vignette("styling")`.
+
+### Deprecations
+* `legend_location` is deprecated in favour of `style_spec(legend.position = )`.
+* `conf_int` in `eda_qt_rr_plot()` and `eda_qtc_comparison_plot()` is deprecated in favour of `show_model_results = model_results_spec(ci = )`.
 
 ### Enhanced
-* All high QTc functions now support configurable `qtc_thresholds` and `dqtc_thresholds` arguments (defaults: `c(450, 480, 500)` and `c(30, 60)`).
-* New `compute_hr()` derives `HR`/`HRBL` from RR.
+* New `model_results_spec()` controls the slope, CI, p-value, and digits in QT vs RR plot captions.
 * `gof_vpc_plot()` and `compute_summary_statistics_of_simulations()` gain a `seed` argument.
-* New `model_results_spec()` controls the slope, CI level, p-value, and digits in QT vs RR plot captions.
-* New `compute_hrblm()`, `compute_qtcbblm()`, and `compute_qtcfblm()` add population baseline-mean columns from a baseline dataset.
-* Example datasets now include subject covariates.
-* `fit_prespecified_model()` now errors early with an actionable message when a model column has a non-syntactic name, naming the offending columns.
-* `fit_prespecified_model()` now checks categorical model columns after rows with missing values are dropped: it errors if a factor collapses to fewer than 2 levels, and warns if a factor loses level(s) but retains 2 or more, naming the columns responsible.
-* Legend and grouping order in plots now honors factor level order rather than order of appearance.
-* New "Data Assembly" vignette covering how to build an analysis-ready dataset.
-* New "Styling" vignette covering plot styling with **ggstylekit**.
+* New `compute_hr()`, `compute_hrblm()`, `compute_qtcbblm()`, and `compute_qtcfblm()` for dataset assembly.
+* High QTc functions gain `qtc_thresholds` and `dqtc_thresholds` arguments.
+* `compute_model_fit_parameters()` and `tabulate_model_fit_parameters()` gain `conc_col_name`, `baseline_col_name`, and `include_reference_levels`.
+* `fit_prespecified_model()` errors on non-syntactic column names and on factors that collapse to one level after missing rows are dropped, and warns when a factor loses levels.
+* Plot legends and groups follow factor level order.
+* Example datasets include subject covariates and `VISIT`. `cqtkit_data_verapamil` gains subject 1005's verapamil period (14 rows), which was missing.
+* New "Data Assembly" and "Styling" vignettes.
 
 ### Fixed
-* Fixed `compute_pk_parameters()` computing Cmax summary statistics over repeated per-observation rows instead of one Cmax per subject, which biased the geometric mean and other summaries.
-* Fixed a `tidyselect` `.data` pronoun deprecation warning.
-* Fixed `eda_mean_dv_over_time()`, `compute_study_summary()`, and `compute_pk_parameters()` ordering groups alphabetically instead of by factor level order.
-
-### Migration Guide
-* If you were using `compute_high_qtc_sub()` or `tabulate_high_qtc_sub()` for observation-level counts, rename to `compute_high_qtc_obs()` or `tabulate_high_qtc_obs()`.
-* If you need subject-level counts (distinct individuals), use the new `compute_high_qtc_sub()` or `tabulate_high_qtc_sub()` with the required `id_col` argument.
-* See the new "Data Assembly" vignette for the updated `preprocess()` workflow.
+* `compute_pk_parameters()` computed Cmax summaries over repeated rows instead of one Cmax per subject.
+* `eda_mean_dv_over_time()`, `compute_study_summary()`, and `compute_pk_parameters()` ordered groups alphabetically instead of by factor level.
 
 # cqtkit 1.1.0
 
