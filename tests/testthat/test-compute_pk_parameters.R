@@ -29,6 +29,21 @@ test_that('compute_pk_parameters works for no 0 and no NA', {
   )
 })
 
+test_that("compute_pk_parameters keeps factor level order with group_col", {
+  tl <- c("Placebo", "Low", "High")
+  lvls <- c("2.4 mg", "7.2 mg", "10 mg")
+  dat <- cqtkit_data_verapamil %>%
+    preprocess() %>%
+    dplyr::filter(DOSE != 0) %>%
+    dplyr::mutate(
+      TRTG = factor(tl[(as.integer(factor(ID)) %% 3) + 1], levels = tl),
+      DOSEF = factor(lvls[(as.integer(factor(ID)) %% 3) + 1], levels = lvls)
+    )
+
+  res <- compute_pk_parameters(dat, ID, DOSEF, CONC, NTLD, group_col = TRTG)
+  expect_equal(as.character(res$group), paste(tl, lvls))
+})
+
 test_that('compute_pk_parameters computes correct geometric mean with unequal timepoints', {
   # quinidine has 12-15 rows per subject-dose, so subjects with more
   # timepoints would be overweighted without deduplication

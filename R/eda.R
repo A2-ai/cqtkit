@@ -661,7 +661,8 @@ eda_hysteresis_loop_plot <- function(
 
   group_values <- mean_qtc_conc_df$group
   group_levels <- if (is.factor(group_values)) {
-    levels(group_values)
+    # Unused levels carry no rows, so enumerating them would filter to nothing.
+    levels(droplevels(group_values))
   } else {
     gtools::mixedsort(unique(group_values))
   }
@@ -850,27 +851,37 @@ eda_mean_dv_over_time <- function(
     if (!rlang::quo_is_null(sec_dv)) {
       # Include DV names when sec_dv is provided
       dv_time_df <- dv_time_df %>%
-        dplyr::mutate(grouping = paste(.data$dose, rlang::quo_name(dv)))
+        dplyr::mutate(grouping = paste_grouping(.data$dose, rlang::quo_name(dv)))
 
       sec_dv_time_df <- sec_dv_time_df %>%
-        dplyr::mutate(grouping = paste(.data$dose, rlang::quo_name(sec_dv)))
+        dplyr::mutate(
+          grouping = paste_grouping(.data$dose, rlang::quo_name(sec_dv))
+        )
+
+      shared <- c(levels(dv_time_df$grouping), levels(sec_dv_time_df$grouping))
+      dv_time_df$grouping <- factor(dv_time_df$grouping, levels = shared)
+      sec_dv_time_df$grouping <- factor(sec_dv_time_df$grouping, levels = shared)
     } else {
       # Just use dose without DV name when sec_dv is NULL
       dv_time_df <- dv_time_df %>%
-        dplyr::mutate(grouping = as.character(.data$dose))
+        dplyr::mutate(grouping = as.factor(.data$dose))
     }
   } else {
     if (!rlang::quo_is_null(sec_dv)) {
       # Include DV names when sec_dv is provided
       dv_time_df <- dv_time_df %>%
         dplyr::mutate(
-          grouping = as.factor(paste(.data$group, rlang::quo_name(dv)))
+          grouping = paste_grouping(.data$group, rlang::quo_name(dv))
         )
 
       sec_dv_time_df <- sec_dv_time_df %>%
         dplyr::mutate(
-          grouping = as.factor(paste(.data$group, rlang::quo_name(sec_dv)))
+          grouping = paste_grouping(.data$group, rlang::quo_name(sec_dv))
         )
+
+      shared <- c(levels(dv_time_df$grouping), levels(sec_dv_time_df$grouping))
+      dv_time_df$grouping <- factor(dv_time_df$grouping, levels = shared)
+      sec_dv_time_df$grouping <- factor(sec_dv_time_df$grouping, levels = shared)
     } else {
       # Just use group without DV name when sec_dv is NULL
       dv_time_df <- dv_time_df %>%
