@@ -2,6 +2,8 @@
 
 ### Fixed
 * `compute_pk_parameters()` now takes one Cmax per subject before summarizing, so subjects with more timepoints no longer contribute repeated Cmax values to `Cmax_gm` and `Cmax_cv`.
+* Plot legends follow the level order of factor grouping columns instead of the order the rows happen to be in.
+* `compute_study_summary()` and `compute_pk_parameters()` keep the level order of factor treatment and group columns in `grouping` instead of sorting them alphabetically.
 
 # cqtkit 1.1.0
 

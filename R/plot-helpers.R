@@ -338,7 +338,13 @@ extract_from_mapping <- function(mapping_entry, data) {
     var <- sub("^\\.data\\$", "", var)
   }
   if (var %in% names(data)) {
-    return(unique(as.character(data[[var]])))
+    values <- data[[var]]
+    # Factors carry their own order; `unique()` on the character values would
+    # instead follow whatever order the rows happen to be in.
+    if (is.factor(values)) {
+      return(levels(droplevels(values)))
+    }
+    return(unique(as.character(values)))
   }
   return(NULL)
 }
