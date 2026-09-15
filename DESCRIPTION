@@ -25,6 +25,7 @@ Imports:
     ggpubr,
     gt,
     gtools,
+    lifecycle,
     magrittr,
     MASS,
     nlme,

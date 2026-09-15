@@ -313,3 +313,116 @@ add_parameter_sections <- function(
 
   parameters[order(parameters$Section), ]
 }
+
+#' Build the summarise expressions counting values above each threshold
+#'
+#' @param qtc_thresholds,dqtc_thresholds Numeric threshold vectors
+#' @param count Either "subjects" (distinct ids) or "observations" (rows)
+#' @return A named list of quosures for `dplyr::summarise()`
+#' @keywords internal
+#' @noRd
+high_qtc_count_exprs <- function(qtc_thresholds, dqtc_thresholds, count) {
+  counter <- function(col) {
+    if (count == "subjects") {
+      function(thresh) {
+        rlang::expr(dplyr::n_distinct(
+          .data$id[.data[[!!col]] > !!thresh],
+          na.rm = TRUE
+        ))
+      }
+    } else {
+      function(thresh) {
+        rlang::expr(sum(.data[[!!col]] > !!thresh, na.rm = TRUE))
+      }
+    }
+  }
+
+  qtc_exprs <- lapply(qtc_thresholds, counter("qtc"))
+  names(qtc_exprs) <- paste0("n_QTc_gt_", qtc_thresholds)
+
+  dqtc_exprs <- lapply(dqtc_thresholds, counter("deltaqtc"))
+  names(dqtc_exprs) <- paste0("n_dQTc_gt_", dqtc_thresholds)
+
+  c(qtc_exprs, dqtc_exprs)
+}
+
+#' Summarise threshold counts, grouped or as a single total row
+#'
+#' @param qtdf Tibble with the qtc/deltaqtc (and optionally id) columns
+#' @param data The original data, used to pull the grouping column
+#' @param group A quosure for the grouping column, possibly NULL
+#' @param exprs Named list of summarise expressions
+#' @return A tibble with a `group` column followed by one column per threshold
+#' @keywords internal
+#' @noRd
+summarise_high_qtc <- function(qtdf, data, group, exprs) {
+  if (!rlang::quo_is_null(group)) {
+    qtdf %>%
+      dplyr::mutate(group = data %>% dplyr::pull(!!group)) %>%
+      dplyr::group_by(.data$group) %>%
+      dplyr::summarise(!!!exprs)
+  } else {
+    qtdf %>%
+      dplyr::summarise(!!!exprs) %>%
+      dplyr::mutate(group = "Total", .before = 1)
+  }
+}
+
+#' Render a high QTc count tibble as a gt table
+#'
+#' @param n_gt Tibble of counts from a `compute_high_qtc_*()` function
+#' @param group A quosure for the grouping column, possibly NULL
+#' @param group_label Optional label for the group column
+#' @param qtc_label String label for the QTc parameter
+#' @param unit String for the unit of measurement
+#' @param qtc_thresholds,dqtc_thresholds Numeric threshold vectors
+#' @param title Optional table title, wrapped in `gt::md()`
+#' @param dots Additional arguments for `gt::tab_options()`
+#' @return A gt table
+#' @keywords internal
+#' @noRd
+render_high_qtc_table <- function(
+  n_gt,
+  group,
+  group_label,
+  qtc_label,
+  unit,
+  qtc_thresholds,
+  dqtc_thresholds,
+  title,
+  dots
+) {
+  qtc_labels <- lapply(qtc_thresholds, function(thresh) {
+    gt::md(paste0(qtc_label, " > ", thresh, " ", unit))
+  })
+  names(qtc_labels) <- paste0("n_QTc_gt_", qtc_thresholds)
+
+  dqtc_labels <- lapply(dqtc_thresholds, function(thresh) {
+    gt::md(paste0("&Delta; ", qtc_label, " > ", thresh, " ", unit))
+  })
+  names(dqtc_labels) <- paste0("n_dQTc_gt_", dqtc_thresholds)
+
+  t <- n_gt %>%
+    gt::gt() %>%
+    gt::cols_label(!!!c(qtc_labels, dqtc_labels))
+
+  if (!is.null(title)) {
+    t <- t %>%
+      gt::tab_header(title = gt::md(title))
+  }
+
+  if (is.null(group_label)) {
+    group_label <- if (!rlang::quo_is_null(group)) {
+      name_quo_if_not_null(group)
+    } else {
+      ""
+    }
+  }
+  t <- t %>%
+    gt::cols_label(group = group_label)
+
+  tab_option_args <- dots[names(dots) %in% names(formals(gt::tab_options))]
+  tab_option_args$data <- t
+
+  do.call(gt::tab_options, tab_option_args)
+}

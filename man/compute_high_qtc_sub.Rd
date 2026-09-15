@@ -19,7 +19,12 @@ compute_high_qtc_sub(data, qtc_col, deltaqtc_col, group_col = NULL)
 A tibble with counts of observations exceeding QTc thresholds (450, 480, 500 ms) and deltaQTc thresholds (30, 60 ms)
 }
 \description{
-Computes the number of subjects with QTc > 450, 480, 500 as well as deltaQTc > 30, 60.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+}
+\details{
+Despite its name, this function counts observations, not subjects. Use
+\code{\link[=compute_high_qtc_subjects]{compute_high_qtc_subjects()}} for subject counts or
+\code{\link[=compute_high_qtc_observations]{compute_high_qtc_observations()}} for observation counts.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)
