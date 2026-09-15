@@ -1196,10 +1196,6 @@ compute_summary_statistics_of_simulations <- function(
 
   if (!is.null(seed)) {
     checkmate::assertIntegerish(seed, len = 1)
-    # local_seed() does not restore the previous stream on exit (withr 3.0.2),
-    # so preserve it explicitly and then seed.
-    withr::local_preserve_seed()
-    set.seed(seed)
   }
 
   xdata <- rlang::enquo(xdata_col)
@@ -1210,9 +1206,16 @@ compute_summary_statistics_of_simulations <- function(
   lower_p <- 1 - (1 + conf_int) / 2
   upper_p <- (1 + conf_int) / 2
 
-  sim_list <- lapply(1:nruns, function(x) {
-    compute_dataset_simulation(data, fit, !!xdata, sim_num = x)
-  })
+  simulate <- function() {
+    lapply(1:nruns, function(x) {
+      compute_dataset_simulation(data, fit, !!xdata, sim_num = x)
+    })
+  }
+  sim_list <- if (is.null(seed)) {
+    simulate()
+  } else {
+    withr::with_seed(seed, simulate())
+  }
   combined_sim <- do.call(rbind, sim_list)
 
   if (length(nbins) == 1) {
