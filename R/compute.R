@@ -218,7 +218,11 @@ compute_pk_parameters <- function(
 
 #' Compute High QTc Subjects
 #'
-#' Computes the number of subjects with QTc > 450, 480, 500 as well as deltaQTc > 30, 60.
+#' `r lifecycle::badge("deprecated")`
+#'
+#' Despite its name, this function counts *observations*, not subjects. Use
+#' [compute_high_qtc_subjects()] for subject counts, or
+#' [compute_high_qtc_observations()] to keep counting observations.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param qtc_col An unquoted column name for containing QTc data
@@ -238,6 +242,20 @@ compute_high_qtc_sub <- function(
   deltaqtc_col,
   group_col = NULL
 ) {
+  lifecycle::deprecate_warn(
+    when = "1.2.0",
+    what = "compute_high_qtc_sub()",
+    with = "compute_high_qtc_subjects()",
+    details = paste(
+      "`compute_high_qtc_sub()` counts observations above each threshold,",
+      "not subjects, so its counts are inflated whenever a subject exceeds a",
+      "threshold more than once. Use `compute_high_qtc_subjects()` for subject",
+      "counts, or `compute_high_qtc_observations()` to keep the current",
+      "observation counts."
+    ),
+    always = TRUE
+  )
+
   checkmate::assertDataFrame(data)
 
   qtc <- rlang::enquo(qtc_col)
@@ -1665,4 +1683,114 @@ compute_contrast_observations <- function(
   }
 
   return(observed_df)
+}
+
+#' Compute High QTc Subjects
+#'
+#' Counts the number of distinct subjects with at least one QTc or deltaQTc
+#' observation above each threshold.
+#'
+#' @param data A data frame containing C-QT analysis dataset
+#' @param qtc_col An unquoted column name containing QTc data
+#' @param deltaqtc_col An unquoted column name containing deltaQTc data
+#' @param id_col An unquoted column name identifying the subject
+#' @param group_col An optional column name for grouping data
+#' @param qtc_thresholds Numeric vector of QTc thresholds (default: 450, 480, 500)
+#' @param dqtc_thresholds Numeric vector of deltaQTc thresholds (default: 30, 60)
+#'
+#' @return A tibble with counts of subjects exceeding each QTc and deltaQTc threshold
+#' @export
+#'
+#' @examples
+#' data_proc <- preprocess(cqtkit_data_verapamil)
+#'
+#' compute_high_qtc_subjects(data_proc, QTCF, deltaQTCF, ID)
+compute_high_qtc_subjects <- function(
+  data,
+  qtc_col,
+  deltaqtc_col,
+  id_col,
+  group_col = NULL,
+  qtc_thresholds = c(450, 480, 500),
+  dqtc_thresholds = c(30, 60)
+) {
+  checkmate::assertDataFrame(data)
+  checkmate::assertNumeric(qtc_thresholds, min.len = 1)
+  checkmate::assertNumeric(dqtc_thresholds, min.len = 1)
+
+  qtc <- rlang::enquo(qtc_col)
+  deltaqtc <- rlang::enquo(deltaqtc_col)
+  id <- rlang::enquo(id_col)
+  group <- rlang::enquo(group_col)
+
+  required_cols <- unlist(lapply(
+    c(qtc, deltaqtc, id, group),
+    name_quo_if_not_null
+  ))
+  checkmate::assertNames(names(data), must.include = required_cols)
+
+  qtdf <- tibble::tibble(
+    id = data %>% dplyr::pull(!!id),
+    qtc = data %>% dplyr::pull(!!qtc),
+    deltaqtc = data %>% dplyr::pull(!!deltaqtc)
+  )
+
+  exprs <- high_qtc_count_exprs(
+    qtc_thresholds,
+    dqtc_thresholds,
+    count = "subjects"
+  )
+
+  summarise_high_qtc(qtdf, data, group, exprs)
+}
+
+#' Compute High QTc Observations
+#'
+#' Counts the number of observations with QTc or deltaQTc above each threshold.
+#'
+#' @param data A data frame containing C-QT analysis dataset
+#' @param qtc_col An unquoted column name containing QTc data
+#' @param deltaqtc_col An unquoted column name containing deltaQTc data
+#' @param group_col An optional column name for grouping data
+#' @param qtc_thresholds Numeric vector of QTc thresholds (default: 450, 480, 500)
+#' @param dqtc_thresholds Numeric vector of deltaQTc thresholds (default: 30, 60)
+#'
+#' @return A tibble with counts of observations exceeding each QTc and deltaQTc threshold
+#' @export
+#'
+#' @examples
+#' data_proc <- preprocess(cqtkit_data_verapamil)
+#'
+#' compute_high_qtc_observations(data_proc, QTCF, deltaQTCF)
+compute_high_qtc_observations <- function(
+  data,
+  qtc_col,
+  deltaqtc_col,
+  group_col = NULL,
+  qtc_thresholds = c(450, 480, 500),
+  dqtc_thresholds = c(30, 60)
+) {
+  checkmate::assertDataFrame(data)
+  checkmate::assertNumeric(qtc_thresholds, min.len = 1)
+  checkmate::assertNumeric(dqtc_thresholds, min.len = 1)
+
+  qtc <- rlang::enquo(qtc_col)
+  deltaqtc <- rlang::enquo(deltaqtc_col)
+  group <- rlang::enquo(group_col)
+
+  required_cols <- unlist(lapply(c(qtc, deltaqtc, group), name_quo_if_not_null))
+  checkmate::assertNames(names(data), must.include = required_cols)
+
+  qtdf <- tibble::tibble(
+    qtc = data %>% dplyr::pull(!!qtc),
+    deltaqtc = data %>% dplyr::pull(!!deltaqtc)
+  )
+
+  exprs <- high_qtc_count_exprs(
+    qtc_thresholds,
+    dqtc_thresholds,
+    count = "observations"
+  )
+
+  summarise_high_qtc(qtdf, data, group, exprs)
 }
