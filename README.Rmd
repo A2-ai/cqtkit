@@ -243,6 +243,7 @@ gof_vpc_plot(
   dqtc_model,
   CONC,
   deltaQTCF,
+  seed = 804831,
   style = set_style(
     xlabel = "Verapamil Concentration (ng/mL)"
   )
@@ -259,7 +260,7 @@ conc_for_10_ms <- compute_conc_for_upper_pred(
   "CONC",
   "TRTG",
   "Verapamil HCL"
-)$lower_conc
+)
 
 
 stpx_cmax <- max(compute_pk_parameters(
