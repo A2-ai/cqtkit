@@ -1211,11 +1211,13 @@ compute_summary_statistics_of_simulations <- function(
       compute_dataset_simulation(data, fit, !!xdata, sim_num = x)
     })
   }
+
   sim_list <- if (is.null(seed)) {
     simulate()
   } else {
     withr::with_seed(seed, simulate())
   }
+
   combined_sim <- do.call(rbind, sim_list)
 
   if (length(nbins) == 1) {

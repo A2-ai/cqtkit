@@ -2,8 +2,11 @@
 
 ### Enhanced
 * `gof_vpc_plot()` and `compute_summary_statistics_of_simulations()` gain a `seed` argument for reproducible simulations. The caller's RNG state is restored on exit.
+* `fit_prespecified_model()` warns when a treatment or time predictor loses a level because rows with missing model values are dropped, naming the level and the column that was missing.
 
 ### Fixed
+* `fit_prespecified_model()` errors naming the offending column when a model column name is non-syntactic, instead of failing in `str2lang()`.
+* `fit_prespecified_model()` errors naming the column, the levels removed, and the missing values responsible when a treatment or time predictor collapses below two levels once rows with missing model values are dropped, instead of failing in `contrasts<-`.
 * `compute_pk_parameters()` now takes one Cmax per subject before summarizing, so subjects with more timepoints no longer contribute repeated Cmax values to `Cmax_gm` and `Cmax_cv`.
 * Plot legends follow the level order of factor grouping columns instead of the order the rows happen to be in.
 * `compute_study_summary()` and `compute_pk_parameters()` keep the level order of factor treatment and group columns in `grouping` instead of sorting them alphabetically.

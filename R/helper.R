@@ -75,3 +75,134 @@ paste_grouping <- function(x, y, sep = " ") {
   lvls <- as.vector(t(outer(levels(x), levels(y), paste, sep = sep)))
   droplevels(factor(paste(x, y, sep = sep), levels = lvls))
 }
+
+#' Error if any model column name is non-syntactic
+#'
+#' `nlme::lme()` builds its formula from pasted column names and cannot parse
+#' non-syntactic ones (e.g. containing spaces), failing downstream in
+#' `str2lang()` with a message that names neither the column nor the cause.
+#'
+#' @param col_names Character vector of column names used in the model
+#' @return `TRUE`, invisibly
+#' @keywords internal
+#' @noRd
+assert_syntactic_names <- function(col_names) {
+  non_syntactic <- col_names[make.names(col_names) != col_names]
+  if (length(non_syntactic) > 0) {
+    stop(
+      "Model column name(s) must be syntactic (no spaces or special characters): ",
+      paste(sprintf('"%s"', non_syntactic), collapse = ", "),
+      ".\nRename the column(s) before fitting, e.g. `",
+      non_syntactic[1],
+      "` -> `",
+      gsub(" ", "_", non_syntactic[1]),
+      "`.",
+      call. = FALSE
+    )
+  }
+  invisible(TRUE)
+}
+
+#' Error or warn when a categorical predictor loses levels to missing values
+#'
+#' Rows with missing model values are dropped when the model is fit
+#' (`na.action = "na.exclude"`). A categorical predictor can lose levels as a
+#' result, and if it collapses below two levels `nlme::lme()` fails inside
+#' `contrasts<-` without naming the column. Detect it first, and report which
+#' model column is responsible for each dropped level.
+#'
+#' @param data The modelling data frame
+#' @param model_cols Character vector of all column names used in the model
+#' @param factor_cols Character vector of the categorical predictors to check
+#' @return `TRUE`, invisibly
+#' @keywords internal
+#' @noRd
+assert_multilevel_factors <- function(data, model_cols, factor_cols) {
+  complete_rows <- stats::complete.cases(data[, model_cols, drop = FALSE])
+  complete_data <- data[complete_rows, , drop = FALSE]
+
+  # For a dropped level of `col`, name the model column(s) entirely NA for its
+  # rows (the actual reason those rows were removed).
+  culprit_line <- function(lv, col) {
+    lv_rows <- !is.na(data[[col]]) & as.character(data[[col]]) == lv
+    always_na <- setdiff(
+      model_cols[vapply(
+        model_cols,
+        function(mc) all(is.na(data[lv_rows, mc])),
+        logical(1)
+      )],
+      col
+    )
+    if (length(always_na) > 0) {
+      paste0(
+        "  - level \"",
+        lv,
+        "\": always NA in column(s): ",
+        paste(always_na, collapse = ", ")
+      )
+    } else {
+      paste0(
+        "  - level \"",
+        lv,
+        "\": rows dropped due to missing values across model columns"
+      )
+    }
+  }
+
+  for (col in factor_cols) {
+    is_categorical <- is.factor(data[[col]]) || is.character(data[[col]])
+    if (!is_categorical) {
+      next
+    }
+
+    kept_levels <- unique(as.character(complete_data[[col]]))
+    present_levels <- unique(as.character(data[[col]][!is.na(data[[col]])]))
+    dropped_levels <- setdiff(present_levels, kept_levels)
+
+    if (length(dropped_levels) == 0) {
+      next
+    }
+
+    culprit_lines <- vapply(
+      dropped_levels,
+      culprit_line,
+      character(1),
+      col = col
+    )
+
+    if (length(kept_levels) < 2) {
+      kept_desc <- if (length(kept_levels) == 1) {
+        paste0("a single level (\"", kept_levels, "\")")
+      } else {
+        "no levels"
+      }
+      stop(
+        "Column \"",
+        col,
+        "\" collapses to ",
+        kept_desc,
+        " once rows with missing model values are dropped, so the model cannot be fit.\n",
+        "Level(s) removed: ",
+        paste(sprintf("\"%s\"", dropped_levels), collapse = ", "),
+        "\n",
+        paste(culprit_lines, collapse = "\n"),
+        "\nFix the missing values in those column(s), or remove this term from the model.",
+        call. = FALSE
+      )
+    }
+
+    warning(
+      "Column \"",
+      col,
+      "\" lost level(s) once rows with missing model values are dropped: ",
+      paste(sprintf("\"%s\"", dropped_levels), collapse = ", "),
+      "\n",
+      paste(culprit_lines, collapse = "\n"),
+      "\nThe model will be fit on the remaining ",
+      length(kept_levels),
+      " level(s).",
+      call. = FALSE
+    )
+  }
+  invisible(TRUE)
+}
