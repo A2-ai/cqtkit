@@ -15,6 +15,13 @@ lhs \%>\% rhs
 The result of calling \code{rhs(lhs)}.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+}
+\details{
+The re-export of magrittr's pipe from cqtkit is deprecated and will be
+removed in cqtkit 2.0.0. Attach the operator yourself with \code{library(dplyr)}
+or \code{library(magrittr)}, or use the base pipe \verb{|>} (R >= 4.1.0).
+
 See \code{magrittr::\link[magrittr:pipe]{\%>\%}} for details.
 }
 \keyword{internal}
