@@ -115,7 +115,7 @@ test_that("tabulate_high_qtc_observations returns a gt table", {
 test_that("compute_high_qtc_sub always warns and keeps observation counts", {
   expect_warning(
     old <- compute_high_qtc_sub(data_proc, QTCF, deltaQTCF),
-    "counts observations above each threshold"
+    "counts observations, not subjects"
   )
   expect_warning(
     old <- compute_high_qtc_sub(data_proc, QTCF, deltaQTCF),
@@ -129,7 +129,7 @@ test_that("compute_high_qtc_sub always warns and keeps observation counts", {
 test_that("tabulate_high_qtc_sub always warns", {
   expect_warning(
     tbl <- tabulate_high_qtc_sub(data_proc, QTCF, deltaQTCF, group_col = DOSEF),
-    "counts observations above each threshold"
+    "counts observations, not subjects"
   )
   expect_warning(
     tbl <- tabulate_high_qtc_sub(data_proc, QTCF, deltaQTCF, group_col = DOSEF),

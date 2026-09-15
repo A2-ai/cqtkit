@@ -11,7 +11,7 @@
 * The high QTc functions gain `qtc_thresholds` and `dqtc_thresholds`, so the thresholds are no longer fixed at 450/480/500 ms and 30/60 ms.
 
 ### Deprecated
-* `compute_high_qtc_sub()` and `tabulate_high_qtc_sub()` are deprecated. Despite their names they count observations, not subjects, so a subject above a threshold at several timepoints is counted several times. They keep returning observation counts and now always warn. Use `compute_high_qtc_subjects()` / `tabulate_high_qtc_subjects()` for subject counts, or `compute_high_qtc_observations()` / `tabulate_high_qtc_observations()` for the existing counts. They will be removed in 2.0.0.
+* `compute_high_qtc_sub()` and `tabulate_high_qtc_sub()` are deprecated. They count observations, not subjects. Their counts are unchanged. Use `compute_high_qtc_subjects()` / `tabulate_high_qtc_subjects()` for subject counts or `compute_high_qtc_observations()` / `tabulate_high_qtc_observations()` for observation counts. They will be removed in 2.0.0.
 
 ### Fixed
 * `fit_prespecified_model()` errors naming the offending column when a model column name is non-syntactic, instead of failing in `str2lang()`.

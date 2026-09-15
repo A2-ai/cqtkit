@@ -22,9 +22,9 @@ A tibble with counts of observations exceeding QTc thresholds (450, 480, 500 ms)
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 }
 \details{
-Despite its name, this function counts \emph{observations}, not subjects. Use
-\code{\link[=compute_high_qtc_subjects]{compute_high_qtc_subjects()}} for subject counts, or
-\code{\link[=compute_high_qtc_observations]{compute_high_qtc_observations()}} to keep counting observations.
+Despite its name, this function counts observations, not subjects. Use
+\code{\link[=compute_high_qtc_subjects]{compute_high_qtc_subjects()}} for subject counts or
+\code{\link[=compute_high_qtc_observations]{compute_high_qtc_observations()}} for observation counts.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

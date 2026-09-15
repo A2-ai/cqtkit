@@ -220,9 +220,9 @@ compute_pk_parameters <- function(
 #'
 #' `r lifecycle::badge("deprecated")`
 #'
-#' Despite its name, this function counts *observations*, not subjects. Use
-#' [compute_high_qtc_subjects()] for subject counts, or
-#' [compute_high_qtc_observations()] to keep counting observations.
+#' Despite its name, this function counts observations, not subjects. Use
+#' [compute_high_qtc_subjects()] for subject counts or
+#' [compute_high_qtc_observations()] for observation counts.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param qtc_col An unquoted column name for containing QTc data
@@ -245,13 +245,10 @@ compute_high_qtc_sub <- function(
   lifecycle::deprecate_warn(
     when = "1.2.0",
     what = "compute_high_qtc_sub()",
-    with = "compute_high_qtc_subjects()",
     details = paste(
-      "`compute_high_qtc_sub()` counts observations above each threshold,",
-      "not subjects, so its counts are inflated whenever a subject exceeds a",
-      "threshold more than once. Use `compute_high_qtc_subjects()` for subject",
-      "counts, or `compute_high_qtc_observations()` to keep the current",
-      "observation counts."
+      "It counts observations, not subjects.",
+      "Use `compute_high_qtc_subjects()` for subject counts or",
+      "`compute_high_qtc_observations()` for observation counts."
     ),
     always = TRUE
   )

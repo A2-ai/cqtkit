@@ -42,9 +42,9 @@ A gt table with counts of observations exceeding QTc thresholds (>450, >480, >50
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 }
 \details{
-Despite its name, this function tabulates \emph{observations}, not subjects. Use
-\code{\link[=tabulate_high_qtc_subjects]{tabulate_high_qtc_subjects()}} for subject counts, or
-\code{\link[=tabulate_high_qtc_observations]{tabulate_high_qtc_observations()}} to keep tabulating observations.
+Despite its name, this function counts observations, not subjects. Use
+\code{\link[=tabulate_high_qtc_subjects]{tabulate_high_qtc_subjects()}} for subject counts or
+\code{\link[=tabulate_high_qtc_observations]{tabulate_high_qtc_observations()}} for observation counts.
 }
 \examples{
 data_proc <- preprocess(cqtkit_data_verapamil)

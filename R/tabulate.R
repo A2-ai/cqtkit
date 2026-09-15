@@ -517,9 +517,9 @@ tabulate_ecg_param_summary <- function(
 #'
 #' `r lifecycle::badge("deprecated")`
 #'
-#' Despite its name, this function tabulates *observations*, not subjects. Use
-#' [tabulate_high_qtc_subjects()] for subject counts, or
-#' [tabulate_high_qtc_observations()] to keep tabulating observations.
+#' Despite its name, this function counts observations, not subjects. Use
+#' [tabulate_high_qtc_subjects()] for subject counts or
+#' [tabulate_high_qtc_observations()] for observation counts.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param qtc_col An unquoted column name for QTc data
@@ -552,13 +552,10 @@ tabulate_high_qtc_sub <- function(
   lifecycle::deprecate_warn(
     when = "1.2.0",
     what = "tabulate_high_qtc_sub()",
-    with = "tabulate_high_qtc_subjects()",
     details = paste(
-      "`tabulate_high_qtc_sub()` counts observations above each threshold,",
-      "not subjects, so its counts are inflated whenever a subject exceeds a",
-      "threshold more than once. Use `tabulate_high_qtc_subjects()` for subject",
-      "counts, or `tabulate_high_qtc_observations()` to keep the current",
-      "observation counts."
+      "It counts observations, not subjects.",
+      "Use `tabulate_high_qtc_subjects()` for subject counts or",
+      "`tabulate_high_qtc_observations()` for observation counts."
     ),
     always = TRUE
   )
