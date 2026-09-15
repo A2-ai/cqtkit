@@ -162,6 +162,11 @@ fit_prespecified_model <- function(
   required_cols <- unlist(lapply(vars, name_quo_if_not_null)) #from helper.R
   checkmate::assertNames(names(data), must.include = required_cols)
 
+  # nlme::lme cannot parse non-syntactic column names (e.g. those with spaces),
+  # even when backtick-quoted. Fail early with an actionable message.
+  model_names <- unlist(lapply(vars, name_quo_if_not_null))
+  assert_syntactic_names(model_names)
+
   #copy data to new variable to overwrite TAFD column if present in model.
   new_data <- data
 
@@ -185,6 +190,16 @@ fit_prespecified_model <- function(
   }
 
   fixed_formula <- stats::as.formula(fixed_formula)
+
+  # After rows with missing model values are dropped (na.action = "na.exclude"),
+  # a categorical predictor (treatment or time) can collapse to a single level,
+  # producing the cryptic "contrasts ... 2 or more levels" error. Detect up front.
+  cat_cols <- c(
+    if (!rlang::quo_is_null(trt)) rlang::quo_name(trt),
+    if (!rlang::quo_is_null(tafd)) rlang::quo_name(tafd)
+  )
+  assert_multilevel_factors(new_data, model_names, cat_cols)
+
   if (remove_conc_iiv) {
     random_formula <- stats::as.formula(paste0(
       "~ 1",
