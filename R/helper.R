@@ -426,3 +426,118 @@ render_high_qtc_table <- function(
 
   do.call(gt::tab_options, tab_option_args)
 }
+
+#' Normalise the `show_model_results` argument
+#'
+#' @param x TRUE, FALSE, NULL, or a `model_results_spec()`
+#' @return A `cqtkit_model_results_spec`, or NULL when results are not shown
+#' @keywords internal
+#' @noRd
+as_model_results_spec <- function(x) {
+  if (is.null(x) || isFALSE(x)) {
+    return(NULL)
+  }
+  if (isTRUE(x)) {
+    return(model_results_spec())
+  }
+  if (inherits(x, "cqtkit_model_results_spec")) {
+    return(x)
+  }
+  stop(
+    "`show_model_results` must be TRUE, FALSE, or a `model_results_spec()`",
+    call. = FALSE
+  )
+}
+
+#' Format a caption number
+#'
+#' `digits = NULL` rounds, which is what cqtkit did before
+#' `model_results_spec()` existed. An integer pads to a fixed width, so 0.1
+#' prints as "0.100" under `digits = 3`.
+#'
+#' @param x Numeric
+#' @param digits Integer decimal places, or NULL to round
+#' @return Numeric when `digits` is NULL, character otherwise
+#' @keywords internal
+#' @noRd
+fmt_model_number <- function(x, digits) {
+  if (is.null(digits)) {
+    return(round(x, 3))
+  }
+  formatC(x, format = "f", digits = digits)
+}
+
+#' Format a slope estimate, CI, and p-value for a plot caption
+#'
+#' @param label Model label prefix, e.g. "Linear Regression"
+#' @param estimate Numeric slope estimate
+#' @param lower,upper Numeric confidence bounds
+#' @param pvalue Numeric slope p-value
+#' @param spec A `model_results_spec()`
+#' @return A caption string, or NULL if the spec shows nothing
+#' @keywords internal
+#' @noRd
+format_model_results <- function(label, estimate, lower, upper, pvalue, spec) {
+  lines <- character()
+  if (spec$slope) {
+    lines <- c(
+      lines,
+      paste0(
+        label,
+        " Slope [",
+        round(spec$ci * 100),
+        "% CI]: ",
+        fmt_model_number(estimate, spec$digits),
+        " [",
+        fmt_model_number(lower, spec$digits),
+        ", ",
+        fmt_model_number(upper, spec$digits),
+        "]"
+      )
+    )
+  }
+  if (spec$pvalue) {
+    p_str <- if (is.na(pvalue)) {
+      "NA"
+    } else if (pvalue < spec$eps) {
+      paste0("< ", format(spec$eps, scientific = FALSE))
+    } else {
+      fmt_model_number(pvalue, spec$digits)
+    }
+    lines <- c(lines, paste0("Slope p-value: ", p_str))
+  }
+  if (length(lines) == 0) {
+    return(NULL)
+  }
+  paste(lines, collapse = "\n")
+}
+
+#' Apply a deprecated `conf_int` argument onto the model results spec's `ci`
+#'
+#' @param spec A `cqtkit_model_results_spec` or NULL
+#' @param conf_int The deprecated argument's value
+#' @param fn Name of the calling function, for the warning
+#' @return The spec with `ci` replaced, or NULL
+#' @keywords internal
+#' @noRd
+legacy_conf_int <- function(
+  spec,
+  conf_int,
+  fn,
+  env = rlang::caller_env(),
+  user_env = rlang::caller_env(2)
+) {
+  lifecycle::deprecate_warn(
+    when = "1.2.0",
+    what = paste0(fn, "(conf_int)"),
+    details = "Set `ci` in `model_results_spec()` instead.",
+    env = env,
+    user_env = user_env
+  )
+  checkmate::assertNumber(conf_int, lower = 0, upper = 1)
+  if (is.null(spec)) {
+    return(NULL)
+  }
+  spec$ci <- conf_int
+  spec
+}

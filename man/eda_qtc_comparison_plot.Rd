@@ -15,10 +15,10 @@ eda_qtc_comparison_plot(
   trt_col = NULL,
   legend_location = "top",
   model_type = c("lm", "lme"),
-  show_model_results = TRUE,
+  show_model_results = model_results_spec(),
   method = "REML",
   remove_rr_iiv = FALSE,
-  conf_int = 0.9,
+  conf_int = lifecycle::deprecated(),
   style = list()
 )
 }
@@ -43,13 +43,15 @@ eda_qtc_comparison_plot(
 
 \item{model_type}{Lm or lme, which model to fit for showing on plot}
 
-\item{show_model_results}{Logical, whether to show regression slope on plot}
+\item{show_model_results}{\code{TRUE}, \code{FALSE}, or a \code{model_results_spec()}
+controlling what each panel's caption reports about the slope}
 
 \item{method}{Method for nlme::lme fitting (ML or REML)}
 
 \item{remove_rr_iiv}{Logical, whether to remove IIV on RR slope}
 
-\item{conf_int}{Numeric confidence interval level (default: 0.9)}
+\item{conf_int}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Set \code{ci} in
+\code{model_results_spec()} instead.}
 
 \item{style}{A named list of arguments passed to style_plot()}
 }

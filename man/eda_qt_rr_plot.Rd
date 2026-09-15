@@ -10,9 +10,9 @@ eda_qt_rr_plot(
   qt_col,
   id_col = NULL,
   trt_col = NULL,
-  conf_int = 0.9,
+  conf_int = lifecycle::deprecated(),
   model_type = c("lm", "lme"),
-  show_model_results = TRUE,
+  show_model_results = model_results_spec(),
   method = "REML",
   remove_rr_iiv = FALSE,
   style = list()
@@ -29,11 +29,13 @@ eda_qt_rr_plot(
 
 \item{trt_col}{An unquoted column name for treatment group}
 
-\item{conf_int}{Numeric confidence interval level (default: 0.9)}
+\item{conf_int}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Set \code{ci} in
+\code{model_results_spec()} instead.}
 
 \item{model_type}{Lm or lme, which model to fit for showing on plot}
 
-\item{show_model_results}{Logical, whether to show regression slope on plot}
+\item{show_model_results}{\code{TRUE}, \code{FALSE}, or a \code{model_results_spec()}
+controlling what the caption reports about the slope}
 
 \item{method}{Method for nlme::lme fitting (ML or REML)}
 

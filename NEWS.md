@@ -9,8 +9,11 @@
 * New `compute_high_qtc_subjects()` and `tabulate_high_qtc_subjects()` count the number of distinct subjects with at least one value above each threshold.
 * New `compute_high_qtc_observations()` and `tabulate_high_qtc_observations()` count observations above each threshold, matching the existing `*_sub()` behaviour.
 * The high QTc functions gain `qtc_thresholds` and `dqtc_thresholds`, so the thresholds are no longer fixed at 450/480/500 ms and 30/60 ms.
+* New `model_results_spec()` controls the slope caption in `eda_qt_rr_plot()` and `eda_qtc_comparison_plot()`: which of the slope and its p-value are shown, the confidence level, the p-value cutoff, and the number of decimals. `show_model_results` accepts it alongside `TRUE` and `FALSE`.
+* `model_results_spec()` defaults `digits` to `NULL`, which rounds to three decimals as before. An integer pads to a fixed width instead, so `0.1` prints as `0.100` under `digits = 3`. `digits` will default to `3` in 2.0.0.
 
 ### Deprecated
+* The `conf_int` argument of `eda_qt_rr_plot()` and `eda_qtc_comparison_plot()` is deprecated. It still sets the confidence level. Set `ci` in `model_results_spec()` instead. It will be removed in 2.0.0.
 * The re-export of magrittr's `%>%` is deprecated. `library(cqtkit)` will no longer attach it in 2.0.0. Attach it with `library(dplyr)` or `library(magrittr)`, or use the base pipe `|>`.
 * `compute_high_qtc_sub()` and `tabulate_high_qtc_sub()` are deprecated. They count observations, not subjects. Their counts are unchanged. Use `compute_high_qtc_subjects()` / `tabulate_high_qtc_subjects()` for subject counts or `compute_high_qtc_observations()` / `tabulate_high_qtc_observations()` for observation counts. They will be removed in 2.0.0.
 
