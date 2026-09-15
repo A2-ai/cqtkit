@@ -175,6 +175,14 @@ tabulate_pk_parameters <- function(
 #' @param scientific Logical, whether to use scientific notation for small values
 #' @param title Optional string for adding tab_header. It will be wrapped in gt::md()
 #' @param ... Optional additional arguments for gt::tab_options
+#' @param conc_col_name A string of column name of concentration (the slope term)
+#'   used in model fitting. Only used when `section = TRUE`.
+#' @param baseline_col_name A string of column name of the baseline covariate
+#'   used in model fitting. Only used when `section = TRUE`.
+#' @param include_reference_levels Logical, whether to add a zero-valued row for
+#'   the reference level of the treatment and time terms (default: FALSE)
+#' @param section Logical, whether to group the rows into Slope, Treatment,
+#'   Intercept, Time and Random Effects row groups (default: FALSE)
 #'
 #' @importFrom rlang .data
 #'
@@ -206,7 +214,11 @@ tabulate_model_fit_parameters <- function(
   show_standard_error = FALSE,
   scientific = TRUE,
   title = NULL,
-  ...
+  ...,
+  conc_col_name = "CONC",
+  baseline_col_name = "deltaQTCFBL",
+  include_reference_levels = FALSE,
+  section = FALSE
 ) {
   checkmate::assert_class(fit, "lme")
   checkmate::assertNumeric(conf_int, lower = 0, upper = 1)
@@ -216,7 +228,11 @@ tabulate_model_fit_parameters <- function(
     trt_col_name,
     tafd_col_name,
     id_col_name,
-    conf_int
+    conc_col_name = conc_col_name,
+    baseline_col_name = baseline_col_name,
+    conf_int = conf_int,
+    include_reference_levels = include_reference_levels,
+    section = section
   )
 
   if (!show_standard_error) {
@@ -224,8 +240,15 @@ tabulate_model_fit_parameters <- function(
       dplyr::select(-"Std.Error")
   }
 
+  fit_result_df <- fit_result_df %>%
+    dplyr::select(-"DF", -"t-value")
+
+  if (section) {
+    fit_result_df <- fit_result_df %>%
+      dplyr::group_by(.data$Section)
+  }
+
   fit_result_table <- fit_result_df %>%
-    dplyr::select(-"DF", -"t-value") %>%
     gt::gt() %>%
     gt::cols_merge(
       columns = c(.data$Value, .data$CIl, .data$CIu),
@@ -234,6 +257,15 @@ tabulate_model_fit_parameters <- function(
     gt::cols_label(
       Value = paste0("Estimate [", conf_int * 100, "% CI]")
     )
+
+  if (section) {
+    fit_result_table <- fit_result_table %>%
+      gt::tab_style(
+        style = gt::cell_text(weight = "bold"),
+        locations = gt::cells_row_groups()
+      )
+  }
+
   if (show_standard_error) {
     fit_result_table <- fit_result_table %>%
       gt::cols_label(

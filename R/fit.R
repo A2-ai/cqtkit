@@ -247,6 +247,18 @@ fit_prespecified_model <- function(
 #' @param tafd_col_name String of column name of tafd used in model fitting
 #' @param id_col_name String of column name of the id used in model fitting for random effects
 #' @param conf_int Numeric confidence interval level (default: 0.9)
+#' @param conc_col_name String of column name of concentration (the slope term)
+#'   used in model fitting. Only used when `section = TRUE`.
+#' @param baseline_col_name String of column name of the baseline covariate used
+#'   in model fitting. Only used when `section = TRUE`.
+#' @param include_reference_levels Logical, whether to add a zero-valued row for
+#'   the reference level of the treatment and time terms. These levels are the
+#'   comparator the other levels are estimated against, so `nlme::lme()` does not
+#'   report them (default: FALSE)
+#' @param section Logical, whether to add a `Section` column classifying each
+#'   parameter as Slope, Treatment, Intercept, Time, Random Effects or Other,
+#'   and order the rows by it. Changes the columns and row order of the returned
+#'   tibble (default: FALSE)
 #'
 #' @return A tibble with fixed effect estimates, standard errors, degrees of freedom, t-values, p-values, confidence intervals, and random effect variances
 #' @export
@@ -271,11 +283,18 @@ compute_model_fit_parameters <- function(
   trt_col_name = "TRTG",
   tafd_col_name = "TAFD",
   id_col_name = "ID",
-  conf_int = 0.95
+  conf_int = 0.95,
+  conc_col_name = "CONC",
+  baseline_col_name = "deltaQTCFBL",
+  include_reference_levels = FALSE,
+  section = FALSE
 ) {
   checkmate::assert_class(fit, "lme")
   checkmate::assertNumeric(conf_int, lower = 0, upper = 1)
+  checkmate::assertFlag(include_reference_levels)
+  checkmate::assertFlag(section)
 
+  model_data <- nlme::getData(fit)
   sum <- summary(fit)$tTable
   new_names <- gsub(paste0("^", trt_col_name), "", rownames(sum))
   new_names <- gsub(paste0("^", tafd_col_name), "", new_names)
@@ -292,6 +311,14 @@ compute_model_fit_parameters <- function(
         stats::qt((1 + conf_int) / 2, .data$DF) * .data$Std.Error
     ) %>%
     tibble::as_tibble()
+
+  if (include_reference_levels) {
+    sum <- add_reference_level_rows(
+      sum,
+      model_data,
+      c(trt_col_name, tafd_col_name)
+    )
+  }
 
   # add residuals
   sigmav <- nlme::intervals(fit, conf_int)$sigma %>%
@@ -351,6 +378,17 @@ compute_model_fit_parameters <- function(
     parameters <- rbind(sum, random_eff, sigmav)
   } else {
     parameters <- rbind(sum, sigmav)
+  }
+
+  if (section) {
+    parameters <- add_parameter_sections(
+      parameters,
+      model_data,
+      trt_col_name = trt_col_name,
+      tafd_col_name = tafd_col_name,
+      conc_col_name = conc_col_name,
+      baseline_col_name = baseline_col_name
+    )
   }
 
   return(parameters)

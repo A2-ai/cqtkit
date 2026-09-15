@@ -811,9 +811,9 @@ gof_residuals_trt_boxplots <- function(
 #' @param nruns Integer number of simulations to run
 #' @param nbins Integer number of bins to break independent variable into - OR - a user specified vector for non-uniform binning
 #' @param type Integer for type parameter of stats::quantile
+#' @param style A named list of arguments passed to style_plot()
 #' @param seed Optional integer seed for reproducible simulations. The RNG state
 #'   is restored on exit. Default (NULL) does not set a seed.
-#' @param style A named list of arguments passed to style_plot()
 #'
 #' @return A visual predictive check plot with observed quantiles overlaid on simulated prediction intervals
 #' @export
@@ -843,8 +843,8 @@ gof_vpc_plot <- function(
   nruns = 500,
   nbins = 10,
   type = 2,
-  seed = NULL,
-  style = list()
+  style = list(),
+  seed = NULL
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))

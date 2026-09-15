@@ -14,7 +14,11 @@ tabulate_model_fit_parameters(
   show_standard_error = FALSE,
   scientific = TRUE,
   title = NULL,
-  ...
+  ...,
+  conc_col_name = "CONC",
+  baseline_col_name = "deltaQTCFBL",
+  include_reference_levels = FALSE,
+  section = FALSE
 )
 }
 \arguments{
@@ -37,6 +41,18 @@ tabulate_model_fit_parameters(
 \item{title}{Optional string for adding tab_header. It will be wrapped in gt::md()}
 
 \item{...}{Optional additional arguments for gt::tab_options}
+
+\item{conc_col_name}{A string of column name of concentration (the slope term)
+used in model fitting. Only used when \code{section = TRUE}.}
+
+\item{baseline_col_name}{A string of column name of the baseline covariate
+used in model fitting. Only used when \code{section = TRUE}.}
+
+\item{include_reference_levels}{Logical, whether to add a zero-valued row for
+the reference level of the treatment and time terms (default: FALSE)}
+
+\item{section}{Logical, whether to group the rows into Slope, Treatment,
+Intercept, Time and Random Effects row groups (default: FALSE)}
 }
 \value{
 A gt table with fixed effect estimates, standard errors, confidence intervals, and p-values
