@@ -1,4 +1,7 @@
-# cqtkit 1.1.1
+# cqtkit 1.2.0
+
+### Enhanced
+* `gof_vpc_plot()` and `compute_summary_statistics_of_simulations()` gain a `seed` argument for reproducible simulations. The caller's RNG state is restored on exit.
 
 ### Fixed
 * `compute_pk_parameters()` now takes one Cmax per subject before summarizing, so subjects with more timepoints no longer contribute repeated Cmax values to `Cmax_gm` and `Cmax_cv`.
