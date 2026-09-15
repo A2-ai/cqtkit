@@ -206,3 +206,110 @@ assert_multilevel_factors <- function(data, model_cols, factor_cols) {
   }
   invisible(TRUE)
 }
+
+#' Insert a zero-valued row for each term's reference level
+#'
+#' `nlme::lme()` estimates each factor level against a reference level, which it
+#' therefore does not report. Add it back so a reader can see the comparator
+#' rather than infer it from which level is absent.
+#'
+#' @param sum Tibble of fixed effect estimates, one row per parameter
+#' @param model_data The data the model was fit to, from `nlme::getData()`
+#' @param col_names Character vector of the factor columns to check
+#' @return `sum` with a reference row inserted above each term's first level
+#' @keywords internal
+#' @noRd
+add_reference_level_rows <- function(sum, model_data, col_names) {
+  reference_row <- function(level_name) {
+    tibble::tibble(
+      Parameters = paste0(level_name, " (Reference)"),
+      Value = 0,
+      Std.Error = NA_real_,
+      DF = NA_integer_,
+      `t-value` = NA_real_,
+      `p-value` = NA_real_,
+      CIl = NA_real_,
+      CIu = NA_real_
+    )
+  }
+
+  for (col in col_names) {
+    if (is.null(col) || !col %in% names(model_data)) {
+      next
+    }
+
+    all_levels <- unique(model_data[[col]])
+    ref_level <- setdiff(all_levels, sum$Parameters)
+    if (length(ref_level) != 1) {
+      next
+    }
+
+    in_table <- intersect(as.character(all_levels), sum$Parameters)
+    first_idx <- which(sum$Parameters %in% in_table)[1]
+    if (is.na(first_idx)) {
+      next
+    }
+
+    sum <- dplyr::bind_rows(
+      sum[seq_len(first_idx - 1), ],
+      reference_row(ref_level),
+      sum[first_idx:nrow(sum), ]
+    )
+  }
+
+  sum
+}
+
+#' Classify model parameters into sections and order the rows by them
+#'
+#' @param parameters Tibble of model parameters
+#' @param model_data The data the model was fit to, from `nlme::getData()`
+#' @param trt_col_name,tafd_col_name,conc_col_name,baseline_col_name Column
+#'   names used in model fitting, used to recognise each parameter
+#' @return `parameters` with a `Section` factor column, ordered by it
+#' @keywords internal
+#' @noRd
+add_parameter_sections <- function(
+  parameters,
+  model_data,
+  trt_col_name,
+  tafd_col_name,
+  conc_col_name,
+  baseline_col_name
+) {
+  levels_of <- function(col) {
+    if (!is.null(col) && col %in% names(model_data)) {
+      as.character(unique(model_data[[col]]))
+    } else {
+      character()
+    }
+  }
+
+  trt_levels <- levels_of(trt_col_name)
+  tafd_levels <- levels_of(tafd_col_name)
+
+  params <- parameters$Parameters
+  bare <- gsub(" \\(Reference\\)", "", params)
+
+  parameters$Section <- dplyr::case_when(
+    params == conc_col_name ~ "Slope",
+    params %in% trt_levels | bare %in% trt_levels ~ "Treatment",
+    params == "Intercept" | params == baseline_col_name ~ "Intercept",
+    params %in% tafd_levels | bare %in% tafd_levels ~ "Time",
+    grepl("^IIV", params) | params == "Residual Error" ~ "Random Effects",
+    TRUE ~ "Other"
+  )
+  parameters$Section <- factor(
+    parameters$Section,
+    levels = c(
+      "Slope",
+      "Treatment",
+      "Intercept",
+      "Time",
+      "Random Effects",
+      "Other"
+    )
+  )
+
+  parameters[order(parameters$Section), ]
+}

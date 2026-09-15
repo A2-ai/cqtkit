@@ -13,8 +13,8 @@ gof_vpc_plot(
   nruns = 500,
   nbins = 10,
   type = 2,
-  seed = NULL,
-  style = list()
+  style = list(),
+  seed = NULL
 )
 }
 \arguments{
@@ -34,10 +34,10 @@ gof_vpc_plot(
 
 \item{type}{Integer for type parameter of stats::quantile}
 
+\item{style}{A named list of arguments passed to style_plot()}
+
 \item{seed}{Optional integer seed for reproducible simulations. The RNG state
 is restored on exit. Default (NULL) does not set a seed.}
-
-\item{style}{A named list of arguments passed to style_plot()}
 }
 \value{
 A visual predictive check plot with observed quantiles overlaid on simulated prediction intervals

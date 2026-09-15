@@ -164,7 +164,9 @@ tabulate_model_fit_parameters(
   tafd_col_name = "TAFD",
   conf_int = 0.9,
   decimals = 2,
-  title = "Fixed-Effect Estimates for &Delta;QTcF Model"
+  title = "Fixed-Effect Estimates for &Delta;QTcF Model",
+  section = TRUE,
+  include_reference_levels = TRUE
 ) %>%
   tab_source_note(
     source_note = "Additive Residual error model with IIV on intercept and slope"

@@ -9,7 +9,11 @@ compute_model_fit_parameters(
   trt_col_name = "TRTG",
   tafd_col_name = "TAFD",
   id_col_name = "ID",
-  conf_int = 0.95
+  conf_int = 0.95,
+  conc_col_name = "CONC",
+  baseline_col_name = "deltaQTCFBL",
+  include_reference_levels = FALSE,
+  section = FALSE
 )
 }
 \arguments{
@@ -22,6 +26,22 @@ compute_model_fit_parameters(
 \item{id_col_name}{String of column name of the id used in model fitting for random effects}
 
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
+
+\item{conc_col_name}{String of column name of concentration (the slope term)
+used in model fitting. Only used when \code{section = TRUE}.}
+
+\item{baseline_col_name}{String of column name of the baseline covariate used
+in model fitting. Only used when \code{section = TRUE}.}
+
+\item{include_reference_levels}{Logical, whether to add a zero-valued row for
+the reference level of the treatment and time terms. These levels are the
+comparator the other levels are estimated against, so \code{nlme::lme()} does not
+report them (default: FALSE)}
+
+\item{section}{Logical, whether to add a \code{Section} column classifying each
+parameter as Slope, Treatment, Intercept, Time, Random Effects or Other,
+and order the rows by it. Changes the columns and row order of the returned
+tibble (default: FALSE)}
 }
 \value{
 A tibble with fixed effect estimates, standard errors, degrees of freedom, t-values, p-values, confidence intervals, and random effect variances
