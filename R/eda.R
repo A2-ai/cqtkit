@@ -18,8 +18,8 @@
 #' @param include_pvalue Logical, add the slope p-value to the caption
 #'   (default: FALSE)
 #' @param pvalue_eps Numeric, p-values below this are shown as "< eps".
-#'   Defaults to `NULL`, which uses the smallest value `decimals` can display,
-#'   so three decimals give "< 0.001". Ignored when `scientific = TRUE`.
+#'   Defaults to `NULL`, no cutoff, so the p-value is rounded to `decimals`
+#'   places. Ignored when `scientific = TRUE`.
 #' @param decimals Integer, decimal places for the slope, confidence interval
 #'   and p-value, or `NULL` (the default) to round to three decimals. `NULL`
 #'   and `3` are not the same: `NULL` rounds, so 0.1 prints as `0.1`, while
@@ -218,8 +218,8 @@ eda_qt_rr_plot <- function(
 #' @param include_pvalue Logical, add the slope p-value to the caption
 #'   (default: FALSE)
 #' @param pvalue_eps Numeric, p-values below this are shown as "< eps".
-#'   Defaults to `NULL`, which uses the smallest value `decimals` can display,
-#'   so three decimals give "< 0.001". Ignored when `scientific = TRUE`.
+#'   Defaults to `NULL`, no cutoff, so the p-value is rounded to `decimals`
+#'   places. Ignored when `scientific = TRUE`.
 #' @param decimals Integer, decimal places for the slope, confidence interval
 #'   and p-value, or `NULL` (the default) to round to three decimals. `NULL`
 #'   and `3` are not the same: `NULL` rounds, so 0.1 prints as `0.1`, while

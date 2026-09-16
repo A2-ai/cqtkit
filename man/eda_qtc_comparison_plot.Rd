@@ -63,8 +63,8 @@ annotation, so it does nothing when this is \code{FALSE}.}
 (default: FALSE)}
 
 \item{pvalue_eps}{Numeric, p-values below this are shown as "< eps".
-Defaults to \code{NULL}, which uses the smallest value \code{decimals} can display,
-so three decimals give "< 0.001". Ignored when \code{scientific = TRUE}.}
+Defaults to \code{NULL}, no cutoff, so the p-value is rounded to \code{decimals}
+places. Ignored when \code{scientific = TRUE}.}
 
 \item{decimals}{Integer, decimal places for the slope, confidence interval
 and p-value, or \code{NULL} (the default) to round to three decimals. \code{NULL}

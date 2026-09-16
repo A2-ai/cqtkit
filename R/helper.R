@@ -453,8 +453,8 @@ fmt_caption_number <- function(x, decimals) {
 #' @param pvalue Numeric slope p-value
 #' @param conf_int Numeric confidence interval level
 #' @param include_pvalue Logical, add the p-value on a second line
-#' @param pvalue_eps Numeric, p-values below this print as "< eps", or NULL to
-#'   derive the floor from `decimals`
+#' @param pvalue_eps Numeric, p-values below this print as "< eps", or NULL for
+#'   no cutoff
 #' @param decimals Integer decimal places, or NULL to round
 #' @param scientific Logical, show the p-value in scientific notation
 #' @return A caption string
@@ -489,23 +489,20 @@ format_model_results <- function(
     return(caption)
   }
 
-  eps <- pvalue_eps %||% 10^-(decimals %||% 3)
-
   p_str <- if (is.na(pvalue)) {
     "NA"
   } else if (scientific) {
     formatC(pvalue, format = "e", digits = decimals %||% 3)
-  } else if (pvalue < eps) {
-    paste0("< ", format(eps, scientific = FALSE))
+  } else if (!is.null(pvalue_eps) && pvalue < pvalue_eps) {
+    paste0("< ", format(pvalue_eps, scientific = FALSE))
   } else {
     rounded <- fmt_caption_number(pvalue, decimals)
     if (as.numeric(rounded) == 0) {
       warning(
-        "The slope p-value printed as 0: `pvalue_eps` (",
-        format(eps),
-        ") is below what `decimals` (",
+        "The slope p-value printed as 0: it is smaller than `decimals` (",
         decimals %||% 3,
-        ") can show. Raise `pvalue_eps` or use `scientific = TRUE`.",
+        ") can show. Use `scientific = TRUE`, or set `pvalue_eps` to print ",
+        "it as `< eps`.",
         call. = FALSE
       )
     }

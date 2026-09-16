@@ -12,7 +12,7 @@
 * `eda_qt_rr_plot()` and `eda_qtc_comparison_plot()` gain arguments for showing the slope p-value in the caption.
   * `include_pvalue` adds the p-value. Defaults to `FALSE`, and warns when `show_model_results = FALSE`.
   * `scientific` shows it in scientific notation. Defaults to `TRUE`, matching `tabulate_model_fit_parameters()`.
-  * `pvalue_eps` is the cutoff below which it prints as `< eps` when `scientific = FALSE`. Defaults to the smallest value `decimals` can display.
+  * `pvalue_eps` is the cutoff below which it prints as `< eps` when `scientific = FALSE`. Defaults to `NULL`, no cutoff.
   * `decimals` sets the decimal places in the caption. Defaults to `NULL`, which rounds to three decimals as before.
 
 ### Deprecated

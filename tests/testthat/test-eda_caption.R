@@ -52,24 +52,31 @@ test_that("include_pvalue adds a scientific p-value by default", {
   expect_match(p$labels$caption, "Slope p-value: [0-9.]+e-[0-9]+$")
 })
 
-test_that("pvalue_eps defaults to the floor decimals can display", {
-  three <- eda_qt_rr_plot(
-    data_proc,
-    RR,
-    QT,
-    model_type = "lm",
-    include_pvalue = TRUE,
-    scientific = FALSE
+test_that("pvalue_eps has no cutoff by default and warns when it rounds to 0", {
+  expect_warning(
+    rounded <- eda_qt_rr_plot(
+      data_proc,
+      RR,
+      QT,
+      model_type = "lm",
+      include_pvalue = TRUE,
+      scientific = FALSE
+    ),
+    "printed as 0"
   )
-  six <- eda_qt_rr_plot(
+  expect_match(rounded$labels$caption, "Slope p-value: 0$")
+
+  cutoff <- eda_qt_rr_plot(
     data_proc,
     RR,
     QT,
     model_type = "lm",
     include_pvalue = TRUE,
     scientific = FALSE,
-    decimals = 6
+    pvalue_eps = 0.001
   )
+  expect_match(cutoff$labels$caption, "Slope p-value: < 0.001$")
+
   coarse <- eda_qt_rr_plot(
     data_proc,
     RR,
@@ -79,27 +86,7 @@ test_that("pvalue_eps defaults to the floor decimals can display", {
     scientific = FALSE,
     pvalue_eps = 0.05
   )
-
-  expect_match(three$labels$caption, "Slope p-value: < 0.001$")
-  expect_match(six$labels$caption, "Slope p-value: < 0.000001$")
   expect_match(coarse$labels$caption, "Slope p-value: < 0.05$")
-})
-
-test_that("an eps finer than decimals can show warns instead of printing 0", {
-  expect_warning(
-    p <- eda_qt_rr_plot(
-      data_proc,
-      RR,
-      QT,
-      model_type = "lm",
-      include_pvalue = TRUE,
-      scientific = FALSE,
-      pvalue_eps = 1e-100
-    ),
-    "printed as 0"
-  )
-
-  expect_match(p$labels$caption, "Slope p-value: 0$")
 })
 
 test_that("decimals pads to a fixed width and NULL rounds", {
