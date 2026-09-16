@@ -426,3 +426,107 @@ render_high_qtc_table <- function(
 
   do.call(gt::tab_options, tab_option_args)
 }
+
+#' Format a caption number
+#'
+#' `decimals = NULL` rounds to three places, which is what the plot captions
+#' did before `decimals` existed. An integer pads to a fixed width, so 0.1
+#' prints as "0.100" under `decimals = 3`.
+#'
+#' @param x Numeric
+#' @param decimals Integer decimal places, or NULL to round
+#' @return Numeric when `decimals` is NULL, character otherwise
+#' @keywords internal
+#' @noRd
+fmt_caption_number <- function(x, decimals) {
+  if (is.null(decimals)) {
+    return(round(x, 3))
+  }
+  formatC(x, format = "f", digits = decimals)
+}
+
+#' Format a slope estimate, its confidence interval and its p-value
+#'
+#' @param label Model label prefix, e.g. "Linear Regression"
+#' @param estimate Numeric slope estimate
+#' @param lower,upper Numeric confidence bounds
+#' @param pvalue Numeric slope p-value
+#' @param conf_int Numeric confidence interval level
+#' @param include_pvalue Logical, add the p-value on a second line
+#' @param pvalue_eps Numeric, p-values below this print as "< eps", or NULL for
+#'   no cutoff
+#' @param decimals Integer decimal places, or NULL to round
+#' @param scientific Logical, show the p-value in scientific notation
+#' @return A caption string
+#' @keywords internal
+#' @noRd
+format_model_results <- function(
+  label,
+  estimate,
+  lower,
+  upper,
+  pvalue,
+  conf_int,
+  include_pvalue = FALSE,
+  pvalue_eps = NULL,
+  decimals = NULL,
+  scientific = TRUE
+) {
+  caption <- paste0(
+    label,
+    " Slope [",
+    round(conf_int * 100),
+    "% CI]: ",
+    fmt_caption_number(estimate, decimals),
+    " [",
+    fmt_caption_number(lower, decimals),
+    ", ",
+    fmt_caption_number(upper, decimals),
+    "]"
+  )
+
+  if (!include_pvalue) {
+    return(caption)
+  }
+
+  p_str <- if (is.na(pvalue)) {
+    "NA"
+  } else if (scientific) {
+    formatC(pvalue, format = "e", digits = decimals %||% 3)
+  } else if (!is.null(pvalue_eps) && pvalue < pvalue_eps) {
+    paste0("< ", format(pvalue_eps, scientific = FALSE))
+  } else {
+    rounded <- fmt_caption_number(pvalue, decimals)
+    if (as.numeric(rounded) == 0) {
+      warning(
+        "The slope p-value printed as 0: it is smaller than `decimals` (",
+        decimals %||% 3,
+        ") can show. Use `scientific = TRUE`, or set `pvalue_eps` to print ",
+        "it as `< eps`.",
+        call. = FALSE
+      )
+    }
+    rounded
+  }
+
+  paste0(caption, "\nSlope p-value: ", p_str)
+}
+
+#' Warn when `include_pvalue` is set but the annotation is switched off
+#'
+#' @param show_model_results Logical
+#' @param include_pvalue Logical
+#' @return NULL, invisibly
+#' @keywords internal
+#' @noRd
+warn_unused_include_pvalue <- function(show_model_results, include_pvalue) {
+  if (include_pvalue && !show_model_results) {
+    warning(
+      "`include_pvalue` is ignored because `show_model_results` is FALSE. ",
+      "The p-value is part of the model results annotation, so set ",
+      "`show_model_results = TRUE` to see it.",
+      call. = FALSE
+    )
+  }
+  invisible(NULL)
+}

@@ -19,7 +19,11 @@ eda_qtc_comparison_plot(
   method = "REML",
   remove_rr_iiv = FALSE,
   conf_int = 0.9,
-  style = list()
+  style = list(),
+  include_pvalue = FALSE,
+  pvalue_eps = NULL,
+  decimals = NULL,
+  scientific = TRUE
 )
 }
 \arguments{
@@ -43,7 +47,9 @@ eda_qtc_comparison_plot(
 
 \item{model_type}{Lm or lme, which model to fit for showing on plot}
 
-\item{show_model_results}{Logical, whether to show regression slope on plot}
+\item{show_model_results}{Logical, whether to draw the fitted line and
+annotate the plot with the model results. \code{include_pvalue} adds to that
+annotation, so it does nothing when this is \code{FALSE}.}
 
 \item{method}{Method for nlme::lme fitting (ML or REML)}
 
@@ -52,6 +58,23 @@ eda_qtc_comparison_plot(
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
 
 \item{style}{A named list of arguments passed to style_plot()}
+
+\item{include_pvalue}{Logical, add the slope p-value to the caption
+(default: FALSE)}
+
+\item{pvalue_eps}{Numeric, p-values below this are shown as "< eps".
+Defaults to \code{NULL}, no cutoff, so the p-value is rounded to \code{decimals}
+places. Ignored when \code{scientific = TRUE}.}
+
+\item{decimals}{Integer, decimal places for the slope, confidence interval
+and p-value, or \code{NULL} (the default) to round to three decimals. \code{NULL}
+and \code{3} are not the same: \code{NULL} rounds, so 0.1 prints as \code{0.1}, while
+\code{decimals = 3} pads to a fixed width, so 0.1 prints as \code{0.100}.}
+
+\item{scientific}{Logical, show the p-value in scientific notation
+(default: TRUE, matching \code{tabulate_model_fit_parameters()}). \code{pvalue_eps}
+does not apply when this is \code{TRUE}, since the point of scientific notation
+is to show the small value rather than hide it.}
 }
 \value{
 A multi-panel plot comparing QT, QTcB, QTcF, and QTcP corrections against RR
