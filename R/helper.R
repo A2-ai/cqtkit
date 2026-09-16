@@ -427,117 +427,109 @@ render_high_qtc_table <- function(
   do.call(gt::tab_options, tab_option_args)
 }
 
-#' Normalise the `show_model_results` argument
-#'
-#' @param x TRUE, FALSE, NULL, or a `model_results_spec()`
-#' @return A `cqtkit_model_results_spec`, or NULL when results are not shown
-#' @keywords internal
-#' @noRd
-as_model_results_spec <- function(x) {
-  if (is.null(x) || isFALSE(x)) {
-    return(NULL)
-  }
-  if (isTRUE(x)) {
-    return(model_results_spec())
-  }
-  if (inherits(x, "cqtkit_model_results_spec")) {
-    return(x)
-  }
-  stop(
-    "`show_model_results` must be TRUE, FALSE, or a `model_results_spec()`",
-    call. = FALSE
-  )
-}
-
 #' Format a caption number
 #'
-#' `digits = NULL` rounds, which is what cqtkit did before
-#' `model_results_spec()` existed. An integer pads to a fixed width, so 0.1
-#' prints as "0.100" under `digits = 3`.
+#' `decimals = NULL` rounds to three places, which is what the plot captions
+#' did before `decimals` existed. An integer pads to a fixed width, so 0.1
+#' prints as "0.100" under `decimals = 3`.
 #'
 #' @param x Numeric
-#' @param digits Integer decimal places, or NULL to round
-#' @return Numeric when `digits` is NULL, character otherwise
+#' @param decimals Integer decimal places, or NULL to round
+#' @return Numeric when `decimals` is NULL, character otherwise
 #' @keywords internal
 #' @noRd
-fmt_model_number <- function(x, digits) {
-  if (is.null(digits)) {
+fmt_caption_number <- function(x, decimals) {
+  if (is.null(decimals)) {
     return(round(x, 3))
   }
-  formatC(x, format = "f", digits = digits)
+  formatC(x, format = "f", digits = decimals)
 }
 
-#' Format a slope estimate, CI, and p-value for a plot caption
+#' Format a slope estimate, its confidence interval and its p-value
 #'
 #' @param label Model label prefix, e.g. "Linear Regression"
 #' @param estimate Numeric slope estimate
 #' @param lower,upper Numeric confidence bounds
 #' @param pvalue Numeric slope p-value
-#' @param spec A `model_results_spec()`
-#' @return A caption string, or NULL if the spec shows nothing
+#' @param conf_int Numeric confidence interval level
+#' @param include_pvalue Logical, add the p-value on a second line
+#' @param pvalue_eps Numeric, p-values below this print as "< eps", or NULL to
+#'   derive the floor from `decimals`
+#' @param decimals Integer decimal places, or NULL to round
+#' @param scientific Logical, show the p-value in scientific notation
+#' @return A caption string
 #' @keywords internal
 #' @noRd
-format_model_results <- function(label, estimate, lower, upper, pvalue, spec) {
-  lines <- character()
-  if (spec$slope) {
-    lines <- c(
-      lines,
-      paste0(
-        label,
-        " Slope [",
-        round(spec$ci * 100),
-        "% CI]: ",
-        fmt_model_number(estimate, spec$digits),
-        " [",
-        fmt_model_number(lower, spec$digits),
-        ", ",
-        fmt_model_number(upper, spec$digits),
-        "]"
+format_model_results <- function(
+  label,
+  estimate,
+  lower,
+  upper,
+  pvalue,
+  conf_int,
+  include_pvalue = FALSE,
+  pvalue_eps = NULL,
+  decimals = NULL,
+  scientific = TRUE
+) {
+  caption <- paste0(
+    label,
+    " Slope [",
+    round(conf_int * 100),
+    "% CI]: ",
+    fmt_caption_number(estimate, decimals),
+    " [",
+    fmt_caption_number(lower, decimals),
+    ", ",
+    fmt_caption_number(upper, decimals),
+    "]"
+  )
+
+  if (!include_pvalue) {
+    return(caption)
+  }
+
+  eps <- pvalue_eps %||% 10^-(decimals %||% 3)
+
+  p_str <- if (is.na(pvalue)) {
+    "NA"
+  } else if (scientific) {
+    formatC(pvalue, format = "e", digits = decimals %||% 3)
+  } else if (pvalue < eps) {
+    paste0("< ", format(eps, scientific = FALSE))
+  } else {
+    rounded <- fmt_caption_number(pvalue, decimals)
+    if (as.numeric(rounded) == 0) {
+      warning(
+        "The slope p-value printed as 0: `pvalue_eps` (",
+        format(eps),
+        ") is below what `decimals` (",
+        decimals %||% 3,
+        ") can show. Raise `pvalue_eps` or use `scientific = TRUE`.",
+        call. = FALSE
       )
-    )
-  }
-  if (spec$pvalue) {
-    p_str <- if (is.na(pvalue)) {
-      "NA"
-    } else if (pvalue < spec$eps) {
-      paste0("< ", format(spec$eps, scientific = FALSE))
-    } else {
-      fmt_model_number(pvalue, spec$digits)
     }
-    lines <- c(lines, paste0("Slope p-value: ", p_str))
+    rounded
   }
-  if (length(lines) == 0) {
-    return(NULL)
-  }
-  paste(lines, collapse = "\n")
+
+  paste0(caption, "\nSlope p-value: ", p_str)
 }
 
-#' Apply a deprecated `conf_int` argument onto the model results spec's `ci`
+#' Warn when `include_pvalue` is set but the annotation is switched off
 #'
-#' @param spec A `cqtkit_model_results_spec` or NULL
-#' @param conf_int The deprecated argument's value
-#' @param fn Name of the calling function, for the warning
-#' @return The spec with `ci` replaced, or NULL
+#' @param show_model_results Logical
+#' @param include_pvalue Logical
+#' @return NULL, invisibly
 #' @keywords internal
 #' @noRd
-legacy_conf_int <- function(
-  spec,
-  conf_int,
-  fn,
-  env = rlang::caller_env(),
-  user_env = rlang::caller_env(2)
-) {
-  lifecycle::deprecate_warn(
-    when = "1.2.0",
-    what = paste0(fn, "(conf_int)"),
-    details = "Set `ci` in `model_results_spec()` instead.",
-    env = env,
-    user_env = user_env
-  )
-  checkmate::assertNumber(conf_int, lower = 0, upper = 1)
-  if (is.null(spec)) {
-    return(NULL)
+warn_unused_include_pvalue <- function(show_model_results, include_pvalue) {
+  if (include_pvalue && !show_model_results) {
+    warning(
+      "`include_pvalue` is ignored because `show_model_results` is FALSE. ",
+      "The p-value is part of the model results annotation, so set ",
+      "`show_model_results = TRUE` to see it.",
+      call. = FALSE
+    )
   }
-  spec$ci <- conf_int
-  spec
+  invisible(NULL)
 }

@@ -1,43 +1,3 @@
-#' Model results caption spec
-#'
-#' Controls what `eda_qt_rr_plot()` and `eda_qtc_comparison_plot()` report in
-#' the plot caption about the fitted QT vs RR slope.
-#'
-#' @param slope Logical, show the slope estimate with its confidence interval
-#' @param ci Numeric confidence interval level for the slope (default: 0.9)
-#' @param pvalue Logical, show the slope p-value on a second caption line
-#' @param eps Numeric, p-values below this are shown as "< eps"
-#' @param digits Integer, decimal places for the slope, CI, and p-value, or
-#'   `NULL` (the default) to round to three decimals. Note that `NULL` and `3`
-#'   are not the same: `NULL` rounds, so 0.1 prints as `0.1`, while `digits = 3`
-#'   pads to a fixed width, so 0.1 prints as `0.100`. `NULL` reproduces the
-#'   captions cqtkit produced before this function existed; it becomes `3` in
-#'   cqtkit 2.0.0.
-#'
-#' @return A list of class `cqtkit_model_results_spec`
-#' @export
-#'
-#' @examples
-#' model_results_spec(pvalue = TRUE)
-#' model_results_spec(ci = 0.95, digits = 4)
-model_results_spec <- function(
-  slope = TRUE,
-  ci = 0.90,
-  pvalue = FALSE,
-  eps = 0.001,
-  digits = NULL
-) {
-  checkmate::assertFlag(slope)
-  checkmate::assertNumber(ci, lower = 0, upper = 1)
-  checkmate::assertFlag(pvalue)
-  checkmate::assertNumber(eps, lower = 0, upper = 1)
-  checkmate::assertInt(digits, lower = 0, null.ok = TRUE)
-  structure(
-    list(slope = slope, ci = ci, pvalue = pvalue, eps = eps, digits = digits),
-    class = "cqtkit_model_results_spec"
-  )
-}
-
 #' EDA QT RR Plot
 #'
 #' Plots QT against RR.
@@ -47,14 +7,27 @@ model_results_spec <- function(
 #' @param qt_col An unquoted column name for QT measurements
 #' @param id_col An unquoted column name for subject ID
 #' @param trt_col An unquoted column name for treatment group
-#' @param conf_int `r lifecycle::badge("deprecated")` Set `ci` in
-#'   `model_results_spec()` instead.
+#' @param conf_int Numeric confidence interval level (default: 0.9)
 #' @param model_type Lm or lme, which model to fit for showing on plot
-#' @param show_model_results `TRUE`, `FALSE`, or a `model_results_spec()`
-#'   controlling what the caption reports about the slope
+#' @param show_model_results Logical, whether to draw the fitted line and
+#'   annotate the plot with the model results. `include_pvalue` adds to that
+#'   annotation, so it does nothing when this is `FALSE`.
 #' @param method Method for nlme::lme fitting (ML or REML)
 #' @param remove_rr_iiv Logical, whether to remove IIV on RR slope
 #' @param style A named list of arguments passed to style_plot()
+#' @param include_pvalue Logical, add the slope p-value to the caption
+#'   (default: FALSE)
+#' @param pvalue_eps Numeric, p-values below this are shown as "< eps".
+#'   Defaults to `NULL`, which uses the smallest value `decimals` can display,
+#'   so three decimals give "< 0.001". Ignored when `scientific = TRUE`.
+#' @param decimals Integer, decimal places for the slope, confidence interval
+#'   and p-value, or `NULL` (the default) to round to three decimals. `NULL`
+#'   and `3` are not the same: `NULL` rounds, so 0.1 prints as `0.1`, while
+#'   `decimals = 3` pads to a fixed width, so 0.1 prints as `0.100`.
+#' @param scientific Logical, show the p-value in scientific notation
+#'   (default: TRUE, matching `tabulate_model_fit_parameters()`). `pvalue_eps`
+#'   does not apply when this is `TRUE`, since the point of scientific notation
+#'   is to show the small value rather than hide it.
 #'
 #' @return A scatter plot of QT vs RR with optional regression line and slope estimate caption
 #' @export
@@ -69,19 +42,23 @@ eda_qt_rr_plot <- function(
   qt_col,
   id_col = NULL,
   trt_col = NULL,
-  conf_int = lifecycle::deprecated(),
+  conf_int = 0.90,
   model_type = c("lm", "lme"),
-  show_model_results = model_results_spec(),
+  show_model_results = TRUE,
   method = "REML",
   remove_rr_iiv = FALSE,
-  style = list()
+  style = list(),
+  include_pvalue = FALSE,
+  pvalue_eps = NULL,
+  decimals = NULL,
+  scientific = TRUE
 ) {
   checkmate::assertDataFrame(data)
-
-  spec <- as_model_results_spec(show_model_results)
-  if (lifecycle::is_present(conf_int)) {
-    spec <- legacy_conf_int(spec, conf_int, "eda_qt_rr_plot")
-  }
+  checkmate::assertNumber(conf_int, lower = 0, upper = 1)
+  checkmate::assertFlag(include_pvalue)
+  checkmate::assertNumber(pvalue_eps, lower = 0, upper = 1, null.ok = TRUE)
+  checkmate::assertInt(decimals, lower = 0, null.ok = TRUE)
+  checkmate::assertFlag(scientific)
 
   qt <- rlang::enquo(qt_col)
   rr <- rlang::enquo(rr_col)
@@ -92,7 +69,8 @@ eda_qt_rr_plot <- function(
   checkmate::assertNames(names(data), must.include = required_cols)
 
   model_type <- match.arg(model_type)
-  if (rlang::quo_is_null(id) && (model_type == "lme") && !is.null(spec)) {
+  warn_unused_include_pvalue(show_model_results, include_pvalue)
+  if (rlang::quo_is_null(id) && (model_type == "lme") && show_model_results) {
     stop(
       "Must supply id_col if fitting LME model. Otherwise use model_type = 'lm'"
     )
@@ -116,12 +94,12 @@ eda_qt_rr_plot <- function(
     )) +
     ggplot2::theme_bw()
 
-  if (model_type == "lm" && !is.null(spec)) {
+  if (model_type == "lm" && show_model_results) {
     lm_results <- compute_lm_fit_df(
       data,
       xdata_col = !!rr,
       ydata_col = !!qt,
-      conf_int = spec$ci
+      conf_int = conf_int
     )
 
     label <- format_model_results(
@@ -130,7 +108,11 @@ eda_qt_rr_plot <- function(
       lm_results$slope_ci_lower,
       lm_results$slope_ci_upper,
       lm_results$p_value_slope,
-      spec
+      conf_int,
+      include_pvalue,
+      pvalue_eps,
+      decimals,
+      scientific
     )
 
     qt_rr_plot <- qt_rr_plot +
@@ -140,7 +122,7 @@ eda_qt_rr_plot <- function(
         formula = y ~ x,
         color = "black"
       )
-  } else if ((model_type == "lme") && !is.null(spec)) {
+  } else if ((model_type == "lme") && show_model_results) {
     lme_mod <- fit_qtc_linear_model(
       data,
       qt_col = !!qt,
@@ -152,7 +134,7 @@ eda_qt_rr_plot <- function(
 
     estimates <- compute_model_fit_parameters(
       lme_mod,
-      conf_int = spec$ci,
+      conf_int = conf_int,
       trt_col_name = name_quo_if_not_null(trt),
       id_col_name = name_quo_if_not_null(id)
     )
@@ -179,7 +161,11 @@ eda_qt_rr_plot <- function(
       slope_ci_lower,
       slope_ci_upper,
       slope_p_value,
-      spec
+      conf_int,
+      include_pvalue,
+      pvalue_eps,
+      decimals,
+      scientific
     )
 
     plot_data$predictions <- stats::predict(lme_mod, level = 0)
@@ -222,13 +208,26 @@ eda_qt_rr_plot <- function(
 #' @param trt_col An unquoted column name for treatment group data
 #' @param legend_location String for legend position (top, bottom, left, right)
 #' @param model_type Lm or lme, which model to fit for showing on plot
-#' @param show_model_results `TRUE`, `FALSE`, or a `model_results_spec()`
-#'   controlling what each panel's caption reports about the slope
+#' @param show_model_results Logical, whether to draw the fitted line and
+#'   annotate the plot with the model results. `include_pvalue` adds to that
+#'   annotation, so it does nothing when this is `FALSE`.
 #' @param method Method for nlme::lme fitting (ML or REML)
 #' @param remove_rr_iiv Logical, whether to remove IIV on RR slope
-#' @param conf_int `r lifecycle::badge("deprecated")` Set `ci` in
-#'   `model_results_spec()` instead.
+#' @param conf_int Numeric confidence interval level (default: 0.9)
 #' @param style A named list of arguments passed to style_plot()
+#' @param include_pvalue Logical, add the slope p-value to the caption
+#'   (default: FALSE)
+#' @param pvalue_eps Numeric, p-values below this are shown as "< eps".
+#'   Defaults to `NULL`, which uses the smallest value `decimals` can display,
+#'   so three decimals give "< 0.001". Ignored when `scientific = TRUE`.
+#' @param decimals Integer, decimal places for the slope, confidence interval
+#'   and p-value, or `NULL` (the default) to round to three decimals. `NULL`
+#'   and `3` are not the same: `NULL` rounds, so 0.1 prints as `0.1`, while
+#'   `decimals = 3` pads to a fixed width, so 0.1 prints as `0.100`.
+#' @param scientific Logical, show the p-value in scientific notation
+#'   (default: TRUE, matching `tabulate_model_fit_parameters()`). `pvalue_eps`
+#'   does not apply when this is `TRUE`, since the point of scientific notation
+#'   is to show the small value rather than hide it.
 #'
 #' @return A multi-panel plot comparing QT, QTcB, QTcF, and QTcP corrections against RR
 #' @export
@@ -259,18 +258,17 @@ eda_qtc_comparison_plot <- function(
   trt_col = NULL,
   legend_location = "top",
   model_type = c("lm", "lme"),
-  show_model_results = model_results_spec(),
+  show_model_results = TRUE,
   method = "REML",
   remove_rr_iiv = FALSE,
-  conf_int = lifecycle::deprecated(),
-  style = list()
+  conf_int = 0.90,
+  style = list(),
+  include_pvalue = FALSE,
+  pvalue_eps = NULL,
+  decimals = NULL,
+  scientific = TRUE
 ) {
   checkmate::assertDataFrame(data)
-
-  spec <- as_model_results_spec(show_model_results)
-  if (lifecycle::is_present(conf_int)) {
-    spec <- legacy_conf_int(spec, conf_int, "eda_qtc_comparison_plot")
-  }
 
   rr <- rlang::enquo(rr_col)
   qt <- rlang::enquo(qt_col)
@@ -281,7 +279,9 @@ eda_qtc_comparison_plot <- function(
   trt <- rlang::enquo(trt_col)
 
   model_type <- match.arg(model_type)
-  if (rlang::quo_is_null(id) && (model_type == "lme") && !is.null(spec)) {
+  warn_unused_include_pvalue(show_model_results, include_pvalue)
+  include_pvalue <- include_pvalue && show_model_results
+  if (rlang::quo_is_null(id) && (model_type == "lme") && show_model_results) {
     stop(
       "Must supply id_col if fitting LME model. Otherwise use show_lm_results = TRUE"
     )
@@ -311,11 +311,16 @@ eda_qtc_comparison_plot <- function(
       qt_col = !!dplyr::sym(qtc),
       id_col = !!id,
       trt_col = !!trt,
+      conf_int = conf_int,
       model_type = model_type,
-      show_model_results = spec,
+      show_model_results = show_model_results,
       method = method,
       remove_rr_iiv = remove_rr_iiv,
-      style = style
+      style = style,
+      include_pvalue = include_pvalue,
+      pvalue_eps = pvalue_eps,
+      decimals = decimals,
+      scientific = scientific
     )
     return(p)
   })
