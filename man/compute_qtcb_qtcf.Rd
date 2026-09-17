@@ -30,5 +30,9 @@ A data frame with QTCF, QTCB, QTCFBL, and QTCBBL columns added
 Compute QTcB QTcF
 }
 \examples{
-compute_qtcb_qtcf(cqtkit_data_verapamil)
+compute_qtcb_qtcf(
+  dplyr::select(cqtkit_data_bl_verapamil, -QTCB, -QTCF),
+  qtbl_col = NULL,
+  rrbl_col = NULL
+)
 }

@@ -48,5 +48,7 @@ A data frame with deltaPARAM columns added
 Compute Deltas
 }
 \examples{
-compute_deltas(compute_qtcb_qtcf(cqtkit_data_verapamil))
+compute_deltas(
+  dplyr::select(cqtkit_data_verapamil, -dplyr::starts_with("delta"))
+)
 }

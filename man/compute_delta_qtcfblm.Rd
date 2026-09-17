@@ -6,26 +6,36 @@
 \usage{
 compute_delta_qtcfblm(
   data,
-  id_col = ID,
+  id_col = lifecycle::deprecated(),
   qtcfbl_col = QTCFBL,
-  deduplicate = TRUE
+  deduplicate = lifecycle::deprecated(),
+  qtcfblm_col = QTCFBLM
 )
 }
 \arguments{
 \item{data}{A data frame containing C-QT analysis dataset}
 
-\item{id_col}{An unquoted column name for subject ID}
+\item{id_col}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} An unquoted column name
+for subject ID. Only used when
+\code{options(cqtkit.override_preprocessing_error = TRUE)}.}
 
-\item{qtcfbl_col}{An unquoted column name for baseline QTCB measurements, default is QTCBBL}
+\item{qtcfbl_col}{An unquoted column name for baseline QTCF measurements, default is QTCFBL}
 
-\item{deduplicate}{Logical, whether to remove duplicate baseline values before averaging}
+\item{deduplicate}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Logical, whether to
+remove duplicate baseline values before averaging. Only used when
+\code{options(cqtkit.override_preprocessing_error = TRUE)}.}
+
+\item{qtcfblm_col}{An unquoted column name for the population mean
+baseline QTCF, default is QTCFBLM}
 }
 \value{
 A data frame with deltaQTCFBL column added
 }
 \description{
-Compute Delta QTcF Baseline Mean
+Adds a \code{deltaQTCFBL} column computed as \code{QTCFBL - QTCFBLM}. \code{QTCFBLM},
+the population mean baseline Fridericia-corrected QT, must already be on
+\code{data}; add it with \code{\link[=compute_blm]{compute_blm()}}.
 }
 \examples{
-compute_delta_qtcfblm(compute_qtcb_qtcf(cqtkit_data_verapamil))
+compute_delta_qtcfblm(dplyr::select(cqtkit_data_verapamil, -deltaQTCFBL))
 }

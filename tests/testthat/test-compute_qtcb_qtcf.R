@@ -80,7 +80,15 @@ test_that("compute_qtcb_qtcf will not overwrite existing QTCF, QTCB, QTCFBL, QTC
   .test_data <- cqtkit_data_verapamil %>%
     dplyr::select(-QTCB, -QTCF, -QTCFBL, -QTCBBL)
 
-  data_proc <- .test_data %>% preprocess()
+  expect_error(
+    .test_data %>% preprocess(),
+    "Corrected QT is nonlinear in RR"
+  )
+
+  data_proc <- withr::with_options(
+    list(cqtkit.override_preprocessing_error = TRUE),
+    suppressWarnings(.test_data %>% preprocess())
+  )
   expect_true(all(c("QTCB", "QTCBBL", "QTCF", "QTCFBL") %in% names(data_proc)))
 
   expect_false(all(

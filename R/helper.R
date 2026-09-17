@@ -530,3 +530,36 @@ warn_unused_include_pvalue <- function(show_model_results, include_pvalue) {
   }
   invisible(NULL)
 }
+
+# lifecycle::is_present() forces the promise, so it cannot be used on an
+# argument whose value is a bare column name.
+deprecated_quo_is_present <- function(arg_quo) {
+  !identical(rlang::quo_get_expr(arg_quo), quote(lifecycle::deprecated()))
+}
+
+#' Column names from a captured quosure
+#'
+#' @param quo A quosure holding a column name, or a `c()` of them, as bare
+#'   symbols or strings.
+#' @param arg Name of the argument to report in the error.
+#' @return A character vector of column names.
+#' @noRd
+names_from_quo <- function(quo, arg = rlang::caller_arg(quo)) {
+  expr <- rlang::quo_get_expr(quo)
+  parts <- if (rlang::is_call(expr, "c")) rlang::call_args(expr) else list(expr)
+
+  is_symbol_or_string <- function(x) {
+    rlang::is_symbol(x) || rlang::is_string(x)
+  }
+
+  if (!all(vapply(parts, is_symbol_or_string, logical(1)))) {
+    stop(
+      "`",
+      arg,
+      "` must be column names, as bare symbols or strings.",
+      call. = FALSE
+    )
+  }
+
+  vapply(parts, rlang::as_string, character(1))
+}

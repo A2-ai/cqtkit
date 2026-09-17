@@ -41,18 +41,22 @@ library(gt)
 
 ## Preprocessing of C-QT datasets
 
-`cqtkit` provides preprocessing functions to help compute derived ECG parameters during data assembly. The `preprocess` function can be used to compute baseline corrected ECG parameter values as well as mean baseline values from the following raw column names:
+`cqtkit` provides preprocessing functions to help compute derived ECG parameters during data assembly. `preprocess()` computes the baseline-from-mean deltas and the row-level deltas from columns that must already be on the data:
 
 - QT, QTBL
-- RR, RRBL  
-- HR, HRBL
+- RR, RRBL
+- HR, HRBL, HRBLM
+- QTCB, QTCBBL, QTCBBLM
+- QTCF, QTCFBL, QTCFBLM
 
-The included `cqtkit_data_<drug>` datasets already contain preprocessed data that have been averaged across replicates, so they include many of the derived columns that `preprocess()` would typically create. However, `preprocess()` can still be useful to compute any missing derived parameters.
+Corrected QT is nonlinear in RR, so `preprocess()` does not derive `QTCB` and `QTCF` from replicate-averaged `QT` and `RR`. Compute them per replicate with `compute_qtcb_qtcf()` before averaging, and add the population baseline means with `compute_blm()`. See `vignette("data-assembly")`.
+
+The included `cqtkit_data_<drug>` datasets are already fully derived, so the example below drops the delta columns first to show what `preprocess()` adds.
 
 ```{r data-preprocessing}
-data_proc <- cqtkit_data_verapamil %>% preprocess()
-new_cols <- setdiff(names(data_proc), names(cqtkit_data_verapamil))
-cat(paste(new_cols, collapse = ", "), "\n")
+input <- cqtkit_data_verapamil %>% select(-starts_with("delta"))
+data_proc <- preprocess(input)
+cat(paste(setdiff(names(data_proc), names(input)), collapse = ", "), "\n")
 ```
 
 ## Exploratory Data Analysis with cqtkit
