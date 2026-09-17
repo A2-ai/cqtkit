@@ -4,23 +4,38 @@
 \alias{compute_delta_hrblm}
 \title{Compute Delta HR Baseline Mean}
 \usage{
-compute_delta_hrblm(data, id_col = ID, hrbl_col = HRBL, deduplicate = TRUE)
+compute_delta_hrblm(
+  data,
+  id_col = lifecycle::deprecated(),
+  hrbl_col = HRBL,
+  deduplicate = lifecycle::deprecated(),
+  hrblm_col = HRBLM
+)
 }
 \arguments{
 \item{data}{A data frame containing C-QT analysis dataset}
 
-\item{id_col}{An unquoted column name for subject ID}
+\item{id_col}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} An unquoted column name
+for subject ID. Only used when
+\code{options(cqtkit.override_preprocessing_error = TRUE)}.}
 
 \item{hrbl_col}{An unquoted column name for baseline HR measurements, default is HRBL}
 
-\item{deduplicate}{Logical, whether to remove duplicate baseline values before averaging}
+\item{deduplicate}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Logical, whether to
+remove duplicate baseline values before averaging. Only used when
+\code{options(cqtkit.override_preprocessing_error = TRUE)}.}
+
+\item{hrblm_col}{An unquoted column name for the population mean baseline
+HR, default is HRBLM}
 }
 \value{
 A data frame with deltaHRBL column added
 }
 \description{
-Compute Delta HR Baseline Mean
+Adds a \code{deltaHRBL} column computed as \code{HRBL - HRBLM}. \code{HRBLM}, the
+population mean baseline heart rate, must already be on \code{data}; add it
+with \code{\link[=compute_blm]{compute_blm()}}.
 }
 \examples{
-compute_delta_hrblm(cqtkit_data_verapamil)
+compute_delta_hrblm(dplyr::select(cqtkit_data_verapamil, -deltaHRBL))
 }

@@ -4,13 +4,13 @@ test_that("the new arguments leave the default captions unchanged", {
   lm_plot <- eda_qt_rr_plot(data_proc, RR, QT, model_type = "lm")
   expect_equal(
     lm_plot$labels$caption,
-    "Linear Regression Slope [90% CI]: 0.107 [0.099, 0.115]"
+    "Linear Regression Slope [90% CI]: 0.108 [0.1, 0.116]"
   )
 
   lme_plot <- eda_qt_rr_plot(data_proc, RR, QT, ID, model_type = "lme")
   expect_equal(
     lme_plot$labels$caption,
-    "Linear Mixed Effects Slope [90% CI]: 0.132 [0.119, 0.144]"
+    "Linear Mixed Effects Slope [90% CI]: 0.131 [0.119, 0.143]"
   )
 
   off <- eda_qt_rr_plot(
@@ -94,7 +94,7 @@ test_that("decimals pads to a fixed width and NULL rounds", {
 
   expect_equal(
     padded$labels$caption,
-    "Linear Regression Slope [90% CI]: 0.1070 [0.0989, 0.1150]"
+    "Linear Regression Slope [90% CI]: 0.1078 [0.1000, 0.1157]"
   )
   expect_equal(fmt_caption_number(0.1, NULL), 0.1)
   expect_equal(fmt_caption_number(0.1, 3), "0.100")

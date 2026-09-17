@@ -16,8 +16,11 @@ preprocess(
   qtcfbl_col = QTCFBL,
   qtcb_col = QTCB,
   qtcbbl_col = QTCBBL,
-  id_col = ID,
-  deduplicate = TRUE
+  id_col = lifecycle::deprecated(),
+  deduplicate = lifecycle::deprecated(),
+  hrblm_col = HRBLM,
+  qtcbblm_col = QTCBBLM,
+  qtcfblm_col = QTCFBLM
 )
 }
 \arguments{
@@ -43,17 +46,45 @@ preprocess(
 
 \item{qtcbbl_col}{An unquoted column name for baseline QTCB measurements, QTCBBL by default}
 
-\item{id_col}{An unquoted column name for subject ID}
+\item{id_col}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} An unquoted column name
+for subject ID. Only used when
+\code{options(cqtkit.override_preprocessing_error = TRUE)}.}
 
-\item{deduplicate}{Logical, whether to remove duplicate baseline values before averaging}
+\item{deduplicate}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Logical, whether to
+remove duplicate baseline values before averaging. Only used when
+\code{options(cqtkit.override_preprocessing_error = TRUE)}.}
+
+\item{hrblm_col}{An unquoted column name for the population mean baseline
+HR, HRBLM by default. \code{NULL} skips the HR baseline delta.}
+
+\item{qtcbblm_col}{An unquoted column name for the population mean baseline
+QTCB, QTCBBLM by default. \code{NULL} skips the QTCB baseline delta.}
+
+\item{qtcfblm_col}{An unquoted column name for the population mean baseline
+QTCF, QTCFBLM by default. \code{NULL} skips the QTCF baseline delta.}
 }
 \value{
 A data frame with all delta columns computed from baseline
 }
 \description{
-Computes QTcB, QTcF, deltaQTcF, deltaQTcB, deltaHR, deltaQTcB Baseline Mean,
+Computes deltaQTcB, deltaQTcF, deltaHR, deltaQTcB Baseline Mean,
 deltaQTcF Baseline Mean, deltaHR Baseline Mean.
 }
+\details{
+\code{QTCB}, \code{QTCF}, \code{QTCBBL} and \code{QTCFBL} must already be on \code{data}, and the
+population means \code{HRBLM}, \code{QTCBBLM} and \code{QTCFBLM} must be too. Corrected
+QT is nonlinear in RR, so deriving it from replicate-averaged \code{QT} and
+\code{RR} does not give the mean of the replicate corrected values. Compute
+the corrections per replicate with \code{\link[=compute_qtcb_qtcf]{compute_qtcb_qtcf()}} before
+averaging, and add the population means with \code{\link[=compute_blm]{compute_blm()}}. See
+\code{vignette("data-assembly")}.
+
+Setting \code{options(cqtkit.override_preprocessing_error = TRUE)} restores
+the pre-1.2.0 behaviour, where \code{preprocess()} derived those columns from
+whatever \code{data} carried.
+}
 \examples{
-preprocess(cqtkit_data_verapamil)
+preprocess(
+  dplyr::select(cqtkit_data_verapamil, -dplyr::starts_with("delta"))
+)
 }
