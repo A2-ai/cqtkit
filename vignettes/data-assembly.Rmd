@@ -131,7 +131,7 @@ same crossover. Construction rules:
 - **Population baseline means (`HRBLM`, `QTCBBLM`, `QTCFBLM`)** are
   per-drug constants computed across the baseline rows of the two arms
   in that drug's study (drug arm + Placebo arm), via `compute_blm()`
-  with `by = c(ID, TRTG)` —
+  with `group_col = c(ID, TRTG)` —
   per-subject-per-period averaging then population mean, per the white
   paper. Each drug's `*BLM` values differ from the other drugs'.
 - **Deltas**: the baseline-from-mean deltas (`deltaHRBL`/`deltaQTCBBL`/
@@ -205,21 +205,21 @@ build_main <- function(drug_label, raw, bl_data) {
     filter(!is.na(CONC)) |>
     compute_blm(
       bl_data,
-      by = c(ID, TRTG),
+      group_col = c(ID, TRTG),
       ecg_param_col = HR,
-      blm_name = "HRBLM"
+      blm_col_name = "HRBLM"
     ) |>
     compute_blm(
       bl_data,
-      by = c(ID, TRTG),
+      group_col = c(ID, TRTG),
       ecg_param_col = QTCB,
-      blm_name = "QTCBBLM"
+      blm_col_name = "QTCBBLM"
     ) |>
     compute_blm(
       bl_data,
-      by = c(ID, TRTG),
+      group_col = c(ID, TRTG),
       ecg_param_col = QTCF,
-      blm_name = "QTCFBLM"
+      blm_col_name = "QTCFBLM"
     ) |>
     compute_delta_hrblm() |>
     compute_delta_qtcbblm() |>

@@ -427,15 +427,13 @@ eda_quantiles_plot <- function(
   }
 
   p <- p +
-      ggplot2::geom_point(
+    ggplot2::geom_point(
       ggplot2::aes(
         shape = .data$.trt_group
       )
     ) +
     ggplot2::geom_smooth(method = "lm", formula = y ~ x, level = conf_int) +
     ggplot2::theme_bw()
-
-
 
   p <- add_error_bars_to_plot(obs, p, NULL, error_bars, conf_int)
   caption <- p$labels$caption
@@ -907,7 +905,9 @@ eda_mean_dv_over_time <- function(
     if (!rlang::quo_is_null(sec_dv)) {
       # Include DV names when sec_dv is provided
       dv_time_df <- dv_time_df %>%
-        dplyr::mutate(grouping = paste_grouping(.data$dose, rlang::quo_name(dv)))
+        dplyr::mutate(
+          grouping = paste_grouping(.data$dose, rlang::quo_name(dv))
+        )
 
       sec_dv_time_df <- sec_dv_time_df %>%
         dplyr::mutate(
@@ -916,7 +916,10 @@ eda_mean_dv_over_time <- function(
 
       shared <- c(levels(dv_time_df$grouping), levels(sec_dv_time_df$grouping))
       dv_time_df$grouping <- factor(dv_time_df$grouping, levels = shared)
-      sec_dv_time_df$grouping <- factor(sec_dv_time_df$grouping, levels = shared)
+      sec_dv_time_df$grouping <- factor(
+        sec_dv_time_df$grouping,
+        levels = shared
+      )
     } else {
       # Just use dose without DV name when sec_dv is NULL
       dv_time_df <- dv_time_df %>%
@@ -937,7 +940,10 @@ eda_mean_dv_over_time <- function(
 
       shared <- c(levels(dv_time_df$grouping), levels(sec_dv_time_df$grouping))
       dv_time_df$grouping <- factor(dv_time_df$grouping, levels = shared)
-      sec_dv_time_df$grouping <- factor(sec_dv_time_df$grouping, levels = shared)
+      sec_dv_time_df$grouping <- factor(
+        sec_dv_time_df$grouping,
+        levels = shared
+      )
     } else {
       # Just use group without DV name when sec_dv is NULL
       dv_time_df <- dv_time_df %>%

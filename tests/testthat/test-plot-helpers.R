@@ -9,7 +9,11 @@ test_that("legend order follows factor levels, not row order", {
   d <- d[order(runif(nrow(d))), ]
 
   p <- eda_scatter_with_regressions(
-    d, dHR, CONC, trt_col = DOSEC, loess_line = FALSE
+    d,
+    dHR,
+    CONC,
+    trt_col = DOSEC,
+    loess_line = FALSE
   )
 
   expect_equal(

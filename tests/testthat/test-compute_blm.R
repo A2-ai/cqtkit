@@ -12,7 +12,7 @@
 )
 
 hrblm <- function(data, bl_data = .bl_derived, ...) {
-  compute_blm(data, bl_data, ecg_param_col = HR, blm_name = "HRBLM", ...)
+  compute_blm(data, bl_data, ecg_param_col = HR, blm_col_name = "HRBLM", ...)
 }
 
 test_that("compute_hr derives HR and HRBL from RR", {
@@ -34,7 +34,7 @@ test_that("compute_blm averages within group before averaging across groups", {
   hr <- 60000 / .bl$RR
   expected <- mean(c(mean(hr[1:2]), mean(hr[3:4]), hr[5]))
 
-  out <- hrblm(tibble::tibble(x = 1), by = ID)
+  out <- hrblm(tibble::tibble(x = 1), group_col = ID)
 
   expect_equal(unique(out$HRBLM), expected)
 })
@@ -46,16 +46,16 @@ test_that("compute_blm averages corrections computed per replicate", {
   b <- compute_blm(
     tibble::tibble(x = 1),
     .bl_derived,
-    by = ID,
+    group_col = ID,
     ecg_param_col = QTCB,
-    blm_name = "QTCBBLM"
+    blm_col_name = "QTCBBLM"
   )
   f <- compute_blm(
     tibble::tibble(x = 1),
     .bl_derived,
-    by = ID,
+    group_col = ID,
     ecg_param_col = QTCF,
-    blm_name = "QTCFBLM"
+    blm_col_name = "QTCFBLM"
   )
 
   expect_equal(
@@ -71,47 +71,49 @@ test_that("compute_blm averages corrections computed per replicate", {
 test_that("the blm scalar differs from a flat mean over baseline rows", {
   flat <- mean(60000 / .bl$RR)
 
-  out <- hrblm(tibble::tibble(x = 1), by = ID)
+  out <- hrblm(tibble::tibble(x = 1), group_col = ID)
 
   expect_false(isTRUE(all.equal(unique(out$HRBLM), flat)))
 })
 
 test_that("by accepts several columns", {
-  out <- hrblm(tibble::tibble(x = 1), by = c(ID, TRTG))
+  out <- hrblm(tibble::tibble(x = 1), group_col = c(ID, TRTG))
 
   expect_equal(
     unique(out$HRBLM),
-    unique(hrblm(tibble::tibble(x = 1), by = ID)$HRBLM)
+    unique(hrblm(tibble::tibble(x = 1), group_col = ID)$HRBLM)
   )
 })
 
-test_that("by is required", {
+test_that("group_col is required", {
   expect_error(hrblm(tibble::tibble(x = 1)))
   expect_error(
-    hrblm(tibble::tibble(x = 1), by = 1),
+    hrblm(tibble::tibble(x = 1), group_col = 1),
     "bare symbols or strings"
   )
 })
 
-test_that("by accepts bare symbols and strings", {
-  expected <- unique(hrblm(tibble::tibble(x = 1), by = c(ID, TRTG))$HRBLM)
+test_that("group_col accepts bare symbols and strings", {
+  expected <- unique(
+    hrblm(tibble::tibble(x = 1), group_col = c(ID, TRTG))$HRBLM
+  )
 
-  for (by in list(quote(c("ID", "TRTG")), quote(c(ID, "TRTG")))) {
+  for (grp in list(quote(c("ID", "TRTG")), quote(c(ID, "TRTG")))) {
     out <- rlang::eval_tidy(rlang::expr(
-      hrblm(tibble::tibble(x = 1), by = !!by)
+      hrblm(tibble::tibble(x = 1), group_col = !!grp)
     ))
     expect_equal(unique(out$HRBLM), expected)
   }
 
   expect_equal(
-    unique(hrblm(tibble::tibble(x = 1), by = "ID")$HRBLM),
-    unique(hrblm(tibble::tibble(x = 1), by = ID)$HRBLM)
+    unique(hrblm(tibble::tibble(x = 1), group_col = "ID")$HRBLM),
+    unique(hrblm(tibble::tibble(x = 1), group_col = ID)$HRBLM)
   )
 })
 
 test_that("compute_blm errors when value_col is absent from bl_data", {
   expect_error(
-    hrblm(tibble::tibble(x = 1), bl_data = .bl, by = ID),
+    hrblm(tibble::tibble(x = 1), bl_data = .bl, group_col = ID),
     "HR"
   )
 })
@@ -121,7 +123,7 @@ test_that("compute_blm drops groups with NA and warns", {
   bl_na$HR[1] <- NA
 
   expect_warning(
-    out <- hrblm(tibble::tibble(x = 1), bl_data = bl_na, by = ID),
+    out <- hrblm(tibble::tibble(x = 1), bl_data = bl_na, group_col = ID),
     "dropped 1 group"
   )
 
@@ -130,7 +132,7 @@ test_that("compute_blm drops groups with NA and warns", {
 })
 
 test_that("compute_blm does not overwrite an existing column", {
-  out <- hrblm(tibble::tibble(HRBLM = 1), by = ID)
+  out <- hrblm(tibble::tibble(HRBLM = 1), group_col = ID)
 
   expect_equal(out$HRBLM, 1)
 })

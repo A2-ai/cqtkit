@@ -1,26 +1,3 @@
-#' Describe where a population baseline mean now comes from
-#'
-#' Shared wording for the deprecation warnings and errors that point callers at
-#' [compute_blm()].
-#'
-#' @return A one-sentence string.
-#' @noRd
-blm_deprecate_details <- function() {
-  paste0(
-    "The population baseline mean is now computed by `compute_blm()` from ",
-    "baseline ECG data."
-  )
-}
-
-#' Is the pre-1.2.0 preprocessing behaviour requested?
-#'
-#' @return `TRUE` when `options(cqtkit.override_preprocessing_error = TRUE)` is
-#'   set, otherwise `FALSE`.
-#' @noRd
-preprocessing_override <- function() {
-  isTRUE(getOption("cqtkit.override_preprocessing_error", FALSE))
-}
-
 #' Add a column unless it is already present
 #'
 #' Existing values are never overwritten, so a column the caller supplied takes
@@ -36,37 +13,6 @@ add_column_if_absent <- function(data, colname, expr) {
     data <- dplyr::mutate(data, !!colname := !!rlang::enquo(expr))
   }
   data
-}
-
-#' Pre-1.2.0 population baseline mean and delta
-#'
-#' Averages the per-subject baseline values already on `data` and subtracts
-#' that mean. The baseline values have themselves been averaged across
-#' replicates, so the result is not the mean of the replicate values. Reached
-#' only under `preprocessing_override()`. Removed in 2.0.0.
-#'
-#' @param data A data frame containing a C-QT analysis dataset.
-#' @param id Quosure for the subject identifier column.
-#' @param bl Quosure for the per-subject baseline column.
-#' @param deduplicate Whether to reduce `data` to one row per subject before
-#'   averaging.
-#' @param blm_name Name of the population baseline mean column to add.
-#' @param delta_name Name of the delta column to add.
-#' @return `data` with both columns added.
-#' @noRd
-legacy_delta_blm <- function(data, id, bl, deduplicate, blm_name, delta_name) {
-  required_cols <- unlist(lapply(c(id, bl), name_quo_if_not_null))
-  checkmate::assertNames(names(data), must.include = required_cols)
-
-  baseline_data <- dplyr::select(data, !!id, !!bl)
-  if (deduplicate) {
-    baseline_data <- dplyr::distinct(baseline_data)
-  }
-
-  bl_mean <- mean(baseline_data[[rlang::as_name(bl)]], na.rm = TRUE)
-
-  data <- add_column_if_absent(data, blm_name, bl_mean)
-  add_column_if_absent(data, delta_name, !!bl - bl_mean)
 }
 
 #' Compute QTcB QTcF
@@ -267,7 +213,9 @@ compute_delta_blm <- function(data, bl, blm, delta_name) {
   blm_name <- rlang::as_name(blm)
   if (!blm_name %in% names(data)) {
     stop(
-      "`", blm_name, "` not found in `data`. ",
+      "`",
+      blm_name,
+      "` not found in `data`. ",
       blm_deprecate_details(),
       " See `vignette(\"data-assembly\")`. To average the baseline values ",
       "already on `data` instead, set ",
@@ -282,64 +230,40 @@ compute_delta_blm <- function(data, bl, blm, delta_name) {
   add_column_if_absent(data, delta_name, !!bl - !!blm)
 }
 
-#' Handle the deprecated `id_col` and `deduplicate` arguments
+
+#' Add one baseline-from-mean delta, honouring the preprocessing override
 #'
-#' Warns when either was supplied, since the population baseline mean is no
-#' longer computed from `data`. Delete alongside those arguments in 2.0.0.
+#' Skips the delta when either column is `NULL`. Under
+#' `preprocessing_override()` the population mean is averaged from the
+#' baseline values on `data`, otherwise `blm` must already be on `data`.
 #'
 #' @param data A data frame containing a C-QT analysis dataset.
-#' @param id Quosure for `id_col`, possibly `lifecycle::deprecated()`.
 #' @param bl Quosure for the per-subject baseline column.
-#' @param deduplicate Value of `deduplicate`, possibly
-#'   `lifecycle::deprecated()`.
 #' @param blm Quosure for the population baseline mean column.
 #' @param delta_name Name of the delta column to add.
-#' @param fn Name of the calling function, for the warning.
+#' @param id Quosure for the subject identifier column, override path only.
+#' @param deduplicate Whether to deduplicate before averaging, override path
+#'   only.
 #'
-#' @return The pre-1.2.0 result when `cqtkit.override_preprocessing_error` is
-#'   set and `blm` is absent from `data`, otherwise `NULL`.
+#' @return `data`, with the delta column added unless it was skipped.
 #' @noRd
-deprecated_blm_delta <- function(
-  data,
-  id,
-  bl,
-  deduplicate,
-  blm,
-  delta_name,
-  fn
-) {
-  if (deprecated_quo_is_present(id)) {
-    lifecycle::deprecate_warn(
-      "1.2.0",
-      paste0(fn, "(id_col)"),
-      details = blm_deprecate_details()
-    )
-  } else {
-    id <- rlang::quo(ID)
-  }
-  if (lifecycle::is_present(deduplicate)) {
-    lifecycle::deprecate_warn(
-      "1.2.0",
-      paste0(fn, "(deduplicate)"),
-      details = blm_deprecate_details()
-    )
-  } else {
-    deduplicate <- TRUE
+add_blm_delta <- function(data, bl, blm, delta_name, id, deduplicate) {
+  if (rlang::quo_is_null(bl) || rlang::quo_is_null(blm)) {
+    return(data)
   }
 
-  blm_name <- rlang::as_name(blm)
-  if (!preprocessing_override() || blm_name %in% names(data)) {
-    return(NULL)
+  if (preprocessing_override()) {
+    return(legacy_delta_blm(
+      data = data,
+      id = id,
+      bl = bl,
+      deduplicate = deduplicate,
+      blm_name = rlang::as_name(blm),
+      delta_name = delta_name
+    ))
   }
 
-  legacy_delta_blm(
-    data = data,
-    id = id,
-    bl = bl,
-    deduplicate = deduplicate,
-    blm_name = blm_name,
-    delta_name = delta_name
-  )
+  compute_delta_blm(data, bl = bl, blm = blm, delta_name = delta_name)
 }
 
 #' Compute Delta HR Baseline Mean
@@ -382,7 +306,8 @@ compute_delta_hrblm <- function(
     deduplicate = deduplicate,
     blm = hrblm,
     delta_name = "deltaHRBL",
-    fn = "compute_delta_hrblm"
+    fn = "compute_delta_hrblm",
+    user_env = rlang::caller_env()
   )
   if (!is.null(legacy)) {
     return(legacy)
@@ -430,13 +355,19 @@ compute_delta_qtcbblm <- function(
     deduplicate = deduplicate,
     blm = qtcbblm,
     delta_name = "deltaQTCBBL",
-    fn = "compute_delta_qtcbblm"
+    fn = "compute_delta_qtcbblm",
+    user_env = rlang::caller_env()
   )
   if (!is.null(legacy)) {
     return(legacy)
   }
 
-  compute_delta_blm(data, bl = qtcbbl, blm = qtcbblm, delta_name = "deltaQTCBBL")
+  compute_delta_blm(
+    data,
+    bl = qtcbbl,
+    blm = qtcbblm,
+    delta_name = "deltaQTCBBL"
+  )
 }
 
 #' Compute Delta QTcF Baseline Mean
@@ -478,13 +409,19 @@ compute_delta_qtcfblm <- function(
     deduplicate = deduplicate,
     blm = qtcfblm,
     delta_name = "deltaQTCFBL",
-    fn = "compute_delta_qtcfblm"
+    fn = "compute_delta_qtcfblm",
+    user_env = rlang::caller_env()
   )
   if (!is.null(legacy)) {
     return(legacy)
   }
 
-  compute_delta_blm(data, bl = qtcfbl, blm = qtcfblm, delta_name = "deltaQTCFBL")
+  compute_delta_blm(
+    data,
+    bl = qtcfbl,
+    blm = qtcfblm,
+    delta_name = "deltaQTCFBL"
+  )
 }
 
 #' Preprocess
@@ -569,25 +506,12 @@ preprocess <- function(
   hrblm <- rlang::enquo(hrblm_col)
   qtcbblm <- rlang::enquo(qtcbblm_col)
   qtcfblm <- rlang::enquo(qtcfblm_col)
-  id <- rlang::enquo(id_col)
-  if (deprecated_quo_is_present(id)) {
-    lifecycle::deprecate_warn(
-      "1.2.0",
-      "preprocess(id_col)",
-      details = blm_deprecate_details()
-    )
-  } else {
-    id <- rlang::quo(ID)
-  }
-  if (lifecycle::is_present(deduplicate)) {
-    lifecycle::deprecate_warn(
-      "1.2.0",
-      "preprocess(deduplicate)",
-      details = blm_deprecate_details()
-    )
-  } else {
-    deduplicate <- TRUE
-  }
+  deprecated_args <- warn_deprecated_blm_args(
+    rlang::enquo(id_col),
+    deduplicate,
+    "preprocess",
+    user_env = rlang::caller_env()
+  )
 
   qtc_missing <- setdiff(
     unlist(lapply(c(qtcb, qtcbbl, qtcf, qtcfbl), name_quo_if_not_null)),
@@ -616,49 +540,21 @@ preprocess <- function(
     )
   }
 
-  if (!rlang::quo_is_null(hrbl) && !rlang::quo_is_null(hrblm)) {
-    data <- if (preprocessing_override()) {
-      legacy_delta_blm(
-        data = data,
-        id = id,
-        bl = hrbl,
-        deduplicate = deduplicate,
-        blm_name = rlang::as_name(hrblm),
-        delta_name = "deltaHRBL"
-      )
-    } else {
-      compute_delta_hrblm(data, hrbl_col = !!hrbl, hrblm_col = !!hrblm)
-    }
-  }
+  blm_specs <- list(
+    list(bl = hrbl, blm = hrblm, delta_name = "deltaHRBL"),
+    list(bl = qtcbbl, blm = qtcbblm, delta_name = "deltaQTCBBL"),
+    list(bl = qtcfbl, blm = qtcfblm, delta_name = "deltaQTCFBL")
+  )
 
-  if (!rlang::quo_is_null(qtcbbl) && !rlang::quo_is_null(qtcbblm)) {
-    data <- if (preprocessing_override()) {
-      legacy_delta_blm(
-        data = data,
-        id = id,
-        bl = qtcbbl,
-        deduplicate = deduplicate,
-        blm_name = rlang::as_name(qtcbblm),
-        delta_name = "deltaQTCBBL"
-      )
-    } else {
-      compute_delta_qtcbblm(data, qtcbbl_col = !!qtcbbl, qtcbblm_col = !!qtcbblm)
-    }
-  }
-
-  if (!rlang::quo_is_null(qtcfbl) && !rlang::quo_is_null(qtcfblm)) {
-    data <- if (preprocessing_override()) {
-      legacy_delta_blm(
-        data = data,
-        id = id,
-        bl = qtcfbl,
-        deduplicate = deduplicate,
-        blm_name = rlang::as_name(qtcfblm),
-        delta_name = "deltaQTCFBL"
-      )
-    } else {
-      compute_delta_qtcfblm(data, qtcfbl_col = !!qtcfbl, qtcfblm_col = !!qtcfblm)
-    }
+  for (spec in blm_specs) {
+    data <- add_blm_delta(
+      data,
+      bl = spec$bl,
+      blm = spec$blm,
+      delta_name = spec$delta_name,
+      id = deprecated_args$id,
+      deduplicate = deprecated_args$deduplicate
+    )
   }
 
   data %>%
@@ -695,10 +591,10 @@ preprocess <- function(
 #' @param bl_data A data frame of baseline ECG measurements to compute the
 #'   population mean baseline from (typically raw data filtered to baseline
 #'   rows), one row per replicate.
-#' @param by Grouping columns, as bare symbols or strings, supplied as
-#'   `c(col1, col2, ...)` or a single value.
+#' @param group_col Grouping columns, as bare symbols or strings, supplied
+#'   as `c(col1, col2, ...)` or a single value.
 #' @param ecg_param_col Unquoted name of the column in `bl_data` to average.
-#' @param blm_name Name of the column added to `data`.
+#' @param blm_col_name Name of the column added to `data`.
 #'
 #' @return `data` with the population mean baseline column added (a constant
 #'   scalar repeated across all rows). If that column already exists on `data`,
@@ -715,33 +611,40 @@ preprocess <- function(
 #' compute_blm(
 #'   dplyr::select(cqtkit_data_verapamil, -QTCFBLM),
 #'   bl_data,
-#'   by = c(ID, TRTG),
+#'   group_col = c(ID, TRTG),
 #'   ecg_param_col = QTCF,
-#'   blm_name = "QTCFBLM"
+#'   blm_col_name = "QTCFBLM"
 #' )
-compute_blm <- function(data, bl_data, by, ecg_param_col, blm_name) {
+compute_blm <- function(data, bl_data, group_col, ecg_param_col, blm_col_name) {
   checkmate::assertDataFrame(data)
   checkmate::assertDataFrame(bl_data)
-  checkmate::assertString(blm_name)
+  checkmate::assertString(blm_col_name)
 
   ecg_param <- rlang::as_name(rlang::enquo(ecg_param_col))
-  by_cols <- names_from_quo(rlang::enquo(by))
-  checkmate::assertNames(names(bl_data), must.include = c(ecg_param, by_cols))
+  group_cols <- names_from_quo(rlang::enquo(group_col))
+  checkmate::assertNames(
+    names(bl_data),
+    must.include = c(ecg_param, group_cols)
+  )
 
-  by_syms <- rlang::syms(by_cols)
+  if (blm_col_name %in% names(data)) {
+    return(data)
+  }
+
+  group_syms <- rlang::syms(group_cols)
 
   bl_flagged <- bl_data %>%
-    dplyr::group_by(!!!by_syms) %>%
+    dplyr::group_by(!!!group_syms) %>%
     dplyr::mutate(.any_na = any(is.na(.data[[ecg_param]]))) %>%
     dplyr::ungroup()
 
   dropped <- bl_flagged %>%
     dplyr::filter(.data$.any_na) %>%
-    dplyr::distinct(!!!by_syms)
+    dplyr::distinct(!!!group_syms)
 
   if (nrow(dropped) > 0) {
     warning(
-      blm_name,
+      blm_col_name,
       ": dropped ",
       nrow(dropped),
       " group(s) with NA values in ",
@@ -752,11 +655,11 @@ compute_blm <- function(data, bl_data, by, ecg_param_col, blm_name) {
 
   per_group <- bl_flagged %>%
     dplyr::filter(!.data$.any_na) %>%
-    dplyr::group_by(!!!by_syms) %>%
+    dplyr::group_by(!!!group_syms) %>%
     dplyr::summarise(
       .grp_mean = mean(.data[[ecg_param]]),
       .groups = "drop"
     )
 
-  add_column_if_absent(data, blm_name, mean(per_group$.grp_mean))
+  add_column_if_absent(data, blm_col_name, mean(per_group$.grp_mean))
 }

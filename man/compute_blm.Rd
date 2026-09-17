@@ -4,7 +4,7 @@
 \alias{compute_blm}
 \title{Compute a population mean baseline value (BLM)}
 \usage{
-compute_blm(data, bl_data, by, ecg_param_col, blm_name)
+compute_blm(data, bl_data, group_col, ecg_param_col, blm_col_name)
 }
 \arguments{
 \item{data}{A data frame to attach the population mean baseline column to
@@ -14,12 +14,12 @@ compute_blm(data, bl_data, by, ecg_param_col, blm_name)
 population mean baseline from (typically raw data filtered to baseline
 rows), one row per replicate.}
 
-\item{by}{Grouping columns, as bare symbols or strings, supplied as
-\code{c(col1, col2, ...)} or a single value.}
+\item{group_col}{Grouping columns, as bare symbols or strings, supplied
+as \code{c(col1, col2, ...)} or a single value.}
 
 \item{ecg_param_col}{Unquoted name of the column in \code{bl_data} to average.}
 
-\item{blm_name}{Name of the column added to \code{data}.}
+\item{blm_col_name}{Name of the column added to \code{data}.}
 }
 \value{
 \code{data} with the population mean baseline column added (a constant
@@ -50,8 +50,8 @@ bl_data <- compute_qtcb_qtcf(
 compute_blm(
   dplyr::select(cqtkit_data_verapamil, -QTCFBLM),
   bl_data,
-  by = c(ID, TRTG),
+  group_col = c(ID, TRTG),
   ecg_param_col = QTCF,
-  blm_name = "QTCFBLM"
+  blm_col_name = "QTCFBLM"
 )
 }

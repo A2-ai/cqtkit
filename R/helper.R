@@ -14,9 +14,9 @@
 #' name_quo_if_not_null(dv)
 #' }
 name_quo_if_not_null <- function(quo) {
-	if (!rlang::quo_is_null(quo)) {
-		return(rlang::quo_name(quo))
-	}
+  if (!rlang::quo_is_null(quo)) {
+    return(rlang::quo_name(quo))
+  }
 }
 
 
@@ -34,13 +34,13 @@ name_quo_if_not_null <- function(quo) {
 #' quad_form(1, 4, 2)
 #' }
 quad_form <- function(a, b, c) {
-	x0 <- (-b - sqrt(b^2 - 4 * a * c)) / (2 * a)
-	x1 <- (-b + sqrt(b^2 - 4 * a * c)) / (2 * a)
+  x0 <- (-b - sqrt(b^2 - 4 * a * c)) / (2 * a)
+  x1 <- (-b + sqrt(b^2 - 4 * a * c)) / (2 * a)
 
-	return(list(
-		lower_conc = x0,
-		upper_conc = x1
-	))
+  return(list(
+    lower_conc = x0,
+    upper_conc = x1
+  ))
 }
 
 #' Null coalescing operator
@@ -64,16 +64,16 @@ quad_form <- function(a, b, c) {
 #' @keywords internal
 #' @noRd
 paste_grouping <- function(x, y, sep = " ") {
-	x <- as.factor(x)
-	if (length(y) == 1L) {
-		return(factor(
-			paste(x, y, sep = sep),
-			levels = paste(levels(x), y, sep = sep)
-		))
-	}
-	y <- as.factor(y)
-	lvls <- as.vector(t(outer(levels(x), levels(y), paste, sep = sep)))
-	droplevels(factor(paste(x, y, sep = sep), levels = lvls))
+  x <- as.factor(x)
+  if (length(y) == 1L) {
+    return(factor(
+      paste(x, y, sep = sep),
+      levels = paste(levels(x), y, sep = sep)
+    ))
+  }
+  y <- as.factor(y)
+  lvls <- as.vector(t(outer(levels(x), levels(y), paste, sep = sep)))
+  droplevels(factor(paste(x, y, sep = sep), levels = lvls))
 }
 
 #' Error if any model column name is non-syntactic
@@ -87,20 +87,20 @@ paste_grouping <- function(x, y, sep = " ") {
 #' @keywords internal
 #' @noRd
 assert_syntactic_names <- function(col_names) {
-	non_syntactic <- col_names[make.names(col_names) != col_names]
-	if (length(non_syntactic) > 0) {
-		stop(
-			"Model column name(s) must be syntactic (no spaces or special characters): ",
-			paste(sprintf('"%s"', non_syntactic), collapse = ", "),
-			".\nRename the column(s) before fitting, e.g. `",
-			non_syntactic[1],
-			"` -> `",
-			gsub(" ", "_", non_syntactic[1]),
-			"`.",
-			call. = FALSE
-		)
-	}
-	invisible(TRUE)
+  non_syntactic <- col_names[make.names(col_names) != col_names]
+  if (length(non_syntactic) > 0) {
+    stop(
+      "Model column name(s) must be syntactic (no spaces or special characters): ",
+      paste(sprintf('"%s"', non_syntactic), collapse = ", "),
+      ".\nRename the column(s) before fitting, e.g. `",
+      non_syntactic[1],
+      "` -> `",
+      gsub(" ", "_", non_syntactic[1]),
+      "`.",
+      call. = FALSE
+    )
+  }
+  invisible(TRUE)
 }
 
 #' Error or warn when a categorical predictor loses levels to missing values
@@ -118,93 +118,93 @@ assert_syntactic_names <- function(col_names) {
 #' @keywords internal
 #' @noRd
 assert_multilevel_factors <- function(data, model_cols, factor_cols) {
-	complete_rows <- stats::complete.cases(data[, model_cols, drop = FALSE])
-	complete_data <- data[complete_rows, , drop = FALSE]
+  complete_rows <- stats::complete.cases(data[, model_cols, drop = FALSE])
+  complete_data <- data[complete_rows, , drop = FALSE]
 
-	# For a dropped level of `col`, name the model column(s) entirely NA for its
-	# rows (the actual reason those rows were removed).
-	culprit_line <- function(lv, col) {
-		lv_rows <- !is.na(data[[col]]) & as.character(data[[col]]) == lv
-		always_na <- setdiff(
-			model_cols[vapply(
-				model_cols,
-				function(mc) all(is.na(data[lv_rows, mc])),
-				logical(1)
-			)],
-			col
-		)
-		if (length(always_na) > 0) {
-			paste0(
-				"  - level \"",
-				lv,
-				"\": always NA in column(s): ",
-				paste(always_na, collapse = ", ")
-			)
-		} else {
-			paste0(
-				"  - level \"",
-				lv,
-				"\": rows dropped due to missing values across model columns"
-			)
-		}
-	}
+  # For a dropped level of `col`, name the model column(s) entirely NA for its
+  # rows (the actual reason those rows were removed).
+  culprit_line <- function(lv, col) {
+    lv_rows <- !is.na(data[[col]]) & as.character(data[[col]]) == lv
+    always_na <- setdiff(
+      model_cols[vapply(
+        model_cols,
+        function(mc) all(is.na(data[lv_rows, mc])),
+        logical(1)
+      )],
+      col
+    )
+    if (length(always_na) > 0) {
+      paste0(
+        "  - level \"",
+        lv,
+        "\": always NA in column(s): ",
+        paste(always_na, collapse = ", ")
+      )
+    } else {
+      paste0(
+        "  - level \"",
+        lv,
+        "\": rows dropped due to missing values across model columns"
+      )
+    }
+  }
 
-	for (col in factor_cols) {
-		is_categorical <- is.factor(data[[col]]) || is.character(data[[col]])
-		if (!is_categorical) {
-			next
-		}
+  for (col in factor_cols) {
+    is_categorical <- is.factor(data[[col]]) || is.character(data[[col]])
+    if (!is_categorical) {
+      next
+    }
 
-		kept_levels <- unique(as.character(complete_data[[col]]))
-		present_levels <- unique(as.character(data[[col]][!is.na(data[[col]])]))
-		dropped_levels <- setdiff(present_levels, kept_levels)
+    kept_levels <- unique(as.character(complete_data[[col]]))
+    present_levels <- unique(as.character(data[[col]][!is.na(data[[col]])]))
+    dropped_levels <- setdiff(present_levels, kept_levels)
 
-		if (length(dropped_levels) == 0) {
-			next
-		}
+    if (length(dropped_levels) == 0) {
+      next
+    }
 
-		culprit_lines <- vapply(
-			dropped_levels,
-			culprit_line,
-			character(1),
-			col = col
-		)
+    culprit_lines <- vapply(
+      dropped_levels,
+      culprit_line,
+      character(1),
+      col = col
+    )
 
-		if (length(kept_levels) < 2) {
-			kept_desc <- if (length(kept_levels) == 1) {
-				paste0("a single level (\"", kept_levels, "\")")
-			} else {
-				"no levels"
-			}
-			stop(
-				"Column \"",
-				col,
-				"\" collapses to ",
-				kept_desc,
-				" once rows with missing model values are dropped, so the model cannot be fit.\n",
-				"Level(s) removed: ",
-				paste(sprintf("\"%s\"", dropped_levels), collapse = ", "),
-				"\n",
-				paste(culprit_lines, collapse = "\n"),
-				"\nFix the missing values in those column(s), or remove this term from the model.",
-				call. = FALSE
-			)
-		}
+    if (length(kept_levels) < 2) {
+      kept_desc <- if (length(kept_levels) == 1) {
+        paste0("a single level (\"", kept_levels, "\")")
+      } else {
+        "no levels"
+      }
+      stop(
+        "Column \"",
+        col,
+        "\" collapses to ",
+        kept_desc,
+        " once rows with missing model values are dropped, so the model cannot be fit.\n",
+        "Level(s) removed: ",
+        paste(sprintf("\"%s\"", dropped_levels), collapse = ", "),
+        "\n",
+        paste(culprit_lines, collapse = "\n"),
+        "\nFix the missing values in those column(s), or remove this term from the model.",
+        call. = FALSE
+      )
+    }
 
-		warning(
-			"Column \"",
-			col,
-			"\" lost level(s) once rows with missing model values are dropped: ",
-			paste(sprintf("\"%s\"", dropped_levels), collapse = ", "),
-			"\n",
-			paste(culprit_lines, collapse = "\n"),
-			"\nThe model will be fit on the remaining ",
-			length(kept_levels),
-			" level(s).",
-			call. = FALSE
-		)
-	}
-	invisible(TRUE)
+    warning(
+      "Column \"",
+      col,
+      "\" lost level(s) once rows with missing model values are dropped: ",
+      paste(sprintf("\"%s\"", dropped_levels), collapse = ", "),
+      "\n",
+      paste(culprit_lines, collapse = "\n"),
+      "\nThe model will be fit on the remaining ",
+      length(kept_levels),
+      " level(s).",
+      call. = FALSE
+    )
+  }
+  invisible(TRUE)
 }
 
 #' Insert a zero-valued row for each term's reference level
@@ -220,44 +220,44 @@ assert_multilevel_factors <- function(data, model_cols, factor_cols) {
 #' @keywords internal
 #' @noRd
 add_reference_level_rows <- function(sum, model_data, col_names) {
-	reference_row <- function(level_name) {
-		tibble::tibble(
-			Parameters = paste0(level_name, " (Reference)"),
-			Value = 0,
-			Std.Error = NA_real_,
-			DF = NA_integer_,
-			`t-value` = NA_real_,
-			`p-value` = NA_real_,
-			CIl = NA_real_,
-			CIu = NA_real_
-		)
-	}
+  reference_row <- function(level_name) {
+    tibble::tibble(
+      Parameters = paste0(level_name, " (Reference)"),
+      Value = 0,
+      Std.Error = NA_real_,
+      DF = NA_integer_,
+      `t-value` = NA_real_,
+      `p-value` = NA_real_,
+      CIl = NA_real_,
+      CIu = NA_real_
+    )
+  }
 
-	for (col in col_names) {
-		if (is.null(col) || !col %in% names(model_data)) {
-			next
-		}
+  for (col in col_names) {
+    if (is.null(col) || !col %in% names(model_data)) {
+      next
+    }
 
-		all_levels <- unique(model_data[[col]])
-		ref_level <- setdiff(all_levels, sum$Parameters)
-		if (length(ref_level) != 1) {
-			next
-		}
+    all_levels <- unique(model_data[[col]])
+    ref_level <- setdiff(all_levels, sum$Parameters)
+    if (length(ref_level) != 1) {
+      next
+    }
 
-		in_table <- intersect(as.character(all_levels), sum$Parameters)
-		first_idx <- which(sum$Parameters %in% in_table)[1]
-		if (is.na(first_idx)) {
-			next
-		}
+    in_table <- intersect(as.character(all_levels), sum$Parameters)
+    first_idx <- which(sum$Parameters %in% in_table)[1]
+    if (is.na(first_idx)) {
+      next
+    }
 
-		sum <- dplyr::bind_rows(
-			sum[seq_len(first_idx - 1), ],
-			reference_row(ref_level),
-			sum[first_idx:nrow(sum), ]
-		)
-	}
+    sum <- dplyr::bind_rows(
+      sum[seq_len(first_idx - 1), ],
+      reference_row(ref_level),
+      sum[first_idx:nrow(sum), ]
+    )
+  }
 
-	sum
+  sum
 }
 
 #' Classify model parameters into sections and order the rows by them
@@ -270,48 +270,48 @@ add_reference_level_rows <- function(sum, model_data, col_names) {
 #' @keywords internal
 #' @noRd
 add_parameter_sections <- function(
-	parameters,
-	model_data,
-	trt_col_name,
-	tafd_col_name,
-	conc_col_name,
-	baseline_col_name
+  parameters,
+  model_data,
+  trt_col_name,
+  tafd_col_name,
+  conc_col_name,
+  baseline_col_name
 ) {
-	levels_of <- function(col) {
-		if (!is.null(col) && col %in% names(model_data)) {
-			as.character(unique(model_data[[col]]))
-		} else {
-			character()
-		}
-	}
+  levels_of <- function(col) {
+    if (!is.null(col) && col %in% names(model_data)) {
+      as.character(unique(model_data[[col]]))
+    } else {
+      character()
+    }
+  }
 
-	trt_levels <- levels_of(trt_col_name)
-	tafd_levels <- levels_of(tafd_col_name)
+  trt_levels <- levels_of(trt_col_name)
+  tafd_levels <- levels_of(tafd_col_name)
 
-	params <- parameters$Parameters
-	bare <- gsub(" \\(Reference\\)", "", params)
+  params <- parameters$Parameters
+  bare <- gsub(" \\(Reference\\)", "", params)
 
-	parameters$Section <- dplyr::case_when(
-		params == conc_col_name ~ "Slope",
-		params %in% trt_levels | bare %in% trt_levels ~ "Treatment",
-		params == "Intercept" | params == baseline_col_name ~ "Intercept",
-		params %in% tafd_levels | bare %in% tafd_levels ~ "Time",
-		grepl("^IIV", params) | params == "Residual Error" ~ "Random Effects",
-		TRUE ~ "Other"
-	)
-	parameters$Section <- factor(
-		parameters$Section,
-		levels = c(
-			"Slope",
-			"Treatment",
-			"Intercept",
-			"Time",
-			"Random Effects",
-			"Other"
-		)
-	)
+  parameters$Section <- dplyr::case_when(
+    params == conc_col_name ~ "Slope",
+    params %in% trt_levels | bare %in% trt_levels ~ "Treatment",
+    params == "Intercept" | params == baseline_col_name ~ "Intercept",
+    params %in% tafd_levels | bare %in% tafd_levels ~ "Time",
+    grepl("^IIV", params) | params == "Residual Error" ~ "Random Effects",
+    TRUE ~ "Other"
+  )
+  parameters$Section <- factor(
+    parameters$Section,
+    levels = c(
+      "Slope",
+      "Treatment",
+      "Intercept",
+      "Time",
+      "Random Effects",
+      "Other"
+    )
+  )
 
-	parameters[order(parameters$Section), ]
+  parameters[order(parameters$Section), ]
 }
 
 #' Build the summarise expressions counting values above each threshold
@@ -322,28 +322,28 @@ add_parameter_sections <- function(
 #' @keywords internal
 #' @noRd
 high_qtc_count_exprs <- function(qtc_thresholds, dqtc_thresholds, count) {
-	counter <- function(col) {
-		if (count == "subjects") {
-			function(thresh) {
-				rlang::expr(dplyr::n_distinct(
-					.data$id[.data[[!!col]] > !!thresh],
-					na.rm = TRUE
-				))
-			}
-		} else {
-			function(thresh) {
-				rlang::expr(sum(.data[[!!col]] > !!thresh, na.rm = TRUE))
-			}
-		}
-	}
+  counter <- function(col) {
+    if (count == "subjects") {
+      function(thresh) {
+        rlang::expr(dplyr::n_distinct(
+          .data$id[.data[[!!col]] > !!thresh],
+          na.rm = TRUE
+        ))
+      }
+    } else {
+      function(thresh) {
+        rlang::expr(sum(.data[[!!col]] > !!thresh, na.rm = TRUE))
+      }
+    }
+  }
 
-	qtc_exprs <- lapply(qtc_thresholds, counter("qtc"))
-	names(qtc_exprs) <- paste0("n_QTc_gt_", qtc_thresholds)
+  qtc_exprs <- lapply(qtc_thresholds, counter("qtc"))
+  names(qtc_exprs) <- paste0("n_QTc_gt_", qtc_thresholds)
 
-	dqtc_exprs <- lapply(dqtc_thresholds, counter("deltaqtc"))
-	names(dqtc_exprs) <- paste0("n_dQTc_gt_", dqtc_thresholds)
+  dqtc_exprs <- lapply(dqtc_thresholds, counter("deltaqtc"))
+  names(dqtc_exprs) <- paste0("n_dQTc_gt_", dqtc_thresholds)
 
-	c(qtc_exprs, dqtc_exprs)
+  c(qtc_exprs, dqtc_exprs)
 }
 
 #' Summarise threshold counts, grouped or as a single total row
@@ -356,16 +356,16 @@ high_qtc_count_exprs <- function(qtc_thresholds, dqtc_thresholds, count) {
 #' @keywords internal
 #' @noRd
 summarise_high_qtc <- function(qtdf, data, group, exprs) {
-	if (!rlang::quo_is_null(group)) {
-		qtdf %>%
-			dplyr::mutate(group = data %>% dplyr::pull(!!group)) %>%
-			dplyr::group_by(.data$group) %>%
-			dplyr::summarise(!!!exprs)
-	} else {
-		qtdf %>%
-			dplyr::summarise(!!!exprs) %>%
-			dplyr::mutate(group = "Total", .before = 1)
-	}
+  if (!rlang::quo_is_null(group)) {
+    qtdf %>%
+      dplyr::mutate(group = data %>% dplyr::pull(!!group)) %>%
+      dplyr::group_by(.data$group) %>%
+      dplyr::summarise(!!!exprs)
+  } else {
+    qtdf %>%
+      dplyr::summarise(!!!exprs) %>%
+      dplyr::mutate(group = "Total", .before = 1)
+  }
 }
 
 #' Render a high QTc count tibble as a gt table
@@ -382,49 +382,49 @@ summarise_high_qtc <- function(qtdf, data, group, exprs) {
 #' @keywords internal
 #' @noRd
 render_high_qtc_table <- function(
-	n_gt,
-	group,
-	group_label,
-	qtc_label,
-	unit,
-	qtc_thresholds,
-	dqtc_thresholds,
-	title,
-	dots
+  n_gt,
+  group,
+  group_label,
+  qtc_label,
+  unit,
+  qtc_thresholds,
+  dqtc_thresholds,
+  title,
+  dots
 ) {
-	qtc_labels <- lapply(qtc_thresholds, function(thresh) {
-		gt::md(paste0(qtc_label, " > ", thresh, " ", unit))
-	})
-	names(qtc_labels) <- paste0("n_QTc_gt_", qtc_thresholds)
+  qtc_labels <- lapply(qtc_thresholds, function(thresh) {
+    gt::md(paste0(qtc_label, " > ", thresh, " ", unit))
+  })
+  names(qtc_labels) <- paste0("n_QTc_gt_", qtc_thresholds)
 
-	dqtc_labels <- lapply(dqtc_thresholds, function(thresh) {
-		gt::md(paste0("&Delta; ", qtc_label, " > ", thresh, " ", unit))
-	})
-	names(dqtc_labels) <- paste0("n_dQTc_gt_", dqtc_thresholds)
+  dqtc_labels <- lapply(dqtc_thresholds, function(thresh) {
+    gt::md(paste0("&Delta; ", qtc_label, " > ", thresh, " ", unit))
+  })
+  names(dqtc_labels) <- paste0("n_dQTc_gt_", dqtc_thresholds)
 
-	t <- n_gt %>%
-		gt::gt() %>%
-		gt::cols_label(!!!c(qtc_labels, dqtc_labels))
+  t <- n_gt %>%
+    gt::gt() %>%
+    gt::cols_label(!!!c(qtc_labels, dqtc_labels))
 
-	if (!is.null(title)) {
-		t <- t %>%
-			gt::tab_header(title = gt::md(title))
-	}
+  if (!is.null(title)) {
+    t <- t %>%
+      gt::tab_header(title = gt::md(title))
+  }
 
-	if (is.null(group_label)) {
-		group_label <- if (!rlang::quo_is_null(group)) {
-			name_quo_if_not_null(group)
-		} else {
-			""
-		}
-	}
-	t <- t %>%
-		gt::cols_label(group = group_label)
+  if (is.null(group_label)) {
+    group_label <- if (!rlang::quo_is_null(group)) {
+      name_quo_if_not_null(group)
+    } else {
+      ""
+    }
+  }
+  t <- t %>%
+    gt::cols_label(group = group_label)
 
-	tab_option_args <- dots[names(dots) %in% names(formals(gt::tab_options))]
-	tab_option_args$data <- t
+  tab_option_args <- dots[names(dots) %in% names(formals(gt::tab_options))]
+  tab_option_args$data <- t
 
-	do.call(gt::tab_options, tab_option_args)
+  do.call(gt::tab_options, tab_option_args)
 }
 
 #' Format a caption number
@@ -439,10 +439,10 @@ render_high_qtc_table <- function(
 #' @keywords internal
 #' @noRd
 fmt_caption_number <- function(x, decimals) {
-	if (is.null(decimals)) {
-		return(round(x, 3))
-	}
-	formatC(x, format = "f", digits = decimals)
+  if (is.null(decimals)) {
+    return(round(x, 3))
+  }
+  formatC(x, format = "f", digits = decimals)
 }
 
 #' Format a slope estimate, its confidence interval and its p-value
@@ -461,55 +461,55 @@ fmt_caption_number <- function(x, decimals) {
 #' @keywords internal
 #' @noRd
 format_model_results <- function(
-	label,
-	estimate,
-	lower,
-	upper,
-	pvalue,
-	conf_int,
-	include_pvalue = FALSE,
-	pvalue_eps = NULL,
-	decimals = NULL,
-	scientific = TRUE
+  label,
+  estimate,
+  lower,
+  upper,
+  pvalue,
+  conf_int,
+  include_pvalue = FALSE,
+  pvalue_eps = NULL,
+  decimals = NULL,
+  scientific = TRUE
 ) {
-	caption <- paste0(
-		label,
-		" Slope [",
-		round(conf_int * 100),
-		"% CI]: ",
-		fmt_caption_number(estimate, decimals),
-		" [",
-		fmt_caption_number(lower, decimals),
-		", ",
-		fmt_caption_number(upper, decimals),
-		"]"
-	)
+  caption <- paste0(
+    label,
+    " Slope [",
+    round(conf_int * 100),
+    "% CI]: ",
+    fmt_caption_number(estimate, decimals),
+    " [",
+    fmt_caption_number(lower, decimals),
+    ", ",
+    fmt_caption_number(upper, decimals),
+    "]"
+  )
 
-	if (!include_pvalue) {
-		return(caption)
-	}
+  if (!include_pvalue) {
+    return(caption)
+  }
 
-	p_str <- if (is.na(pvalue)) {
-		"NA"
-	} else if (scientific) {
-		formatC(pvalue, format = "e", digits = decimals %||% 3)
-	} else if (!is.null(pvalue_eps) && pvalue < pvalue_eps) {
-		paste0("< ", format(pvalue_eps, scientific = FALSE))
-	} else {
-		rounded <- fmt_caption_number(pvalue, decimals)
-		if (as.numeric(rounded) == 0) {
-			warning(
-				"The slope p-value printed as 0: it is smaller than `decimals` (",
-				decimals %||% 3,
-				") can show. Use `scientific = TRUE`, or set `pvalue_eps` to print ",
-				"it as `< eps`.",
-				call. = FALSE
-			)
-		}
-		rounded
-	}
+  p_str <- if (is.na(pvalue)) {
+    "NA"
+  } else if (scientific) {
+    formatC(pvalue, format = "e", digits = decimals %||% 3)
+  } else if (!is.null(pvalue_eps) && pvalue < pvalue_eps) {
+    paste0("< ", format(pvalue_eps, scientific = FALSE))
+  } else {
+    rounded <- fmt_caption_number(pvalue, decimals)
+    if (as.numeric(rounded) == 0) {
+      warning(
+        "The slope p-value printed as 0: it is smaller than `decimals` (",
+        decimals %||% 3,
+        ") can show. Use `scientific = TRUE`, or set `pvalue_eps` to print ",
+        "it as `< eps`.",
+        call. = FALSE
+      )
+    }
+    rounded
+  }
 
-	paste0(caption, "\nSlope p-value: ", p_str)
+  paste0(caption, "\nSlope p-value: ", p_str)
 }
 
 #' Warn when `include_pvalue` is set but the annotation is switched off
@@ -520,21 +520,21 @@ format_model_results <- function(
 #' @keywords internal
 #' @noRd
 warn_unused_include_pvalue <- function(show_model_results, include_pvalue) {
-	if (include_pvalue && !show_model_results) {
-		warning(
-			"`include_pvalue` is ignored because `show_model_results` is FALSE. ",
-			"The p-value is part of the model results annotation, so set ",
-			"`show_model_results = TRUE` to see it.",
-			call. = FALSE
-		)
-	}
-	invisible(NULL)
+  if (include_pvalue && !show_model_results) {
+    warning(
+      "`include_pvalue` is ignored because `show_model_results` is FALSE. ",
+      "The p-value is part of the model results annotation, so set ",
+      "`show_model_results = TRUE` to see it.",
+      call. = FALSE
+    )
+  }
+  invisible(NULL)
 }
 
 # lifecycle::is_present() forces the promise, so it cannot be used on an
 # argument whose value is a bare column name.
 deprecated_quo_is_present <- function(arg_quo) {
-	!identical(rlang::quo_get_expr(arg_quo), quote(lifecycle::deprecated()))
+  !identical(rlang::quo_get_expr(arg_quo), quote(lifecycle::deprecated()))
 }
 
 #' Column names from a captured quosure
@@ -545,21 +545,21 @@ deprecated_quo_is_present <- function(arg_quo) {
 #' @return A character vector of column names.
 #' @noRd
 names_from_quo <- function(quo, arg = rlang::caller_arg(quo)) {
-	expr <- rlang::quo_get_expr(quo)
-	parts <- if (rlang::is_call(expr, "c")) rlang::call_args(expr) else list(expr)
+  expr <- rlang::quo_get_expr(quo)
+  parts <- if (rlang::is_call(expr, "c")) rlang::call_args(expr) else list(expr)
 
-	is_symbol_or_string <- function(x) {
-		rlang::is_symbol(x) || rlang::is_string(x)
-	}
+  is_symbol_or_string <- function(x) {
+    rlang::is_symbol(x) || rlang::is_string(x)
+  }
 
-	if (!all(vapply(parts, is_symbol_or_string, logical(1)))) {
-		stop(
-			"`",
-			arg,
-			"` must be column names, as bare symbols or strings.",
-			call. = FALSE
-		)
-	}
+  if (!all(vapply(parts, is_symbol_or_string, logical(1)))) {
+    stop(
+      "`",
+      arg,
+      "` must be column names, as bare symbols or strings.",
+      call. = FALSE
+    )
+  }
 
-	vapply(parts, rlang::as_string, character(1))
+  vapply(parts, rlang::as_string, character(1))
 }
