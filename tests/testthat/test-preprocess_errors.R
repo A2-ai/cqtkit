@@ -30,7 +30,7 @@ test_that("the override restores the pre-1.2.0 derivation", {
 
   out <- withr::with_options(
     list(cqtkit.override_preprocessing_error = TRUE),
-    preprocess(stripped)
+    suppressWarnings(preprocess(stripped))
   )
 
   expect_equal(out$QTCF, stripped$QT / ((stripped$RR / 1000)^(1 / 3)))
@@ -70,17 +70,50 @@ test_that("the deprecated arguments warn only when supplied", {
     cqtkit.override_preprocessing_error = TRUE,
     lifecycle_verbosity = "warning"
   )
-  stripped <- dplyr::select(.data, -HRBLM, -deltaHRBL)
 
-  expect_no_warning(compute_delta_hrblm(stripped))
+  expect_no_warning(
+    compute_delta_hrblm(.data),
+    class = "lifecycle_warning_deprecated"
+  )
   expect_warning(
-    compute_delta_hrblm(stripped, ID),
+    compute_delta_hrblm(.data, ID),
     "`id_col` argument of `compute_delta_hrblm\\(\\)` is deprecated"
   )
   expect_warning(
-    compute_delta_hrblm(stripped, deduplicate = FALSE),
+    compute_delta_hrblm(.data, deduplicate = FALSE),
     "`deduplicate` argument of `compute_delta_hrblm\\(\\)` is deprecated"
   )
+})
+
+test_that("the override warns about every value it derives", {
+  withr::local_options(cqtkit.override_preprocessing_error = TRUE)
+  stripped <- dplyr::select(
+    .data,
+    -QTCB,
+    -QTCF,
+    -QTCBBL,
+    -QTCFBL,
+    -HRBLM,
+    -QTCBBLM,
+    -QTCFBLM,
+    -dplyr::starts_with("delta")
+  )
+
+  expect_warning(
+    preprocess(stripped),
+    "`QTCB`, `QTCBBL`, `QTCF`, `QTCFBL`, `HRBLM`, `QTCBBLM`, `QTCFBLM` derived"
+  )
+  expect_warning(
+    compute_delta_hrblm(stripped),
+    "`HRBLM` derived from replicate-averaged data"
+  )
+})
+
+test_that("the override is silent when it changes nothing", {
+  withr::local_options(cqtkit.override_preprocessing_error = TRUE)
+
+  expect_no_warning(preprocess(.data))
+  expect_no_warning(compute_delta_hrblm(.data))
 })
 
 test_that("the deprecated arguments still take effect under the override", {

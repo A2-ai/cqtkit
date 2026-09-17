@@ -21,6 +21,26 @@ preprocessing_override <- function() {
   isTRUE(getOption("cqtkit.override_preprocessing_error", FALSE))
 }
 
+#' Warn that a value was derived the pre-1.2.0 way
+#'
+#' Emitted whenever `cqtkit.override_preprocessing_error` actually changes what
+#' is computed, so output produced under the override is never silent. Delete
+#' alongside the override in 2.0.0.
+#'
+#' @param cols Names of the columns derived from replicate-averaged data.
+#' @return `NULL`, invisibly.
+#' @noRd
+warn_preprocessing_override <- function(cols) {
+  warning(
+    paste0("`", cols, "`", collapse = ", "),
+    " derived from replicate-averaged data because ",
+    "`cqtkit.override_preprocessing_error` is set. These values are not the ",
+    "mean of the replicate values. See `vignette(\"data-assembly\")`.",
+    call. = FALSE
+  )
+  invisible(NULL)
+}
+
 #' Pre-1.2.0 population baseline mean and delta
 #'
 #' Averages the per-subject baseline values already on `data` and subtracts
@@ -134,6 +154,8 @@ deprecated_blm_delta <- function(
   if (!preprocessing_override() || blm_name %in% names(data)) {
     return(NULL)
   }
+
+  warn_preprocessing_override(blm_name)
 
   legacy_delta_blm(
     data = data,

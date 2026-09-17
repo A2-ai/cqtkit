@@ -440,7 +440,7 @@ compute_delta_qtcfblm <- function(
 #'
 #' Setting `options(cqtkit.override_preprocessing_error = TRUE)` restores
 #' the pre-1.2.0 behaviour, where `preprocess()` derived those columns from
-#' whatever `data` carried.
+#' whatever `data` carried. It warns naming each value derived that way.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param qt_col An unquoted column name for QT measurements
@@ -531,6 +531,14 @@ preprocess <- function(
   }
 
   if (preprocessing_override()) {
+    blm_missing <- setdiff(
+      unlist(lapply(c(hrblm, qtcbblm, qtcfblm), name_quo_if_not_null)),
+      names(data)
+    )
+    if (length(c(qtc_missing, blm_missing)) > 0) {
+      warn_preprocessing_override(c(qtc_missing, blm_missing))
+    }
+
     data <- compute_qtcb_qtcf(
       data,
       qt_col = !!qt,
@@ -575,7 +583,7 @@ preprocess <- function(
 #' Compute a population mean baseline value (BLM)
 #'
 #' Assembly-time helper for building a C-QT analysis dataset. Averages
-#' `ecg_param_col` within each `by` group, averages those group means, and
+#' `ecg_param_col` within each `group_col` group, averages those group means, and
 #' attaches the result to `data` as a constant column. Not intended for use on
 #' already-assembled datasets, use [compute_delta_hrblm()],
 #' [compute_delta_qtcbblm()] or [compute_delta_qtcfblm()] for that.

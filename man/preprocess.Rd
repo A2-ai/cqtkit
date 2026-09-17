@@ -81,7 +81,7 @@ averaging, and add the population means with \code{\link[=compute_blm]{compute_b
 
 Setting \code{options(cqtkit.override_preprocessing_error = TRUE)} restores
 the pre-1.2.0 behaviour, where \code{preprocess()} derived those columns from
-whatever \code{data} carried.
+whatever \code{data} carried. It warns naming each value derived that way.
 }
 \examples{
 preprocess(

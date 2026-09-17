@@ -28,7 +28,7 @@ returns \code{data} unchanged.
 }
 \description{
 Assembly-time helper for building a C-QT analysis dataset. Averages
-\code{ecg_param_col} within each \code{by} group, averages those group means, and
+\code{ecg_param_col} within each \code{group_col} group, averages those group means, and
 attaches the result to \code{data} as a constant column. Not intended for use on
 already-assembled datasets, use \code{\link[=compute_delta_hrblm]{compute_delta_hrblm()}},
 \code{\link[=compute_delta_qtcbblm]{compute_delta_qtcbblm()}} or \code{\link[=compute_delta_qtcfblm]{compute_delta_qtcfblm()}} for that.

@@ -87,7 +87,7 @@ test_that("compute_qtcb_qtcf will not overwrite existing QTCF, QTCB, QTCFBL, QTC
 
   data_proc <- withr::with_options(
     list(cqtkit.override_preprocessing_error = TRUE),
-    .test_data %>% preprocess()
+    suppressWarnings(.test_data %>% preprocess())
   )
   expect_true(all(c("QTCB", "QTCBBL", "QTCF", "QTCFBL") %in% names(data_proc)))
 

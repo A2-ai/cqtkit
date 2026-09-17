@@ -20,21 +20,16 @@ datasets shipped with the package were assembled from the raw trial
 data, and shows how cqtkit's helper functions support C-QT dataset
 assembly more generally.
 
-The raw source file is **not** redistributed with cqtkit, so the code
-chunks below are shown for reference and are not evaluated when the
-vignette is built. To reproduce the datasets, point `read.csv()` at
-your own copy of the source file.
-
 ## Source
 
-The datasets in this package — the four per-drug `cqtkit_data_*` files
-and the four `cqtkit_data_bl_*` baseline files — are derived from the
+The datasets in this package, the four per-drug `cqtkit_data_*` files
+and the four `cqtkit_data_bl_*` baseline files, are derived from the
 FDA ECGRDVQ trial reported in Johannesen et al., *CPT* 2014
 (<https://doi.org/10.1038/clpt.2014.155>). The assembly uses two source
 files:
 
-- `SCR-002.Clinical.Data.csv` — ECG-level measurements
-- `SCR-002.Clinical.Data.Description.txt` — column dictionary
+- `SCR-002.Clinical.Data.csv`: ECG-level measurements
+- `SCR-002.Clinical.Data.Description.txt`: column dictionary
 
 Per the dictionary, `EXTRT` carries the human-readable treatment name
 (`Ranolazine`, `Dofetilide`, `Quinidine Sulph`, `Verapamil HCL`,
@@ -110,8 +105,6 @@ for (slug in names(bls)) {
 }
 ```
 
-The baseline datasets are written with `usethis::use_data()`
-
 ## Analysis datasets (`cqtkit_data_*`)
 
 Each analysis dataset combines one drug arm with the placebo arm of the
@@ -131,15 +124,14 @@ same crossover. Construction rules:
 - **Population baseline means (`HRBLM`, `QTCBBLM`, `QTCFBLM`)** are
   per-drug constants computed across the baseline rows of the two arms
   in that drug's study (drug arm + Placebo arm), via `compute_blm()`
-  with `group_col = c(ID, TRTG)` —
+  with `group_col = c(ID, TRTG)`:
   per-subject-per-period averaging then population mean, per the white
   paper. Each drug's `*BLM` values differ from the other drugs'.
 - **Deltas**: the baseline-from-mean deltas (`deltaHRBL`/`deltaQTCBBL`/
   `deltaQTCFBL`) and the row-level deltas
   (`deltaQTCB`/`deltaQTCF`/`deltaHR`/`deltaQT`/`deltaRR`).
 - **Missing concentrations**: a dosed timepoint whose replicates carry no
-  measured concentration is dropped. Averaging them gives `NaN`, and the
-  row cannot contribute to an exposure-response analysis.
+  measured concentration is dropped. 
 
 The tail of `build_main()` below adds the population means
 (`compute_blm()`), the baseline-from-mean deltas
@@ -221,6 +213,7 @@ build_main <- function(drug_label, raw, bl_data) {
       ecg_param_col = QTCF,
       blm_col_name = "QTCFBLM"
     ) |>
+		# the following 4 functions are equivalent to calling preprocess()
     compute_delta_hrblm() |>
     compute_delta_qtcbblm() |>
     compute_delta_qtcfblm() |>
@@ -243,5 +236,3 @@ cqtkit_data_dofetilide <- build_main("Dofetilide", raw, cqtkit_data_bl_dofetilid
 cqtkit_data_quinidine <- build_main("Quinidine Sulph", raw, cqtkit_data_bl_quinidine)
 cqtkit_data_ranolazine <- build_main("Ranolazine", raw, cqtkit_data_bl_ranolazine)
 ```
-
-The analysis datasets are written with `usethis::use_data()`
