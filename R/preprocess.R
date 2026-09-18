@@ -565,7 +565,7 @@ preprocess <- function(
     )
   }
 
-  data %>%
+  data |>
     compute_deltas(
       !!qt,
       !!qtbl,
@@ -641,13 +641,13 @@ compute_blm <- function(data, bl_data, group_col, ecg_param_col, blm_col_name) {
 
   group_syms <- rlang::syms(group_cols)
 
-  bl_flagged <- bl_data %>%
-    dplyr::group_by(!!!group_syms) %>%
-    dplyr::mutate(.any_na = any(is.na(.data[[ecg_param]]))) %>%
+  bl_flagged <- bl_data |>
+    dplyr::group_by(!!!group_syms) |>
+    dplyr::mutate(.any_na = any(is.na(.data[[ecg_param]]))) |>
     dplyr::ungroup()
 
-  dropped <- bl_flagged %>%
-    dplyr::filter(.data$.any_na) %>%
+  dropped <- bl_flagged |>
+    dplyr::filter(.data$.any_na) |>
     dplyr::distinct(!!!group_syms)
 
   if (nrow(dropped) > 0) {
@@ -661,9 +661,9 @@ compute_blm <- function(data, bl_data, group_col, ecg_param_col, blm_col_name) {
     )
   }
 
-  per_group <- bl_flagged %>%
-    dplyr::filter(!.data$.any_na) %>%
-    dplyr::group_by(!!!group_syms) %>%
+  per_group <- bl_flagged |>
+    dplyr::filter(!.data$.any_na) |>
+    dplyr::group_by(!!!group_syms) |>
     dplyr::summarise(
       .grp_mean = mean(.data[[ecg_param]]),
       .groups = "drop"
