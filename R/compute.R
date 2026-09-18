@@ -408,11 +408,11 @@ compute_ecg_param_summary <- function(
       conf_int = conf_int
     ) |>
     dplyr::arrange(dose) |>
-    dplyr::select(selections) |>
+    dplyr::select(dplyr::all_of(selections)) |>
     dplyr::rename(
-      mean_ecg = .data$mean_dv,
-      ecg_low = .data$ci_low,
-      ecg_high = .data$ci_high
+      mean_ecg = "mean_dv",
+      ecg_low = "ci_low",
+      ecg_high = "ci_high"
     )
 
   if (!is.null(reference_dose)) {
@@ -432,19 +432,19 @@ compute_ecg_param_summary <- function(
     conf_int = conf_int
   ) |>
     dplyr::arrange(dose) |>
-    dplyr::select(selections) |>
+    dplyr::select(dplyr::all_of(selections)) |>
     dplyr::rename(
-      mean_decg = .data$mean_dv,
-      decg_low = .data$ci_low,
-      decg_high = .data$ci_high
+      mean_decg = "mean_dv",
+      decg_low = "ci_low",
+      decg_high = "ci_high"
     )
 
   if (!is.null(reference_dose)) {
     decg_summ <- decg_summ |>
       dplyr::rename(
-        mean_ddecg = .data$mean_delta_dv,
-        ddecg_low = .data$ci_low_delta,
-        ddecg_high = .data$ci_up_delta
+        mean_ddecg = "mean_delta_dv",
+        ddecg_low = "ci_low_delta",
+        ddecg_high = "ci_up_delta"
       )
   }
 

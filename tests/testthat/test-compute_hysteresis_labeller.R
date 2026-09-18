@@ -1,6 +1,8 @@
 test_that("hysteresis_labeller gives correct return type.", {
   .test_data <- cqtkit_data_verapamil %>%
-    preprocess()
+    preprocess() %>%
+    dplyr::filter(DOSE > 0) %>%
+    droplevels()
 
   expect_type(
     compute_hysteresis_labeller(
