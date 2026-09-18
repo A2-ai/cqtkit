@@ -55,7 +55,7 @@ fit <- fit_prespecified_model(
   TRUE
 )
 pk_df <- compute_pk_parameters(
-  data_proc \%>\% dplyr::filter(DOSE != 0), ID, DOSEF, CONC, NTLD)
+  data_proc |> dplyr::filter(DOSE != 0), ID, DOSEF, CONC, NTLD)
 
 predict_with_exposure_plot(
   data_proc,

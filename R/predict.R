@@ -98,7 +98,7 @@ predict_with_observations_plot <- function(
     treatment_predictors,
     control_predictors,
     conf_int = conf_int
-  ) %>%
+  ) |>
     dplyr::mutate(
       group = "Predictions",
       fill = ci_label
@@ -107,10 +107,10 @@ predict_with_observations_plot <- function(
   # Combine predictions and observations for unified legend mapping
   combined_data <- dplyr::bind_rows(
     observed_df,
-    prediction_df %>% dplyr::select("conc", dv = "pred", "group")
+    prediction_df |> dplyr::select("conc", dv = "pred", "group")
   )
 
-  p <- combined_data %>%
+  p <- combined_data |>
     ggplot2::ggplot(ggplot2::aes(
       x = .data$conc,
       y = .data$dv,
@@ -128,7 +128,7 @@ predict_with_observations_plot <- function(
       )
     ) +
     ggplot2::geom_line(
-      data = prediction_df %>% dplyr::select("conc", dv = "pred", "group")
+      data = prediction_df |> dplyr::select("conc", dv = "pred", "group")
     ) +
     ggplot2::geom_point(data = observed_df) +
     ggplot2::theme_bw()
@@ -302,7 +302,7 @@ predict_with_quantiles_plot <- function(
     dv,
     conf_int,
     nbins = nbins
-  ) %>%
+  ) |>
     dplyr::mutate(group = "Quantiles")
 
   ci_label <- paste0(round(conf_int * 100), "% CI")
@@ -313,7 +313,7 @@ predict_with_quantiles_plot <- function(
     treatment_predictors,
     control_predictors,
     conf_int
-  ) %>%
+  ) |>
     dplyr::mutate(
       group = "Predictions",
       fill = ci_label
@@ -439,7 +439,7 @@ predict_with_quantiles_plot <- function(
 #'   TRUE
 #' )
 #' pk_df <- compute_pk_parameters(
-#'   data_proc %>% dplyr::filter(DOSE != 0), ID, DOSEF, CONC, NTLD)
+#'   data_proc |> dplyr::filter(DOSE != 0), ID, DOSEF, CONC, NTLD)
 #'
 #' predict_with_exposure_plot(
 #'   data_proc,
@@ -502,7 +502,7 @@ predict_with_exposure_plot <- function(
   ci_label <- paste0(round(conf_int * 100), "% CI")
   pred_df$fill <- ci_label
 
-  p <- pred_df %>%
+  p <- pred_df |>
     ggplot2::ggplot(ggplot2::aes(x = .data$conc, y = .data$pred)) +
     ggplot2::geom_line() +
     ggplot2::geom_ribbon(

@@ -357,13 +357,13 @@ high_qtc_count_exprs <- function(qtc_thresholds, dqtc_thresholds, count) {
 #' @noRd
 summarise_high_qtc <- function(qtdf, data, group, exprs) {
   if (!rlang::quo_is_null(group)) {
-    qtdf %>%
-      dplyr::mutate(group = data %>% dplyr::pull(!!group)) %>%
-      dplyr::group_by(.data$group) %>%
+    qtdf |>
+      dplyr::mutate(group = data |> dplyr::pull(!!group)) |>
+      dplyr::group_by(.data$group) |>
       dplyr::summarise(!!!exprs)
   } else {
-    qtdf %>%
-      dplyr::summarise(!!!exprs) %>%
+    qtdf |>
+      dplyr::summarise(!!!exprs) |>
       dplyr::mutate(group = "Total", .before = 1)
   }
 }
@@ -402,12 +402,12 @@ render_high_qtc_table <- function(
   })
   names(dqtc_labels) <- paste0("n_dQTc_gt_", dqtc_thresholds)
 
-  t <- n_gt %>%
-    gt::gt() %>%
+  t <- n_gt |>
+    gt::gt() |>
     gt::cols_label(!!!c(qtc_labels, dqtc_labels))
 
   if (!is.null(title)) {
-    t <- t %>%
+    t <- t |>
       gt::tab_header(title = gt::md(title))
   }
 
@@ -418,7 +418,7 @@ render_high_qtc_table <- function(
       ""
     }
   }
-  t <- t %>%
+  t <- t |>
     gt::cols_label(group = group_label)
 
   tab_option_args <- dots[names(dots) %in% names(formals(gt::tab_options))]
