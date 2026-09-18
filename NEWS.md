@@ -1,5 +1,7 @@
 # cqtkit 1.2.0
 
+* cqtkit requires R >= 4.1.0, up from 3.5.0. The package now uses the base pipe `|>` internally.
+
 ### Enhanced
 * `gof_vpc_plot()` and `compute_summary_statistics_of_simulations()` gain a `seed` argument for reproducible simulations. The caller's RNG state is restored on exit.
 * `fit_prespecified_model()` warns when a treatment or time predictor loses a level because rows with missing model values are dropped, naming the level and the column that was missing.
