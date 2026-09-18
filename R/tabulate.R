@@ -733,7 +733,7 @@ tabulate_exposure_predictions <- function(
     dplyr::arrange(conc) |>
     dplyr::mutate(conc = as.numeric(as.character(conc))) |>
     dplyr::mutate(Dose = doses) |>
-    dplyr::rename(Cmax = .data$conc) |>
+    dplyr::rename(Cmax = "conc") |>
     dplyr::select("Dose", "Cmax", "pred", "lower", "upper") |>
     gt::gt() |>
     gt::cols_merge(
