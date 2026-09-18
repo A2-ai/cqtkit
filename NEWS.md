@@ -15,6 +15,11 @@
   * New `compute_hr()` derives `HR` and `HRBL` from an RR column.
   * New `compute_blm()` computes a population mean baseline from replicate-level baseline ECG data, averaging within each `group_col` group and then across groups.
   * New `vignette("data-assembly")` documents how the bundled datasets are assembled from the source trial data.
+* All sixteen plotting functions accept a ggstylekit `style_spec()` as `style`, alongside the existing style list. The two are told apart by class, so an untouched call keeps the list engine and the figure it produced before.
+  * cqtkit gains `ggstylekit (>= 0.3.0)` as a dependency, and re-exports `style_spec()`, `legend_spec()`, `reveal()` and `restyle_plot()`. Everything else in ggstylekit is reached as `ggstylekit::`.
+  * Do not call `library(ggstylekit)` while both styling APIs exist. Both packages export `set_style` and `style_plot`, they are unrelated functions, and whichever package is attached second wins.
+  * Plots styled with a `style_spec()` can be adjusted afterwards with `restyle_plot()` and inspected with `reveal()`. Plots styled with a list cannot.
+  * New `vignette("styling")` maps every `set_style()` argument to its `style_spec()` or `legend_spec()` equivalent.
 * `eda_qt_rr_plot()` and `eda_qtc_comparison_plot()` gain arguments for showing the slope p-value in the caption.
   * `include_pvalue` adds the p-value. Defaults to `FALSE`, and warns when `show_model_results = FALSE`.
   * `scientific` shows it in scientific notation. Defaults to `TRUE`, matching `tabulate_model_fit_parameters()`.
@@ -22,6 +27,7 @@
   * `decimals` sets the decimal places in the caption. Defaults to `NULL`, which rounds to three decimals as before.
 
 ### Deprecated
+* `set_style()` and `style_plot()` are deprecated in favour of `style_spec()` and `restyle_plot()`. Both keep working. Passing `style` a list keeps working and does not warn. They will be removed in 2.0.0.
 * The `id_col` and `deduplicate` arguments of `preprocess()`, `compute_delta_hrblm()`, `compute_delta_qtcbblm()` and `compute_delta_qtcfblm()` are deprecated. The population baseline mean is now computed by `compute_blm()`. They will be removed in 2.0.0.
 * The re-export of magrittr's `%>%` is deprecated. `library(cqtkit)` will no longer attach it in 2.0.0. Attach it with `library(dplyr)` or `library(magrittr)`, or use the base pipe `|>`.
 * `compute_high_qtc_sub()` and `tabulate_high_qtc_sub()` are deprecated. They count observations, not subjects. Their counts are unchanged. Use `compute_high_qtc_subjects()` / `tabulate_high_qtc_subjects()` for subject counts or `compute_high_qtc_observations()` / `tabulate_high_qtc_observations()` for observation counts. They will be removed in 2.0.0.
@@ -35,6 +41,7 @@
 * `fit_prespecified_model()` errors naming the offending column when a model column name is non-syntactic, instead of failing in `str2lang()`.
 * `fit_prespecified_model()` errors naming the column, the levels removed, and the missing values responsible when a treatment or time predictor collapses below two levels once rows with missing model values are dropped, instead of failing in `contrasts<-`.
 * `compute_pk_parameters()` now takes one Cmax per subject before summarizing, so subjects with more timepoints no longer contribute repeated Cmax values to `Cmax_gm` and `Cmax_cv`.
+* `eda_qt_rr_plot()` reads the caller's `xlabel` from `style$xlabel` rather than the misspelled `style$xlabe`, which resolved only through partial matching.
 * Plot legends follow the level order of factor grouping columns instead of the order the rows happen to be in.
 * `compute_study_summary()` and `compute_pk_parameters()` keep the level order of factor treatment and group columns in `grouping` instead of sorting them alphabetically.
 

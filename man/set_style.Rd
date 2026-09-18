@@ -84,7 +84,11 @@ set_style(
 A named list of style parameters for use with style_plot()
 }
 \description{
-Creates a style list for eda graphing functions.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+}
+\details{
+Creates a style list for eda graphing functions. Deprecated in favour of
+\code{\link[=style_spec]{style_spec()}}.
 }
 \examples{
 data_proc <- cqtkit_data_verapamil |> preprocess()

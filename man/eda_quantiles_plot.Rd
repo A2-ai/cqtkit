@@ -30,7 +30,8 @@ eda_quantiles_plot(
 
 \item{error_bars}{A string for setting which errorbars are shown, CI, SE, SD}
 
-\item{style}{A named list of arguments passed to style_plot()}
+\item{style}{A \code{\link[=style_spec]{style_spec()}}, or a named list of arguments passed to
+\code{style_plot()}. The list form is deprecated.}
 }
 \value{
 A scatter plot of decile medians with linear regression and optional error bars

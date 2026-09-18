@@ -11,7 +11,8 @@
 #' @param conc_xlabel A string for concentration plot xlabel
 #' @param dv_label A string of dv label (default: bquote(Delta ~ 'QTc (ms)'))
 #' @param legend_location String for legend position (top, bottom, left, right)
-#' @param style A named list of arguments passed to style_plot()
+#' @param style A [style_spec()], or a named list of arguments passed to
+#'   `style_plot()`. The list form is deprecated.
 #'
 #' @return A 2x2 panel with concordance plots, residual distributions, Q-Q plots, and residual histograms
 #' @export
@@ -109,10 +110,14 @@ gof_plots <- function(
     ggplot2::theme(aspect.ratio = 1) +
     ggplot2::coord_equal(xlim = p1_axis_limits, ylim = p1_axis_limits)
 
-  if (is.null(style)) style <- list()
-  style$legend <- style$legend %||% "Treatment Group"
+  style <- as_style_spec(style)
 
-  p1 <- do.call(style_plot, c(list(p = p1), style))
+  p1 <- cqtkit_apply_style(
+    p1,
+    style,
+    legend = "Treatment Group",
+    theme = cqtkit_square_theme()
+  )
 
   #qq plot
   p2_all_values <- c(fit_results_df$IWRES)
@@ -131,7 +136,12 @@ gof_plots <- function(
     ggplot2::geom_abline(slope = 1, color = "black") +
     ggplot2::coord_equal(xlim = p2_axis_limits, ylim = p2_axis_limits)
 
-  p2 <- do.call(style_plot, c(list(p = p2), style))
+  p2 <- cqtkit_apply_style(
+    p2,
+    style,
+    legend = "Treatment Group",
+    theme = cqtkit_square_theme()
+  )
 
   #residuals vs concentration
   p3 <- fit_results_df |>
@@ -156,7 +166,12 @@ gof_plots <- function(
     ggplot2::labs(x = conc_xlabel, y = "Standardized Residuals") +
     ggplot2::theme(aspect.ratio = 1)
 
-  p3 <- do.call(style_plot, c(list(p = p3), style))
+  p3 <- cqtkit_apply_style(
+    p3,
+    style,
+    legend = "Treatment Group",
+    theme = cqtkit_square_theme()
+  )
 
   p4 <- fit_results_df |>
     ggplot2::ggplot(ggplot2::aes(x = .data$IWRES)) +
@@ -206,7 +221,8 @@ gof_plots <- function(
 #' @param trt_col An unquoted column name for treatment group"
 #' @param dv_label A string of dv label (default: bquote(Delta ~ 'QTc (ms)'))
 #' @param legend_location String for legend position (top, bottom, left, right)
-#' @param style A named list of arguments passed to style_plot()
+#' @param style A [style_spec()], or a named list of arguments passed to
+#'   `style_plot()`. The list form is deprecated.
 #'
 #' @return A 2-panel plot comparing population (PRED) and individual (IPRED) predictions vs observed values
 #' @export
@@ -269,7 +285,7 @@ gof_concordance_plots <- function(
   all_values <- c(fit_results_df$PRED, fit_results_df$IPRED, fit_results_df$dv)
   axis_limits <- range(all_values, na.rm = TRUE)
 
-  if (is.null(style)) style <- list()
+  style <- as_style_spec(style)
   if (is.null(style$xlims)) style$xlims <- axis_limits
   if (is.null(style$ylims)) style$ylims <- axis_limits
 
@@ -293,13 +309,14 @@ gof_concordance_plots <- function(
         linetype = "dashed"
       )
 
-    this_style <- style
-    this_style$xlabel <- this_style$xlabel %||% xlabels[[i]]
-    this_style$ylabel <- this_style$ylabel %||%
-      bquote("Observed  " ~ .(dv_label))
-    this_style$legend <- this_style$legend %||% "Treatment Group"
-
-    .p <- do.call(style_plot, c(list(p = .p), this_style))
+    .p <- cqtkit_apply_style(
+      .p,
+      style,
+      xlabel = xlabels[[i]],
+      ylabel = bquote("Observed  " ~ .(dv_label)),
+      legend = "Treatment Group",
+      theme = cqtkit_square_theme()
+    )
   })
 
   .p <- ggpubr::ggarrange(
@@ -329,7 +346,8 @@ gof_concordance_plots <- function(
 #' @param dv_label A string of dv label (default: bquote(Delta ~ 'QTc (ms)'))
 #' @param residual_references Numeric vector of reference residual lines to add, default -2 and 2
 #' @param legend_location String for legend position (top, bottom, left, right)
-#' @param style A named list of arguments passed to style_plot()
+#' @param style A [style_spec()], or a named list of arguments passed to
+#'   `style_plot()`. The list form is deprecated.
 #'
 #' @return A 4-panel plot of WRES and IWRES residuals vs predicted values and concentration
 #' @export
@@ -401,7 +419,7 @@ gof_residuals_plots <- function(
     conc_xlabel
   )
 
-  if (is.null(style)) style <- list()
+  style <- as_style_spec(style)
 
   plots <- lapply(seq_along(xdata), function(i) {
     .p <- fit_results_df |>
@@ -418,12 +436,14 @@ gof_residuals_plots <- function(
       .p <- add_horizontal_references(.p, residual_references)
     }
 
-    this_style <- style
-    this_style$xlabel <- this_style$xlabel %||% xlabel[[i]]
-    this_style$ylabel <- this_style$ylabel %||% ydata[[i]]
-    this_style$legend <- this_style$legend %||% "Treatment Group"
-
-    .p <- do.call(style_plot, c(list(p = .p), this_style))
+    .p <- cqtkit_apply_style(
+      .p,
+      style,
+      xlabel = xlabel[[i]],
+      ylabel = ydata[[i]],
+      legend = "Treatment Group",
+      theme = ggplot2::theme_bw()
+    )
   })
 
   # Arrange plots
@@ -458,7 +478,8 @@ gof_residuals_plots <- function(
 #' @param ntime_col An unquoted column name for nominal time since dose
 #' @param trt_col An unquoted column name for treatment group"
 #' @param legend_location String for legend position (top, bottom, left, right)
-#' @param style A named list of arguments passed to style_plot()
+#' @param style A [style_spec()], or a named list of arguments passed to
+#'   `style_plot()`. The list form is deprecated.
 #'
 #' @return A 2-panel Q-Q plot comparing WRES and IWRES to normal distribution
 #' @export
@@ -512,7 +533,7 @@ gof_qq_plots <- function(
   sample_data <- list("WRES", "IWRES")
   plots <- list()
 
-  if (is.null(style)) style <- list()
+  style <- as_style_spec(style)
 
   for (r in sample_data) {
     all_values <- c(fit_results_df$WRES, fit_results_df$IWRES)
@@ -529,14 +550,15 @@ gof_qq_plots <- function(
       ggplot2::geom_abline(slope = 1, linetype = "dashed") +
       ggplot2::theme_bw()
 
-    this_style <- style
-    this_style$legend <- this_style$legend %||% "Treatment Group"
-    this_style$xlabel <- this_style$xlabel %||% "Theoretical Quantiles"
-    this_style$ylabel <- this_style$ylabel %||% paste0("Quantiles of ", r)
-    this_style$xlims <- this_style$xlims %||% axis_limits
-    this_style$ylims <- this_style$ylims %||% axis_limits
-
-    .qqp <- do.call(style_plot, c(list(p = .qqp), this_style))
+    .qqp <- cqtkit_apply_style(
+      .qqp,
+      style,
+      legend = "Treatment Group",
+      xlabel = "Theoretical Quantiles",
+      ylabel = paste0("Quantiles of ", r),
+      xlims = axis_limits,
+      ylims = axis_limits
+    )
 
     plots[[r]] <- .qqp
   }
@@ -572,7 +594,8 @@ gof_qq_plots <- function(
 #' @param trt_col An unquoted column name for treatment group" will use for filling boxplots
 #' @param residual_references Numeric vector of reference residual lines to add, default -2 and 2
 #' @param legend_location String for legend position (top, bottom, left, right)
-#' @param style A named list of arguments passed to style_plot()
+#' @param style A [style_spec()], or a named list of arguments passed to
+#'   `style_plot()`. The list form is deprecated.
 #'
 #' @return A 2-panel boxplot of WRES and IWRES residuals by nominal time
 #' @export
@@ -629,7 +652,7 @@ gof_residuals_time_boxplots <- function(
   time_plots <- list()
   ydata <- c("WRES", "IWRES")
 
-  if (is.null(style)) style <- list()
+  style <- as_style_spec(style)
 
   for (i in seq_along(ydata)) {
     .rbp <- fit_results_df |>
@@ -654,15 +677,21 @@ gof_residuals_time_boxplots <- function(
     }
 
     this_style <- style
-    this_style$xlabel <- this_style$xlabel %||%
-      "Nominal Time Since Last Dose (h)"
-    this_style$ylabel <- this_style$ylabel %||% ydata[[i]]
-    this_style$fill_legend <- this_style$legend %||% "Treatment Group"
-    this_style$legend <- ""
-    this_style$color_order <- this_style$color_order %||% 2
-    this_style$fill_order <- this_style$fill_order %||% 1
+    if (!is_style_spec(this_style)) {
+      this_style$fill_legend <- this_style$legend %||% "Treatment Group"
+      this_style$legend <- ""
+    }
 
-    .rbp <- do.call(style_plot, c(list(p = .rbp), this_style))
+    .rbp <- cqtkit_apply_style(
+      .rbp,
+      this_style,
+      xlabel = "Nominal Time Since Last Dose (h)",
+      ylabel = ydata[[i]],
+      legend = "",
+      fill_legend = "Treatment Group",
+      color_order = 2,
+      fill_order = 1
+    )
 
     time_plots[[i]] <- .rbp
   }
@@ -701,7 +730,8 @@ gof_residuals_time_boxplots <- function(
 #' @param trt_col An unquoted column name for treatment group"
 #' @param residual_references Numeric vector of reference residual lines to add, default -2 and 2
 #' @param legend_location String for legend position (top, bottom, left, right)
-#' @param style A named list of arguments passed to style_plot()
+#' @param style A [style_spec()], or a named list of arguments passed to
+#'   `style_plot()`. The list form is deprecated.
 #'
 #' @return A 2-panel boxplot of WRES and IWRES residuals by treatment group
 #' @export
@@ -750,7 +780,7 @@ gof_residuals_trt_boxplots <- function(
   trtg_plots <- list()
   ydata <- c("WRES", "IWRES")
 
-  if (is.null(style)) style <- list()
+  style <- as_style_spec(style)
 
   for (i in seq_along(ydata)) {
     .rbpt <- fit_results_df |>
@@ -772,15 +802,16 @@ gof_residuals_trt_boxplots <- function(
       .rbpt <- add_horizontal_references(.rbpt, residual_references)
     }
 
-    this_style <- style
-    this_style$xlabel <- this_style$xlabel %||% "Treatment Group"
-    this_style$ylabel <- this_style$ylabel %||% ydata[[i]]
-    this_style$fill_legend <- this_style$fill_legend %||% "Treatment Group"
-    this_style$legend <- this_style$legend %||% ""
-    this_style$color_order <- this_style$color_order %||% 2
-    this_style$fill_order <- this_style$fill_order %||% 1
-
-    .rbpt <- do.call(style_plot, c(list(p = .rbpt), this_style))
+    .rbpt <- cqtkit_apply_style(
+      .rbpt,
+      style,
+      xlabel = "Treatment Group",
+      ylabel = ydata[[i]],
+      fill_legend = "Treatment Group",
+      legend = "",
+      color_order = 2,
+      fill_order = 1
+    )
 
     trtg_plots[[i]] <- .rbpt
   }
@@ -811,7 +842,8 @@ gof_residuals_trt_boxplots <- function(
 #' @param nruns Integer number of simulations to run
 #' @param nbins Integer number of bins to break independent variable into - OR - a user specified vector for non-uniform binning
 #' @param type Integer for type parameter of stats::quantile
-#' @param style A named list of arguments passed to style_plot()
+#' @param style A [style_spec()], or a named list of arguments passed to
+#'   `style_plot()`. The list form is deprecated.
 #' @param seed Optional integer seed for reproducible simulations. The RNG state
 #'   is restored on exit. Default (NULL) does not set a seed.
 #'
@@ -960,23 +992,24 @@ gof_vpc_plot <- function(
     ggplot2::theme_bw()
 
   # Apply styling
-  if (is.null(style)) style <- list()
-  style$xlabel <- style$xlabel %||% "Concentration (ng/mL)"
-  style$ylabel <- style$ylabel %||% bquote(Delta ~ "QTc (ms)")
-  style$fill_legend <- style$fill_legend %||%
-    paste0(conf_int * 100, "% Confidence Intervals")
-  style$legend <- style$legend %||% "Observations"
-  style$colors <- style$colors %||%
-    c(
+  style <- as_style_spec(style)
+  .p <- cqtkit_apply_style(
+    .p,
+    style,
+    xlabel = "Concentration (ng/mL)",
+    ylabel = bquote(Delta ~ "QTc (ms)"),
+    fill_legend = paste0(conf_int * 100, "% Confidence Intervals"),
+    legend = "Observations",
+    colors = c(
       "Observations" = "grey",
       "95th percentile" = "darkseagreen",
       "Median" = "cornflowerblue",
       "5th percentile" = "darkseagreen"
-    )
-  style$color_order <- style$color_order %||% 1
-  style$shape_order <- style$shape_order %||% 1
-  style$fill_order <- style$fill_order %||% 2
-  style$fill_alpha <- style$fill_alpha %||% 0.5
-  .p <- do.call(style_plot, c(list(p = .p), style))
+    ),
+    color_order = 1,
+    shape_order = 1,
+    fill_order = 2,
+    fill_alpha = 0.5
+  )
   return(.p)
 }

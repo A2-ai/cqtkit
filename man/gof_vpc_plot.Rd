@@ -34,7 +34,8 @@ gof_vpc_plot(
 
 \item{type}{Integer for type parameter of stats::quantile}
 
-\item{style}{A named list of arguments passed to style_plot()}
+\item{style}{A \code{\link[=style_spec]{style_spec()}}, or a named list of arguments passed to
+\code{style_plot()}. The list form is deprecated.}
 
 \item{seed}{Optional integer seed for reproducible simulations. The RNG state
 is restored on exit. Default (NULL) does not set a seed.}

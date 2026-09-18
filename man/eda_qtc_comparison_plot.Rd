@@ -57,7 +57,8 @@ annotation, so it does nothing when this is \code{FALSE}.}
 
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
 
-\item{style}{A named list of arguments passed to style_plot()}
+\item{style}{A \code{\link[=style_spec]{style_spec()}}, or a named list of arguments passed to
+\code{style_plot()}. The list form is deprecated.}
 
 \item{include_pvalue}{Logical, add the slope p-value to the caption
 (default: FALSE)}

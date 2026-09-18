@@ -33,7 +33,8 @@ eda_hysteresis_loop_plot(
 
 \item{show_hysteresis_warning}{Logical, whether to add "Hysteresis Detected" to facet labels for affected groups}
 
-\item{style}{A named list of arguments passed to style_plot()}
+\item{style}{A \code{\link[=style_spec]{style_spec()}}, or a named list of arguments passed to
+\code{style_plot()}. The list form is deprecated.}
 }
 \value{
 A faceted plot showing concentration vs deltaQTc trajectories over time with directional arrows

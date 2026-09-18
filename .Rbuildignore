@@ -20,3 +20,5 @@
 ^\.claude$
 ^_starlightr\.yaml$
 ^data-raw$
+^doc$
+^Meta$

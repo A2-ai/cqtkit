@@ -14,6 +14,7 @@ repositories = [
 dependencies = [
 	"devtools",
 	"covr",
-	"ggstylekit",
+  { name = "ggstylekit", git = "https://github.com/a2-ai/ggstylekit", branch = "update-reveal" },
 	{ name = "cqtkit", path = ".", dependencies_only = true, install_suggestions = true },
+    "patchwork",
 ]
