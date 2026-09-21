@@ -160,7 +160,11 @@ cqtkit also has plot manipulation functions:
 
 Plots are styled with \pkg{ggstylekit}. Pass a
 \code{ggstylekit::style_spec()} to any plotting function's \code{style}
-argument. This helper adds reference lines:
+argument. Multi-panel plots built with a style specification return an
+editable patchwork, so \code{restyle_plot()} and \code{reveal()} can update
+their panels. The deprecated list style retains the legacy ggpubr return
+value. See \code{vignette("styling")} for the complete styling workflow.
+This helper adds reference lines:
 \itemize{
 \item \code{\link{add_horizontal_references}}: Add reference lines to plots
 \item \code{\link[ggstylekit]{style_spec}}, \code{\link[ggstylekit]{legend_spec}}, \code{\link[ggstylekit]{reveal}}, \code{\link[ggstylekit]{restyle_plot}}: Re-exported from \pkg{ggstylekit}

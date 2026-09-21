@@ -111,10 +111,12 @@ gof_plots <- function(
     ggplot2::coord_equal(xlim = p1_axis_limits, ylim = p1_axis_limits)
 
   style <- as_style_spec(style)
+  figure_title <- style$title
+  panel_style <- without_panel_title(style)
 
   p1 <- cqtkit_apply_style(
     p1,
-    style,
+    panel_style,
     legend = "Treatment Group",
     theme = cqtkit_square_theme()
   )
@@ -138,7 +140,7 @@ gof_plots <- function(
 
   p2 <- cqtkit_apply_style(
     p2,
-    style,
+    panel_style,
     legend = "Treatment Group",
     theme = cqtkit_square_theme()
   )
@@ -168,7 +170,7 @@ gof_plots <- function(
 
   p3 <- cqtkit_apply_style(
     p3,
-    style,
+    panel_style,
     legend = "Treatment Group",
     theme = cqtkit_square_theme()
   )
@@ -191,20 +193,22 @@ gof_plots <- function(
     ggplot2::theme_bw() +
     ggplot2::theme(aspect.ratio = 1)
 
-  .p <- ggpubr::ggarrange(
-    p1,
-    p2,
-    p3,
-    p4,
+  if (is_style_spec(style)) {
+    p4 <- cqtkit_apply_style(
+      p4,
+      panel_style,
+      theme = cqtkit_square_theme()
+    )
+  }
+
+  .p <- compose_cqtkit_plots(
+    list(p1, p2, p3, p4),
+    style,
     nrow = 2,
     ncol = 2,
-    common.legend = TRUE,
-    legend = legend_location
+    legend_location = legend_location,
+    title = figure_title
   )
-
-  if (!is.null(style$title)) {
-    .p <- ggpubr::annotate_figure(.p, top = style$title)
-  }
 
   return(.p)
 }
@@ -286,8 +290,12 @@ gof_concordance_plots <- function(
   axis_limits <- range(all_values, na.rm = TRUE)
 
   style <- as_style_spec(style)
+  figure_title <- style$title
+  panel_style <- without_panel_title(style)
   if (is.null(style$xlims)) style$xlims <- axis_limits
   if (is.null(style$ylims)) style$ylims <- axis_limits
+  if (is.null(panel_style$xlims)) panel_style$xlims <- axis_limits
+  if (is.null(panel_style$ylims)) panel_style$ylims <- axis_limits
 
   plots <- lapply(seq_along(xdata), function(i) {
     .p <- fit_results_df |>
@@ -311,7 +319,7 @@ gof_concordance_plots <- function(
 
     .p <- cqtkit_apply_style(
       .p,
-      style,
+      panel_style,
       xlabel = xlabels[[i]],
       ylabel = bquote("Observed  " ~ .(dv_label)),
       legend = "Treatment Group",
@@ -319,15 +327,12 @@ gof_concordance_plots <- function(
     )
   })
 
-  .p <- ggpubr::ggarrange(
-    plotlist = plots,
-    common.legend = TRUE,
-    legend = legend_location
+  .p <- compose_cqtkit_plots(
+    plots,
+    style,
+    legend_location = legend_location,
+    title = figure_title
   )
-
-  if (!is.null(style$title)) {
-    .p <- ggpubr::annotate_figure(.p, top = style$title)
-  }
 
   return(.p)
 }
@@ -420,6 +425,8 @@ gof_residuals_plots <- function(
   )
 
   style <- as_style_spec(style)
+  figure_title <- style$title
+  panel_style <- without_panel_title(style)
 
   plots <- lapply(seq_along(xdata), function(i) {
     .p <- fit_results_df |>
@@ -438,7 +445,7 @@ gof_residuals_plots <- function(
 
     .p <- cqtkit_apply_style(
       .p,
-      style,
+      panel_style,
       xlabel = xlabel[[i]],
       ylabel = ydata[[i]],
       legend = "Treatment Group",
@@ -446,23 +453,13 @@ gof_residuals_plots <- function(
     )
   })
 
-  # Arrange plots
-  if (!rlang::quo_is_null(trt)) {
-    .p <- ggpubr::ggarrange(
-      plotlist = plots,
-      common.legend = TRUE,
-      legend = legend_location
-    )
-  } else {
-    .p <- ggpubr::ggarrange(
-      plotlist = plots,
-      common.legend = TRUE,
-      legend = "none"
-    )
-  }
-
-  if (!is.null(style$title))
-    .p <- ggpubr::annotate_figure(.p, top = style$title)
+  .p <- compose_cqtkit_plots(
+    plots,
+    style,
+    legend_location = legend_location,
+    common_legend = !rlang::quo_is_null(trt),
+    title = figure_title
+  )
 
   return(.p)
 }
@@ -534,6 +531,8 @@ gof_qq_plots <- function(
   plots <- list()
 
   style <- as_style_spec(style)
+  figure_title <- style$title
+  panel_style <- without_panel_title(style)
 
   for (r in sample_data) {
     all_values <- c(fit_results_df$WRES, fit_results_df$IWRES)
@@ -552,7 +551,7 @@ gof_qq_plots <- function(
 
     .qqp <- cqtkit_apply_style(
       .qqp,
-      style,
+      panel_style,
       legend = "Treatment Group",
       xlabel = "Theoretical Quantiles",
       ylabel = paste0("Quantiles of ", r),
@@ -563,22 +562,13 @@ gof_qq_plots <- function(
     plots[[r]] <- .qqp
   }
 
-  if (!rlang::quo_is_null(trt)) {
-    .p <- ggpubr::ggarrange(
-      plotlist = plots,
-      common.legend = TRUE,
-      legend = legend_location
-    )
-  } else {
-    .p <- ggpubr::ggarrange(
-      plotlist = plots,
-      common.legend = TRUE,
-      legend = "none"
-    )
-  }
-
-  if (!is.null(style$title))
-    .p <- ggpubr::annotate_figure(.p, top = style$title)
+  .p <- compose_cqtkit_plots(
+    plots,
+    style,
+    legend_location = legend_location,
+    common_legend = !rlang::quo_is_null(trt),
+    title = figure_title
+  )
   return(.p)
 }
 
@@ -653,6 +643,8 @@ gof_residuals_time_boxplots <- function(
   ydata <- c("WRES", "IWRES")
 
   style <- as_style_spec(style)
+  figure_title <- style$title
+  panel_style <- without_panel_title(style)
 
   for (i in seq_along(ydata)) {
     .rbp <- fit_results_df |>
@@ -676,7 +668,7 @@ gof_residuals_time_boxplots <- function(
       .rbp <- add_horizontal_references(.rbp, residual_references)
     }
 
-    this_style <- style
+    this_style <- panel_style
     if (!is_style_spec(this_style)) {
       this_style$fill_legend <- this_style$legend %||% "Treatment Group"
       this_style$legend <- ""
@@ -696,24 +688,14 @@ gof_residuals_time_boxplots <- function(
     time_plots[[i]] <- .rbp
   }
 
-  if (!rlang::quo_is_null(trt)) {
-    .p <- ggpubr::ggarrange(
-      plotlist = time_plots,
-      ncol = 1,
-      common.legend = TRUE,
-      legend = legend_location
-    )
-  } else {
-    .p <- ggpubr::ggarrange(
-      plotlist = time_plots,
-      ncol = 1,
-      common.legend = TRUE,
-      legend = "none"
-    )
-  }
-
-  if (!is.null(style$title))
-    .p <- ggpubr::annotate_figure(.p, top = style$title)
+  .p <- compose_cqtkit_plots(
+    time_plots,
+    style,
+    ncol = 1,
+    legend_location = legend_location,
+    common_legend = !rlang::quo_is_null(trt),
+    title = figure_title
+  )
 
   return(.p)
 }
@@ -781,6 +763,8 @@ gof_residuals_trt_boxplots <- function(
   ydata <- c("WRES", "IWRES")
 
   style <- as_style_spec(style)
+  figure_title <- style$title
+  panel_style <- without_panel_title(style)
 
   for (i in seq_along(ydata)) {
     .rbpt <- fit_results_df |>
@@ -804,7 +788,7 @@ gof_residuals_trt_boxplots <- function(
 
     .rbpt <- cqtkit_apply_style(
       .rbpt,
-      style,
+      panel_style,
       xlabel = "Treatment Group",
       ylabel = ydata[[i]],
       fill_legend = "Treatment Group",
@@ -816,16 +800,14 @@ gof_residuals_trt_boxplots <- function(
     trtg_plots[[i]] <- .rbpt
   }
 
-  trt_plot <- ggpubr::ggarrange(
-    plotlist = trtg_plots,
+  trt_plot <- compose_cqtkit_plots(
+    trtg_plots,
+    style,
     ncol = 1,
-    common.legend = TRUE,
-    legend = legend_location
+    legend_location = legend_location,
+    common_legend = !rlang::quo_is_null(trt),
+    title = figure_title
   )
-
-  if (!is.null(style$title)) {
-    trt_plot <- ggpubr::annotate_figure(trt_plot, top = style$title)
-  }
 
   return(trt_plot)
 }

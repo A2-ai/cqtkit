@@ -593,9 +593,16 @@ cqtkit_style_defaults <- function() {
 
 # Resolve caller spec against per-function defaults, then the house defaults.
 cqtkit_style_plot <- function(p, style, ...) {
+  caller_legends <- style$legends
   style <- ggstylekit::with_defaults(style, ggstylekit::style_spec(...))
   style <- ggstylekit::with_defaults(style, cqtkit_style_defaults())
   style <- unify_shape_legend(style, p)
+  if (!is.null(caller_legends)) {
+    style <- ggstylekit::with_defaults(
+      ggstylekit::style_spec(legends = caller_legends),
+      style
+    )
+  }
   style <- default_fill_from_colors(style, p)
   ggstylekit::style_plot(p, style)
 }
@@ -639,6 +646,19 @@ default_fill_from_colors <- function(style, p) {
     return(style)
   }
 
+  if (is.function(style$colors)) {
+    fill_defaults <- attr(p, "fill_colors")
+    if (length(fill_defaults) == 0L) {
+      fill_defaults <- NULL
+    }
+    resolved <- ggstylekit::with_defaults(
+      ggstylekit::style_spec(fill = style$colors),
+      ggstylekit::style_spec(fill = fill_defaults)
+    )
+    style$fill <- resolved$fill
+    return(style)
+  }
+
   # Build it the way the list engine does: fill_colors is the base, the
   # resolved colours override by name and append new names. The order is load
   # bearing, ggplot2 falls back to positional assignment here.
@@ -669,6 +689,60 @@ as_style_spec <- function(style) {
 
 is_style_spec <- function(style) {
   inherits(style, "ggstylekit_style_spec")
+}
+
+# Compose styled panels without baking the spec path into grobs. The legacy
+# path stays on ggpubr so existing list-styled and default figures retain their
+# current rendering. A collected patchwork legend takes its initial position
+# from the public function argument; later restyle_plot() calls can move it.
+compose_cqtkit_plots <- function(
+  plots,
+  style,
+  nrow = NULL,
+  ncol = NULL,
+  legend_location = "top",
+  common_legend = TRUE,
+  title = NULL
+) {
+  legend_position <- if (common_legend) legend_location else "none"
+
+  if (is_style_spec(style)) {
+    plots <- unname(plots)
+    combined <- do.call(
+      ggstylekit::combine_styled_plots,
+      c(plots, list(nrow = nrow, ncol = ncol))
+    )
+    combined <- ggstylekit::restyle_plot(
+      combined,
+      legend.position = legend_position
+    )
+    if (!is.null(title)) {
+      combined <- combined + patchwork::plot_annotation(title = title)
+    }
+    return(combined)
+  }
+
+  combined <- ggpubr::ggarrange(
+    plotlist = plots,
+    nrow = nrow,
+    ncol = ncol,
+    common.legend = common_legend,
+    legend = legend_position
+  )
+  if (!is.null(title)) {
+    combined <- ggpubr::annotate_figure(combined, top = title)
+  }
+  combined
+}
+
+# A GOF style title belongs to the assembled figure. Remove it from spec-styled
+# panels while preserving the class and explicit NULL field expected by
+# ggstylekit's default resolution.
+without_panel_title <- function(style) {
+  if (is_style_spec(style)) {
+    style["title"] <- list(NULL)
+  }
+  style
 }
 
 # The scale values the list engine reads off the plot object. The `linetype_values`

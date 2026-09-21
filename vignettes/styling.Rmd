@@ -17,6 +17,18 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(cqtkit)
+
+fit <- fit_prespecified_model(
+  cqtkit_data_verapamil,
+  deltaQTCF,
+  ID,
+  CONC,
+  deltaQTCFBL,
+  TRTG,
+  TAFD,
+  method = "REML",
+  remove_conc_iiv = TRUE
+)
 ```
 
 Every cqtkit plotting function takes a `style` argument. As of 1.2.0 that
@@ -64,8 +76,8 @@ p <- gof_plots(
   style = style_spec()
 )
 
-restyle_plot(p, style_spec(legend.position = "bottom"))
-reveal(p)
+restyle_plot(p, legend.position = "bottom")
+reveal(p, time, as = "facet")
 ```
 
 Plots returned from the list path do not carry that state, and

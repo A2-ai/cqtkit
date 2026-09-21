@@ -70,6 +70,7 @@ test_that("eda_qtc_comparison_plot parity", {
     style = style_spec()
   )
 
+  expect_s3_class(p, "patchwork")
   snapshot_plot(p, "eda-qtc-comparison")
 })
 
@@ -142,6 +143,7 @@ test_that("gof_plots parity", {
     style = style_spec()
   )
 
+  expect_s3_class(p, "patchwork")
   snapshot_plot(p, "gof-plots")
 })
 
@@ -156,6 +158,7 @@ test_that("gof_concordance_plots parity", {
     style = style_spec()
   )
 
+  expect_s3_class(p, "patchwork")
   snapshot_plot(p, "gof-concordance")
 })
 
@@ -170,6 +173,7 @@ test_that("gof_residuals_plots parity", {
     style = style_spec()
   )
 
+  expect_s3_class(p, "patchwork")
   snapshot_plot(p, "gof-residuals")
 })
 
@@ -184,6 +188,7 @@ test_that("gof_qq_plots parity", {
     style = style_spec()
   )
 
+  expect_s3_class(p, "patchwork")
   snapshot_plot(p, "gof-qq")
 })
 
@@ -198,6 +203,7 @@ test_that("gof_residuals_time_boxplots parity", {
     style = style_spec()
   )
 
+  expect_s3_class(p, "patchwork")
   snapshot_plot(p, "gof-residuals-time-box")
 })
 
@@ -212,6 +218,7 @@ test_that("gof_residuals_trt_boxplots parity", {
     style = style_spec()
   )
 
+  expect_s3_class(p, "patchwork")
   snapshot_plot(p, "gof-residuals-trt-box")
 })
 

@@ -330,16 +330,13 @@ eda_qtc_comparison_plot <- function(
     return(p)
   })
 
-  if (rlang::quo_is_null(trt)) {
-    ggpubr::ggarrange(plotlist = plots, ncol = 1, legend = "none")
-  } else {
-    ggpubr::ggarrange(
-      plotlist = plots,
-      ncol = 1,
-      common.legend = TRUE,
-      legend = legend_location
-    )
-  }
+  compose_cqtkit_plots(
+    plots,
+    style,
+    ncol = 1,
+    legend_location = legend_location,
+    common_legend = !rlang::quo_is_null(trt)
+  )
 }
 
 #' EDA Quantiles Plot

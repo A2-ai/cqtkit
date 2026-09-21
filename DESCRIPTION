@@ -30,6 +30,7 @@ Imports:
     magrittr,
     MASS,
     nlme,
+    patchwork,
     purrr,
     rlang,
     scales,
