@@ -43,13 +43,6 @@ quad_form <- function(a, b, c) {
   ))
 }
 
-#' Null coalescing operator
-#'
-#' Returns the left-hand side if it is not NULL, otherwise returns the right-hand side.
-#' @keywords internal
-#' @noRd
-`%||%` <- function(a, b) if (!is.null(a)) a else b
-
 #' Paste grouping values together while keeping factor level order
 #'
 #' `paste()` returns character, which then sorts lexically in legends and in

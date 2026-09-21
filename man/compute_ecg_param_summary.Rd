@@ -33,7 +33,9 @@ compute_ecg_param_summary(
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
 }
 \value{
-A tibble with mean QTc, deltaQTc, and optionally delta-delta QTc values with confidence intervals, stratified by dose and time
+A tibble with mean QTc, deltaQTc, and optionally delta-delta QTc
+values with confidence intervals, stratified by dose and time. \code{group}
+is a factor whose levels carry the intended display order.
 }
 \description{
 Generates a tibble of summary of QTc, dQTc and ddQTc over time stratified by dose.

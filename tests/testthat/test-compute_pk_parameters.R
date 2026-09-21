@@ -27,6 +27,8 @@ test_that('compute_pk_parameters works for no 0 and no NA', {
     #i Actually got a <dplyr_regroup> with text: -- how to remove these?
     result <- compute_pk_parameters(.test_data, ID, DOSE, CONC, NTLD)
   )
+  expect_s3_class(result$group, "factor")
+  expect_equal(levels(result$group), "120")
 })
 
 test_that("compute_pk_parameters keeps factor level order with group_col", {
@@ -41,7 +43,24 @@ test_that("compute_pk_parameters keeps factor level order with group_col", {
     )
 
   res <- compute_pk_parameters(dat, ID, DOSEF, CONC, NTLD, group_col = TRTG)
+  expect_s3_class(res$group, "factor")
+  expect_equal(levels(res$group), paste(tl, lvls))
   expect_equal(as.character(res$group), paste(tl, lvls))
+})
+
+test_that("compute_pk_parameters orders numeric dose groups numerically", {
+  dat <- tibble::tibble(
+    id = 1:4,
+    dose = c(120, 60, 120, 60),
+    conc = c(4, 2, 5, 3),
+    time = 1
+  )
+
+  res <- compute_pk_parameters(dat, id, dose, conc, time)
+
+  expect_s3_class(res$group, "factor")
+  expect_equal(levels(res$group), c("60", "120"))
+  expect_equal(as.character(res$group), c("60", "120"))
 })
 
 test_that('compute_pk_parameters computes correct geometric mean with unequal timepoints', {

@@ -36,14 +36,14 @@
 * Preprocessing no longer derives values from replicate-averaged data. The QT corrections are nonlinear in RR, so applying them to an averaged `QT` and `RR` gives an incorrect `QTCB` or `QTCF`: the correction must be applied to each replicate and the results averaged.
   * `preprocess()` errors when `QTCB`, `QTCF`, `QTCBBL` or `QTCFBL` is missing from `data` instead of deriving it.
   * `compute_delta_hrblm()`, `compute_delta_qtcbblm()` and `compute_delta_qtcfblm()` error when the matching `HRBLM`, `QTCBBLM` or `QTCFBLM` column is missing from `data` instead of averaging the baseline values already on `data`.
-  * `options(cqtkit.override_preprocessing_error = TRUE)` restores the pre-1.2.0 behaviour of all four functions, and warns naming each value it derived that way.
+  * `options(cqtkit.override_preprocessing_error = TRUE)` derives any of those values that are missing from `data` the pre-1.2.0 way, and warns naming each one.
   * The bundled `cqtkit_data_*` and `cqtkit_data_bl_*` datasets are rebuilt, as documented in `vignette("data-assembly")`. Values and row counts change, and the datasets gain subject covariates.
 * `fit_prespecified_model()` errors naming the offending column when a model column name is non-syntactic, instead of failing in `str2lang()`.
 * `fit_prespecified_model()` errors naming the column, the levels removed, and the missing values responsible when a treatment or time predictor collapses below two levels once rows with missing model values are dropped, instead of failing in `contrasts<-`.
-* `compute_pk_parameters()` now takes one Cmax per subject before summarizing, so subjects with more timepoints no longer contribute repeated Cmax values to `Cmax_gm` and `Cmax_cv`.
+* `compute_pk_parameters()` now takes one Tmax and Cmax per subject before summarizing, so subjects with more timepoints no longer contribute repeated values to any Tmax or Cmax summary.
 * `eda_qt_rr_plot()` reads the caller's `xlabel` from `style$xlabel` rather than the misspelled `style$xlabe`, which resolved only through partial matching.
-* Plot legends follow the level order of factor grouping columns instead of the order the rows happen to be in.
-* `compute_study_summary()` and `compute_pk_parameters()` keep the level order of factor treatment and group columns in `grouping` instead of sorting them alphabetically.
+* Plot legends and their default colours follow the level order of factor grouping columns instead of the order the rows happen to be in. A group's default colour can therefore change where row order and level order differed.
+* Grouping columns returned by `compute_grouped_mean_sd()`, `compute_ecg_param_summary()`, `compute_pk_parameters()` and `compute_study_summary()` are factors whose levels carry their intended display order. This preserves factor treatment and group order, and sorts numeric groups numerically, instead of sorting their labels alphabetically.
 
 # cqtkit 1.1.0
 

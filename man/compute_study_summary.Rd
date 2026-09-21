@@ -16,7 +16,8 @@ compute_study_summary(data, trt_col, id_col, group_col = NULL)
 \item{group_col}{Optional additional grouping column}
 }
 \value{
-A tibble with unique subject counts per treatment group and overall total
+A tibble with unique subject counts per factor \code{grouping}, including
+an overall \code{Total} as the first level
 }
 \description{
 Creates a data frame summarizing number of subjects in each treatment group.

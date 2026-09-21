@@ -294,7 +294,11 @@ compute_model_fit_parameters <- function(
   checkmate::assertFlag(include_reference_levels)
   checkmate::assertFlag(section)
 
-  model_data <- nlme::getData(fit)
+  model_data <- if (include_reference_levels || section) {
+    nlme::getData(fit)
+  } else {
+    NULL
+  }
   sum <- summary(fit)$tTable
   new_names <- gsub(paste0("^", trt_col_name), "", rownames(sum))
   new_names <- gsub(paste0("^", tafd_col_name), "", new_names)

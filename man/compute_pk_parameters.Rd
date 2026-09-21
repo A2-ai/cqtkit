@@ -27,7 +27,8 @@ compute_pk_parameters(
 \item{group_col}{An unquoted column name for additional grouping variable}
 }
 \value{
-A tibble with PK summary statistics by group: N, Tmax (median/min/max), and Cmax (geometric mean, CV\%, median/min/max)
+A tibble with PK summary statistics by factor \code{group}: N, Tmax
+(median/min/max), and Cmax (geometric mean, CV\%, median/min/max)
 }
 \description{
 Generates PK parameters Cmax and Tmax for exposure predictions.
