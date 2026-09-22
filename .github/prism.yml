@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/a2-ai-prism-ecosystem/gh-prism/main/internal/contracts/prism-config.schema.json
+#
+# PRISM release configuration. Platform names come from
+# https://github.com/a2-ai-prism-ecosystem/r-package-workflows/blob/main/platforms/registry.json
+version: 1
+build:
+  # The first platform is the primary: it builds the source tarball.
+  platforms:
+    - "almalinux8/x86_64"
+    - "macos/arm64"
+  r_versions: ["4.6", "4.5", "4.4", "4.3"]
+  # auto also merges gh-prism's curated defaults (ignores + Enterprise Linux
+  # extras for known rules-database gaps); sysdeps_defaults: false opts out.
+  sysdeps: auto
+  toolchain: auto
+deploy:
+  create_edition: true
+  latest_edition: true
+  no_sys_deps: true
+  # To also bump this package inside a shared mutable edition, set
+  # update_edition and name the registry/edition (the package must already be
+  # a member of that edition):
+  update_edition: false
+  # registry: my-team-registry
+  # edition: dev
