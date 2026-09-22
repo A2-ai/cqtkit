@@ -13,15 +13,6 @@ explore data, validate key assumptions from the white paper, fit and
 assess the pre-specified model with comprehensive goodness-of-fit plots,
 and generate relevant exposure–response predictions.
 
-## Installation
-
-You can install the development version of `cqtkit` from
-[GitHub](https://github.com) with:
-
-``` r
-pak::pkg_install("a2-ai/cqtkit")
-```
-
 ## Documentation
 
 The documentation site for cqtkit can be found
@@ -57,7 +48,7 @@ the example below drops the delta columns first to show what
 `preprocess()` adds.
 
 ``` r
-input <- cqtkit_data_verapamil %>% select(-starts_with("delta"))
+input <- cqtkit_data_verapamil |> select(-starts_with("delta"))
 data_proc <- preprocess(input)
 cat(paste(setdiff(names(data_proc), names(input)), collapse = ", "), "\n")
 #> deltaHRBL, deltaQTCBBL, deltaQTCFBL, deltaQTCB, deltaQTCF, deltaRR, deltaHR, deltaQT
@@ -82,18 +73,22 @@ eda_mean_dv_over_time(
   secondary_data_col = CONC,
   group_col = TRTG,
   conf_int = 0.9,
-  style = set_style(
+  style = style_spec(
     ylabel = bquote(Delta ~ Delta ~ "HR (bpm)"),
-    legend = "Verapamil 120 mg Dose",
-    labels = c(
-      "120 mg Verapamil HCL deltaHR" = "ddHR",
-      "120 mg Verapamil HCL CONC" = "Concentration",
-      "Reference -10" = "+/- 10 bpm ddHR",
-      "Reference 10" = NA
-    ),
     legend.position = "top",
-    legend.title.position = "left",
-    legend_nrow = 2
+    legend_nrow = 2,
+    legends = list(
+      legend_spec(
+        channel = "color",
+        title = "Verapamil 120 mg Dose",
+        labels = c(
+          "120 mg Verapamil HCL deltaHR" = "ddHR",
+          "120 mg Verapamil HCL CONC" = "Concentration",
+          "Reference -10" = "+/- 10 bpm ddHR",
+          "Reference 10" = NA
+        )
+      )
+    )
   )
 )
 ```
@@ -103,14 +98,14 @@ eda_mean_dv_over_time(
 ### QTc Correction
 
 ``` r
-bl <- cqtkit_data_bl_verapamil %>% compute_qtcb_qtcf(qtbl_col = NULL, rrbl_col = NULL)
+bl <- cqtkit_data_bl_verapamil |> compute_qtcb_qtcf(qtbl_col = NULL, rrbl_col = NULL)
 eda_qtc_comparison_plot(
   data = bl,
   rr_col = RR,
   qt_col = QT,
   qtcb_col = QTCB,
   qtcf_col = QTCF,
-  style = set_style(
+  style = style_spec(
     caption_hjust = "left"
   )
 )
@@ -128,7 +123,7 @@ eda_hysteresis_loop_plot(
   CONC,
   DOSEF,
   reference_dose = "0 mg",
-  style = set_style(
+  style = style_spec(
     ylabel = bquote(Delta ~ Delta ~ "QTcF (ms)"),
     xlabel = "Verapamil Plasma Concentration (ng/mL)",
     legend.position = "none"
@@ -149,15 +144,17 @@ eda_scatter_with_regressions(
   linear_line = TRUE,
   span = 0.90,
   trt_col = TRTG,
-  style = set_style(
+  style = style_spec(
     ylabel = bquote(Delta ~ "QTcF (ms)"),
     xlabel = "Verapamil Concentration (ng/mL)",
-    labels = c(
-      "Verapamil HCL" = "Verapamil"
-    ),
     legend.position = "top",
-    legend.title.position = "left",
-    legend_nrow = 2
+    legend_nrow = 2,
+    legends = list(
+      legend_spec(
+        channel = "color",
+        labels = c("Verapamil HCL" = "Verapamil")
+      )
+    )
   )
 )
 ```
@@ -190,14 +187,14 @@ tabulate_model_fit_parameters(
   title = "Fixed-Effect Estimates for &Delta;QTcF Model",
   section = TRUE,
   include_reference_levels = TRUE
-) %>%
+) |>
   tab_source_note(
     source_note = "Additive Residual error model with IIV on intercept and slope"
-  ) %>%
+  ) |>
   as_raw_html()
 ```
 
-<div id="jmrsgdknkb" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="poqaeokuob" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   &#10;  <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF">
   <thead style="border-style: none;">
     <tr class="gt_heading" style="border-style: none; background-color: #FFFFFF; text-align: center; border-bottom-color: #FFFFFF; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;" bgcolor="#FFFFFF" align="center">
@@ -309,6 +306,21 @@ tabulate_model_fit_parameters(
 models
 
 ``` r
+gof_style <- style_spec(
+  legend.title.position = "left",
+  legends = list(
+    legend_spec(
+      channel = "color",
+      labels = c(
+        "Verapamil HCL" = "Verapamil",
+        "Placebo" = "Placebo",
+        "Reference 2" = "+/- 2 Residual",
+        "Reference -2" = NA
+      )
+    )
+  )
+)
+
 gof_plots(
   data = data_proc,
   fit = dqtc_model,
@@ -318,12 +330,7 @@ gof_plots(
   trt_col = TRTG,
   conc_xlabel = "Verapamil Concentration (ng/mL)",
   legend_location = "top",
-  style = set_style(
-    labels = c(
-      "Verapamil HCL" = "Verapamil"
-    ),
-    legend.title.position = "left"
-  )
+  style = gof_style
 )
 ```
 
@@ -339,15 +346,7 @@ gof_concordance_plots(
   trt_col = TRTG,
   dv_label = "QTcF (ms)",
   legend_location = "top",
-  style = set_style(
-    labels = c(
-      "Verapamil HCL" = "Verapamil",
-      "Placebo" = "Placebo",
-      "Reference 2" = "+/- 2 Residual",
-      "Reference -2" = NA
-    ),
-    legend.title.position = "left"
-  )
+  style = gof_style
 )
 ```
 
@@ -364,15 +363,7 @@ gof_residuals_plots(
   dv_label = "QTcF (ms)",
   conc_xlabel = "Verapamil Concentration (ng/mL)",
   legend_location = "top",
-  style = set_style(
-    labels = c(
-      "Verapamil HCL" = "Verapamil",
-      "Placebo" = "Placebo",
-      "Reference 2" = "+/- 2 Residual",
-      "Reference -2" = NA
-    ),
-    legend.title.position = "left"
-  )
+  style = gof_style
 )
 ```
 
@@ -385,7 +376,7 @@ gof_vpc_plot(
   CONC,
   deltaQTCF,
   seed = 804831,
-  style = set_style(
+  style = style_spec(
     xlabel = "Verapamil Concentration (ng/mL)"
   )
 )
@@ -411,7 +402,7 @@ conc_for_10_ms <- compute_conc_for_upper_pred(
 
 
 stpx_cmax <- max(compute_pk_parameters(
-  data_proc %>% dplyr::filter(TRTG != "Placebo"),
+  data_proc |> dplyr::filter(TRTG != "Placebo"),
   ID,
   DOSE,
   CONC,
@@ -439,22 +430,30 @@ predict_with_exposure_plot(
   conf_int = 0.9,
   cmaxes = c(2 * stpx_cmax, stpx_cmax, conc_for_10_ms),
   reference_threshold = 10,
-  style = set_style(
+  style = style_spec(
     xlabel = "Verapamil Plasma Concentration (ng/mL)",
     ylabel = bquote(Delta ~ Delta ~ "QTcF (ms)"),
     colors = c(
-      "Cmax_228.46" = "red",
-      "Cmax_152.19" = "brown",
-      "Cmax_114.23" = "skyblue"
+      "Cmax_227.18" = "red",
+      "Cmax_165.01" = "brown",
+      "Cmax_113.59" = "skyblue"
     ),
-    labels = c(
-      "Cmax_228.46" = "2 x Supratherapeutic dose exposure",
-      "Cmax_114.23" = "Supratherapeutic dose exposure",
-      "Cmax_152.19" = "Exposure for predicted 10 ms",
-      "Reference 10" = "10 ms ddQTcF",
-      "90% CI" = "Model derived 90% CI"
-    ),
-    fill_legend = ""
+    legends = list(
+      legend_spec(
+        channel = "color",
+        labels = c(
+          "Cmax_227.18" = "2 x Supratherapeutic dose exposure",
+          "Cmax_113.59" = "Supratherapeutic dose exposure",
+          "Cmax_165.01" = "Exposure for predicted 10 ms",
+          "Reference 10" = "10 ms ddQTcF"
+        )
+      ),
+      legend_spec(
+        channel = "fill",
+        title = "",
+        labels = c("90% CI" = "Model derived 90% CI")
+      )
+    )
   )
 )
 ```
@@ -483,14 +482,14 @@ tabulate_exposure_predictions(
   conc_units = "ng/mL",
   scientific = FALSE,
   title = "&Delta;&Delta;QTcF Predictions"
-) %>%
+) |>
   tab_source_note(
     source_note = gt::md("\\* Computed C~max~ for upper 90% CI to reach 10 ms")
-  ) %>%
+  ) |>
   as_raw_html()
 ```
 
-<div id="srcbjvfcyd" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="nootluxdhx" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   &#10;  <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF">
   <thead style="border-style: none;">
     <tr class="gt_heading" style="border-style: none; background-color: #FFFFFF; text-align: center; border-bottom-color: #FFFFFF; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;" bgcolor="#FFFFFF" align="center">

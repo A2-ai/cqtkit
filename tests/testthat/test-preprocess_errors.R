@@ -116,6 +116,29 @@ test_that("the override is silent when it changes nothing", {
   expect_no_warning(compute_delta_hrblm(.data))
 })
 
+test_that("the override honours an existing population mean", {
+  withr::local_options(cqtkit.override_preprocessing_error = TRUE)
+  input <- dplyr::select(.data, -dplyr::starts_with("delta"))
+  input$HRBLM <- 999
+
+  preprocessed <- preprocess(input)
+  computed <- compute_delta_hrblm(input)
+
+  expect_equal(preprocessed$deltaHRBL, input$HRBL - 999)
+  expect_equal(preprocessed$deltaHRBL, computed$deltaHRBL)
+})
+
+test_that("the override derives a missing population mean consistently", {
+  withr::local_options(cqtkit.override_preprocessing_error = TRUE)
+  input <- dplyr::select(.data, -HRBLM, -dplyr::starts_with("delta"))
+
+  preprocessed <- expect_warning(preprocess(input), "`HRBLM` derived")
+  computed <- expect_warning(compute_delta_hrblm(input), "`HRBLM` derived")
+
+  expect_equal(preprocessed$HRBLM, computed$HRBLM)
+  expect_equal(preprocessed$deltaHRBL, computed$deltaHRBL)
+})
+
 test_that("the deprecated arguments still take effect under the override", {
   withr::local_options(cqtkit.override_preprocessing_error = TRUE)
   stripped <- dplyr::select(.data, -HRBLM, -deltaHRBL)

@@ -23,14 +23,18 @@ compute_grouped_mean_sd(
 
 \item{dose_col}{An unquoted column name for dose group}
 
-\item{group_col}{An unquoted column of optional grouping column}
+\item{group_col}{An unquoted column of optional grouping column,
+without missing values. Fill or filter missing values, or omit this argument
+for dose-only summaries.}
 
 \item{reference_dose}{Reference dose value for comparison calculations}
 
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
 }
 \value{
-A tibble with mean, SD, SE, and confidence intervals for the dependent variable, grouped by time and dose
+A tibble with mean, SD, SE, and confidence intervals for the
+dependent variable, grouped by time and dose. \code{group} is a factor whose
+levels carry the intended display order.
 }
 \description{
 Computes the mean and standard deviation of the dependent variable data

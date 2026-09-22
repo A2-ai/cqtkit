@@ -33,7 +33,8 @@ predict_with_exposure_plot(
 
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
 
-\item{style}{A named list of arguments passed to style_plot()}
+\item{style}{A \code{\link[=style_spec]{style_spec()}}, or a named list of arguments passed to
+\code{style_plot()}. The list form is deprecated.}
 }
 \value{
 A plot of model predictions with confidence interval and vertical Cmax reference lines

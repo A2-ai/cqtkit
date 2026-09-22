@@ -30,7 +30,8 @@ gof_qq_plots(
 
 \item{legend_location}{String for legend position (top, bottom, left, right)}
 
-\item{style}{A named list of arguments passed to style_plot()}
+\item{style}{A \code{\link[=style_spec]{style_spec()}}, or a named list of arguments passed to
+\code{style_plot()}. The list form is deprecated.}
 }
 \value{
 A 2-panel Q-Q plot comparing WRES and IWRES to normal distribution

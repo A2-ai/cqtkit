@@ -82,3 +82,55 @@ test_that("tabulate_model_fit_parameters groups rows only when asked", {
     c("Slope", "Treatment", "Intercept", "Time", "Random Effects")
   )
 })
+
+test_that("overlapping treatment and time labels retain their model terms", {
+  dat <- model_data
+  dat$TRTG <- factor(dat$TRTG, labels = c("0", "1"))
+  dat$TAFD <- factor(
+    dat$TAFD, levels = unique(dat$TAFD),
+    labels = seq_along(unique(dat$TAFD)) - 1
+  )
+  mod <- fit_prespecified_model(
+    dat, deltaQTCF, ID, CONC, deltaQTCFBL, TRTG, TAFD,
+    remove_conc_iiv = TRUE
+  )
+  params <- compute_model_fit_parameters(
+    mod, section = TRUE, include_reference_levels = TRUE
+  )
+  refs <- params[params$Parameters == "0 (Reference)", ]
+  expect_equal(as.character(refs$Section), c("Treatment", "Time"))
+  expect_equal(refs$Value, c(0, 0))
+  expect_equal(sum(params$Section == "Treatment"), 2)
+  expect_equal(sum(params$Section == "Time"), nlevels(dat$TAFD))
+  expect_false(any(params$Section == "Other"))
+  expect_false(".term" %in% names(params))
+  estimates <- summary(mod)$tTable[, "Value"]
+  expect_equal(params$Value[params$Section == "Treatment" & params$Parameters == "1"],
+               unname(estimates["TRTG1"]))
+  expect_equal(params$Value[params$Section == "Time" & params$Parameters == "1"],
+               unname(estimates["TAFD1"]))
+  plain <- compute_model_fit_parameters(mod, include_reference_levels = TRUE)
+  expect_equal(sum(plain$Parameters == "0 (Reference)"), 2)
+  expect_false(any(c(".term", "Section") %in% names(plain)))
+})
+
+test_that("reference rows follow fitted contrasts rather than missing labels", {
+  dat <- model_data
+  contrasts(dat$TRTG) <- stats::contr.treatment(2, base = 2)
+  mod <- fit_prespecified_model(
+    dat, deltaQTCF, ID, CONC, deltaQTCFBL, TRTG, TAFD,
+    remove_conc_iiv = TRUE
+  )
+  params <- compute_model_fit_parameters(mod, include_reference_levels = TRUE)
+  expect_true("Verapamil HCL (Reference)" %in% params$Parameters)
+  expect_false("Placebo (Reference)" %in% params$Parameters)
+
+  contrasts(dat$TRTG) <- stats::contr.sum(2)
+  mod <- fit_prespecified_model(
+    dat, deltaQTCF, ID, CONC, deltaQTCFBL, TRTG, TAFD,
+    remove_conc_iiv = TRUE
+  )
+  params <- compute_model_fit_parameters(mod, section = TRUE, include_reference_levels = TRUE)
+  expect_equal(sum(params$Section == "Treatment"), 1)
+  expect_false(any(grepl("Reference", params$Parameters[params$Section == "Treatment"])))
+})

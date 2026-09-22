@@ -36,7 +36,8 @@ eda_scatter_with_regressions(
 
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
 
-\item{style}{A named list of arguments passed to style_plot(). Shapes are mapped to treatment groups and can be controlled via the shapes parameter in style}
+\item{style}{A \code{\link[=style_spec]{style_spec()}}, or a named list of arguments passed to
+\code{style_plot()}. The list form is deprecated.. Shapes are mapped to treatment groups and can be controlled via the shapes parameter in style}
 }
 \value{
 A scatter plot with linear and/or LOESS regression lines for assessing linearity

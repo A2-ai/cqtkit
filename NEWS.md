@@ -15,6 +15,12 @@
   * New `compute_hr()` derives `HR` and `HRBL` from an RR column.
   * New `compute_blm()` computes a population mean baseline from replicate-level baseline ECG data, averaging within each `group_col` group and then across groups.
   * New `vignette("data-assembly")` documents how the bundled datasets are assembled from the source trial data.
+* All sixteen plotting functions accept a ggstylekit `style_spec()` as `style`, alongside the existing style list. The two are told apart by class, so an untouched call keeps the list engine and the figure it produced before.
+  * cqtkit re-exports `style_spec()`, `legend_spec()`, `reveal()` and `restyle_plot()` from ggstylekit. Everything else in ggstylekit is reached as `ggstylekit::`.
+  * Do not call `library(ggstylekit)` while both styling APIs exist. Both packages export `set_style` and `style_plot`, they are unrelated functions, and whichever package is attached second wins.
+  * Plots styled with a `style_spec()` can be adjusted afterwards with `restyle_plot()` and inspected with `reveal()`. Multi-panel plots on this path are patchworks so their panels remain editable. Plots styled with a list cannot.
+  * Palette functions supplied to `style_spec(colors = )` now also work for plots with mapped fills, and explicit shape legend settings are preserved.
+  * New `vignette("styling")` maps every `set_style()` argument to its `style_spec()` or `legend_spec()` equivalent.
 * `eda_qt_rr_plot()` and `eda_qtc_comparison_plot()` gain arguments for showing the slope p-value in the caption.
   * `include_pvalue` adds the p-value. Defaults to `FALSE`, and warns when `show_model_results = FALSE`.
   * `scientific` shows it in scientific notation. Defaults to `TRUE`, matching `tabulate_model_fit_parameters()`.
@@ -22,21 +28,25 @@
   * `decimals` sets the decimal places in the caption. Defaults to `NULL`, which rounds to three decimals as before.
 
 ### Deprecated
+* `set_style()` and `style_plot()` are deprecated in favour of `style_spec()` and `restyle_plot()`. Both keep working. Passing `style` a list keeps working and does not warn. They will be removed in 2.0.0.
 * The `id_col` and `deduplicate` arguments of `preprocess()`, `compute_delta_hrblm()`, `compute_delta_qtcbblm()` and `compute_delta_qtcfblm()` are deprecated. The population baseline mean is now computed by `compute_blm()`. They will be removed in 2.0.0.
 * The re-export of magrittr's `%>%` is deprecated. `library(cqtkit)` will no longer attach it in 2.0.0. Attach it with `library(dplyr)` or `library(magrittr)`, or use the base pipe `|>`.
 * `compute_high_qtc_sub()` and `tabulate_high_qtc_sub()` are deprecated. They count observations, not subjects. Their counts are unchanged. Use `compute_high_qtc_subjects()` / `tabulate_high_qtc_subjects()` for subject counts or `compute_high_qtc_observations()` / `tabulate_high_qtc_observations()` for observation counts. They will be removed in 2.0.0.
 
 ### Fixed
+* Summary functions that combine `group_col` with dose or treatment now error if the supplied grouping column contains missing values. Fill or filter those values, or omit `group_col` to summarize by dose or treatment alone. This deliberately replaces the literal `NA` labels produced in 1.1.0 and prevents missing groups from silently merging distinct doses or treatments.
+* Model-table sections and reference rows use the original model terms and fitted contrasts, so treatment and time levels with matching display labels remain distinct. These options do not change model estimates.
 * Preprocessing no longer derives values from replicate-averaged data. The QT corrections are nonlinear in RR, so applying them to an averaged `QT` and `RR` gives an incorrect `QTCB` or `QTCF`: the correction must be applied to each replicate and the results averaged.
   * `preprocess()` errors when `QTCB`, `QTCF`, `QTCBBL` or `QTCFBL` is missing from `data` instead of deriving it.
   * `compute_delta_hrblm()`, `compute_delta_qtcbblm()` and `compute_delta_qtcfblm()` error when the matching `HRBLM`, `QTCBBLM` or `QTCFBLM` column is missing from `data` instead of averaging the baseline values already on `data`.
-  * `options(cqtkit.override_preprocessing_error = TRUE)` restores the pre-1.2.0 behaviour of all four functions, and warns naming each value it derived that way.
+  * `options(cqtkit.override_preprocessing_error = TRUE)` derives any of those values that are missing from `data` the pre-1.2.0 way, and warns naming each one.
   * The bundled `cqtkit_data_*` and `cqtkit_data_bl_*` datasets are rebuilt, as documented in `vignette("data-assembly")`. Values and row counts change, and the datasets gain subject covariates.
 * `fit_prespecified_model()` errors naming the offending column when a model column name is non-syntactic, instead of failing in `str2lang()`.
 * `fit_prespecified_model()` errors naming the column, the levels removed, and the missing values responsible when a treatment or time predictor collapses below two levels once rows with missing model values are dropped, instead of failing in `contrasts<-`.
-* `compute_pk_parameters()` now takes one Cmax per subject before summarizing, so subjects with more timepoints no longer contribute repeated Cmax values to `Cmax_gm` and `Cmax_cv`.
-* Plot legends follow the level order of factor grouping columns instead of the order the rows happen to be in.
-* `compute_study_summary()` and `compute_pk_parameters()` keep the level order of factor treatment and group columns in `grouping` instead of sorting them alphabetically.
+* `compute_pk_parameters()` now takes one Tmax and Cmax per subject before summarizing, so subjects with more timepoints no longer contribute repeated values to any Tmax or Cmax summary.
+* `eda_qt_rr_plot()` reads the caller's `xlabel` from `style$xlabel` rather than the misspelled `style$xlabe`, which resolved only through partial matching.
+* Plot legends and their default colours follow the level order of factor grouping columns instead of the order the rows happen to be in. A group's default colour can therefore change where row order and level order differed.
+* Grouping columns returned by `compute_grouped_mean_sd()`, `compute_ecg_param_summary()`, `compute_pk_parameters()` and `compute_study_summary()` are factors whose levels carry their intended display order. This preserves factor treatment and group order, and sorts numeric groups numerically, instead of sorting their labels alphabetically.
 
 # cqtkit 1.1.0
 

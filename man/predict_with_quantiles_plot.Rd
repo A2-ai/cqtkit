@@ -51,7 +51,8 @@ predict_with_quantiles_plot(
 
 \item{contrast_method}{A string specifying contrast method when using control_predictors: "matched" for individual ID+time matching (crossover studies), "group" for group-wise subtraction (parallel studies)}
 
-\item{style}{A named list of arguments passed to style_plot()}
+\item{style}{A \code{\link[=style_spec]{style_spec()}}, or a named list of arguments passed to
+\code{style_plot()}. The list form is deprecated.}
 }
 \value{
 A plot of binned observed data quantiles with model prediction line and confidence interval

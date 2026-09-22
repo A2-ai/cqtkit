@@ -235,7 +235,8 @@ compute_delta_blm <- function(data, bl, blm, delta_name) {
 #'
 #' Skips the delta when either column is `NULL`. Under
 #' `preprocessing_override()` the population mean is averaged from the
-#' baseline values on `data`, otherwise `blm` must already be on `data`.
+#' baseline values on `data` only when `blm` is absent. Otherwise the existing
+#' `blm` column is used.
 #'
 #' @param data A data frame containing a C-QT analysis dataset.
 #' @param bl Quosure for the per-subject baseline column.
@@ -252,7 +253,10 @@ add_blm_delta <- function(data, bl, blm, delta_name, id, deduplicate) {
     return(data)
   }
 
-  if (preprocessing_override()) {
+  if (
+    preprocessing_override() &&
+      !rlang::as_name(blm) %in% names(data)
+  ) {
     return(legacy_delta_blm(
       data = data,
       id = id,

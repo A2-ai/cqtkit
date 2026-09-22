@@ -48,7 +48,8 @@ eda_mean_dv_over_time(
 
 \item{sec_ylabel}{A string for secondary ylabel, default is Concentration (ng/mL)}
 
-\item{style}{A named list of arguments passed to style_plot(). Shapes are mapped to grouping variables and can be controlled via the shapes parameter in style}
+\item{style}{A \code{\link[=style_spec]{style_spec()}}, or a named list of arguments passed to
+\code{style_plot()}. The list form is deprecated.. Shapes are mapped to grouping variables and can be controlled via the shapes parameter in style}
 }
 \value{
 A line plot of mean dependent variable over time with optional error bars, reference lines, and secondary axis

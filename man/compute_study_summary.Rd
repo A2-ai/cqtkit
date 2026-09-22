@@ -13,10 +13,12 @@ compute_study_summary(data, trt_col, id_col, group_col = NULL)
 
 \item{id_col}{Column name of ID}
 
-\item{group_col}{Optional additional grouping column}
+\item{group_col}{Optional additional grouping column, without missing values.
+Fill or filter missing values, or omit this argument for treatment-only summaries.}
 }
 \value{
-A tibble with unique subject counts per treatment group and overall total
+A tibble with unique subject counts per factor \code{grouping}, including
+an overall \code{Total} as the first level
 }
 \description{
 Creates a data frame summarizing number of subjects in each treatment group.

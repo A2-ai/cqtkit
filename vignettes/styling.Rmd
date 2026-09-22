@@ -1,0 +1,179 @@
+---
+title: "Styling plots"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Styling plots}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+```{r setup}
+library(cqtkit)
+
+fit <- fit_prespecified_model(
+  cqtkit_data_verapamil,
+  deltaQTCF,
+  ID,
+  CONC,
+  deltaQTCFBL,
+  TRTG,
+  TAFD,
+  method = "REML",
+  remove_conc_iiv = TRUE
+)
+```
+
+Every cqtkit plotting function takes a `style` argument. As of 1.2.0 that
+argument accepts two things: a `style_spec()` from ggstylekit, or the style
+list that `set_style()` builds. The list form is deprecated and will be removed
+in 2.0.0.
+
+The two are told apart by class, so an existing call keeps the styling engine
+it has always used and produces the figure it has always produced. Nothing
+about the list path changed in 1.2.0.
+
+## The spec path
+
+```{r}
+eda_scatter_with_regressions(
+  cqtkit_data_verapamil,
+  deltaQTCF,
+  CONC,
+  TRTG,
+  reference_threshold = c(-10, 10),
+  style = style_spec(
+    title = "Concentration-QTc Relationship",
+    xlabel = "Concentration (ng/mL)",
+    ylabel = "deltaQTcF (ms)",
+    colors = c("Placebo" = "grey", "Verapamil HCL" = "steelblue")
+  )
+)
+```
+
+cqtkit carries its own defaults, and a spec overrides them field by field.
+Anything left `NULL` falls through to the cqtkit default, so a bare
+`style_spec()` gives the house figure.
+
+Plots returned from the spec path carry the state ggstylekit needs, so they can
+be adjusted afterwards:
+
+```{r}
+p <- gof_plots(
+  cqtkit_data_verapamil,
+  fit,
+  deltaQTCF,
+  CONC,
+  NTLD,
+  TRTG,
+  style = style_spec()
+)
+
+restyle_plot(p, legend.position = "bottom")
+reveal(p, time, as = "facet")
+```
+
+Plots returned from the list path do not carry that state, and
+`restyle_plot()` and `reveal()` error on them.
+
+## Error bars
+
+With ggstylekit 0.4.0, error bars can be styled independently of lines:
+
+```{r}
+eda_mean_dv_over_time(
+  cqtkit_data_verapamil, deltaQTCF, NTLD, DOSEF,
+  error_bars = "CI",
+  style = style_spec(
+    errorbar_width = 0.15,
+    errorbar_linewidth = 0.7,
+    errorbar_alpha = 0.8
+  )
+)
+```
+
+`error_bars` selects CI, SE or SD; styling does not change the interval
+calculation. `errorbar_width` sets the cap width in x-axis units (hours here).
+The same settings work with `eda_quantiles_plot()` and
+`predict_with_quantiles_plot()`, where the x-axis is concentration. Use
+`restyle_plot(p, errorbar_width = 0.2)` to adjust a spec-styled plot afterwards.
+`line_*` settings affect lines; use `errorbar_*` for error bars. Mapped group
+colors take precedence over `errorbar_color`; use `colors` to change the
+group palette.
+
+## Legends
+
+The legacy vocabulary spells legends as flat arguments. The spec vocabulary
+puts them in `legends`, a list of `legend_spec()` entries, one per channel.
+
+```{r}
+# deprecated
+set_style(legend = "Treatment", color_order = 1, labels = c("Reference -10" = NA))
+
+# current
+style_spec(
+  legends = list(
+    legend_spec(
+      channel = "color",
+      title = "Treatment",
+      order = 1,
+      labels = c("Reference -10" = NA)
+    )
+  )
+)
+```
+
+A label of `NA` drops that key from the legend, the same idiom in both.
+
+A legend shared across two channels is two `legend_spec()` entries carrying the
+same `title`, `labels` and `order`. That is how the unified colour and shape
+legend in the `predict_*` plots is built.
+
+`legend_spec(hide = TRUE)` drops a channel's legend outright.
+
+## Argument map
+
+| `set_style()` | `style_spec()` |
+| --- | --- |
+| `title` | `title` |
+| `xlabel` | `xlabel` |
+| `ylabel` | `ylabel` |
+| `xlims` | `xlims` |
+| `ylims` | `ylims` |
+| `logx` | `logx` |
+| `logy` | `logy` |
+| `colors` | `colors` |
+| `shapes` | `shapes` |
+| `fill_alpha` | `fill_alpha` |
+| `legend.position` | `legend.position` |
+| `legend.title.position` | `legend.title.position` |
+| `legend.title.hjust` | `legend.title.hjust` |
+| `legend_nrow` | `legend_nrow` |
+| `caption_hjust` | `caption_hjust` |
+| `legend` | `legend_spec(channel = "color", title = )` |
+| `fill_legend` | `legend_spec(channel = "fill", title = )` |
+| `shape_legend` | `legend_spec(channel = "shape", title = )` |
+| `labels` | `legend_spec(labels = )` |
+| `color_order` | `legend_spec(channel = "color", order = )` |
+| `shape_order` | `legend_spec(channel = "shape", order = )` |
+| `linetype_order` | `legend_spec(channel = "linetype", order = )` |
+| `fill_order` | `legend_spec(channel = "fill", order = )` |
+
+## Do not attach ggstylekit
+
+cqtkit re-exports `style_spec()`, `legend_spec()`, `reveal()` and
+`restyle_plot()`, which is the supported way to reach them. Anything else in
+ggstylekit should be qualified, as `ggstylekit::series_layer()`.
+
+Do not call `library(ggstylekit)` while both styling APIs exist. Both packages
+export `set_style` and `style_plot`, they are unrelated functions, and whichever
+package is attached second wins. ggstylekit's `set_style()` takes `(style, ...)`,
+so a normal cqtkit call fails with `argument "style" is missing, with no
+default`.

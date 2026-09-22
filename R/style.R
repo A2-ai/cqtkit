@@ -1,6 +1,9 @@
 #' Set Style
 #'
-#' Creates a style list for eda graphing functions.
+#' `r lifecycle::badge("deprecated")`
+#'
+#' Creates a style list for eda graphing functions. Deprecated in favour of
+#' [style_spec()].
 #'
 #' @param style An optional named list of style arguments to update
 #' @param title A string for a plot title
@@ -71,6 +74,12 @@ set_style <- function(
   caption_hjust = NULL,
   legend_nrow = NULL
 ) {
+  lifecycle::deprecate_warn(
+    when = "1.2.0",
+    what = "set_style()",
+    with = "style_spec()"
+  )
+
   default_style <- list(
     title = NULL,
     xlabel = NULL,
@@ -275,32 +284,13 @@ is_plot_label <- function(x) {
 
 #' Style Plot
 #'
-#' Styles a plot with provided colors and labels.
+#' `r lifecycle::badge("deprecated")`
+#'
+#' Styles a plot with provided colors and labels. Deprecated in favour of
+#' [style_spec()] and [restyle_plot()].
 #'
 #' @param p A ggplot2 object to update colors/legend labels
-#' @param title A string for a plot title
-#' @param xlabel A string for x-axis label
-#' @param ylabel A string for y-axis label
-#' @param xlims A tuple of numbers specifying limits for x-axis
-#' @param ylims A tuple of numbers specifying limits for y-axis
-#' @param colors A named character vector for setting colors
-#' @param labels A named character vector for setting legend labels
-#' @param shapes A named character vector for setting geom_point shapes
-#' @param legend A string for setting color legend title
-#' @param shape_legend A string for setting shape legend title
-#' @param color_order A numeric for setting color legend order
-#' @param shape_order A numeric for setting shape legend order
-#' @param linetype_order A numeric for setting linetype legend order
-#' @param legend.position A string for legend position
-#' @param legend.title.position A string for legend title position ("top", "left", "bottom", "right")
-#' @param legend.title.hjust A string or numeric for legend title horizontal justification ("left"/0, "center"/0.5, "right"/1)
-#' @param logx Logical, whether to use log scale for x-axis
-#' @param logy Logical, whether to use log scale for y-axis
-#' @param fill_alpha A numeric for controlling alpha of fill colors
-#' @param fill_legend A string to replace fill legend title
-#' @param fill_order A numeric for setting fill legend order
-#' @param caption_hjust A string or numeric for caption horizontal justification ("left"/0, "center"/0.5, "right"/1)
-#' @param legend_nrow A numeric for number of rows in legend
+#' @param ... Style arguments, documented in [set_style()]
 #'
 #' @return A ggplot2 object with applied colors, labels, shapes, and theme settings
 #' @export
@@ -331,6 +321,20 @@ is_plot_label <- function(x) {
 #' )
 #' .p
 style_plot <- function(
+  p,
+  ...
+) {
+  lifecycle::deprecate_warn(
+    when = "1.2.0",
+    what = "style_plot()",
+    with = "restyle_plot()"
+  )
+  style_plot_impl(p, ...)
+}
+
+# The list styling engine. cqtkit calls this directly so that a default
+# `style = list()` call does not warn; only style_plot() itself is deprecated.
+style_plot_impl <- function(
   p,
   title = NULL,
   xlabel = NULL,
@@ -562,4 +566,350 @@ style_plot <- function(
   }
 
   return(p)
+}
+
+# ---------------------------------------------------------------------------
+# ggstylekit path
+#
+# cqtkit carries its own house defaults as a style_spec() and resolves the
+# caller's spec against them field by field, so anything the caller leaves NULL
+# falls through to cqtkit's default. The list engine above is untouched.
+# ---------------------------------------------------------------------------
+
+# What cqtkit hardcodes today, written as a spec.
+cqtkit_style_defaults <- function() {
+  ggstylekit::style_spec(
+    theme = ggplot2::theme_bw(),
+    legends = list(
+      ggstylekit::legend_spec(
+        channel = "color",
+        title = "Treatment Group",
+        order = 1
+      ),
+      ggstylekit::legend_spec(channel = "linetype", title = "")
+    )
+  )
+}
+
+# Resolve caller spec against per-function defaults, then the house defaults.
+cqtkit_style_plot <- function(p, style, ...) {
+  caller_legends <- style$legends
+  style <- ggstylekit::with_defaults(style, ggstylekit::style_spec(...))
+  style <- ggstylekit::with_defaults(style, cqtkit_style_defaults())
+  style <- unify_shape_legend(style, p)
+  if (!is.null(caller_legends)) {
+    style <- ggstylekit::with_defaults(
+      ggstylekit::style_spec(legends = caller_legends),
+      style
+    )
+  }
+  style <- default_fill_from_colors(style, p)
+  ggstylekit::style_plot(p, style)
+}
+
+# The list engine gives the shape guide the colour legend's title, so the two
+# render as one guide. Mirror that here, and do it after the caller's spec has
+# been resolved: a caller who renames the colour legend has to move both, or
+# ggplot2 sees two titles and draws two legends.
+unify_shape_legend <- function(style, p) {
+  shape_groups <- unique(c(get_shape_groups(p), get_color_groups(p)))
+  color_groups <- get_color_groups(p)
+  if (length(shape_groups) == 0 || !all(shape_groups %in% color_groups)) {
+    return(style)
+  }
+
+  channel_of <- function(entry) entry$channel %||% ""
+  color_entry <- Find(function(e) channel_of(e) == "colors", style$legends)
+  if (is.null(color_entry)) {
+    return(style)
+  }
+
+  style$legends <- lapply(style$legends, function(entry) {
+    if (channel_of(entry) != "shapes") {
+      return(entry)
+    }
+    entry$title <- color_entry$title
+    entry$labels <- color_entry$labels
+    entry$order <- color_entry$order
+    entry
+  })
+
+  style
+}
+
+# The list engine passes one `colors` map to both the colour and the fill
+# scale. style_spec() keeps them apart, so mirror it: fill defaults to the
+# resolved colours laid over whatever the plot stashed as fill_colors. Run
+# after the merge so a caller's own colours reach the ribbons too.
+default_fill_from_colors <- function(style, p) {
+  if (!is.null(style$fill) || length(get_fill_groups(p)) == 0) {
+    return(style)
+  }
+
+  if (is.function(style$colors)) {
+    fill_defaults <- attr(p, "fill_colors")
+    if (length(fill_defaults) == 0L) {
+      fill_defaults <- NULL
+    }
+    resolved <- ggstylekit::with_defaults(
+      ggstylekit::style_spec(fill = style$colors),
+      ggstylekit::style_spec(fill = fill_defaults)
+    )
+    style$fill <- resolved$fill
+    return(style)
+  }
+
+  # Build it the way the list engine does: fill_colors is the base, the
+  # resolved colours override by name and append new names. The order is load
+  # bearing, ggplot2 falls back to positional assignment here.
+  fill <- attr(p, "fill_colors") %||% character(0)
+  if (length(style$colors) > 0) {
+    fill[names(style$colors)] <- style$colors
+  }
+  if (length(fill) > 0) {
+    style$fill <- fill
+  }
+  style
+}
+
+# Dispatch rather than gate: NULL and a bare list keep the list engine, a
+# ggstylekit_style_spec takes the spec path.
+as_style_spec <- function(style) {
+  if (is.null(style)) {
+    return(list())
+  }
+  if (inherits(style, "ggstylekit_style_spec")) {
+    return(style)
+  }
+  if (!is.list(style)) {
+    stop("style must be a list or a ggstylekit style_spec()")
+  }
+  style
+}
+
+is_style_spec <- function(style) {
+  inherits(style, "ggstylekit_style_spec")
+}
+
+# Compose styled panels without baking the spec path into grobs. The legacy
+# path stays on ggpubr so existing list-styled and default figures retain their
+# current rendering. A collected patchwork legend takes its initial position
+# from the public function argument; later restyle_plot() calls can move it.
+compose_cqtkit_plots <- function(
+  plots,
+  style,
+  nrow = NULL,
+  ncol = NULL,
+  legend_location = "top",
+  common_legend = TRUE,
+  title = NULL
+) {
+  legend_position <- if (common_legend) legend_location else "none"
+
+  if (is_style_spec(style)) {
+    plots <- unname(plots)
+    combined <- do.call(
+      ggstylekit::combine_styled_plots,
+      c(plots, list(nrow = nrow, ncol = ncol))
+    )
+    combined <- ggstylekit::restyle_plot(
+      combined,
+      legend.position = legend_position
+    )
+    if (!is.null(title)) {
+      combined <- combined + patchwork::plot_annotation(title = title)
+    }
+    return(combined)
+  }
+
+  combined <- ggpubr::ggarrange(
+    plotlist = plots,
+    nrow = nrow,
+    ncol = ncol,
+    common.legend = common_legend,
+    legend = legend_position
+  )
+  if (!is.null(title)) {
+    combined <- ggpubr::annotate_figure(combined, top = title)
+  }
+  combined
+}
+
+# A GOF style title belongs to the assembled figure. Remove it from spec-styled
+# panels while preserving the class and explicit NULL field expected by
+# ggstylekit's default resolution.
+without_panel_title <- function(style) {
+  if (is_style_spec(style)) {
+    style["title"] <- list(NULL)
+  }
+  style
+}
+
+# The scale values the list engine reads off the plot object. The `linetype_values`
+# attribute is not among them: get_linetype_groups() returns nothing, so
+# style_plot() skips the linetype branch and ggplot2's default discrete palette
+# is what draws LOESS solid and Linear dashed today.
+plot_scale_defaults <- function(p) {
+  # The list engine's colour scale reads these two and not fill_colors, which
+  # belongs to the fill scale alone.
+  colors <- c(
+    attr(p, "reference_colors") %||% character(0),
+    attr(p, "prediction_colors") %||% character(0)
+  )
+  list(
+    colors = dedupe_by_name(colors),
+    shapes = default_shape_map(p)
+  )
+}
+
+# The list engine gives every colour or shape group an explicit shape, 16 for a
+# primary group and 1 for a secondary one. Without the same map the spec path
+# falls back to ggplot2's default shape 19, which draws a stroked point where
+# the list path draws a solid one.
+default_shape_map <- function(p) {
+  groups <- unique(c(get_shape_groups(p), get_color_groups(p)))
+  if (length(groups) == 0) {
+    return(NULL)
+  }
+  secondary <- names(attr(p, "secondary_shapes") %||% integer(0))
+  shapes <- stats::setNames(
+    ifelse(groups %in% secondary, 1L, 16L),
+    groups
+  )
+  dedupe_by_name(shapes)
+}
+
+# style_spec() rejects a scale map with repeated names. The plot attributes and
+# the per-function defaults can name the same group, so the first value wins.
+dedupe_by_name <- function(x) {
+  if (is.null(x) || length(x) == 0) {
+    return(NULL)
+  }
+  x[!duplicated(names(x))]
+}
+
+# Theme for the square gof_* panels, which set aspect.ratio = 1 at construction.
+cqtkit_square_theme <- function() {
+  ggplot2::theme_bw() + ggplot2::theme(aspect.ratio = 1)
+}
+
+# The order style_plot() builds for its scale breaks: caller-named groups
+# first, then everything else in detection order. legend_spec(levels = ) is
+# how the spec path asks for the same sequence.
+master_order <- function(p, labels, colors, shapes) {
+  named <- unique(c(names(labels), names(colors), names(shapes)))
+  detected <- unique(c(
+    get_color_groups(p),
+    get_shape_groups(p),
+    get_fill_groups(p),
+    get_linetype_groups(p)
+  ))
+  unique(c(named, setdiff(detected, named)))
+}
+
+# Single translation point between the two vocabularies. Per-function defaults
+# arrive in the legacy names; on the spec path the legend ones become
+# legend_spec() entries and everything else carries across unchanged.
+cqtkit_apply_style <- function(
+  p,
+  style,
+  title = NULL,
+  xlabel = NULL,
+  ylabel = NULL,
+  xlims = NULL,
+  ylims = NULL,
+  colors = NULL,
+  fill_alpha = NULL,
+  legend = NULL,
+  shape_legend = NULL,
+  fill_legend = NULL,
+  labels = NULL,
+  color_order = NULL,
+  shape_order = NULL,
+  linetype_order = NULL,
+  fill_order = NULL,
+  theme = NULL
+) {
+  style$title <- style$title %||% title
+  style$xlabel <- style$xlabel %||% xlabel
+  style$ylabel <- style$ylabel %||% ylabel
+  style$xlims <- style$xlims %||% xlims
+  style$ylims <- style$ylims %||% ylims
+  style$fill_alpha <- style$fill_alpha %||% fill_alpha
+
+  if (!is_style_spec(style)) {
+    style$colors <- style$colors %||% colors
+    style$legend <- style$legend %||% legend
+    style$shape_legend <- style$shape_legend %||% shape_legend
+    style$fill_legend <- style$fill_legend %||% fill_legend
+    style$labels <- style$labels %||% labels
+    style$color_order <- style$color_order %||% color_order
+    style$shape_order <- style$shape_order %||% shape_order
+    style$linetype_order <- style$linetype_order %||% linetype_order
+    style$fill_order <- style$fill_order %||% fill_order
+    return(do.call(style_plot_impl, c(list(p = p), style)))
+  }
+
+  scales <- plot_scale_defaults(p)
+  levels <- master_order(p, labels, colors, scales$shapes)
+
+  legends <- list()
+  if (!is.null(legend) || !is.null(labels) || !is.null(color_order)) {
+    legends <- c(
+      legends,
+      list(ggstylekit::legend_spec(
+        channel = "color",
+        title = legend,
+        labels = labels,
+        order = color_order,
+        levels = levels
+      ))
+    )
+  }
+  shape_title <- shape_legend %||% legend
+  if (!is.null(shape_title) || !is.null(labels) || !is.null(shape_order)) {
+    legends <- c(
+      legends,
+      list(ggstylekit::legend_spec(
+        channel = "shape",
+        title = shape_title,
+        labels = labels,
+        levels = levels,
+        # ggplot2 merges the colour and shape guides only when their order
+        # matches too, and the house colour legend sits at 1.
+        order = shape_order %||% color_order %||% 1
+      ))
+    )
+  }
+  if (!is.null(fill_legend) || !is.null(fill_order)) {
+    legends <- c(
+      legends,
+      list(ggstylekit::legend_spec(
+        channel = "fill",
+        title = fill_legend,
+        order = fill_order,
+        levels = levels
+      ))
+    )
+  }
+  if (!is.null(linetype_order)) {
+    legends <- c(
+      legends,
+      list(ggstylekit::legend_spec(
+        channel = "linetype",
+        order = linetype_order
+      ))
+    )
+  }
+
+  default_colors <- dedupe_by_name(c(colors, scales$colors))
+
+  cqtkit_style_plot(
+    p,
+    style,
+    colors = default_colors,
+    shapes = scales$shapes,
+    legends = if (length(legends) > 0) legends else NULL,
+    theme = theme
+  )
 }

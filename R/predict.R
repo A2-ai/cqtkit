@@ -14,7 +14,8 @@
 #' @param reference_threshold Optional vector of numbers to add as horizontal dashed lines
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #' @param contrast_method A string specifying contrast method when using control_predictors: "matched" for individual ID+time matching (crossover studies), "group" for group-wise subtraction (parallel studies)
-#' @param style A named list of arguments passed to style_plot()
+#' @param style A [style_spec()], or a named list of arguments passed to
+#'   `style_plot()`. The list form is deprecated.
 #'
 #' @return A scatter plot of observations with model prediction line and confidence interval ribbon
 #' @export
@@ -174,24 +175,26 @@ predict_with_observations_plot <- function(
   p <- p + ggplot2::labs(caption = caption)
 
   # Final styling
-  if (is.null(style)) style <- list()
+  style <- as_style_spec(style)
 
-  style$xlabel <- style$xlabel %||% "Concentration (ng/mL)"
-  style$ylabel <- style$ylabel %||% bquote(Delta ~ "QTcF (ms)")
-  style$colors <- style$colors %||% c("Predictions" = "black")
-  style$labels <- style$labels %||%
-    c(
+  p <- cqtkit_apply_style(
+    p,
+    style,
+    xlabel = "Concentration (ng/mL)",
+    ylabel = bquote(Delta ~ "QTcF (ms)"),
+    colors = c("Predictions" = "black"),
+    labels = c(
       "Predictions" = "Population Predicted dQTcF (ms)",
       "Observations" = "Observations"
-    )
-  style$fill_alpha <- style$fill_alpha %||% 0.5
-  style$fill_legend <- style$fill_legend %||% "Confidence Interval"
-  style$legend <- style$legend %||% "Legend"
-  style$fill_order <- style$fill_order %||% 2
-  style$color_order <- style$color_order %||% 1
-  style$shape_order <- style$shape_order %||% 1 # ensures legend stays unified
-
-  p <- do.call(style_plot, c(list(p = p), style))
+    ),
+    fill_alpha = 0.5,
+    fill_legend = "Confidence Interval",
+    legend = "Legend",
+    fill_order = 2,
+    color_order = 1,
+    # shape_order matches color_order so the legend stays unified
+    shape_order = 1
+  )
 
   return(p)
 }
@@ -215,7 +218,8 @@ predict_with_observations_plot <- function(
 #' @param nbins Number of bins for quantiles, or vector of cut points for computing average
 #' @param error_bars A string to denote which errorbars to show, CI, SE, SD or none.
 #' @param contrast_method A string specifying contrast method when using control_predictors: "matched" for individual ID+time matching (crossover studies), "group" for group-wise subtraction (parallel studies)
-#' @param style A named list of arguments passed to style_plot()
+#' @param style A [style_spec()], or a named list of arguments passed to
+#'   `style_plot()`. The list form is deprecated.
 #'
 #' @return A plot of binned observed data quantiles with model prediction line and confidence interval
 #' @export
@@ -391,18 +395,20 @@ predict_with_quantiles_plot <- function(
   p <- p + ggplot2::theme_bw() + ggplot2::labs(caption = caption)
 
   # Style
-  if (is.null(style)) style <- list()
-  style$xlabel <- style$xlabel %||% "Concentration (ng/mL)"
-  style$ylabel <- style$ylabel %||% bquote(Delta ~ "QTc (ms)")
-  style$fill_alpha <- style$fill_alpha %||% 0.5
-  style$legend <- style$legend %||% "Legend"
-  style$fill_legend <- style$fill_legend %||% "Confidence Interval"
-  style$colors <- style$colors %||% c("Predictions" = "black")
-  style$color_order <- style$color_order %||% 1
-  style$shape_order <- style$shape_order %||% 1
-  style$fill_order <- style$fill_order %||% 2
-
-  p <- do.call(style_plot, c(list(p = p), style))
+  style <- as_style_spec(style)
+  p <- cqtkit_apply_style(
+    p,
+    style,
+    xlabel = "Concentration (ng/mL)",
+    ylabel = bquote(Delta ~ "QTc (ms)"),
+    fill_alpha = 0.5,
+    legend = "Legend",
+    fill_legend = "Confidence Interval",
+    colors = c("Predictions" = "black"),
+    color_order = 1,
+    shape_order = 1,
+    fill_order = 2
+  )
 
   return(p)
 }
@@ -420,7 +426,8 @@ predict_with_quantiles_plot <- function(
 #' @param reference_threshold Optional vector of numbers to add as horizontal dashed lines
 #' @param cmaxes Optional - numeric vector of Cmax values to add as reference lines
 #' @param conf_int Numeric confidence interval level (default: 0.9)
-#' @param style A named list of arguments passed to style_plot()
+#' @param style A [style_spec()], or a named list of arguments passed to
+#'   `style_plot()`. The list form is deprecated.
 #'
 #' @return A plot of model predictions with confidence interval and vertical Cmax reference lines
 #' @export
@@ -553,19 +560,12 @@ predict_with_exposure_plot <- function(
       )
   }
 
-  if (is.null(style)) style <- list()
-  style$xlabel <- style$xlabel %||% "Concentration (ng/mL)"
-  style$ylabel <- style$ylabel %||%
-    if (!is.null(control_predictors)) {
-      bquote(Delta ~ Delta ~ "QTc (ms)")
-    } else {
-      bquote(Delta ~ "QTc (ms)")
-    }
-  style$fill_alpha <- style$fill_alpha %||% 0.5
-  style$fill_legend <- style$fill_legend %||% "Confidence Interval"
-  style$color_order <- style$color_order %||% 1
-  style$fill_order <- style$fill_order %||% 2
-  style$legend <- style$legend %||% "Exposure"
+  style <- as_style_spec(style)
+  default_ylabel <- if (!is.null(control_predictors)) {
+    bquote(Delta ~ Delta ~ "QTc (ms)")
+  } else {
+    bquote(Delta ~ "QTc (ms)")
+  }
 
   caption <- paste0(
     "Shaded region represents ",
@@ -594,7 +594,17 @@ predict_with_exposure_plot <- function(
     }
   }
 
-  p <- do.call(style_plot, c(list(p = p), style))
+  p <- cqtkit_apply_style(
+    p,
+    style,
+    xlabel = "Concentration (ng/mL)",
+    ylabel = default_ylabel,
+    fill_alpha = 0.5,
+    fill_legend = "Confidence Interval",
+    color_order = 1,
+    fill_order = 2,
+    legend = "Exposure"
+  )
   p <- p + ggplot2::labs(caption = caption)
 
   return(p)

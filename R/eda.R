@@ -14,7 +14,8 @@
 #'   annotation, so it does nothing when this is `FALSE`.
 #' @param method Method for nlme::lme fitting (ML or REML)
 #' @param remove_rr_iiv Logical, whether to remove IIV on RR slope
-#' @param style A named list of arguments passed to style_plot()
+#' @param style A [style_spec()], or a named list of arguments passed to
+#'   `style_plot()`. The list form is deprecated.
 #' @param include_pvalue Logical, add the slope p-value to the caption
 #'   (default: FALSE)
 #' @param pvalue_eps Numeric, p-values below this are shown as "< eps".
@@ -185,12 +186,15 @@ eda_qt_rr_plot <- function(
       ggplot2::labs(caption = label)
   }
 
-  if (is.null(style)) style <- list()
-  style$xlabel <- style$xlabe %||% "RR (ms)"
-  style$ylabel <- style$ylabel %||% "QT (ms)"
-  style$legend <- style$legend %||% "Treatment Group"
+  style <- as_style_spec(style)
 
-  qt_rr_plot <- do.call(style_plot, c(list(p = qt_rr_plot), style))
+  qt_rr_plot <- cqtkit_apply_style(
+    qt_rr_plot,
+    style,
+    xlabel = "RR (ms)",
+    ylabel = "QT (ms)",
+    legend = "Treatment Group"
+  )
   return(qt_rr_plot)
 }
 
@@ -214,7 +218,8 @@ eda_qt_rr_plot <- function(
 #' @param method Method for nlme::lme fitting (ML or REML)
 #' @param remove_rr_iiv Logical, whether to remove IIV on RR slope
 #' @param conf_int Numeric confidence interval level (default: 0.9)
-#' @param style A named list of arguments passed to style_plot()
+#' @param style A [style_spec()], or a named list of arguments passed to
+#'   `style_plot()`. The list form is deprecated.
 #' @param include_pvalue Logical, add the slope p-value to the caption
 #'   (default: FALSE)
 #' @param pvalue_eps Numeric, p-values below this are shown as "< eps".
@@ -298,7 +303,7 @@ eda_qtc_comparison_plot <- function(
   qtcs_quos <- c(qt, qtcb, qtcf, qtcp)
   qtcs <- unlist(sapply(qtcs_quos, name_quo_if_not_null))
 
-  if (is.null(style)) style <- list()
+  style <- as_style_spec(style)
   if (is.null(style$xlabel)) style$xlabel <- "RR (ms)"
 
   plots <- lapply(qtcs, function(qtc) {
@@ -325,16 +330,13 @@ eda_qtc_comparison_plot <- function(
     return(p)
   })
 
-  if (rlang::quo_is_null(trt)) {
-    ggpubr::ggarrange(plotlist = plots, ncol = 1, legend = "none")
-  } else {
-    ggpubr::ggarrange(
-      plotlist = plots,
-      ncol = 1,
-      common.legend = TRUE,
-      legend = legend_location
-    )
-  }
+  compose_cqtkit_plots(
+    plots,
+    style,
+    ncol = 1,
+    legend_location = legend_location,
+    common_legend = !rlang::quo_is_null(trt)
+  )
 }
 
 #' EDA Quantiles Plot
@@ -348,7 +350,8 @@ eda_qtc_comparison_plot <- function(
 #' @param plot_observations Logical, whether to include raw individual data points as background (default: FALSE)
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #' @param error_bars A string for setting which errorbars are shown, CI, SE, SD
-#' @param style A named list of arguments passed to style_plot()
+#' @param style A [style_spec()], or a named list of arguments passed to
+#'   `style_plot()`. The list form is deprecated.
 #'
 #' @return A scatter plot of decile medians with linear regression and optional error bars
 #'
@@ -449,10 +452,9 @@ eda_quantiles_plot <- function(
       caption = caption
     )
 
-  if (is.null(style)) style <- list()
-  style$legend <- style$legend %||% "Treatment Group"
+  style <- as_style_spec(style)
 
-  p <- do.call(style_plot, c(list(p = p), style))
+  p <- cqtkit_apply_style(p, style, legend = "Treatment Group")
   return(p)
 }
 
@@ -469,7 +471,8 @@ eda_quantiles_plot <- function(
 #' @param linear_line Logical, whether to add linear regression line
 #' @param span A fractional value for LOESS span parameter in geom_smooth if LOESS is used, default 0.99
 #' @param conf_int Numeric confidence interval level (default: 0.9)
-#' @param style A named list of arguments passed to style_plot(). Shapes are mapped to treatment groups and can be controlled via the shapes parameter in style
+#' @param style A [style_spec()], or a named list of arguments passed to
+#'   `style_plot()`. The list form is deprecated.. Shapes are mapped to treatment groups and can be controlled via the shapes parameter in style
 #'
 #' @return A scatter plot with linear and/or LOESS regression lines for assessing linearity
 #' @export
@@ -578,15 +581,18 @@ eda_scatter_with_regressions <- function(
     ggplot2::labs(
       caption = caption
     )
-  if (is.null(style)) style <- list()
-  style$xlabel <- style$xlabel %||% "Concentration (ng/mL)"
-  style$ylabel <- style$ylabel %||% bquote(Delta ~ "QTc (ms)")
-  style$legend <- style$legend %||% "Treatment Group"
-  style$color_order <- style$color_order %||% 1
-  style$shape_order <- style$shape_order %||% 1
-  style$linetype_order <- style$linetype_order %||% 2
+  style <- as_style_spec(style)
 
-  p <- do.call(style_plot, c(list(p = p), style))
+  p <- cqtkit_apply_style(
+    p,
+    style,
+    xlabel = "Concentration (ng/mL)",
+    ylabel = bquote(Delta ~ "QTc (ms)"),
+    legend = "Treatment Group",
+    color_order = 1,
+    shape_order = 1,
+    linetype_order = 2
+  )
 
   return(p)
 }
@@ -609,7 +615,8 @@ eda_scatter_with_regressions <- function(
 #' @param group_col An unquoted column name for additional grouping column
 #' @param reference_dose Reference dose value for comparison calculations
 #' @param show_hysteresis_warning Logical, whether to add "Hysteresis Detected" to facet labels for affected groups
-#' @param style A named list of arguments passed to style_plot()
+#' @param style A [style_spec()], or a named list of arguments passed to
+#'   `style_plot()`. The list form is deprecated.
 #'
 #' @return A faceted plot showing concentration vs deltaQTc trajectories over time with directional arrows
 #'
@@ -768,19 +775,21 @@ eda_hysteresis_loop_plot <- function(
     ) +
     ggplot2::theme_bw()
 
-  if (is.null(style)) style <- list()
+  style <- as_style_spec(style)
 
-  style$xlabel <- style$xlabel %||% "Mean Plasma Concentration (ng/mL)"
-  style$legend <- style$legend %||% "Dose"
-
-  if (!(is.null(reference_dose))) {
-    style$ylabel <- style$ylabel %||%
-      bquote("Mean " ~ Delta ~ Delta ~ "QTc (ms)")
+  default_ylabel <- if (!is.null(reference_dose)) {
+    bquote("Mean " ~ Delta ~ Delta ~ "QTc (ms)")
   } else {
-    style$ylabel <- style$ylabel %||% bquote("Mean " ~ Delta ~ "QTc (ms)")
+    bquote("Mean " ~ Delta ~ "QTc (ms)")
   }
 
-  .p <- do.call(style_plot, c(list(p = .p), style))
+  .p <- cqtkit_apply_style(
+    .p,
+    style,
+    xlabel = "Mean Plasma Concentration (ng/mL)",
+    ylabel = default_ylabel,
+    legend = "Dose"
+  )
 
   if (show_hysteresis_warning) {
     .p <- .p +
@@ -810,7 +819,8 @@ eda_hysteresis_loop_plot <- function(
 #' @param shift_factor Optional additive factor for shifting secondary data
 #' @param error_bars A string for setting which errorbars are shown, CI, SE, SD
 #' @param sec_ylabel A string for secondary ylabel, default is Concentration (ng/mL)
-#' @param style A named list of arguments passed to style_plot(). Shapes are mapped to grouping variables and can be controlled via the shapes parameter in style
+#' @param style A [style_spec()], or a named list of arguments passed to
+#'   `style_plot()`. The list form is deprecated.. Shapes are mapped to grouping variables and can be controlled via the shapes parameter in style
 #'
 #' @return A line plot of mean dependent variable over time with optional error bars, reference lines, and secondary axis
 #' @export
@@ -974,7 +984,7 @@ eda_mean_dv_over_time <- function(
     conf_int
   )
 
-  if (is.null(style)) style <- list()
+  style <- as_style_spec(style)
   style$ylabel <- style$ylabel %||% bquote("Mean " ~ Delta ~ "QTc (ms)")
 
   if (!rlang::quo_is_null(sec_dv)) {
@@ -992,13 +1002,15 @@ eda_mean_dv_over_time <- function(
     )
   }
 
-  style$xlabel <- style$xlabel %||% "Nominal time since last dose (h)"
-  style$legend <- style$legend %||% "Legend"
-  style$color_order <- style$color_order %||% 1
-  style$shape_order <- style$shape_order %||% 1
-  style$linetype_order <- style$linetype_order %||% 2
-
-  p <- do.call(style_plot, c(list(p = p), style))
+  p <- cqtkit_apply_style(
+    p,
+    style,
+    xlabel = "Nominal time since last dose (h)",
+    legend = "Legend",
+    color_order = 1,
+    shape_order = 1,
+    linetype_order = 2
+  )
 
   return(p)
 }

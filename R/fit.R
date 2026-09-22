@@ -294,8 +294,8 @@ compute_model_fit_parameters <- function(
   checkmate::assertFlag(include_reference_levels)
   checkmate::assertFlag(section)
 
-  model_data <- nlme::getData(fit)
   sum <- summary(fit)$tTable
+  coefficient_names <- rownames(sum)
   new_names <- gsub(paste0("^", trt_col_name), "", rownames(sum))
   new_names <- gsub(paste0("^", tafd_col_name), "", new_names)
   new_names <- gsub("[\\(\\)]", "", new_names)
@@ -312,10 +312,22 @@ compute_model_fit_parameters <- function(
     ) |>
     tibble::as_tibble()
 
+  if (include_reference_levels || section) {
+    model_terms <- stats::delete.response(stats::terms(fit))
+    design <- stats::model.matrix(
+      model_terms, nlme::getData(fit), contrasts.arg = fit$contrasts
+    )
+    term_names <- c("(Intercept)", attr(model_terms, "term.labels"))
+    coefficient_terms <- term_names[attr(design, "assign") + 1L]
+    sum$.term <- coefficient_terms[match(coefficient_names, colnames(design))]
+    # Display labels may repeat across terms; do not repair them as row names.
+    sum$Parameters <- new_names
+  }
+
   if (include_reference_levels) {
     sum <- add_reference_level_rows(
       sum,
-      model_data,
+      fit,
       c(trt_col_name, tafd_col_name)
     )
   }
@@ -375,15 +387,14 @@ compute_model_fit_parameters <- function(
         "CIu"
       )
 
-    parameters <- rbind(sum, random_eff, sigmav)
+    parameters <- dplyr::bind_rows(sum, random_eff, sigmav)
   } else {
-    parameters <- rbind(sum, sigmav)
+    parameters <- dplyr::bind_rows(sum, sigmav)
   }
 
   if (section) {
     parameters <- add_parameter_sections(
       parameters,
-      model_data,
       trt_col_name = trt_col_name,
       tafd_col_name = tafd_col_name,
       conc_col_name = conc_col_name,
@@ -391,6 +402,7 @@ compute_model_fit_parameters <- function(
     )
   }
 
+  parameters$.term <- NULL
   return(parameters)
 }
 

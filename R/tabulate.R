@@ -51,6 +51,10 @@ tabulate_study_summary <- function(
       grouping = grouping_col_name,
       n_sub = n_sub_col_name
     ) |>
+    gt::cols_align(
+      align = "left",
+      columns = .data$grouping
+    ) |>
     gt::tab_header(
       title = gt::md(title),
       subtitle = paste(sprintf("Protocol Number: %s", protocol_number))
@@ -138,6 +142,10 @@ tabulate_pk_parameters <- function(
       Tmax_median = "Tmax Median (min, max)",
       Cmax_gm = "Cmax geometric mean (%CV)",
       Cmax_median = "Cmax Median (min, max)"
+    ) |>
+    gt::cols_align(
+      align = "left",
+      columns = .data$group
     ) |>
     gt::fmt_number(decimals = decimals) |>
     gt::fmt_number(
