@@ -83,6 +83,31 @@ reveal(p, time, as = "facet")
 Plots returned from the list path do not carry that state, and
 `restyle_plot()` and `reveal()` error on them.
 
+## Error bars
+
+With ggstylekit 0.4.0, error bars can be styled independently of lines:
+
+```{r}
+eda_mean_dv_over_time(
+  cqtkit_data_verapamil, deltaQTCF, NTLD, DOSEF,
+  error_bars = "CI",
+  style = style_spec(
+    errorbar_width = 0.15,
+    errorbar_linewidth = 0.7,
+    errorbar_alpha = 0.8
+  )
+)
+```
+
+`error_bars` selects CI, SE or SD; styling does not change the interval
+calculation. `errorbar_width` sets the cap width in x-axis units (hours here).
+The same settings work with `eda_quantiles_plot()` and
+`predict_with_quantiles_plot()`, where the x-axis is concentration. Use
+`restyle_plot(p, errorbar_width = 0.2)` to adjust a spec-styled plot afterwards.
+`line_*` settings affect lines; use `errorbar_*` for error bars. Mapped group
+colors take precedence over `errorbar_color`; use `colors` to change the
+group palette.
+
 ## Legends
 
 The legacy vocabulary spells legends as flat arguments. The spec vocabulary

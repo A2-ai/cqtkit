@@ -24,7 +24,9 @@ compute_pk_parameters(
 
 \item{ntime_col}{An unquoted column name for nominal times}
 
-\item{group_col}{An unquoted column name for additional grouping variable}
+\item{group_col}{An unquoted column name for additional grouping variable.
+When supplied, this column must not contain missing values. Fill or filter
+missing values, or omit \code{group_col} for dose-only summaries.}
 }
 \value{
 A tibble with PK summary statistics by factor \code{group}: N, Tmax

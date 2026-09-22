@@ -122,7 +122,9 @@ compute_lme_slope_df <- function(lme_mod, xdata_col, conf_int = 0.95) {
 #' @param dose_col An unquoted column name for dose measurements
 #' @param conc_col An unquoted column name for drug concentration measurements
 #' @param ntime_col An unquoted column name for nominal times
-#' @param group_col An unquoted column name for additional grouping variable
+#' @param group_col An unquoted column name for additional grouping variable.
+#'   When supplied, this column must not contain missing values. Fill or filter
+#'   missing values, or omit `group_col` for dose-only summaries.
 #'
 #' @importFrom rlang .data
 #'
@@ -181,7 +183,7 @@ compute_pk_parameters <- function(
     pk_df$group <- as.factor(pk_df$dose)
   } else {
     pk_df$group <- paste_grouping(
-      data |> dplyr::pull(!!group),
+      complete_group_values(data, group),
       pk_df$dose
     )
   }
@@ -298,7 +300,8 @@ compute_high_qtc_sub <- function(
 #' @param data A data frame containing C-QT analysis dataset
 #' @param trt_col Column name of treatment group
 #' @param id_col Column name of ID
-#' @param group_col Optional additional grouping column
+#' @param group_col Optional additional grouping column, without missing values.
+#'   Fill or filter missing values, or omit this argument for treatment-only summaries.
 #'
 #' @return A tibble with unique subject counts per factor `grouping`, including
 #'   an overall `Total` as the first level
@@ -323,7 +326,7 @@ compute_study_summary <- function(data, trt_col, id_col, group_col = NULL) {
     trt = data |> dplyr::pull(!!trt)
   )
   if (!rlang::quo_is_null(group)) {
-    df$group <- data |> dplyr::pull(!!group)
+    df$group <- complete_group_values(data, group)
   }
 
   if (!rlang::quo_is_null(group)) {
@@ -365,7 +368,9 @@ compute_study_summary <- function(data, trt_col, id_col, group_col = NULL) {
 #' @param dose_col An unquoted column name for dose data
 #' @param ecg_param_col An unquoted column name for QTc measurements
 #' @param deltaecg_param_col An unquoted column name for deltaQTc measurements
-#' @param group_col An unquoted column name for additional grouping column
+#' @param group_col An unquoted column name for additional grouping column,
+#'   without missing values. Fill or filter missing values, or omit this argument
+#'   for dose-only summaries.
 #' @param reference_dose Reference dose value for comparison calculations
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #'
@@ -473,7 +478,9 @@ compute_ecg_param_summary <- function(
 #' @param dv_col An unquoted column name for dependent variable
 #' @param ntime_col An unquoted column name for the Time group
 #' @param dose_col An unquoted column name for dose group
-#' @param group_col An unquoted column of optional grouping column
+#' @param group_col An unquoted column of optional grouping column,
+#'   without missing values. Fill or filter missing values, or omit this argument
+#'   for dose-only summaries.
 #' @param reference_dose Reference dose value for comparison calculations
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #'
@@ -519,7 +526,7 @@ compute_grouped_mean_sd <- function(
     dose = data |> dplyr::pull(!!dose),
   )
   if (!rlang::quo_is_null(group)) {
-    df$group <- data |> dplyr::pull(!!group)
+    df$group <- complete_group_values(data, group)
   }
 
   if (!is.null(reference_dose)) {

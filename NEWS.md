@@ -34,6 +34,8 @@
 * `compute_high_qtc_sub()` and `tabulate_high_qtc_sub()` are deprecated. They count observations, not subjects. Their counts are unchanged. Use `compute_high_qtc_subjects()` / `tabulate_high_qtc_subjects()` for subject counts or `compute_high_qtc_observations()` / `tabulate_high_qtc_observations()` for observation counts. They will be removed in 2.0.0.
 
 ### Fixed
+* Summary functions that combine `group_col` with dose or treatment now error if the supplied grouping column contains missing values. Fill or filter those values, or omit `group_col` to summarize by dose or treatment alone. This deliberately replaces the literal `NA` labels produced in 1.1.0 and prevents missing groups from silently merging distinct doses or treatments.
+* Model-table sections and reference rows use the original model terms and fitted contrasts, so treatment and time levels with matching display labels remain distinct. These options do not change model estimates.
 * Preprocessing no longer derives values from replicate-averaged data. The QT corrections are nonlinear in RR, so applying them to an averaged `QT` and `RR` gives an incorrect `QTCB` or `QTCF`: the correction must be applied to each replicate and the results averaged.
   * `preprocess()` errors when `QTCB`, `QTCF`, `QTCBBL` or `QTCFBL` is missing from `data` instead of deriving it.
   * `compute_delta_hrblm()`, `compute_delta_qtcbblm()` and `compute_delta_qtcfblm()` error when the matching `HRBLM`, `QTCBBLM` or `QTCFBLM` column is missing from `data` instead of averaging the baseline values already on `data`.

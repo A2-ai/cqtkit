@@ -69,6 +69,20 @@ paste_grouping <- function(x, y, sep = " ") {
   droplevels(factor(paste(x, y, sep = sep), levels = lvls))
 }
 
+# Pull an optional grouping column without silently merging missing groups.
+complete_group_values <- function(data, group) {
+  values <- dplyr::pull(data, !!group)
+  if (anyNA(values)) {
+    stop(
+      "`group_col` column `", rlang::as_name(group),
+      "` contains missing values. Fill or filter these rows, or omit ",
+      "`group_col` to use the default grouping.",
+      call. = FALSE
+    )
+  }
+  values
+}
+
 #' Error if any model column name is non-syntactic
 #'
 #' `nlme::lme()` builds its formula from pasted column names and cannot parse
@@ -207,13 +221,13 @@ assert_multilevel_factors <- function(data, model_cols, factor_cols) {
 #' rather than infer it from which level is absent.
 #'
 #' @param sum Tibble of fixed effect estimates, one row per parameter
-#' @param model_data The data the model was fit to, from `nlme::getData()`
+#' @param fit The fitted model, carrying the contrasts used in fitting
 #' @param col_names Character vector of the factor columns to check
 #' @return `sum` with a reference row inserted above each term's first level
 #' @keywords internal
 #' @noRd
-add_reference_level_rows <- function(sum, model_data, col_names) {
-  reference_row <- function(level_name) {
+add_reference_level_rows <- function(sum, fit, col_names) {
+  reference_row <- function(level_name, term) {
     tibble::tibble(
       Parameters = paste0(level_name, " (Reference)"),
       Value = 0,
@@ -222,30 +236,33 @@ add_reference_level_rows <- function(sum, model_data, col_names) {
       `t-value` = NA_real_,
       `p-value` = NA_real_,
       CIl = NA_real_,
-      CIu = NA_real_
+      CIu = NA_real_,
+      .term = term
     )
   }
 
   for (col in col_names) {
-    if (is.null(col) || !col %in% names(model_data)) {
+    if (!col %in% sum$.term) {
       next
     }
 
-    all_levels <- unique(model_data[[col]])
-    ref_level <- setdiff(all_levels, sum$Parameters)
+    contrast <- fit$contrasts[[col]]
+    if (!is.matrix(contrast)) {
+      next
+    }
+    ref_level <- rownames(contrast)[rowSums(abs(contrast)) == 0]
     if (length(ref_level) != 1) {
       next
     }
 
-    in_table <- intersect(as.character(all_levels), sum$Parameters)
-    first_idx <- which(sum$Parameters %in% in_table)[1]
+    first_idx <- which(sum$.term == col)[1]
     if (is.na(first_idx)) {
       next
     }
 
     sum <- dplyr::bind_rows(
       sum[seq_len(first_idx - 1), ],
-      reference_row(ref_level),
+      reference_row(ref_level, col),
       sum[first_idx:nrow(sum), ]
     )
   }
@@ -256,7 +273,6 @@ add_reference_level_rows <- function(sum, model_data, col_names) {
 #' Classify model parameters into sections and order the rows by them
 #'
 #' @param parameters Tibble of model parameters
-#' @param model_data The data the model was fit to, from `nlme::getData()`
 #' @param trt_col_name,tafd_col_name,conc_col_name,baseline_col_name Column
 #'   names used in model fitting, used to recognise each parameter
 #' @return `parameters` with a `Section` factor column, ordered by it
@@ -264,31 +280,19 @@ add_reference_level_rows <- function(sum, model_data, col_names) {
 #' @noRd
 add_parameter_sections <- function(
   parameters,
-  model_data,
   trt_col_name,
   tafd_col_name,
   conc_col_name,
   baseline_col_name
 ) {
-  levels_of <- function(col) {
-    if (!is.null(col) && col %in% names(model_data)) {
-      as.character(unique(model_data[[col]]))
-    } else {
-      character()
-    }
-  }
-
-  trt_levels <- levels_of(trt_col_name)
-  tafd_levels <- levels_of(tafd_col_name)
-
   params <- parameters$Parameters
-  bare <- gsub(" \\(Reference\\)", "", params)
+  term <- parameters$.term
 
   parameters$Section <- dplyr::case_when(
-    params == conc_col_name ~ "Slope",
-    params %in% trt_levels | bare %in% trt_levels ~ "Treatment",
-    params == "Intercept" | params == baseline_col_name ~ "Intercept",
-    params %in% tafd_levels | bare %in% tafd_levels ~ "Time",
+    term %in% conc_col_name ~ "Slope",
+    term %in% trt_col_name ~ "Treatment",
+    term %in% c("(Intercept)", baseline_col_name) ~ "Intercept",
+    term %in% tafd_col_name ~ "Time",
     grepl("^IIV", params) | params == "Residual Error" ~ "Random Effects",
     TRUE ~ "Other"
   )

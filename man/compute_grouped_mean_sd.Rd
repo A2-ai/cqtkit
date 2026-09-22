@@ -23,7 +23,9 @@ compute_grouped_mean_sd(
 
 \item{dose_col}{An unquoted column name for dose group}
 
-\item{group_col}{An unquoted column of optional grouping column}
+\item{group_col}{An unquoted column of optional grouping column,
+without missing values. Fill or filter missing values, or omit this argument
+for dose-only summaries.}
 
 \item{reference_dose}{Reference dose value for comparison calculations}
 

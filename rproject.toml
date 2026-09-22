@@ -16,6 +16,6 @@ dependencies = [
 	"devtools",
 	"covr",
 	"starlightr",
-  { name = "ggstylekit", git = "https://github.com/a2-ai/ggstylekit", branch = "update-reveal" },
+  { name = "ggstylekit", git = "https://github.com/a2-ai/ggstylekit", branch = "main" },
 	{ name = "cqtkit", path = ".", dependencies_only = true, install_suggestions = true },
 ]

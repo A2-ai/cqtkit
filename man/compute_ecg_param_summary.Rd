@@ -26,7 +26,9 @@ compute_ecg_param_summary(
 
 \item{deltaecg_param_col}{An unquoted column name for deltaQTc measurements}
 
-\item{group_col}{An unquoted column name for additional grouping column}
+\item{group_col}{An unquoted column name for additional grouping column,
+without missing values. Fill or filter missing values, or omit this argument
+for dose-only summaries.}
 
 \item{reference_dose}{Reference dose value for comparison calculations}
 

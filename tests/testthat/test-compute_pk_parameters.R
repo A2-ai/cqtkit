@@ -1,3 +1,37 @@
+test_that("missing additional groups error instead of merging doses", {
+  dat <- data.frame(
+    id = c(1, 1, 2, 2), dose = c(10, 20, 10, 20),
+    conc = c(1, 100, 4, 400), time = 1, group = NA_character_
+  )
+  for (values in list(rep(NA_character_, 4), c("A", NA, "A", "A"))) {
+    dat$group <- values
+    expect_error(
+      compute_pk_parameters(dat, id, dose, conc, time, group),
+      "`group_col` column `group` contains missing values", fixed = TRUE
+    )
+    expect_error(
+      tabulate_pk_parameters(dat, id, dose, conc, time, group),
+      "contains missing values", fixed = TRUE
+    )
+  }
+  result <- compute_pk_parameters(dat, id, dose, conc, time)
+  expect_equal(as.character(result$group), c("10", "20"))
+  expect_equal(result$Cmax_gm, c(2, 200))
+  dat$group <- "A"
+  expect_equal(
+    compute_pk_parameters(dat, id, dose, conc, time, group)$Cmax_gm,
+    c(2, 200)
+  )
+  expect_error(
+    compute_study_summary(transform(dat, group = NA_character_), dose, id, group),
+    "contains missing values", fixed = TRUE
+  )
+  expect_error(
+    compute_grouped_mean_sd(transform(dat, group = NA_character_), conc, time, dose, group),
+    "contains missing values", fixed = TRUE
+  )
+})
+
 test_that("compute_pk_parameters warns when NA are present in data", {
   .test_data <- cqtkit_data_verapamil %>%
     preprocess() %>%
