@@ -16,7 +16,7 @@
   * New `compute_blm()` computes a population mean baseline from replicate-level baseline ECG data, averaging within each `group_col` group and then across groups.
   * New `vignette("data-assembly")` documents how the bundled datasets are assembled from the source trial data.
 * All sixteen plotting functions accept a ggstylekit `style_spec()` as `style`, alongside the existing style list. The two are told apart by class, so an untouched call keeps the list engine and the figure it produced before.
-  * cqtkit gains ggstylekit and patchwork as dependencies, and re-exports `style_spec()`, `legend_spec()`, `reveal()` and `restyle_plot()`. Everything else in ggstylekit is reached as `ggstylekit::`. The release will require ggstylekit 0.4.0 once that version is published.
+  * cqtkit re-exports `style_spec()`, `legend_spec()`, `reveal()` and `restyle_plot()` from ggstylekit. Everything else in ggstylekit is reached as `ggstylekit::`.
   * Do not call `library(ggstylekit)` while both styling APIs exist. Both packages export `set_style` and `style_plot`, they are unrelated functions, and whichever package is attached second wins.
   * Plots styled with a `style_spec()` can be adjusted afterwards with `restyle_plot()` and inspected with `reveal()`. Multi-panel plots on this path are patchworks so their panels remain editable. Plots styled with a list cannot.
   * Palette functions supplied to `style_spec(colors = )` now also work for plots with mapped fills, and explicit shape legend settings are preserved.
