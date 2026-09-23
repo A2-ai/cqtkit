@@ -258,6 +258,10 @@ jobs:
         with:
           r-version: ${{ env.BUILD_R }}
 
+      - name: Configure repository
+        shell: bash
+        run: rv configure repository replace prism --alias prism --url https://prism.dev.a2-ai.cloud/rpkgs/nimbus/2026.06
+
       - name: Setup build environment
         uses: A2-ai/r-releaser/setup-build-env@feat/gh-compatibility
         with:
@@ -360,11 +364,11 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {"name":"almalinux8-x86_64","runner":"ubuntu-latest","container":"almalinux:8","os_release_id":"almalinux","arch":"x86_64","r":"4.5","sysdeps":"auto","sysdeps_ignore":"libgit2_1.7-devel pandoc","sysdeps_extra":"libgit2-devel libcurl-devel","toolchain":"auto","rust":"auto"}
-          - {"name":"almalinux8-x86_64","runner":"ubuntu-latest","container":"almalinux:8","os_release_id":"almalinux","arch":"x86_64","r":"4.4","sysdeps":"auto","sysdeps_ignore":"libgit2_1.7-devel pandoc","sysdeps_extra":"libgit2-devel libcurl-devel","toolchain":"auto","rust":"auto"}
-          - {"name":"macos-arm64","runner":"macos-15","container":null,"os_release_id":null,"arch":"arm64","r":"4.6","sysdeps":"none","sysdeps_ignore":"","sysdeps_extra":"","toolchain":"auto","rust":"auto"}
-          - {"name":"macos-arm64","runner":"macos-15","container":null,"os_release_id":null,"arch":"arm64","r":"4.5","sysdeps":"none","sysdeps_ignore":"","sysdeps_extra":"","toolchain":"auto","rust":"auto"}
-          - {"name":"macos-arm64","runner":"macos-15","container":null,"os_release_id":null,"arch":"arm64","r":"4.4","sysdeps":"none","sysdeps_ignore":"","sysdeps_extra":"","toolchain":"auto","rust":"auto"}
+          - {"name":"almalinux8-x86_64","runner":"ubuntu-latest","container":"almalinux:8","os_release_id":"almalinux","arch":"x86_64","r":"4.5","repo":"https://prism.dev.a2-ai.cloud/rpkgs/nimbus/2026.06","sysdeps":"auto","sysdeps_ignore":"libgit2_1.7-devel pandoc","sysdeps_extra":"libgit2-devel libcurl-devel","toolchain":"auto","rust":"auto"}
+          - {"name":"almalinux8-x86_64","runner":"ubuntu-latest","container":"almalinux:8","os_release_id":"almalinux","arch":"x86_64","r":"4.4","repo":"https://prism.dev.a2-ai.cloud/rpkgs/nimbus/2026.04","sysdeps":"auto","sysdeps_ignore":"libgit2_1.7-devel pandoc","sysdeps_extra":"libgit2-devel libcurl-devel","toolchain":"auto","rust":"auto"}
+          - {"name":"macos-arm64","runner":"macos-15","container":null,"os_release_id":null,"arch":"arm64","r":"4.6","repo":"https://prism.dev.a2-ai.cloud/rpkgs/nimbus/2026.06","sysdeps":"none","sysdeps_ignore":"","sysdeps_extra":"","toolchain":"auto","rust":"auto"}
+          - {"name":"macos-arm64","runner":"macos-15","container":null,"os_release_id":null,"arch":"arm64","r":"4.5","repo":"https://prism.dev.a2-ai.cloud/rpkgs/nimbus/2026.06","sysdeps":"none","sysdeps_ignore":"","sysdeps_extra":"","toolchain":"auto","rust":"auto"}
+          - {"name":"macos-arm64","runner":"macos-15","container":null,"os_release_id":null,"arch":"arm64","r":"4.4","repo":"https://prism.dev.a2-ai.cloud/rpkgs/nimbus/2026.04","sysdeps":"none","sysdeps_ignore":"","sysdeps_extra":"","toolchain":"auto","rust":"auto"}
     env:
       BUILD_R: ${{ matrix.config.r }}
       BUILD_CONTAINER: ${{ matrix.config.container || '' }}
@@ -411,10 +415,9 @@ jobs:
         with:
           r-version: ${{ env.BUILD_R }}
 
-      - name: Configure repository (R 4.4)
-        if: env.BUILD_R == '4.4'
+      - name: Configure repository
         shell: bash
-        run: rv configure repository replace prism --alias prism --url https://prism.dev.a2-ai.cloud/rpkgs/nimbus/2026.04
+        run: rv configure repository replace prism --alias prism --url "${{ matrix.config.repo }}"
 
       - name: Setup build environment
         uses: A2-ai/r-releaser/setup-build-env@feat/gh-compatibility
