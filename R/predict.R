@@ -594,6 +594,7 @@ predict_with_exposure_plot <- function(
     }
   }
 
+  p <- p + ggplot2::labs(caption = caption)
   p <- cqtkit_apply_style(
     p,
     style,
@@ -605,7 +606,6 @@ predict_with_exposure_plot <- function(
     fill_order = 2,
     legend = "Exposure"
   )
-  p <- p + ggplot2::labs(caption = caption)
 
   return(p)
 }

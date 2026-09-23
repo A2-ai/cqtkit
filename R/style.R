@@ -907,6 +907,7 @@ cqtkit_apply_style <- function(
   cqtkit_style_plot(
     p,
     style,
+    caption = p$labels$caption,
     colors = default_colors,
     shapes = scales$shapes,
     legends = if (length(legends) > 0) legends else NULL,

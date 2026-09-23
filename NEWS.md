@@ -1,6 +1,7 @@
 # cqtkit 1.2.1
 
 ### Fixed
+* Requires ggstylekit >= 0.4.1. `style_spec(caption = ...)` overrides generated plot captions, including exposure predictions; `caption = ""` hides them.
 * `eda_scatter_with_regressions()`, the `gof_*()` residual plots and `predict_with_observations_plot()` keep the remaining columns of `data` in the plot data, so `reveal()` can map a covariate on them.
   * `compute_fit_results()` and `compute_contrast_observations()` return the remaining columns of `data` after their computed columns.
 

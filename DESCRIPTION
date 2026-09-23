@@ -22,7 +22,7 @@ Imports:
     forcats,
     ggplot2 (>= 3.5),
     ggpubr,
-    ggstylekit (>= 0.4.0),
+    ggstylekit (>= 0.4.1),
     gt,
     gtools,
     lifecycle,

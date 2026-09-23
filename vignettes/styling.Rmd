@@ -58,6 +58,20 @@ eda_qt_rr_plot(
   reveal(SEX, as = c("shapes", "facet"), on = "point")
 ```
 
+## Captions
+
+Generated captions are defaults. Use `style_spec(caption = "...")` to
+replace one, or `caption = ""` to hide it. Captions can also be changed
+after plotting with `restyle_plot()`.
+
+```{r style-caption}
+eda_scatter_with_regressions(
+  cqtkit_data_verapamil, deltaQTCF, CONC, TRTG,
+  style = style_spec(caption = "Verapamil study")
+) |>
+  restyle_plot(caption = "Verapamil study: observed concentration and QTcF change")
+```
+
 ## Legends
 
 `legend_spec()` controls the title, position, wrapping, and entry
