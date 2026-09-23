@@ -8,7 +8,7 @@ build:
   platforms:
     - "almalinux8/x86_64"
     - "macos/arm64"
-  r_versions: ["4.6", "4.5", "4.4", "4.3"]
+  r_versions: ["4.6", "4.5", "4.4"]
   # auto also merges gh-prism's curated defaults (ignores + Enterprise Linux
   # extras for known rules-database gaps); sysdeps_defaults: false opts out.
   sysdeps: auto

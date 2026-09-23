@@ -6,7 +6,7 @@
 # `gh prism init --force`, and commit both files together.
 #
 # gh-prism-version: v0.1.3
-# prism-config-sha256: 0706c26123b6f16dc94caa642a06b60a66b37e72ab6f754883574f28e16dbb4d
+# prism-config-sha256: 1378569452402d4a3f7f9925dc1a65d847f1a0de07c540a0427285172c990273
 # =============================================================================
 name: Release
 
@@ -108,7 +108,7 @@ jobs:
 
       - name: Check .github/prism.yml is what this workflow was generated from
         run: |
-          want="0706c26123b6f16dc94caa642a06b60a66b37e72ab6f754883574f28e16dbb4d"
+          want="1378569452402d4a3f7f9925dc1a65d847f1a0de07c540a0427285172c990273"
           got="$(sha256sum .github/prism.yml | cut -d' ' -f1)"
           if [ "$got" != "$want" ]; then
             echo "::warning file=.github/prism.yml::.github/prism.yml changed after this workflow was generated — run 'gh prism init --force' and commit both files. This release runs with the settings baked into the workflow."
@@ -362,11 +362,9 @@ jobs:
         config:
           - {"name":"almalinux8-x86_64","runner":"ubuntu-latest","container":"almalinux:8","os_release_id":"almalinux","arch":"x86_64","r":"4.5","sysdeps":"auto","sysdeps_ignore":"libgit2_1.7-devel pandoc","sysdeps_extra":"libgit2-devel libcurl-devel","toolchain":"auto","rust":"auto"}
           - {"name":"almalinux8-x86_64","runner":"ubuntu-latest","container":"almalinux:8","os_release_id":"almalinux","arch":"x86_64","r":"4.4","sysdeps":"auto","sysdeps_ignore":"libgit2_1.7-devel pandoc","sysdeps_extra":"libgit2-devel libcurl-devel","toolchain":"auto","rust":"auto"}
-          - {"name":"almalinux8-x86_64","runner":"ubuntu-latest","container":"almalinux:8","os_release_id":"almalinux","arch":"x86_64","r":"4.3","sysdeps":"auto","sysdeps_ignore":"libgit2_1.7-devel pandoc","sysdeps_extra":"libgit2-devel libcurl-devel","toolchain":"auto","rust":"auto"}
           - {"name":"macos-arm64","runner":"macos-15","container":null,"os_release_id":null,"arch":"arm64","r":"4.6","sysdeps":"none","sysdeps_ignore":"","sysdeps_extra":"","toolchain":"auto","rust":"auto"}
           - {"name":"macos-arm64","runner":"macos-15","container":null,"os_release_id":null,"arch":"arm64","r":"4.5","sysdeps":"none","sysdeps_ignore":"","sysdeps_extra":"","toolchain":"auto","rust":"auto"}
           - {"name":"macos-arm64","runner":"macos-15","container":null,"os_release_id":null,"arch":"arm64","r":"4.4","sysdeps":"none","sysdeps_ignore":"","sysdeps_extra":"","toolchain":"auto","rust":"auto"}
-          - {"name":"macos-arm64","runner":"macos-15","container":null,"os_release_id":null,"arch":"arm64","r":"4.3","sysdeps":"none","sysdeps_ignore":"","sysdeps_extra":"","toolchain":"auto","rust":"auto"}
     env:
       BUILD_R: ${{ matrix.config.r }}
       BUILD_CONTAINER: ${{ matrix.config.container || '' }}
@@ -412,6 +410,11 @@ jobs:
         uses: a2-ai/r-gh-mac-build/prep@main
         with:
           r-version: ${{ env.BUILD_R }}
+
+      - name: Configure repository (R 4.4)
+        if: env.BUILD_R == '4.4'
+        shell: bash
+        run: rv configure repository replace prism --alias prism --url https://prism.dev.a2-ai.cloud/rpkgs/nimbus/2026.04
 
       - name: Setup build environment
         uses: A2-ai/r-releaser/setup-build-env@feat/gh-compatibility

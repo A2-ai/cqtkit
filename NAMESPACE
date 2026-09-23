@@ -63,13 +63,17 @@ export(tabulate_high_qtc_subjects)
 export(tabulate_model_fit_parameters)
 export(tabulate_pk_parameters)
 export(tabulate_study_summary)
-importFrom(ggstylekit,legend_spec)
-importFrom(ggstylekit,restyle_plot)
-importFrom(ggstylekit,reveal)
-importFrom(ggstylekit,style_spec)
+importFrom(ggstylekit,
+  legend_spec,
+  restyle_plot,
+  reveal,
+  style_spec
+)
 importFrom(magrittr,"%>%")
 importFrom(nlme,lme)
-importFrom(rlang,"%||%")
-importFrom(rlang,":=")
-importFrom(rlang,.data)
+importFrom(rlang,
+  "%||%",
+  ":=",
+  .data
+)
 importFrom(stats,density)

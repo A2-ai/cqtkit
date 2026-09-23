@@ -14,6 +14,6 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{ggstylekit}{\code{\link[ggstylekit]{legend_spec}}, \code{\link[ggstylekit]{restyle_plot}}, \code{\link[ggstylekit]{reveal}}, \code{\link[ggstylekit]{style_spec}}}
+  \item{ggstylekit}{\code{\link[ggstylekit:legend_spec]{legend_spec()}}, \code{\link[ggstylekit:restyle_plot]{restyle_plot()}}, \code{\link[ggstylekit:reveal]{reveal()}}, \code{\link[ggstylekit:style_spec]{style_spec()}}}
 }}
 
