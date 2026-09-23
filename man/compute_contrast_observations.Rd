@@ -36,7 +36,7 @@ compute_contrast_observations(
 \item{contrast_method}{A string specifying contrast method: "matched" for individual ID+time matching (crossover studies), "group" for group-wise subtraction (parallel studies)}
 }
 \value{
-A tibble with group labels, concentration, and dependent variable values (optionally contrast-adjusted)
+A tibble with group labels, concentration, and dependent variable values (optionally contrast-adjusted), followed by the remaining columns of \code{data}
 }
 \description{
 Compute Contrast Observations

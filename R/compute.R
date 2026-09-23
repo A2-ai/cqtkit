@@ -1541,7 +1541,7 @@ compute_exposure_predictions <- function(
 #' @param control_predictors An optional list for contrast predictions
 #' @param contrast_method A string specifying contrast method: "matched" for individual ID+time matching (crossover studies), "group" for group-wise subtraction (parallel studies)
 #'
-#' @return A tibble with group labels, concentration, and dependent variable values (optionally contrast-adjusted)
+#' @return A tibble with group labels, concentration, and dependent variable values (optionally contrast-adjusted), followed by the remaining columns of `data`
 #' @export
 #'
 #' @examples
@@ -1620,21 +1620,14 @@ compute_contrast_observations <- function(
 
   if (is.null(control_predictors)) {
     # Simple case: no control group subtraction
-    if (rlang::quo_is_null(trt)) {
-      # No treatment column provided, use default grouping
-      observed_df <- tibble::tibble(
-        group = "Observations",
-        conc = data |> dplyr::pull(!!conc),
-        dv = data |> dplyr::pull(!!dv)
-      )
+    group_expr <- if (rlang::quo_is_null(trt)) {
+      "Observations"
     } else {
-      # Use treatment column for grouping
-      observed_df <- tibble::tibble(
-        group = data |> dplyr::pull(!!trt),
-        conc = data |> dplyr::pull(!!conc),
-        dv = data |> dplyr::pull(!!dv)
-      )
+      trt
     }
+    observed_df <- data |>
+      dplyr::mutate(group = !!group_expr, conc = !!conc, dv = !!dv) |>
+      dplyr::relocate("group", "conc", "dv")
   } else {
     # Control group subtraction case
     trt_str <- rlang::as_name(trt)
@@ -1644,8 +1637,7 @@ compute_contrast_observations <- function(
     if (contrast_method == "matched") {
       # Individual ID+time matching (crossover studies)
       treatment_df <- data |>
-        dplyr::filter(!!rlang::sym(trt_str) == !!treatment_value) |>
-        dplyr::select(!!id, !!ntime, !!conc, !!trt, treatment_dv = !!dv)
+        dplyr::filter(!!rlang::sym(trt_str) == !!treatment_value)
 
       control_df <- data |>
         dplyr::filter(!!rlang::sym(trt_str) == !!control_value) |>
@@ -1656,12 +1648,13 @@ compute_contrast_observations <- function(
           control_df,
           by = c(rlang::as_name(id), rlang::as_name(ntime))
         ) |>
-        dplyr::mutate(dv = .data$treatment_dv - .data$control_dv) |>
-        dplyr::transmute(
+        dplyr::mutate(
           group = !!trt,
           conc = !!conc,
-          dv
-        )
+          dv = !!dv - .data$control_dv
+        ) |>
+        dplyr::select(-"control_dv") |>
+        dplyr::relocate("group", "conc", "dv")
 
       if (any(is.na(observed_df$dv))) {
         warning("Observed data contained NA and are removed in plot")
@@ -1680,12 +1673,13 @@ compute_contrast_observations <- function(
       observed_df <- data |>
         dplyr::filter(!!rlang::sym(trt_str) == !!treatment_value) |>
         dplyr::left_join(control_means, by = rlang::as_name(ntime)) |>
-        dplyr::mutate(dv = !!dv - .data$control_mean_dv) |>
-        dplyr::transmute(
+        dplyr::mutate(
           group = !!trt,
           conc = !!conc,
-          dv
-        )
+          dv = !!dv - .data$control_mean_dv
+        ) |>
+        dplyr::select(-"control_mean_dv") |>
+        dplyr::relocate("group", "conc", "dv")
 
       if (any(is.na(observed_df$dv))) {
         warning(

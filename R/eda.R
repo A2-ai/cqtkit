@@ -508,28 +508,24 @@ eda_scatter_with_regressions <- function(
   required_cols <- unlist(lapply(c(ydata, xdata, trt), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
-  dqtcf_conc_df <- tibble::tibble(
-    ydata = data |> dplyr::pull(!!ydata),
-    xdata = data |> dplyr::pull(!!xdata)
-  )
-
-  if (!rlang::quo_is_null(trt)) {
-    dqtcf_conc_df$trt <- data |> dplyr::pull(!!trt)
+  plot_data <- data
+  plot_data$.trt_group <- if (!rlang::quo_is_null(trt)) {
+    rlang::eval_tidy(trt, data)
   } else {
-    dqtcf_conc_df$trt <- as.factor("Treatment")
+    as.factor("Treatment")
   }
 
-  p <- dqtcf_conc_df |>
+  p <- plot_data |>
     ggplot2::ggplot(
       ggplot2::aes(
-        x = .data$xdata,
-        y = .data$ydata,
+        x = !!xdata,
+        y = !!ydata,
       )
     ) +
     ggplot2::geom_point(
       ggplot2::aes(
-        color = .data$trt,
-        shape = .data$trt
+        color = .data$.trt_group,
+        shape = .data$.trt_group
       )
     ) +
     ggplot2::theme_bw()

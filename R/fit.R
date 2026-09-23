@@ -419,7 +419,7 @@ compute_model_fit_parameters <- function(
 #'
 #' @importFrom nlme lme
 #'
-#' @return A tibble with observed DV, concentration, time, population/individual predictions (PRED/IPRED), and residuals (RES/IRES/WRES/IWRES)
+#' @return A tibble with observed DV, concentration, time, population/individual predictions (PRED/IPRED), residuals (RES/IRES/WRES/IWRES), and the remaining columns of `data`
 #' @export
 #'
 #' @examples
@@ -457,10 +457,11 @@ compute_fit_results <- function(
   required_cols <- unlist(lapply(c(dv, conc, time, trt), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
-  fit_results_df <- tibble::tibble(
-    dv = data |> dplyr::pull(!!dv),
-    conc = data |> dplyr::pull(!!conc),
-    time = data |> dplyr::pull(!!time),
+  fit_results_df <- dplyr::mutate(
+    data,
+    dv = !!dv,
+    conc = !!conc,
+    time = !!time,
     PRED = stats::fitted(fit, level = 0),
     IPRED = stats::fitted(fit, level = 1),
     RES = stats::residuals(fit, level = 0),
@@ -475,5 +476,18 @@ compute_fit_results <- function(
     fit_results_df <- fit_results_df |>
       dplyr::mutate(TRTG = "")
   }
+  fit_results_df <- fit_results_df |>
+    dplyr::relocate(
+      "dv",
+      "conc",
+      "time",
+      "PRED",
+      "IPRED",
+      "RES",
+      "IRES",
+      "WRES",
+      "IWRES",
+      "TRTG"
+    )
   return(fit_results_df)
 }

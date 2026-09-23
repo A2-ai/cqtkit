@@ -11,169 +11,480 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  eval = FALSE
+  eval = TRUE,
+  error = FALSE,
+  fig.width = 7,
+  fig.height = 4.5
 )
 ```
 
-```{r setup}
+```{r setup, message = FALSE}
 library(cqtkit)
-
-fit <- fit_prespecified_model(
-  cqtkit_data_verapamil,
-  deltaQTCF,
-  ID,
-  CONC,
-  deltaQTCFBL,
-  TRTG,
-  TAFD,
-  method = "REML",
-  remove_conc_iiv = TRUE
-)
 ```
 
-Every cqtkit plotting function takes a `style` argument. As of 1.2.0 that
-argument accepts two things: a `style_spec()` from ggstylekit, or the style
-list that `set_style()` builds. The list form is deprecated and will be removed
-in 2.0.0.
+Every cqtkit plotting function returns a `ggplot` object and takes a
+`style` argument. As of 1.2.0 that argument accepts a `style_spec()` from
+[ggstylekit](https://github.com/a2-ai/ggstylekit) alongside the style list
+that `set_style()` builds. The two are told apart by class, so an existing
+call keeps the styling engine it has always used and produces the figure it
+has always produced. The list form is deprecated and will be removed in 2.0.0.
 
-The two are told apart by class, so an existing call keeps the styling engine
-it has always used and produces the figure it has always produced. Nothing
-about the list path changed in 1.2.0.
+Only plots styled with a `style_spec()` carry the state ggstylekit needs, so
+`reveal()` and `restyle_plot()` work on them and error on list-styled plots.
+A bare `style_spec()` gives the house figure. This vignette leans hard on that
+integration: it styles and `reveal()`s aggressively so that each plot
+exercises a different slice of the styling surface.
 
-## The spec path
+## The `style` argument
 
-```{r}
-eda_scatter_with_regressions(
-  cqtkit_data_verapamil,
-  deltaQTCF,
-  CONC,
-  TRTG,
-  reference_threshold = c(-10, 10),
+`style_spec()` fields cover labels, limits, per-series aesthetics, and
+the theme all at once.
+
+```{r style-basic}
+eda_qt_rr_plot(
+  cqtkit_data_verapamil, RR, QT, ID, TRTG,
+  model_type = "lm",
   style = style_spec(
-    title = "Concentration-QTc Relationship",
-    xlabel = "Concentration (ng/mL)",
-    ylabel = "deltaQTcF (ms)",
-    colors = c("Placebo" = "grey", "Verapamil HCL" = "steelblue")
+    title = "QT vs RR",
+    xlabel = "RR interval (ms)",
+    ylabel = bquote("QT interval (" * italic(t) * ", ms)"),
+    xlims = c(600, 1400),
+    colors = c("Placebo" = "grey60", "Verapamil HCL" = "steelblue"),
+    point_alpha = 0.5,
+    point_size = 1.5,
+    theme = ggplot2::theme_minimal()
   )
-)
+) |>
+  reveal(SEX, as = c("shapes", "facet"), on = "point")
 ```
-
-cqtkit carries its own defaults, and a spec overrides them field by field.
-Anything left `NULL` falls through to the cqtkit default, so a bare
-`style_spec()` gives the house figure.
-
-Plots returned from the spec path carry the state ggstylekit needs, so they can
-be adjusted afterwards:
-
-```{r}
-p <- gof_plots(
-  cqtkit_data_verapamil,
-  fit,
-  deltaQTCF,
-  CONC,
-  NTLD,
-  TRTG,
-  style = style_spec()
-)
-
-restyle_plot(p, legend.position = "bottom")
-reveal(p, time, as = "facet")
-```
-
-Plots returned from the list path do not carry that state, and
-`restyle_plot()` and `reveal()` error on them.
-
-## Error bars
-
-With ggstylekit 0.4.0, error bars can be styled independently of lines:
-
-```{r}
-eda_mean_dv_over_time(
-  cqtkit_data_verapamil, deltaQTCF, NTLD, DOSEF,
-  error_bars = "CI",
-  style = style_spec(
-    errorbar_width = 0.15,
-    errorbar_linewidth = 0.7,
-    errorbar_alpha = 0.8
-  )
-)
-```
-
-`error_bars` selects CI, SE or SD; styling does not change the interval
-calculation. `errorbar_width` sets the cap width in x-axis units (hours here).
-The same settings work with `eda_quantiles_plot()` and
-`predict_with_quantiles_plot()`, where the x-axis is concentration. Use
-`restyle_plot(p, errorbar_width = 0.2)` to adjust a spec-styled plot afterwards.
-`line_*` settings affect lines; use `errorbar_*` for error bars. Mapped group
-colors take precedence over `errorbar_color`; use `colors` to change the
-group palette.
 
 ## Legends
 
-The legacy vocabulary spells legends as flat arguments. The spec vocabulary
-puts them in `legends`, a list of `legend_spec()` entries, one per channel.
+`legend_spec()` controls the title, position, wrapping, and entry
+labels of a channel's legend.
 
-```{r}
-# deprecated
-set_style(legend = "Treatment", color_order = 1, labels = c("Reference -10" = NA))
-
-# current
-style_spec(
-  legends = list(
-    legend_spec(
+```{r style-legend}
+eda_qt_rr_plot(
+  cqtkit_data_verapamil, RR, QT, ID, TRTG,
+  model_type = "lm",
+  style = style_spec(
+    colors = c("Placebo" = "grey60", "Verapamil HCL" = "steelblue"),
+    legend.position = "bottom",
+    legends = legend_spec(
       channel = "color",
-      title = "Treatment",
-      order = 1,
-      labels = c("Reference -10" = NA)
+      title = "Treatment arm",
+      nrow = 1,
+      labels = c("Verapamil HCL" = "Verapamil")
     )
   )
 )
 ```
 
-A label of `NA` drops that key from the legend, the same idiom in both.
+## Revealing a covariate
 
-A legend shared across two channels is two `legend_spec()` entries carrying the
-same `title`, `labels` and `order`. That is how the unified colour and shape
-legend in the `predict_*` plots is built.
+`reveal()` maps a carried covariate onto a free aesthetic. A
+**continuous** covariate becomes a colorbar; a **discrete** one a
+keyed legend. Reveals chain.
 
-`legend_spec(hide = TRUE)` drops a channel's legend outright.
+```{r reveal-continuous}
+eda_qt_rr_plot(cqtkit_data_verapamil, RR, QT, ID, model_type = "lm", style = style_spec()) |>
+  reveal(AGE, as = "color", on = "point")
+```
 
-## Argument map
+```{r reveal-chained}
+eda_qt_rr_plot(
+  cqtkit_data_verapamil, RR, QT, ID, TRTG,
+  model_type = "lm",
+  style = style_spec(colors = c("Placebo" = "grey60", "Verapamil HCL" = "steelblue"))
+) |>
+  reveal(SEX, as = "shapes", on = "point", legends = legend_spec(channel = "shape", title = "Sex")) |>
+  reveal(RACE, as = "facet")
+```
 
-| `set_style()` | `style_spec()` |
-| --- | --- |
-| `title` | `title` |
-| `xlabel` | `xlabel` |
-| `ylabel` | `ylabel` |
-| `xlims` | `xlims` |
-| `ylims` | `ylims` |
-| `logx` | `logx` |
-| `logy` | `logy` |
-| `colors` | `colors` |
-| `shapes` | `shapes` |
-| `fill_alpha` | `fill_alpha` |
-| `legend.position` | `legend.position` |
-| `legend.title.position` | `legend.title.position` |
-| `legend.title.hjust` | `legend.title.hjust` |
-| `legend_nrow` | `legend_nrow` |
-| `caption_hjust` | `caption_hjust` |
-| `legend` | `legend_spec(channel = "color", title = )` |
-| `fill_legend` | `legend_spec(channel = "fill", title = )` |
-| `shape_legend` | `legend_spec(channel = "shape", title = )` |
-| `labels` | `legend_spec(labels = )` |
-| `color_order` | `legend_spec(channel = "color", order = )` |
-| `shape_order` | `legend_spec(channel = "shape", order = )` |
-| `linetype_order` | `legend_spec(channel = "linetype", order = )` |
-| `fill_order` | `legend_spec(channel = "fill", order = )` |
+# Exploratory plots
 
-## Do not attach ggstylekit
+## `eda_qt_rr_plot()`
 
-cqtkit re-exports `style_spec()`, `legend_spec()`, `reveal()` and
-`restyle_plot()`, which is the supported way to reach them. Anything else in
-ggstylekit should be qualified, as `ggstylekit::series_layer()`.
+Continuous size reveal plus a discrete facet, on a log-x axis with
+custom breaks.
+
+```{r eda-qt-rr}
+eda_qt_rr_plot(
+  cqtkit_data_verapamil, RR, QT, ID,
+  model_type = "lm",
+  style = style_spec(
+    logx = TRUE,
+    xbreaks = c(700, 900, 1100, 1300),
+    point_alpha = 0.4
+  )
+) |>
+  reveal(WGHT, as = "size", legends = legend_spec(title = "Weight (kg)")) |>
+  reveal(SEX, as = "facet")
+```
+
+## `eda_qtc_comparison_plot()`
+
+A multi-panel patchwork. One `style_spec()` hits every panel, and a
+continuous color reveal is grafted across the whole patchwork.
+
+```{r eda-qtc-comparison, fig.width = 8, fig.height = 7}
+eda_qtc_comparison_plot(
+  cqtkit_data_verapamil, RR, QT, QTCB, QTCF,
+  id_col = ID, trt_col = TRTG,
+  model_type = "lme", remove_rr_iiv = TRUE,
+  style = style_spec(
+    colors = c("Placebo" = "grey60", "Verapamil HCL" = "steelblue"),
+    point_alpha = 0.4,
+    legend.position = "bottom"
+  )
+) |>
+  reveal(WGHT, as = "color", on = "point",
+         legends = legend_spec(title = "Weight (kg)"))
+```
+
+## `eda_quantiles_plot()`
+
+Aggregated (not reveal-able), so this leans on style: log axes,
+relabeled legend entries, and plotted observations.
+
+```{r eda-quantiles}
+eda_quantiles_plot(
+  dplyr::filter(cqtkit_data_verapamil, DOSE > 0),
+  CONC, QTCF, trt_col = TRTG,
+  plot_observations = TRUE,
+  style = style_spec(
+    logx = TRUE,
+    logy = TRUE,
+    xlabel = "Concentration (ng/mL, log)",
+    ylabel = "QTcF (ms, log)",
+    colors = c("Placebo" = "grey60", "Verapamil HCL" = "steelblue"),
+    legends = legend_spec(
+      channel = "color", title = "Arm",
+      labels = c("Verapamil HCL" = "Verapamil")
+    )
+  )
+)
+```
+
+## `eda_scatter_with_regressions()`
+
+Reference lines and regression lines share a `linetype` legend (with
+relabeled entries). Color is free, so a discrete covariate is revealed
+onto the points, and legend order is set explicitly.
+
+```{r eda-scatter}
+eda_scatter_with_regressions(
+  cqtkit_data_verapamil, deltaQTCF, CONC, TRTG,
+  reference_threshold = c(-10, 10),
+  style = style_spec(
+    xlabel = "Concentration (ng/mL)",
+    ylabel = bquote(Delta ~ "QTcF (ms)"),
+    colors = c("Placebo" = "grey60", "Verapamil HCL" = "steelblue"),
+    point_alpha = 0.4,
+    legends = list(
+      legend_spec(channel = "color", title = "Treatment", order = 1),
+      legend_spec(
+        channel = "linetype", title = "Regresions", order = 2,
+        labels = c("Reference -10" = "+/-10 ms", "Reference 10" = NA)
+      )
+    )
+  )
+) |>
+  reveal(SEX, as = "shapes", on = "point",
+         legends = legend_spec(title = "Sex"))
+```
+
+The fit and reference lines are named series (`"LOESS Regression"`,
+`"Linear Regression"`, `"Reference <threshold>"`), so the per-series
+maps restyle them by name just like data series:
+
+```{r eda-scatter-series}
+eda_scatter_with_regressions(
+  cqtkit_data_verapamil, deltaQTCF, CONC, TRTG,
+  reference_threshold = c(-10, 10),
+  style = style_spec(
+    colors = c(
+      "LOESS Regression" = "firebrick",
+      "Linear Regression" = "grey40",
+      "Reference 10" = "orange",
+      "Reference -10" = "orange"
+    ),
+    fill = c("LOESS Regression" = "mistyrose"),
+    linetypes = c("LOESS Regression" = "solid")
+  )
+)
+```
+
+## `eda_mean_dv_over_time()`
+
+Aggregated with a PK overlay (secondary axis) and error bars. The
+reference line merges into the color legend; an entry is relabeled.
+
+```{r eda-mean-dv}
+eda_mean_dv_over_time(
+  cqtkit_data_verapamil, deltaQTCF, NTLD, DOSEF,
+  secondary_data_col = CONC,
+  group_col = TRTG, reference_threshold = 10, error_bars = "CI",
+  style = style_spec(
+    ylabel = bquote("Mean " ~ Delta ~ "QTcF (ms)"),
+    xlabel = "Time (h)",
+    legend.position = "bottom",
+    legend_nrow = 2
+  )
+)
+```
+
+## `eda_hysteresis_loop_plot()`
+
+```{r eda-hysteresis}
+p1 <- eda_hysteresis_loop_plot(
+  droplevels(dplyr::filter(cqtkit_data_verapamil, DOSE > 0)),
+  NTLD, deltaQTCF, CONC, DOSEF,
+  style = style_spec(
+    ylabel = bquote(Delta ~ "QTcF (ms)"),
+    xlabel = "Concentration (ng/mL)",
+    theme = ggplot2::theme_minimal(),
+    legends = legend_spec(channel = 'color', hide = TRUE)
+  )
+)
+
+p2 <- eda_hysteresis_loop_plot(
+  cqtkit_data_verapamil,
+  NTLD, deltaQTCF, CONC, DOSEF,
+  reference_dose = "0 mg",
+  style = style_spec(
+    ylabel = bquote(Delta ~ Delta ~ "QTcF (ms)"),
+    xlabel = "Concentration (ng/mL)",
+    theme = ggplot2::theme_minimal(),
+    legends = legend_spec(channel = 'color', hide = TRUE)
+  )
+)
+
+ggstylekit::combine_styled_plots(p1, p2, axes = "collect_x")
+```
+
+# Goodness-of-fit plots
+
+```{r fit}
+fit <- fit_prespecified_model(
+  cqtkit_data_verapamil,
+  deltaQTCF, ID, CONC, deltaQTCFBL, TRTG, TAFD,
+  method = "REML", remove_conc_iiv = TRUE
+)
+```
+
+## `gof_plots()`
+
+Three legends collected across a 2x2 patchwork: treatment on color, and
+SEX revealed onto both point shapes and the histogram fill, with
+explicit ordering. The loess smooths here are the same
+`"LOESS Regression"` series as in the eda plots, so one
+`colors = c("LOESS Regression" = ...)` entry recolors them too.
+
+```{r gof-plots, fig.width = 8, fig.height = 6}
+gof_plots(
+  cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG,
+  style = style_spec(
+    colors = c("Placebo" = "grey60", "Verapamil HCL" = "steelblue"),
+    point_alpha = 0.5,
+    legends = legend_spec(channel = "color", title = "Treatment", order = 1),
+    legend.position = "right"
+  )
+) |>
+  reveal(SEX, as = "shapes", on = "point",
+         legends = legend_spec(channel = "shape", title = "Sex", order = 2)) |>
+  reveal(SEX, as = "fill", on = "bar", fill = c(F = "pink", M = "steelblue"),
+         legends = legend_spec(channel = "fill", title = "Sex", order = 3))
+```
+
+## `gof_concordance_plots()`
+
+A continuous covariate revealed as a colorbar onto the points, with
+facets by SEX laid out in two rows.
+
+```{r gof-concordance, fig.width = 7, fig.height = 7}
+gof_concordance_plots(
+  cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG,
+  style = style_spec(
+    colors = c("Placebo" = "grey60", "Verapamil HCL" = "steelblue"),
+    legend.position = "bottom"
+  )
+) |>
+  reveal(AGE, as = "color", on = "point",
+         legends = legend_spec(channel = "color", title = "Age (y)"))
+```
+
+## `gof_residuals_plots()`
+
+Discrete covariate revealed onto shapes across the panels.
+
+```{r gof-residuals, fig.width = 8, fig.height = 5}
+gof_residuals_plots(
+  cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG,
+  style = style_spec(
+    colors = c("Placebo" = "grey60", "Verapamil HCL" = "steelblue"),
+    legend.position = "bottom"
+  )
+) |>
+  reveal(SEX, as = "shapes", on = "point", legends = legend_spec(channel = "shape", title = "Sex"))
+```
+
+## `gof_qq_plots()`
+
+```{r gof-qq, fig.width = 7, fig.height = 4}
+gof_qq_plots(
+  cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG,
+  style = style_spec(
+    colors = c("Placebo" = "grey60", "Verapamil HCL" = "steelblue"),
+    legend.position = "bottom"
+  )
+)
+```
+
+## `gof_residuals_time_boxplots()`
+
+Treatment on `fill` with reduced alpha; SEX revealed onto the box
+outline color with a thicker line; reference lines keep their own
+`linetype` legend.
+
+```{r gof-resid-time-box, fig.width = 8, fig.height = 4.5}
+gof_residuals_time_boxplots(
+  cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG,
+  style = style_spec(
+    fill = c("Placebo" = "grey70", "Verapamil HCL" = "steelblue"),
+    fill_alpha = 0.4,
+    legends = legend_spec(channel = "fill", title = "Treatment"),
+    legend.position = "right"
+  )
+) |>
+  reveal(SEX, as = "color", on = "box", colors = c(F = "firebrick", M = "navy"),
+         box_linewidth = 0.5, legends = legend_spec(channel = "color", title = "Sex"))
+```
+
+## `gof_residuals_trt_boxplots()`
+
+```{r gof-resid-trt-box, fig.width = 6, fig.height = 4.5}
+gof_residuals_trt_boxplots(
+  cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG,
+  style = style_spec(
+    fill = c("Placebo" = "grey70", "Verapamil HCL" = "steelblue"),
+    fill_alpha = 0.5,
+    legends = legend_spec(channel = "fill", title = "Treatment"),
+    legend.position = "bottom"
+  )
+)
+```
+
+## `gof_vpc_plot()`
+
+Percentile lines own the color channel, so SEX is revealed onto shapes.
+
+```{r gof-vpc}
+set.seed(804831)
+gof_vpc_plot(cqtkit_data_verapamil, fit, CONC, deltaQTCF, nruns = 10, style = style_spec()) |>
+  reveal(SEX, as = "shapes", on = "point",
+         legends = legend_spec(channel = "shape", title = "Sex"))
+```
+
+# Exposure-response predictions
+
+## `predict_with_observations_plot()`
+
+The observations carry the full dataset, so a covariate can be revealed
+onto them. This holds for both the single-treatment (ΔQTcF) form and the
+contrast (ΔΔQTcF) form built with `control_predictors`.
+
+Single treatment:
+
+```{r predict-observations}
+predict_with_observations_plot(
+  cqtkit_data_verapamil, fit, CONC, deltaQTCF,
+  treatment_predictors = list(
+    CONC = 0, deltaQTCFBL = 0, TRTG = "Verapamil HCL", TAFD = "0.5 HR"
+  ),
+  reference_threshold = 10,
+  style = style_spec(ylabel = bquote(Delta ~ "QTcF (ms)"))
+) |>
+  reveal(SEX, as = "shapes", on = "point",
+         legends = legend_spec(channel = "shape", title = "Sex"))
+```
+
+Placebo-corrected contrast (ΔΔQTcF), revealing the same covariate on the
+contrast observations:
+
+```{r predict-observations-contrast}
+predict_with_observations_plot(
+  cqtkit_data_verapamil, fit, CONC, deltaQTCF,
+  id_col = ID, ntime_col = NTLD, trt_col = TRTG,
+  treatment_predictors = list(
+    CONC = 0, deltaQTCFBL = 0, TRTG = "Verapamil HCL", TAFD = "2 HR"
+  ),
+  control_predictors = list(
+    CONC = 0, deltaQTCFBL = 0, TRTG = "Placebo", TAFD = "2 HR"
+  ),
+  reference_threshold = c(-10, 10),
+  style = style_spec(ylabel = bquote(Delta ~ Delta ~ "QTcF (ms)"))
+) |>
+  reveal(SEX, as = "shapes", on = "point",
+         legends = legend_spec(channel = "shape", title = "Sex"))
+```
+
+## `predict_with_quantiles_plot()`
+
+```{r predict-quantiles}
+predict_with_quantiles_plot(
+  cqtkit_data_verapamil, fit, CONC, deltaQTCF,
+  treatment_predictors = list(
+    CONC = 0, deltaQTCFBL = 0, TRTG = "Verapamil HCL", TAFD = "0.5 HR"
+  ),
+  reference_threshold = 10, error_bars = "CI",
+  style = style_spec(
+    ylabel = bquote(Delta ~ "QTcF (ms)"),
+    xlabel = "Concentration (ng/mL)"
+  )
+)
+```
+
+## `predict_with_exposure_plot()`
+
+`cmaxes` marks exposure levels via the geometric-mean Cmax.
+
+```{r predict-exposure}
+pk_df <- compute_pk_parameters(
+  dplyr::filter(cqtkit_data_verapamil, DOSE != 0), ID, DOSEF, CONC, NTLD
+)
+
+predict_with_exposure_plot(
+  cqtkit_data_verapamil, fit, CONC,
+  treatment_predictors = list(
+    CONC = 0, deltaQTCFBL = 0, TRTG = "Verapamil HCL", TAFD = "0.5 HR"
+  ),
+  cmaxes = pk_df[[1, "Cmax_gm"]],
+  reference_threshold = 10,
+  style = style_spec(ylabel = bquote(Delta ~ "QTcF (ms)"))
+)
+```
+
+# Migrating from `set_style()`
+
+`set_style()` and `style_plot()` are deprecated in 1.2.0 and warn when called.
+Passing `style` a list still works and does not warn. All three will be removed
+in 2.0.0. `style_spec()`, `legend_spec()`, `reveal()`, and `restyle_plot()` are
+re-exported from ggstylekit, so nothing here needs `library(ggstylekit)`.
+
+| Deprecated | Current |
+|---|---|
+| `set_style(title, xlabel, ylabel, xlims, ylims, colors, shapes, logx, logy, legend.position, legend.title.position, legend.title.hjust, caption_hjust, fill_alpha, legend_nrow)` | `style_spec()` with the same argument names |
+| `style = list(title = "...")` | `style = style_spec(title = "...")` |
+| `set_style(labels = c(A = "a", B = NA))` | `legend_spec(channel = "color", labels = c(A = "a", B = NA))`; an `NA` label still hides the entry |
+| `set_style(legend = "Treatment")` | `legend_spec(channel = "color", title = "Treatment")` |
+| `set_style(shape_legend = , fill_legend = )` | `legend_spec(channel = "shape", title = )`, `legend_spec(channel = "fill", title = )` |
+| `set_style(color_order = , shape_order = , fill_order = , linetype_order = )` | `legend_spec(channel = , order = )` |
+| `style_plot(p, ...)` | `restyle_plot(p, ...)` with `style_spec()` field names |
+
+Legend specs go in `style_spec(legends = list(...))`, one per channel.
 
 Do not call `library(ggstylekit)` while both styling APIs exist. Both packages
-export `set_style` and `style_plot`, they are unrelated functions, and whichever
-package is attached second wins. ggstylekit's `set_style()` takes `(style, ...)`,
-so a normal cqtkit call fails with `argument "style" is missing, with no
-default`.
+export `set_style` and `style_plot`, they are unrelated functions, and
+whichever package is attached second wins. Anything in ggstylekit beyond the
+four re-exports should be qualified, as `ggstylekit::series_layer()`.

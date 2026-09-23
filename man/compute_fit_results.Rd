@@ -20,7 +20,7 @@ compute_fit_results(data, fit, dv_col, conc_col, ntime_col, trt_col = NULL)
 \item{trt_col}{An unquoted column name for treatment group, default NULL}
 }
 \value{
-A tibble with observed DV, concentration, time, population/individual predictions (PRED/IPRED), and residuals (RES/IRES/WRES/IWRES)
+A tibble with observed DV, concentration, time, population/individual predictions (PRED/IPRED), residuals (RES/IRES/WRES/IWRES), and the remaining columns of \code{data}
 }
 \description{
 Computes all fitted results and residuals for GOF plots.
