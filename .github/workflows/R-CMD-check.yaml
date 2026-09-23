@@ -50,6 +50,12 @@ jobs:
         run: |
           rv configure repository replace prism --alias prism --url "$CRAN_REPOSITORY"
 
+      - name: Use prism for rms (R 4.3)
+        if: matrix.config.r == '4.3'
+        shell: bash
+        run: |
+          rv configure repository replace rms --alias rms --url "$CRAN_REPOSITORY"
+
       - name: rv-plan
         shell: bash
         run: rv plan
