@@ -25,7 +25,7 @@ jobs:
           - {os: ubuntu-latest,  r: '4.6', prism: '2026.06'}
           - {os: ubuntu-latest,  r: '4.5', prism: '2026.06'}
           - {os: ubuntu-latest,  r: '4.4', prism: '2026.04'}
-          - {os: ubuntu-latest,  r: '4.3', prism: '2025.06'}
+          - {os: ubuntu-latest,  r: '4.3', prism: '2025.07'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
