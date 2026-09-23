@@ -2,20 +2,22 @@ use_lockfile = false
 
 [project]
 name = "cqtkit"
-r_version = "4.5"
+r_version = "4.6"
 
 repositories = [
-
 	{ alias = "ggstylekit", url = "https://prism.dev.a2-ai.cloud/rpkgs/ggstylekit/latest" },
 	{ alias = "starlightr", url = "https://prism.dev.a2-ai.cloud/rpkgs/starlightr/latest" },
 	{ alias = "prism", url = "https://prism.dev.a2-ai.cloud/rpkgs/stratus/2026-08-28/" },
 	# has rms 6.7.1 for R4.3 compatibility	
 	#{ alias = "prism-old", url = "https://prism.dev.a2-ai.cloud/rpkgs/stratus/2025-05-09/" },
+	{ alias = "rms", url = "https://packagemanager.posit.co/cran/latest" },
+
 ]
 
 dependencies = [
 	"devtools",
 	"covr",
 	"starlightr",
+	{ name = "rms", repo = "rms" },
 	{ name = "cqtkit", path = ".", dependencies_only = true, install_suggestions = true },
 ]
