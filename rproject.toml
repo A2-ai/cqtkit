@@ -8,9 +8,7 @@ repositories = [
 
 	{ alias = "ggstylekit", url = "https://prism.dev.a2-ai.cloud/rpkgs/ggstylekit/latest" },
 	{ alias = "starlightr", url = "https://prism.dev.a2-ai.cloud/rpkgs/starlightr/latest" },
-	{ alias = "ppm", url = "https://packagemanager.posit.co/cran/latest" },	
-
-	#{ alias = "prism-current", url = "https://prism.dev.a2-ai.cloud/rpkgs/stratus/2026-08-28/" },
+	{ alias = "prism", url = "https://prism.dev.a2-ai.cloud/rpkgs/stratus/2026-08-28/" },
 	# has rms 6.7.1 for R4.3 compatibility	
 	#{ alias = "prism-old", url = "https://prism.dev.a2-ai.cloud/rpkgs/stratus/2025-05-09/" },
 ]
