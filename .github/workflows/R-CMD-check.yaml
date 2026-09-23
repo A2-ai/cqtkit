@@ -25,7 +25,7 @@ jobs:
           - {os: ubuntu-latest,  r: '4.6', repo: 'https://prism.dev.a2-ai.cloud/rpkgs/nimbus/2026.06'}
           - {os: ubuntu-latest,  r: '4.5', repo: 'https://prism.dev.a2-ai.cloud/rpkgs/nimbus/2026.06'}
           - {os: ubuntu-latest,  r: '4.4', repo: 'https://prism.dev.a2-ai.cloud/rpkgs/nimbus/2026.04'}
-          - {os: ubuntu-latest,  r: '4.3', repo: 'https://packagemanager.posit.co/cran/latest'}
+          - {os: ubuntu-latest,  r: '4.3', repo: 'https://prism.dev.a2-ai.cloud/rpkgs/stratus/2025-05-09/'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
