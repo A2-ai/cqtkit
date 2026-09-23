@@ -20,18 +20,18 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macos-latest,   r: '4.6', prism: '2026.06'}
-          - {os: windows-latest, r: '4.6', prism: '2026.06'}
-          - {os: ubuntu-latest,  r: '4.6', prism: '2026.06'}
-          - {os: ubuntu-latest,  r: '4.5', prism: '2026.06'}
-          - {os: ubuntu-latest,  r: '4.4', prism: '2026.04'}
-          - {os: ubuntu-latest,  r: '4.3', prism: '2025.07'}
+          - {os: macos-latest,   r: '4.6', repo: 'https://prism.dev.a2-ai.cloud/rpkgs/nimbus/2026.06'}
+          - {os: windows-latest, r: '4.6', repo: 'https://packagemanager.posit.co/cran/latest'}
+          - {os: ubuntu-latest,  r: '4.6', repo: 'https://prism.dev.a2-ai.cloud/rpkgs/nimbus/2026.06'}
+          - {os: ubuntu-latest,  r: '4.5', repo: 'https://prism.dev.a2-ai.cloud/rpkgs/nimbus/2026.06'}
+          - {os: ubuntu-latest,  r: '4.4', repo: 'https://prism.dev.a2-ai.cloud/rpkgs/nimbus/2026.04'}
+          - {os: ubuntu-latest,  r: '4.3', repo: 'https://packagemanager.posit.co/cran/latest'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
       RV_R_VERSION: ${{ matrix.config.r }}
-      PRISM_REPOSITORY: https://prism.dev.a2-ai.cloud/rpkgs/nimbus/${{ matrix.config.prism }}
+      CRAN_REPOSITORY: ${{ matrix.config.repo }}
 
     steps:
       - uses: actions/checkout@v4
@@ -42,44 +42,27 @@ jobs:
         with:
           r-version: ${{ matrix.config.r }}
           use-public-rspm: false
-          cran: ${{ env.PRISM_REPOSITORY }}
+          cran: ${{ env.CRAN_REPOSITORY }}
           extra-repositories: |
             https://prism.dev.a2-ai.cloud/rpkgs/ggstylekit/latest
             https://prism.dev.a2-ai.cloud/rpkgs/starlightr/latest
 
       - uses: a2-ai/setup-rv@main
-        with:
-          version: '0.23.1'
-
-      - name: Select the installed R for rv
-        shell: Rscript --vanilla {0}
-        run: |
-          r_bin <- normalizePath(Sys.which("R"), winslash = "/", mustWork = TRUE)
-          # The project .Rprofile uses the TOML R version to choose its library.
-          # CI selects the library explicitly below instead.
-          profile <- file.path(Sys.getenv("RUNNER_TEMP"), "cqtkit-ci.Rprofile")
-          file.create(profile)
-          cat(
-            paste0("RV_R_BIN=", r_bin),
-            paste0("R_PROFILE_USER=", profile),
-            sep = "\n", file = Sys.getenv("GITHUB_ENV"), append = TRUE
-          )
-          cat("\n", file = Sys.getenv("GITHUB_ENV"), append = TRUE)
 
       - name: Configure repositories
         shell: bash
         run: |
-          rv configure repository replace prism --alias prism --url "$PRISM_REPOSITORY"
+          rv configure repository replace prism --alias prism --url "$CRAN_REPOSITORY"
 
       - name: rv-plan
         shell: bash
-        run: rv plan --r-bin "$RV_R_BIN" --r-version "$RV_R_VERSION"
+        run: rv plan
 
       - name: rv-sysdeps-install (Linux)
         if: runner.os == 'Linux'
         shell: bash
         run: |
-          MISSING_DEPS=$(rv plan --r-bin "$RV_R_BIN" --r-version "$RV_R_VERSION" --json | jq -r '.installed[].sys_deps[]? | select(.status == "absent") | .name')
+          MISSING_DEPS=$(rv plan --json | jq -r '.installed[].sys_deps[]? | select(.status == "absent") | .name')
           if [ -n "$MISSING_DEPS" ]; then
             echo "Found missing system dependencies:"
             echo "$MISSING_DEPS"
@@ -88,14 +71,17 @@ jobs:
           else
             echo "All system dependencies are present"
           fi
+
       - name: rv-sync
         shell: bash
-        run: rv sync --r-bin "$RV_R_BIN" --r-version "$RV_R_VERSION"
+        run: rv sync
 
       - name: Use the rv library for package checks
         shell: bash
         run: |
-          echo "R_LIBS_USER=$(rv library --r-bin "$RV_R_BIN" --r-version "$RV_R_VERSION")" >> "$GITHUB_ENV"
+          touch "$RUNNER_TEMP/empty.Rprofile"
+          echo "R_PROFILE_USER=$RUNNER_TEMP/empty.Rprofile" >> "$GITHUB_ENV"
+          echo "R_LIBS_USER=$GITHUB_WORKSPACE/$(rv library)" >> "$GITHUB_ENV"
 
       - uses: r-lib/actions/check-r-package@v2
         with:
