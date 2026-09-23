@@ -262,6 +262,11 @@ jobs:
         shell: bash
         run: rv configure repository replace prism --alias prism --url https://prism.dev.a2-ai.cloud/rpkgs/nimbus/2026.06
 
+      - name: Add rms binary for almalinux8
+        if: env.BUILD_CONTAINER != ''
+        shell: bash
+        run: rv add rms --url "https://packagemanager.posit.co/cran/__linux__/centos8/latest/src/contrib/rms_8.1-1.tar.gz?r_version=$BUILD_R" --no-sync
+
       - name: Setup build environment
         uses: A2-ai/r-releaser/setup-build-env@feat/gh-compatibility
         with:
@@ -418,6 +423,11 @@ jobs:
       - name: Configure repository
         shell: bash
         run: rv configure repository replace prism --alias prism --url "${{ matrix.config.repo }}"
+
+      - name: Add rms binary for almalinux8
+        if: env.BUILD_CONTAINER != ''
+        shell: bash
+        run: rv add rms --url "https://packagemanager.posit.co/cran/__linux__/centos8/latest/src/contrib/rms_8.1-1.tar.gz?r_version=$BUILD_R" --no-sync
 
       - name: Setup build environment
         uses: A2-ai/r-releaser/setup-build-env@feat/gh-compatibility
