@@ -438,7 +438,7 @@ eda_quantiles_plot <- function(
     ggplot2::geom_smooth(method = "lm", formula = y ~ x, level = conf_int) +
     ggplot2::theme_bw()
 
-  p <- add_error_bars_to_plot(obs, p, NULL, error_bars, conf_int)
+  p <- add_error_bars_to_plot(obs, p, NULL, error_bars, conf_int, style)
   caption <- p$labels$caption
 
   caption <- paste0(
@@ -977,7 +977,8 @@ eda_mean_dv_over_time <- function(
     p,
     reference_dose,
     error_bars,
-    conf_int
+    conf_int,
+    style
   )
 
   style <- as_style_spec(style)

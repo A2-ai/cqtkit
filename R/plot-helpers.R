@@ -7,6 +7,7 @@
 #' @param reference_dose Reference dose value for comparison calculations
 #' @param error_bars Type of errorbars to use (ci, se, sd, null)
 #' @param conf_int Numeric confidence interval level (default: 0.9)
+#' @param style Plot style, used to leave error-bar color unmapped when fixed.
 #'
 #' @return A ggplot2 object with error bars added
 add_error_bars_to_plot <- function(
@@ -14,76 +15,57 @@ add_error_bars_to_plot <- function(
   p,
   reference_dose,
   error_bars,
-  conf_int
+  conf_int,
+  style = NULL
 ) {
-  # no reference dose error bars here
-  if (is.null(reference_dose)) {
-    if (!is.null(error_bars)) {
-      if (error_bars == "CI") {
-        p <- p +
-          ggplot2::geom_errorbar(
-            data = data,
-            ggplot2::aes(ymin = .data$ci_low, ymax = .data$ci_high)
-          )
-        caption <- paste0("errorbars represent ", round(conf_int * 100), "% CI")
-      } else if (error_bars == "SE") {
-        p <- p +
-          ggplot2::geom_errorbar(
-            data = data,
-            ggplot2::aes(
-              ymin = .data$mean_dv - .data$se,
-              ymax = .data$mean_dv + .data$se
-            )
-          )
-        caption <- paste0("errorbars represent SE")
-      } else if (error_bars == "SD") {
-        p <- p +
-          ggplot2::geom_errorbar(
-            data = data,
-            ggplot2::aes(
-              ymin = .data$mean_dv - .data$sd,
-              ymax = .data$mean_dv + .data$sd,
-              y = .data$mean_dv
-            )
-          )
-        caption <- paste0("errorbars represent SD")
-      }
+  caption <- ""
+  if (!is.null(error_bars)) {
+    bounds <- if (is.null(reference_dose)) {
+      switch(error_bars,
+        CI = ggplot2::aes(ymin = .data$ci_low, ymax = .data$ci_high),
+        SE = ggplot2::aes(
+          ymin = .data$mean_dv - .data$se,
+          ymax = .data$mean_dv + .data$se
+        ),
+        SD = ggplot2::aes(
+          ymin = .data$mean_dv - .data$sd,
+          ymax = .data$mean_dv + .data$sd,
+          y = .data$mean_dv
+        )
+      )
     } else {
-      caption <- paste0("")
+      switch(error_bars,
+        CI = ggplot2::aes(ymin = .data$ci_low_delta, ymax = .data$ci_up_delta),
+        SE = ggplot2::aes(
+          ymin = .data$mean_delta_dv - .data$delta_se,
+          ymax = .data$mean_delta_dv + .data$delta_se
+        ),
+        SD = ggplot2::aes(
+          ymin = .data$mean_delta_dv - .data$delta_sd,
+          ymax = .data$mean_delta_dv + .data$delta_sd
+        )
+      )
     }
-  } else {
-    # reference dose error bars
-    if (!is.null(error_bars)) {
-      if (error_bars == "CI") {
-        p <- p +
-          ggplot2::geom_errorbar(
-            data = data,
-            ggplot2::aes(ymin = .data$ci_low_delta, ymax = .data$ci_up_delta)
-          )
-        caption <- paste0("errorbars represent ", round(conf_int * 100), "% CI")
-      } else if (error_bars == "SE") {
-        p <- p +
-          ggplot2::geom_errorbar(
-            data = data,
-            ggplot2::aes(
-              ymin = .data$mean_delta_dv - .data$delta_se,
-              ymax = .data$mean_delta_dv + .data$delta_se
-            )
-          )
-        caption <- paste0("errorbars represent SE")
-      } else if (error_bars == "SD") {
-        p <- p +
-          ggplot2::geom_errorbar(
-            data = data,
-            ggplot2::aes(
-              ymin = .data$mean_delta_dv - .data$delta_sd,
-              ymax = .data$mean_delta_dv + .data$delta_sd
-            )
-          )
-        caption <- paste0("errorbars represent SD")
-      }
+
+    fixed_color <- is_style_spec(style) &&
+      !is.null(style$errorbar_color) && !is.na(style$errorbar_color)
+    mapping <- bounds
+    if (fixed_color) {
+      # Retain positions and groups without inheriting the treatment color.
+      # ggstylekit supplies the requested color when the plot is styled.
+      mapping <- p$mapping
+      mapping[names(bounds)] <- bounds
+      mapping$group <- mapping$group %||% mapping$colour
+      mapping$colour <- NULL
+      mapping$shape <- NULL
+    }
+    p <- p + ggplot2::geom_errorbar(
+      data = data, mapping = mapping, inherit.aes = !fixed_color
+    )
+    caption <- if (error_bars == "CI") {
+      paste0("errorbars represent ", round(conf_int * 100), "% CI")
     } else {
-      caption <- paste0("")
+      paste("errorbars represent", error_bars)
     }
   }
 

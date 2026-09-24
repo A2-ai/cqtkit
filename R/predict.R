@@ -360,7 +360,7 @@ predict_with_quantiles_plot <- function(
     )
 
   # Error bars
-  p <- add_error_bars_to_plot(obs, p, NULL, error_bars, conf_int)
+  p <- add_error_bars_to_plot(obs, p, NULL, error_bars, conf_int, style)
 
   # Caption
   caption <- p$labels$caption
