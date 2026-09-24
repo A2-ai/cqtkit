@@ -248,6 +248,26 @@ eda_mean_dv_over_time(
 )
 ```
 
+Each point is the mean of one `dosef_col` level at one time, so the plot
+data carries only the columns with one value per point. Stacking two studies
+that both label placebo `"0 mg"` pools their placebo subjects, and `STUDY`
+is not carried. `group_col = STUDY` gives each study its own points, and
+`reveal()` can then facet by it.
+
+```{r eda-mean-dv-studies}
+studies <- rbind(
+  transform(cqtkit_data_verapamil, STUDY = "Verapamil"),
+  transform(cqtkit_data_dofetilide, STUDY = "Dofetilide")
+)
+
+eda_mean_dv_over_time(
+  studies, deltaQTCF, NTLD, DOSEF,
+  group_col = STUDY, error_bars = "SD",
+  style = style_spec(legends = legend_spec(channel = "colors", title = "Dosing Regimens"))
+) |>
+  reveal(STUDY, as = "facet", facet_scales = "free_x")
+```
+
 ## `eda_hysteresis_loop_plot()`
 
 ```{r eda-hysteresis}
