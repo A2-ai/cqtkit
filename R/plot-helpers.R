@@ -75,9 +75,10 @@ line_series_layer <- function(layer, name) {
 
 # Adds to a summary the columns of `data` that have one value in every summary
 # cell (a study nested in the dose groups, say), so `reveal()` can map them.
-# The summary's own columns and the columns it was computed from are skipped.
+# The summary's own columns and the time and dv columns are skipped. The dose
+# and group columns are cell keys, so they are always carried.
 carry_constant_columns <- function(summary, data, time, dose, group, dv) {
-  used <- unlist(lapply(c(time, dose, group, dv), name_quo_if_not_null))
+  used <- unlist(lapply(c(time, dv), name_quo_if_not_null))
   candidates <- setdiff(names(data), c(names(summary), used))
   if (length(candidates) == 0) {
     return(summary)
@@ -88,7 +89,7 @@ carry_constant_columns <- function(summary, data, time, dose, group, dv) {
     dose = dplyr::pull(data, !!dose)
   )
   if (!rlang::quo_is_null(group)) {
-    cells$group <- complete_group_values(data, group)
+    cells$group <- paste_grouping(cells$dose, complete_group_values(data, group))
   }
   keys <- names(cells)
   cells <- dplyr::bind_cols(cells, data[candidates])
