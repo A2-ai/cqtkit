@@ -449,6 +449,9 @@ gof_residuals_plots <- function(
       xlabel = xlabel[[i]],
       ylabel = ydata[[i]],
       legend = "Treatment Group",
+      color_order = 1,
+      shape_order = 1,
+      linetype_order = 2,
       theme = ggplot2::theme_bw()
     )
   })
@@ -681,8 +684,9 @@ gof_residuals_time_boxplots <- function(
       ylabel = ydata[[i]],
       legend = "",
       fill_legend = "Treatment Group",
-      color_order = 2,
-      fill_order = 1
+      color_order = 3,
+      fill_order = 1,
+      linetype_order = 2
     )
 
     time_plots[[i]] <- .rbp
@@ -793,8 +797,9 @@ gof_residuals_trt_boxplots <- function(
       ylabel = ydata[[i]],
       fill_legend = "Treatment Group",
       legend = "",
-      color_order = 2,
-      fill_order = 1
+      color_order = 3,
+      fill_order = 1,
+      linetype_order = 2
     )
 
     trtg_plots[[i]] <- .rbpt
@@ -959,16 +964,35 @@ gof_vpc_plot <- function(
       ),
       alpha = 0.5
     ) +
-    suppressWarnings(
+    line_series_layer(
       ggplot2::geom_line(
-        data = obs_long,
-        ggplot2::aes(
-          x = .data$xdata,
-          y = .data$ydata,
-          color = .data$.group,
-          shape = .data$.group
-        )
-      )
+        data = obs_long[obs_long$.group == upper_caption, ],
+        ggplot2::aes(x = .data$xdata, y = .data$ydata),
+        inherit.aes = FALSE,
+        color = "darkseagreen",
+        linetype = "solid"
+      ),
+      upper_caption
+    ) +
+    line_series_layer(
+      ggplot2::geom_line(
+        data = obs_long[obs_long$.group == "Median", ],
+        ggplot2::aes(x = .data$xdata, y = .data$ydata),
+        inherit.aes = FALSE,
+        color = "cornflowerblue",
+        linetype = "solid"
+      ),
+      "Median"
+    ) +
+    line_series_layer(
+      ggplot2::geom_line(
+        data = obs_long[obs_long$.group == lower_caption, ],
+        ggplot2::aes(x = .data$xdata, y = .data$ydata),
+        inherit.aes = FALSE,
+        color = "darkseagreen",
+        linetype = "solid"
+      ),
+      lower_caption
     ) +
 
     ggplot2::theme_bw()
@@ -990,7 +1014,8 @@ gof_vpc_plot <- function(
     ),
     color_order = 1,
     shape_order = 1,
-    fill_order = 2,
+    linetype_order = 2,
+    fill_order = 3,
     fill_alpha = 0.5
   )
   return(.p)

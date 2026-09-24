@@ -17,7 +17,7 @@ repositories = [
 dependencies = [
 	"devtools",
 	"covr",
-{ name = "starlightr", path = "../starlightr" },
+	"starlightr",
 	{ name = "rms", repository = "rms" },
 	{ name = "cqtkit", path = ".", install_suggestions = true },
 ]

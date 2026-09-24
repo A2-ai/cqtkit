@@ -358,7 +358,8 @@ style_plot_impl <- function(
   fill_legend = NULL,
   fill_order = NULL,
   caption_hjust = NULL,
-  legend_nrow = NULL
+  legend_nrow = NULL,
+  linetype_legend = NULL
 ) {
   if (!inherits(p, "ggplot")) {
     stop("Must provide a ggplot object")
@@ -382,6 +383,7 @@ style_plot_impl <- function(
   if (!is.null(labels)) master_order <- c(master_order, names(labels))
   if (!is.null(colors)) master_order <- c(master_order, names(colors))
   if (!is.null(shapes)) master_order <- c(master_order, names(shapes))
+  master_order <- c(master_order, names(line_series_linetypes(p)))
 
   remaining_groups <- setdiff(all_groups, master_order)
   master_order <- unique(c(master_order, remaining_groups))
@@ -389,18 +391,25 @@ style_plot_impl <- function(
   attr(p, "master_order") <- master_order
 
   # Color scale
-  p <- apply_manual_scale(
-    p,
-    aesthetic = "color",
-    groups = color_groups,
-    default_map = c(
-      attr(p, "reference_colors") %||% character(0),
-      attr(p, "prediction_colors") %||% character(0)
-    ),
-    user_values = colors,
-    user_labels = labels,
-    scale_fn = ggplot2::scale_color_manual
-  )
+  if (length(color_groups) > 0) {
+    p <- apply_manual_scale(
+      p,
+      aesthetic = "color",
+      groups = color_groups,
+      default_map = attr(p, "series_colors") %||% character(0),
+      user_values = colors,
+      user_labels = labels,
+      scale_fn = ggplot2::scale_color_manual
+    )
+  }
+
+  # Named line series map no colour, so `colors` reaches them directly.
+  for (i in seq_along(p$layers)) {
+    series <- attr(p$layers[[i]], "cqtkit_series")
+    if (!is.null(series) && series %in% names(colors)) {
+      p$layers[[i]]$aes_params$colour <- colors[[series]]
+    }
+  }
 
   # Fill scale
   if (length(fill_groups) > 0) {
@@ -418,7 +427,7 @@ style_plot_impl <- function(
 
   # Shape scale
   full_shape_groups <- unique(c(shape_groups, color_groups))
-  if (length(full_shape_groups) > 0) {
+  if (length(shape_groups) > 0) {
     expanded_shapes <- shapes %||% integer(0)
 
     # Fill in missing shape values
@@ -454,7 +463,7 @@ style_plot_impl <- function(
       p,
       aesthetic = "linetype",
       groups = linetype_groups,
-      default_map = attr(p, "linetype_values") %||% character(0),
+      default_map = line_series_linetypes(p),
       user_values = NULL,
       user_labels = labels,
       scale_fn = ggplot2::scale_linetype_manual
@@ -463,10 +472,10 @@ style_plot_impl <- function(
 
   # Axis labels and legend titles
   if (!is.null(legend)) {
-    p <- p + ggplot2::labs(color = legend)
+    if (length(color_groups) > 0) p <- p + ggplot2::labs(color = legend)
 
     if (
-      length(full_shape_groups) > 0 && all(full_shape_groups %in% color_groups)
+      length(shape_groups) > 0 && all(full_shape_groups %in% color_groups)
     ) {
       p <- p + ggplot2::labs(shape = legend)
     }
@@ -522,7 +531,8 @@ style_plot_impl <- function(
     guide_list$fill <- do.call(ggplot2::guide_legend, guide_args)
   }
   if (!is.null(linetype_order) || !is.null(legend_nrow)) {
-    guide_args <- list(title = "")
+    # NULL, not "": a blank title still takes a row of legend height.
+    guide_args <- list(title = linetype_legend)
     if (!is.null(linetype_order)) guide_args$order <- linetype_order
     if (!is.null(legend_nrow)) guide_args$nrow <- legend_nrow
     guide_list$linetype <- do.call(ggplot2::guide_legend, guide_args)
@@ -565,6 +575,10 @@ style_plot_impl <- function(
       )
   }
 
+  if (is.null(p$theme$legend.box.just)) {
+    p <- p + legend_box_just_theme()
+  }
+
   return(p)
 }
 
@@ -585,8 +599,7 @@ cqtkit_style_defaults <- function() {
         channel = "color",
         title = "Treatment Group",
         order = 1
-      ),
-      ggstylekit::legend_spec(channel = "linetype", title = "")
+      )
     )
   )
 }
@@ -604,7 +617,20 @@ cqtkit_style_plot <- function(p, style, ...) {
     )
   }
   style <- default_fill_from_colors(style, p)
+  if (is.null(style$theme$legend.box.just)) {
+    style$theme <- style$theme + legend_box_just_theme()
+  }
+  # The line legend is untitled. legend_spec() cannot set a NULL title, and a
+  # blank one still takes a row of legend height, so clear it before styling.
+  p <- p + ggplot2::labs(linetype = NULL)
   ggstylekit::style_plot(p, style)
+}
+
+# The line legend has no title, so side by side (legend.position top or
+# bottom) its keys sit level with the other legends' titles unless legends
+# are bottom-aligned. "left" keeps stacked legends left-aligned.
+legend_box_just_theme <- function() {
+  ggplot2::theme(legend.box.just = c("left", "bottom"))
 }
 
 # The list engine gives the shape guide the colour legend's title, so the two
@@ -745,19 +771,12 @@ without_panel_title <- function(style) {
   style
 }
 
-# The scale values the list engine reads off the plot object. The `linetype_values`
-# attribute is not among them: get_linetype_groups() returns nothing, so
-# style_plot() skips the linetype branch and ggplot2's default discrete palette
-# is what draws LOESS solid and Linear dashed today.
+# The scale values the list engine reads off the plot object: the default
+# colours of colour-mapped lines (add_color_references()) and the shapes.
+# Named lines carry their own colours and linetypes (line_series_layer()).
 plot_scale_defaults <- function(p) {
-  # The list engine's colour scale reads these two and not fill_colors, which
-  # belongs to the fill scale alone.
-  colors <- c(
-    attr(p, "reference_colors") %||% character(0),
-    attr(p, "prediction_colors") %||% character(0)
-  )
   list(
-    colors = dedupe_by_name(colors),
+    colors = attr(p, "series_colors") %||% character(0),
     shapes = default_shape_map(p)
   )
 }
@@ -779,6 +798,18 @@ default_shape_map <- function(p) {
   dedupe_by_name(shapes)
 }
 
+# Linetypes of the plot's named lines, in legend order: the `linetype_values`
+# attribute first, then the remaining lines in the order they were drawn.
+line_series_linetypes <- function(p) {
+  drawn <- character(0)
+  for (layer in p$layers) {
+    name <- attr(layer, "cqtkit_series")
+    if (!is.null(name)) drawn[[name]] <- attr(layer, "cqtkit_linetype")
+  }
+  linetypes <- c(attr(p, "linetype_values") %||% character(0), drawn)
+  linetypes[!duplicated(names(linetypes))]
+}
+
 # style_spec() rejects a scale map with repeated names. The plot attributes and
 # the per-function defaults can name the same group, so the first value wins.
 dedupe_by_name <- function(x) {
@@ -797,7 +828,12 @@ cqtkit_square_theme <- function() {
 # first, then everything else in detection order. legend_spec(levels = ) is
 # how the spec path asks for the same sequence.
 master_order <- function(p, labels, colors, shapes) {
-  named <- unique(c(names(labels), names(colors), names(shapes)))
+  named <- unique(c(
+    names(labels),
+    names(colors),
+    names(shapes),
+    names(line_series_linetypes(p))
+  ))
   detected <- unique(c(
     get_color_groups(p),
     get_shape_groups(p),
@@ -828,7 +864,8 @@ cqtkit_apply_style <- function(
   shape_order = NULL,
   linetype_order = NULL,
   fill_order = NULL,
-  theme = NULL
+  theme = NULL,
+  linetype_legend = NULL
 ) {
   style$title <- style$title %||% title
   style$xlabel <- style$xlabel %||% xlabel
@@ -846,6 +883,7 @@ cqtkit_apply_style <- function(
     style$color_order <- style$color_order %||% color_order
     style$shape_order <- style$shape_order %||% shape_order
     style$linetype_order <- style$linetype_order %||% linetype_order
+    style$linetype_legend <- style$linetype_legend %||% linetype_legend
     style$fill_order <- style$fill_order %||% fill_order
     return(do.call(style_plot_impl, c(list(p = p), style)))
   }
@@ -892,12 +930,15 @@ cqtkit_apply_style <- function(
       ))
     )
   }
-  if (!is.null(linetype_order)) {
+  if (!is.null(linetype_order) || !is.null(linetype_legend)) {
     legends <- c(
       legends,
       list(ggstylekit::legend_spec(
         channel = "linetype",
-        order = linetype_order
+        title = linetype_legend,
+        labels = labels,
+        order = linetype_order,
+        levels = levels
       ))
     )
   }

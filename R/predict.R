@@ -105,18 +105,11 @@ predict_with_observations_plot <- function(
       fill = ci_label
     )
 
-  # Combine predictions and observations for unified legend mapping
-  combined_data <- dplyr::bind_rows(
-    observed_df,
-    prediction_df |> dplyr::select("conc", dv = "pred", "group")
-  )
-
-  p <- combined_data |>
+  p <- observed_df |>
     ggplot2::ggplot(ggplot2::aes(
       x = .data$conc,
       y = .data$dv,
-      color = .data$group,
-      shape = .data$group
+      color = .data$group
     )) +
     ggplot2::geom_ribbon(
       data = prediction_df,
@@ -129,20 +122,18 @@ predict_with_observations_plot <- function(
       )
     ) +
     ggplot2::geom_line(
-      data = prediction_df |> dplyr::select("conc", dv = "pred", "group")
+      data = prediction_df,
+      ggplot2::aes(x = .data$conc, y = .data$pred, color = .data$group),
+      inherit.aes = FALSE
     ) +
     ggplot2::geom_point(data = observed_df) +
     ggplot2::theme_bw()
 
   # Styling attributes for scale functions
   attr(p, "fill_colors") <- stats::setNames("grey", ci_label)
-  # default open circle for line group
-  attr(p, "secondary_shapes") <- stats::setNames(1, "Predictions")
-  # default black color for predictions line
-  attr(p, "prediction_colors") <- stats::setNames("black", "Predictions")
 
   # Add reference line(s)
-  p <- add_horizontal_references(p, reference_threshold)
+  p <- add_color_references(p, reference_threshold)
 
   # Caption
   caption <- paste0(
@@ -182,7 +173,6 @@ predict_with_observations_plot <- function(
     style,
     xlabel = "Concentration (ng/mL)",
     ylabel = bquote(Delta ~ "QTcF (ms)"),
-    colors = c("Predictions" = "black"),
     labels = c(
       "Predictions" = "Population Predicted dQTcF (ms)",
       "Observations" = "Observations"
@@ -191,9 +181,7 @@ predict_with_observations_plot <- function(
     fill_legend = "Confidence Interval",
     legend = "Legend",
     fill_order = 2,
-    color_order = 1,
-    # shape_order matches color_order so the legend stays unified
-    shape_order = 1
+    color_order = 1
   )
 
   return(p)
@@ -329,8 +317,7 @@ predict_with_quantiles_plot <- function(
     ggplot2::aes(
       x = .data$xdata,
       y = .data$mean_dv,
-      color = .data$group,
-      shape = .data$group
+      color = .data$group
     )
   ) +
     ggplot2::geom_ribbon(
@@ -347,20 +334,13 @@ predict_with_quantiles_plot <- function(
     ) +
     ggplot2::geom_line(
       data = qtc_pred,
-      ggplot2::aes(
-        x = .data$conc,
-        y = .data$pred,
-        color = .data$group,
-        group = .data$group,
-      ),
+      ggplot2::aes(x = .data$conc, y = .data$pred, color = .data$group),
+      inherit.aes = FALSE
     ) +
-    ggplot2::geom_point(
-      data = obs,
-      ggplot2::aes(shape = .data$group, color = .data$group)
-    )
+    ggplot2::geom_point(data = obs)
 
   # Error bars
-  p <- add_error_bars_to_plot(obs, p, NULL, error_bars, conf_int, style)
+  p <- add_error_bars_to_plot(obs, p, NULL, error_bars, conf_int)
 
   # Caption
   caption <- p$labels$caption
@@ -387,11 +367,8 @@ predict_with_quantiles_plot <- function(
 
   # Add attributes for styling
   attr(p, "fill_colors") <- stats::setNames("grey", ci_label)
-  attr(p, "secondary_shapes") <- stats::setNames(1, "Predictions")
-  # default black color for predictions line
-  attr(p, "prediction_colors") <- stats::setNames("black", "Predictions")
 
-  p <- add_horizontal_references(p, reference_threshold)
+  p <- add_color_references(p, reference_threshold)
   p <- p + ggplot2::theme_bw() + ggplot2::labs(caption = caption)
 
   # Style
@@ -404,9 +381,8 @@ predict_with_quantiles_plot <- function(
     fill_alpha = 0.5,
     legend = "Legend",
     fill_legend = "Confidence Interval",
-    colors = c("Predictions" = "black"),
+    labels = c("Predictions" = "Predictions", "Quantiles" = "Quantiles"),
     color_order = 1,
-    shape_order = 1,
     fill_order = 2
   )
 
@@ -534,30 +510,39 @@ predict_with_exposure_plot <- function(
       pred_df$upper[which(pred_df$conc == x)]
     })
 
-    # Add vertical lines
-    p <- p +
-      ggplot2::geom_segment(
-        data = cmax_data,
-        ggplot2::aes(
-          x = .data$cmax,
-          y = -Inf,
-          xend = .data$cmax,
-          yend = .data$dqtc,
-          color = .data$group
-        ),
-        linetype = "dashed"
-      ) +
-      ggplot2::geom_segment(
-        data = cmax_data,
-        ggplot2::aes(
-          x = -Inf,
-          y = .data$dqtc,
-          xend = .data$cmax,
-          yend = .data$dqtc,
-          color = .data$group
-        ),
-        linetype = "dashed"
-      )
+    # Each Cmax is a named line, in ggplot2's default discrete colours.
+    cmax_colors <- scales::hue_pal()(nrow(cmax_data))
+    for (i in seq_len(nrow(cmax_data))) {
+      p <- p +
+        line_series_layer(
+          ggplot2::geom_segment(
+            data = cmax_data[i, ],
+            ggplot2::aes(
+              x = .data$cmax,
+              y = -Inf,
+              xend = .data$cmax,
+              yend = .data$dqtc
+            ),
+            color = cmax_colors[[i]],
+            linetype = "dashed"
+          ),
+          cmax_data$group[[i]]
+        ) +
+        line_series_layer(
+          ggplot2::geom_segment(
+            data = cmax_data[i, ],
+            ggplot2::aes(
+              x = -Inf,
+              y = .data$dqtc,
+              xend = .data$cmax,
+              yend = .data$dqtc
+            ),
+            color = cmax_colors[[i]],
+            linetype = "dashed"
+          ),
+          cmax_data$group[[i]]
+        )
+    }
   }
 
   style <- as_style_spec(style)
@@ -602,10 +587,11 @@ predict_with_exposure_plot <- function(
     ylabel = default_ylabel,
     fill_alpha = 0.5,
     fill_legend = "Confidence Interval",
-    color_order = 1,
-    fill_order = 2,
-    legend = "Exposure"
+    fill_order = 3,
+    linetype_order = 2,
+    linetype_legend = style$legend %||% "Exposure"
   )
 
   return(p)
 }
+

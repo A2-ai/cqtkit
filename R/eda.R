@@ -438,7 +438,7 @@ eda_quantiles_plot <- function(
     ggplot2::geom_smooth(method = "lm", formula = y ~ x, level = conf_int) +
     ggplot2::theme_bw()
 
-  p <- add_error_bars_to_plot(obs, p, NULL, error_bars, conf_int, style)
+  p <- add_error_bars_to_plot(obs, p, NULL, error_bars, conf_int)
   caption <- p$labels$caption
 
   caption <- paste0(
@@ -532,26 +532,32 @@ eda_scatter_with_regressions <- function(
 
   if (loess_line) {
     p <- p +
-      ggplot2::geom_smooth(
-        method = "loess",
-        span = span,
-        level = conf_int,
-        formula = y ~ x,
-        color = "blue",
-        fill = "lightblue",
-        ggplot2::aes(linetype = "LOESS Regression"),
-        linewidth = 0.5
+      line_series_layer(
+        ggplot2::geom_smooth(
+          method = "loess",
+          span = span,
+          level = conf_int,
+          formula = y ~ x,
+          color = "blue",
+          fill = "lightblue",
+          linetype = "22",
+          linewidth = 0.5
+        ),
+        "LOESS Regression"
       )
   }
 
   if (linear_line) {
     p <- p +
-      ggplot2::geom_smooth(
-        method = "lm",
-        ggplot2::aes(linetype = "Linear Regression"),
-        formula = y ~ x,
-        color = "black",
-        level = conf_int
+      line_series_layer(
+        ggplot2::geom_smooth(
+          method = "lm",
+          formula = y ~ x,
+          color = "black",
+          linetype = "solid",
+          level = conf_int
+        ),
+        "Linear Regression"
       )
   }
 
@@ -560,8 +566,8 @@ eda_scatter_with_regressions <- function(
 
   # Set linetype attribute for styling
   linetype_values <- c()
-  if (linear_line) linetype_values["Linear Regression"] <- "dashed"
-  if (loess_line) linetype_values["LOESS Regression"] <- "dashed"
+  if (linear_line) linetype_values["Linear Regression"] <- "solid"
+  if (loess_line) linetype_values["LOESS Regression"] <- "22"
 
   if (length(linetype_values) > 0) {
     attr(p, "linetype_values") <- linetype_values
@@ -977,8 +983,7 @@ eda_mean_dv_over_time <- function(
     p,
     reference_dose,
     error_bars,
-    conf_int,
-    style
+    conf_int
   )
 
   style <- as_style_spec(style)

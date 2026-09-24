@@ -159,23 +159,24 @@
 <text transform='translate(13.45,276.92) rotate(-90)' style='font-size: 11.00px; font-family: sans;' textLength='2.75px' lengthAdjust='spacingAndGlyphs'> </text>
 <text transform='translate(13.45,274.16) rotate(-90)' style='font-size: 11.00px; font-family: sans;' textLength='45.84px' lengthAdjust='spacingAndGlyphs'>QTc (ms)</text>
 <text transform='translate(525.32,272.51) rotate(90)' text-anchor='middle' style='font-size: 11.00px; font-family: sans;' textLength='109.45px' lengthAdjust='spacingAndGlyphs'>Concentration (ng/mL)</text>
-<rect x='543.84' y='224.81' width='170.68' height='95.41' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<text x='549.32' y='239.00' style='font-size: 11.00px; font-family: sans;' textLength='36.71px' lengthAdjust='spacingAndGlyphs'>Legend</text>
-<rect x='549.32' y='245.62' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<circle cx='557.96' cy='254.26' r='1.95' style='stroke-width: 0.71; stroke: none; fill: #F8766D;' />
-<line x1='551.05' y1='254.26' x2='564.88' y2='254.26' style='stroke-width: 1.07; stroke: #F8766D; stroke-linecap: butt;' />
-<line x1='551.05' y1='254.26' x2='564.88' y2='254.26' style='stroke-width: 1.07; stroke: #F8766D; stroke-linecap: butt;' />
-<rect x='549.32' y='262.90' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<line x1='551.05' y1='271.54' x2='564.88' y2='271.54' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
-<rect x='549.32' y='280.18' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<line x1='551.05' y1='288.82' x2='564.88' y2='288.82' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
-<rect x='549.32' y='297.46' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<line x1='551.05' y1='306.10' x2='564.88' y2='306.10' style='stroke-width: 1.07; stroke: #00BFC4; stroke-linecap: butt;' />
-<circle cx='557.96' cy='306.10' r='1.95' style='stroke-width: 0.71; stroke: #00BFC4;' />
-<text x='572.08' y='257.29' style='font-size: 8.80px; font-family: sans;' textLength='136.96px' lengthAdjust='spacingAndGlyphs'>120 mg Verapamil HCL deltaQTCF</text>
-<text x='572.08' y='274.57' style='font-size: 8.80px; font-family: sans;' textLength='55.77px' lengthAdjust='spacingAndGlyphs'>Reference -10</text>
-<text x='572.08' y='291.85' style='font-size: 8.80px; font-family: sans;' textLength='52.84px' lengthAdjust='spacingAndGlyphs'>Reference 10</text>
-<text x='572.08' y='309.13' style='font-size: 8.80px; font-family: sans;' textLength='119.84px' lengthAdjust='spacingAndGlyphs'>120 mg Verapamil HCL CONC</text>
+<rect x='543.84' y='213.85' width='170.68' height='60.85' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<text x='549.32' y='228.04' style='font-size: 11.00px; font-family: sans;' textLength='36.71px' lengthAdjust='spacingAndGlyphs'>Legend</text>
+<rect x='549.32' y='234.66' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<circle cx='557.96' cy='243.30' r='1.95' style='stroke-width: 0.71; stroke: none; fill: #F8766D;' />
+<line x1='551.05' y1='243.30' x2='564.88' y2='243.30' style='stroke-width: 1.07; stroke: #F8766D; stroke-linecap: butt;' />
+<line x1='551.05' y1='243.30' x2='564.88' y2='243.30' style='stroke-width: 1.07; stroke: #F8766D; stroke-linecap: butt;' />
+<rect x='549.32' y='251.94' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<line x1='551.05' y1='260.58' x2='564.88' y2='260.58' style='stroke-width: 1.07; stroke: #00BFC4; stroke-linecap: butt;' />
+<circle cx='557.96' cy='260.58' r='1.95' style='stroke-width: 0.71; stroke: #00BFC4;' />
+<text x='572.08' y='246.33' style='font-size: 8.80px; font-family: sans;' textLength='136.96px' lengthAdjust='spacingAndGlyphs'>120 mg Verapamil HCL deltaQTCF</text>
+<text x='572.08' y='263.61' style='font-size: 8.80px; font-family: sans;' textLength='119.84px' lengthAdjust='spacingAndGlyphs'>120 mg Verapamil HCL CONC</text>
+<rect x='543.84' y='285.66' width='89.49' height='45.52' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<rect x='549.32' y='291.14' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<line x1='551.05' y1='299.78' x2='564.88' y2='299.78' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
+<rect x='549.32' y='308.42' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<line x1='551.05' y1='317.06' x2='564.88' y2='317.06' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
+<text x='572.08' y='302.81' style='font-size: 8.80px; font-family: sans;' textLength='55.77px' lengthAdjust='spacingAndGlyphs'>Reference -10</text>
+<text x='572.08' y='320.09' style='font-size: 8.80px; font-family: sans;' textLength='52.84px' lengthAdjust='spacingAndGlyphs'>Reference 10</text>
 <text x='38.40' y='14.56' style='font-size: 13.20px; font-family: sans;' textLength='165.83px' lengthAdjust='spacingAndGlyphs'>eda-mean-dv-time-pk-ddqtcf</text>
 <text x='500.68' y='559.19' text-anchor='end' style='font-size: 8.80px; font-family: sans;' textLength='109.08px' lengthAdjust='spacingAndGlyphs'>errorbars represent 90% CI </text>
 <text x='500.68' y='568.69' text-anchor='end' style='font-size: 8.80px; font-family: sans;' textLength='0.00px' lengthAdjust='spacingAndGlyphs'></text>

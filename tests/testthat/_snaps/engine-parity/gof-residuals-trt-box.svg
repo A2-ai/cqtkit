@@ -155,31 +155,31 @@
 <text x='525.57' y='550.62' text-anchor='middle' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='59.67px' lengthAdjust='spacingAndGlyphs'>Verapamil HCL</text>
 <text x='372.67' y='562.76' text-anchor='middle' style='font-size: 11.00px; font-family: sans;' textLength='83.77px' lengthAdjust='spacingAndGlyphs'>Treatment Group</text>
 <text transform='translate(18.53,430.68) rotate(-90)' text-anchor='middle' style='font-size: 11.00px; font-family: sans;' textLength='36.06px' lengthAdjust='spacingAndGlyphs'>IWRES</text>
-<rect x='162.72' y='28.26' width='242.69' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<text x='168.20' y='46.17' style='font-size: 11.00px; font-family: sans;' textLength='83.77px' lengthAdjust='spacingAndGlyphs'>Treatment Group</text>
-<rect x='257.45' y='33.74' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<polyline points='266.09,49.29 266.09,46.70 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt; stroke-linejoin: miter;' />
-<polyline points='266.09,38.06 266.09,35.47 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt; stroke-linejoin: miter;' />
-<rect x='259.61' y='38.06' width='12.96' height='8.64' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt; stroke-linejoin: miter; fill: #F8766D;' />
-<polyline points='259.61,42.38 272.57,42.38 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt; stroke-linejoin: miter;' />
-<polyline points='266.09,49.29 266.09,49.29 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt; stroke-linejoin: miter;' />
-<polyline points='266.09,35.47 266.09,35.47 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt; stroke-linejoin: miter;' />
-<rect x='317.49' y='33.74' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<polyline points='326.13,49.29 326.13,46.70 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt; stroke-linejoin: miter;' />
-<polyline points='326.13,38.06 326.13,35.47 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt; stroke-linejoin: miter;' />
-<rect x='319.65' y='38.06' width='12.96' height='8.64' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt; stroke-linejoin: miter; fill: #00BFC4;' />
-<polyline points='319.65,42.38 332.61,42.38 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt; stroke-linejoin: miter;' />
-<polyline points='326.13,49.29 326.13,49.29 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt; stroke-linejoin: miter;' />
-<polyline points='326.13,35.47 326.13,35.47 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt; stroke-linejoin: miter;' />
-<text x='280.21' y='45.41' style='font-size: 8.80px; font-family: sans;' textLength='31.81px' lengthAdjust='spacingAndGlyphs'>Placebo</text>
-<text x='340.25' y='45.41' style='font-size: 8.80px; font-family: sans;' textLength='59.67px' lengthAdjust='spacingAndGlyphs'>Verapamil HCL</text>
-<rect x='416.37' y='28.26' width='166.26' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<rect x='427.32' y='33.74' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<line x1='429.05' y1='42.38' x2='442.88' y2='42.38' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
-<rect x='506.44' y='33.74' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<line x1='508.17' y1='42.38' x2='521.99' y2='42.38' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
-<text x='450.08' y='45.41' style='font-size: 8.80px; font-family: sans;' textLength='50.88px' lengthAdjust='spacingAndGlyphs'>Reference -2</text>
-<text x='529.20' y='45.41' style='font-size: 8.80px; font-family: sans;' textLength='47.95px' lengthAdjust='spacingAndGlyphs'>Reference 2</text>
+<rect x='165.46' y='28.26' width='242.69' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<text x='170.94' y='46.17' style='font-size: 11.00px; font-family: sans;' textLength='83.77px' lengthAdjust='spacingAndGlyphs'>Treatment Group</text>
+<rect x='260.19' y='33.74' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<polyline points='268.83,49.29 268.83,46.70 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt; stroke-linejoin: miter;' />
+<polyline points='268.83,38.06 268.83,35.47 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt; stroke-linejoin: miter;' />
+<rect x='262.35' y='38.06' width='12.96' height='8.64' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt; stroke-linejoin: miter; fill: #F8766D;' />
+<polyline points='262.35,42.38 275.31,42.38 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt; stroke-linejoin: miter;' />
+<polyline points='268.83,49.29 268.83,49.29 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt; stroke-linejoin: miter;' />
+<polyline points='268.83,35.47 268.83,35.47 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt; stroke-linejoin: miter;' />
+<rect x='320.23' y='33.74' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<polyline points='328.87,49.29 328.87,46.70 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt; stroke-linejoin: miter;' />
+<polyline points='328.87,38.06 328.87,35.47 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt; stroke-linejoin: miter;' />
+<rect x='322.39' y='38.06' width='12.96' height='8.64' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt; stroke-linejoin: miter; fill: #00BFC4;' />
+<polyline points='322.39,42.38 335.35,42.38 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt; stroke-linejoin: miter;' />
+<polyline points='328.87,49.29 328.87,49.29 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt; stroke-linejoin: miter;' />
+<polyline points='328.87,35.47 328.87,35.47 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt; stroke-linejoin: miter;' />
+<text x='282.95' y='45.41' style='font-size: 8.80px; font-family: sans;' textLength='31.81px' lengthAdjust='spacingAndGlyphs'>Placebo</text>
+<text x='342.99' y='45.41' style='font-size: 8.80px; font-family: sans;' textLength='59.67px' lengthAdjust='spacingAndGlyphs'>Verapamil HCL</text>
+<rect x='419.11' y='28.26' width='160.78' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<rect x='424.58' y='33.74' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<line x1='426.31' y1='42.38' x2='440.14' y2='42.38' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
+<rect x='503.70' y='33.74' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<line x1='505.43' y1='42.38' x2='519.25' y2='42.38' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
+<text x='447.34' y='45.41' style='font-size: 8.80px; font-family: sans;' textLength='50.88px' lengthAdjust='spacingAndGlyphs'>Reference -2</text>
+<text x='526.46' y='45.41' style='font-size: 8.80px; font-family: sans;' textLength='47.95px' lengthAdjust='spacingAndGlyphs'>Reference 2</text>
 <text x='10.96' y='14.56' style='font-size: 13.20px; font-family: sans;' textLength='117.39px' lengthAdjust='spacingAndGlyphs'>gof-residuals-trt-box</text>
 </g>
 </svg>

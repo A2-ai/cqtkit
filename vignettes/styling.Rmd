@@ -198,7 +198,7 @@ eda_scatter_with_regressions(
     legends = list(
       legend_spec(channel = "color", title = "Treatment", order = 1),
       legend_spec(
-        channel = "linetype", title = "Regresions", order = 2,
+        channel = "linetype", title = "Regressions", order = 2,
         labels = c("Reference -10" = "+/-10 ms", "Reference 10" = NA)
       )
     )
@@ -232,9 +232,7 @@ eda_scatter_with_regressions(
 ## `eda_mean_dv_over_time()`
 
 Aggregated with a PK overlay (secondary axis) and error bars. The
-reference line merges into the color legend; an entry is relabeled.
-`errorbar_color` sets a fixed color for the bars while points and lines
-keep their treatment colors. Omit it to keep treatment-colored bars.
+reference line has its own `linetype` legend entry.
 
 ```{r eda-mean-dv}
 eda_mean_dv_over_time(
@@ -244,7 +242,6 @@ eda_mean_dv_over_time(
   style = style_spec(
     ylabel = bquote("Mean " ~ Delta ~ "QTcF (ms)"),
     xlabel = "Time (h)",
-    errorbar_color = "grey60",
     legend.position = "bottom",
     legend_nrow = 2
   )

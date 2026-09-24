@@ -11,7 +11,7 @@ These functions customize the style of plots
 \itemize{
 \item \code{\link{add_horizontal_references}} - Adds dashed horizontal reference lines to plots
 \item \code{\link[ggstylekit]{style_spec}}, \code{\link[ggstylekit]{legend_spec}}, \code{\link[ggstylekit]{reveal}}, \code{\link[ggstylekit]{restyle_plot}} - Re-exported from \pkg{ggstylekit} so plots can be styled without attaching it
-\item \code{\link{set_style}}, \code{\link{style_plot}} - Removed in 2.0.0. Use \code{style_spec()} and \code{restyle_plot()}
+\item \code{\link{set_style}}, \code{\link{style_plot}} - Deprecated in 1.2.0. Use \code{style_spec()} and \code{restyle_plot()}
 }
 }
 

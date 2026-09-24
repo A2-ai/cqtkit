@@ -18,20 +18,21 @@
   </clipPath>
 </defs>
 <g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHw1NzYuMDA=)'>
-<rect x='159.09' y='-0.000000000000096' width='401.83' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<text x='164.57' y='17.90' style='font-size: 11.00px; font-family: sans;' textLength='83.77px' lengthAdjust='spacingAndGlyphs'>Treatment Group</text>
-<rect x='252.48' y='5.48' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<circle cx='261.12' cy='14.12' r='1.95' style='stroke-width: 0.71; stroke: none; fill: #F8766D;' />
-<rect x='313.23' y='5.48' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<circle cx='321.87' cy='14.12' r='1.95' style='stroke-width: 0.71; stroke: none; fill: #00BFC4;' />
-<rect x='401.67' y='5.48' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<line x1='403.40' y1='14.12' x2='417.23' y2='14.12' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
-<rect x='483.92' y='5.48' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<line x1='485.65' y1='14.12' x2='499.47' y2='14.12' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
-<text x='275.24' y='17.15' style='font-size: 8.80px; font-family: sans;' textLength='31.81px' lengthAdjust='spacingAndGlyphs'>Placebo</text>
-<text x='335.99' y='17.15' style='font-size: 8.80px; font-family: sans;' textLength='59.67px' lengthAdjust='spacingAndGlyphs'>Verapamil HCL</text>
-<text x='424.43' y='17.15' style='font-size: 8.80px; font-family: sans;' textLength='50.88px' lengthAdjust='spacingAndGlyphs'>Reference -2</text>
-<text x='506.68' y='17.15' style='font-size: 8.80px; font-family: sans;' textLength='47.95px' lengthAdjust='spacingAndGlyphs'>Reference 2</text>
+<rect x='150.87' y='-0.000000000000096' width='242.59' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<text x='156.35' y='17.90' style='font-size: 11.00px; font-family: sans;' textLength='83.77px' lengthAdjust='spacingAndGlyphs'>Treatment Group</text>
+<rect x='244.26' y='5.48' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<circle cx='252.90' cy='14.12' r='1.95' style='stroke-width: 0.71; stroke: none; fill: #F8766D;' />
+<rect x='305.02' y='5.48' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<circle cx='313.66' cy='14.12' r='1.95' style='stroke-width: 0.71; stroke: none; fill: #00BFC4;' />
+<text x='267.02' y='17.15' style='font-size: 8.80px; font-family: sans;' textLength='31.81px' lengthAdjust='spacingAndGlyphs'>Placebo</text>
+<text x='327.77' y='17.15' style='font-size: 8.80px; font-family: sans;' textLength='59.67px' lengthAdjust='spacingAndGlyphs'>Verapamil HCL</text>
+<rect x='404.41' y='-0.000000000000096' width='164.72' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<rect x='409.89' y='5.48' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<line x1='411.62' y1='14.12' x2='425.45' y2='14.12' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
+<rect x='492.14' y='5.48' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<line x1='493.87' y1='14.12' x2='507.69' y2='14.12' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
+<text x='432.65' y='17.15' style='font-size: 8.80px; font-family: sans;' textLength='50.88px' lengthAdjust='spacingAndGlyphs'>Reference -2</text>
+<text x='514.90' y='17.15' style='font-size: 8.80px; font-family: sans;' textLength='47.95px' lengthAdjust='spacingAndGlyphs'>Reference 2</text>
 </g>
 <defs>
   <clipPath id='cpMC4wMHw3MjAuMDB8MjguMjR8NTc2LjAw'>

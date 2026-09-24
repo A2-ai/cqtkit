@@ -2900,20 +2900,21 @@
 <text x='641.12' y='547.94' text-anchor='middle' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='14.68px' lengthAdjust='spacingAndGlyphs'>300</text>
 <text x='549.94' y='560.08' text-anchor='middle' style='font-size: 11.00px; font-family: sans;' textLength='109.45px' lengthAdjust='spacingAndGlyphs'>Concentration (ng/mL)</text>
 <text transform='translate(373.05,429.34) rotate(-90)' text-anchor='middle' style='font-size: 11.00px; font-family: sans;' textLength='36.06px' lengthAdjust='spacingAndGlyphs'>IWRES</text>
-<rect x='173.68' y='28.26' width='397.99' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<text x='179.16' y='46.17' style='font-size: 11.00px; font-family: sans;' textLength='83.77px' lengthAdjust='spacingAndGlyphs'>Treatment Group</text>
-<rect x='268.41' y='33.74' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<circle cx='277.05' cy='42.38' r='1.95' style='stroke-width: 0.71; stroke: none; fill: #F8766D;' />
-<rect x='328.45' y='33.74' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<circle cx='337.09' cy='42.38' r='1.95' style='stroke-width: 0.71; stroke: none; fill: #00BFC4;' />
-<rect x='416.37' y='33.74' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<line x1='418.09' y1='42.38' x2='431.92' y2='42.38' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
-<rect x='495.48' y='33.74' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<line x1='497.21' y1='42.38' x2='511.03' y2='42.38' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
-<text x='291.17' y='45.41' style='font-size: 8.80px; font-family: sans;' textLength='31.81px' lengthAdjust='spacingAndGlyphs'>Placebo</text>
-<text x='351.21' y='45.41' style='font-size: 8.80px; font-family: sans;' textLength='59.67px' lengthAdjust='spacingAndGlyphs'>Verapamil HCL</text>
-<text x='439.13' y='45.41' style='font-size: 8.80px; font-family: sans;' textLength='50.88px' lengthAdjust='spacingAndGlyphs'>Reference -2</text>
-<text x='518.24' y='45.41' style='font-size: 8.80px; font-family: sans;' textLength='47.95px' lengthAdjust='spacingAndGlyphs'>Reference 2</text>
+<rect x='165.46' y='28.26' width='242.69' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<text x='170.94' y='46.17' style='font-size: 11.00px; font-family: sans;' textLength='83.77px' lengthAdjust='spacingAndGlyphs'>Treatment Group</text>
+<rect x='260.19' y='33.74' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<circle cx='268.83' cy='42.38' r='1.95' style='stroke-width: 0.71; stroke: none; fill: #F8766D;' />
+<rect x='320.23' y='33.74' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<circle cx='328.87' cy='42.38' r='1.95' style='stroke-width: 0.71; stroke: none; fill: #00BFC4;' />
+<text x='282.95' y='45.41' style='font-size: 8.80px; font-family: sans;' textLength='31.81px' lengthAdjust='spacingAndGlyphs'>Placebo</text>
+<text x='342.99' y='45.41' style='font-size: 8.80px; font-family: sans;' textLength='59.67px' lengthAdjust='spacingAndGlyphs'>Verapamil HCL</text>
+<rect x='419.11' y='28.26' width='160.78' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<rect x='424.58' y='33.74' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<line x1='426.31' y1='42.38' x2='440.14' y2='42.38' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
+<rect x='503.70' y='33.74' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<line x1='505.43' y1='42.38' x2='519.25' y2='42.38' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
+<text x='447.34' y='45.41' style='font-size: 8.80px; font-family: sans;' textLength='50.88px' lengthAdjust='spacingAndGlyphs'>Reference -2</text>
+<text x='526.46' y='45.41' style='font-size: 8.80px; font-family: sans;' textLength='47.95px' lengthAdjust='spacingAndGlyphs'>Reference 2</text>
 <text x='10.96' y='14.56' style='font-size: 13.20px; font-family: sans;' textLength='75.58px' lengthAdjust='spacingAndGlyphs'>gof-residuals</text>
 </g>
 </svg>

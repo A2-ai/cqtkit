@@ -7,7 +7,6 @@
 #' @param reference_dose Reference dose value for comparison calculations
 #' @param error_bars Type of errorbars to use (ci, se, sd, null)
 #' @param conf_int Numeric confidence interval level (default: 0.9)
-#' @param style Plot style, used to leave error-bar color unmapped when fixed.
 #'
 #' @return A ggplot2 object with error bars added
 add_error_bars_to_plot <- function(
@@ -15,8 +14,7 @@ add_error_bars_to_plot <- function(
   p,
   reference_dose,
   error_bars,
-  conf_int,
-  style = NULL
+  conf_int
 ) {
   caption <- ""
   if (!is.null(error_bars)) {
@@ -47,21 +45,7 @@ add_error_bars_to_plot <- function(
       )
     }
 
-    fixed_color <- is_style_spec(style) &&
-      !is.null(style$errorbar_color) && !is.na(style$errorbar_color)
-    mapping <- bounds
-    if (fixed_color) {
-      # Retain positions and groups without inheriting the treatment color.
-      # ggstylekit supplies the requested color when the plot is styled.
-      mapping <- p$mapping
-      mapping[names(bounds)] <- bounds
-      mapping$group <- mapping$group %||% mapping$colour
-      mapping$colour <- NULL
-      mapping$shape <- NULL
-    }
-    p <- p + ggplot2::geom_errorbar(
-      data = data, mapping = mapping, inherit.aes = !fixed_color
-    )
+    p <- p + ggplot2::geom_errorbar(data = data, mapping = bounds)
     caption <- if (error_bars == "CI") {
       paste0("errorbars represent ", round(conf_int * 100), "% CI")
     } else {
@@ -76,6 +60,45 @@ add_error_bars_to_plot <- function(
     )
 
   return(p)
+}
+
+# A named line (reference, regression, prediction or VPC percentile) keyed
+# into the linetype legend. ggstylekit styles it by name; the list path reads
+# `cqtkit_series` to apply `colors` to it, since the layer maps no colour.
+line_series_layer <- function(layer, name) {
+  linetype <- layer$aes_params$linetype %||% "solid"
+  layer <- ggstylekit::series_layer(layer, name, legend_channel = "linetypes")
+  attr(layer, "cqtkit_series") <- name
+  attr(layer, "cqtkit_linetype") <- linetype
+  layer
+}
+
+# Reference lines on the colour channel, for plots whose points map colour
+# only, so the references join the colour legend. Sets the default colours
+# (predictions and references black) the styling reads from `series_colors`.
+add_color_references <- function(p, reference_threshold) {
+  attr(p, "series_colors") <- c("Predictions" = "black")
+  if (length(reference_threshold) == 0) {
+    return(p)
+  }
+
+  ref <- data.frame(
+    yintercept = reference_threshold,
+    group = paste0("Reference ", reference_threshold)
+  )
+  p <- p +
+    ggplot2::geom_hline(
+      data = ref,
+      ggplot2::aes(yintercept = .data$yintercept, color = .data$group),
+      inherit.aes = FALSE,
+      linetype = "dashed"
+    )
+  attr(p, "series_colors") <- c(
+    attr(p, "series_colors"),
+    stats::setNames(rep("black", nrow(ref)), ref$group)
+  )
+
+  p
 }
 
 #' Add Horizontal References
@@ -111,35 +134,17 @@ add_horizontal_references <- function(p, reference_threshold) {
 
   ref_labels <- paste0("Reference ", reference_threshold)
 
-  ref_data <- data.frame(
-    yintercept = reference_threshold,
-    group = ref_labels,
-    stringsAsFactors = FALSE
-  )
-
-  p <- p +
-    suppressWarnings(
-      ggplot2::geom_hline(
-        data = ref_data,
-        ggplot2::aes(
-          yintercept = .data$yintercept,
-          color = .data$group,
-          shape = .data$group # Needed for combined color/shape legend
+  for (i in seq_along(reference_threshold)) {
+    p <- p +
+      line_series_layer(
+        ggplot2::geom_hline(
+          yintercept = reference_threshold[[i]],
+          color = "black",
+          linetype = "dashed"
         ),
-        linetype = "dashed"
+        ref_labels[[i]]
       )
-    )
-
-  attr(p, "reference_colors") <- stats::setNames(
-    rep("black", length(reference_threshold)),
-    ref_labels
-  )
-
-  # Also set reference shapes as NA so they don't appear in legend
-  attr(p, "reference_shapes") <- stats::setNames(
-    rep(NA, length(reference_threshold)),
-    ref_labels
-  )
+  }
 
   return(p)
 }
@@ -315,6 +320,15 @@ extract_groups <- function(p, aesthetic) {
 }
 
 extract_from_mapping <- function(mapping_entry, data) {
+  # A constant mapping, e.g. from ggstylekit::series_layer(), is one group.
+  expr <- if (rlang::is_quosure(mapping_entry)) {
+    rlang::quo_get_expr(mapping_entry)
+  } else {
+    mapping_entry
+  }
+  if (is.character(expr) && length(expr) == 1) {
+    return(expr)
+  }
   var <- rlang::as_label(mapping_entry)
   if (startsWith(var, ".data$")) {
     var <- sub("^\\.data\\$", "", var)
