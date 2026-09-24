@@ -495,7 +495,7 @@ predict_with_exposure_plot <- function(
 
   attr(p, "fill_colors") <- stats::setNames("grey", ci_label)
 
-  p <- add_horizontal_references(p, reference_threshold)
+  p <- add_reference_lines(p, reference_threshold)
 
   if (!is.null(cmaxes)) {
     # Create data frame for Cmax reference lines

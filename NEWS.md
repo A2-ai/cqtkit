@@ -1,6 +1,14 @@
 # cqtkit 1.2.1
 
+### Deprecated
+* `add_horizontal_references()` is deprecated. Use the `reference_threshold` argument of the plotting functions.
+
 ### Fixed
+* Reference lines, regression lines and `gof_vpc_plot()` percentile lines are named lines in the linetype legend, placed after the group legend. `reveal()` onto shapes gives a legend of the revealed column only, and `colors` and `linetypes` restyle each line by name, for example `"Reference 10"`.
+  * `eda_scatter_with_regressions()` draws the linear regression solid and the LOESS regression short-dashed.
+  * The linetype legend has no title. Legends placed side by side are bottom-aligned unless the theme sets `legend.box.just`.
+* `predict_with_observations_plot()` and `predict_with_quantiles_plot()` show predictions, observations and reference lines in one legend. Their points map colour only; set their shape with `style_spec(point_shape = )`.
+* `predict_with_exposure_plot()` shows reference and Cmax lines in one "Exposure" legend. `colors` recolours a Cmax line by name, for example `"Cmax_113.59"`.
 * Requires ggstylekit >= 0.4.1. `style_spec(caption = ...)` overrides generated plot captions, including exposure predictions; `caption = ""` hides them.
 * `eda_scatter_with_regressions()`, the `gof_*()` residual plots and `predict_with_observations_plot()` keep the remaining columns of `data` in the plot data, so `reveal()` can map a covariate on them.
   * `compute_fit_results()` and `compute_contrast_observations()` return the remaining columns of `data` after their computed columns.

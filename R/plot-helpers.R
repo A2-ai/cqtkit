@@ -73,6 +73,41 @@ line_series_layer <- function(layer, name) {
   layer
 }
 
+# Adds to a summary the columns of `data` that have one value in every summary
+# cell (a study nested in the dose groups, say), so `reveal()` can map them.
+# The summary's own columns and the columns it was computed from are skipped.
+carry_constant_columns <- function(summary, data, time, dose, group, dv) {
+  used <- unlist(lapply(c(time, dose, group, dv), name_quo_if_not_null))
+  candidates <- setdiff(names(data), c(names(summary), used))
+  if (length(candidates) == 0) {
+    return(summary)
+  }
+
+  cells <- tibble::tibble(
+    time = dplyr::pull(data, !!time),
+    dose = dplyr::pull(data, !!dose)
+  )
+  if (!rlang::quo_is_null(group)) {
+    cells$group <- complete_group_values(data, group)
+  }
+  keys <- names(cells)
+  cells <- dplyr::bind_cols(cells, data[candidates])
+
+  constant <- cells |>
+    dplyr::group_by(dplyr::across(dplyr::all_of(keys))) |>
+    dplyr::summarize(
+      dplyr::across(dplyr::all_of(candidates), ~ dplyr::n_distinct(.x) == 1),
+      .groups = "drop"
+    )
+  keep <- candidates[vapply(candidates, function(x) all(constant[[x]]), logical(1))]
+  if (length(keep) == 0) {
+    return(summary)
+  }
+
+  values <- dplyr::distinct(cells, dplyr::across(dplyr::all_of(c(keys, keep))))
+  dplyr::left_join(summary, values, by = keys)
+}
+
 # Reference lines on the colour channel, for plots whose points map colour
 # only, so the references join the colour legend. Sets the default colours
 # (predictions and references black) the styling reads from `series_colors`.
@@ -101,9 +136,36 @@ add_color_references <- function(p, reference_threshold) {
   p
 }
 
+# Reference lines as named black dashed lines in the linetype legend.
+add_reference_lines <- function(p, reference_threshold) {
+  if (is.null(reference_threshold) || length(reference_threshold) == 0) {
+    return(p)
+  }
+
+  ref_labels <- paste0("Reference ", reference_threshold)
+
+  for (i in seq_along(reference_threshold)) {
+    p <- p +
+      line_series_layer(
+        ggplot2::geom_hline(
+          yintercept = reference_threshold[[i]],
+          color = "black",
+          linetype = "dashed"
+        ),
+        ref_labels[[i]]
+      )
+  }
+
+  return(p)
+}
+
 #' Add Horizontal References
 #'
-#' Adds horizontal reference lines to plot.
+#' `r lifecycle::badge("deprecated")`
+#'
+#' Adds horizontal reference lines to plot. Deprecated in favour of the
+#' `reference_threshold` argument of the plotting functions. A plot styled with
+#' [style_spec()] cannot be revealed or restyled after lines are added to it.
 #'
 #' @param p A ggplot object
 #' @param reference_threshold Numeric/vector of numerics for horizontal lines
@@ -128,25 +190,27 @@ add_color_references <- function(p, reference_threshold) {
 #'     reference_threshold = c(-10, 10)
 #'   )
 add_horizontal_references <- function(p, reference_threshold) {
-  if (is.null(reference_threshold) || length(reference_threshold) == 0) {
+  lifecycle::deprecate_warn(
+    when = "1.2.1",
+    what = "add_horizontal_references()",
+    details = "Use the `reference_threshold` argument of the plotting functions."
+  )
+
+  p <- add_reference_lines(p, reference_threshold)
+
+  # The plot was styled before these lines existed, so set the linetypes of
+  # all its named lines here, replacing the styled linetype scale.
+  linetypes <- line_series_linetypes(p)
+  if (length(linetypes) == 0) {
     return(p)
   }
-
-  ref_labels <- paste0("Reference ", reference_threshold)
-
-  for (i in seq_along(reference_threshold)) {
-    p <- p +
-      line_series_layer(
-        ggplot2::geom_hline(
-          yintercept = reference_threshold[[i]],
-          color = "black",
-          linetype = "dashed"
-        ),
-        ref_labels[[i]]
+  suppressMessages(
+    p +
+      ggplot2::scale_linetype_manual(
+        values = linetypes,
+        breaks = names(linetypes)
       )
-  }
-
-  return(p)
+  )
 }
 
 
@@ -468,8 +532,10 @@ apply_manual_scale <- function(
   # Keep all colors in final_map, don't filter by valid_groups
 
   # Use master order from style_plot (colors → labels → shapes → remaining)
+  # Only mapped groups get legend keys: a `colors` entry for a named line
+  # (line_series_layer()) is applied to the layer, not the scale.
   master_order <- attr(p, "master_order")
-  breaks <- intersect(master_order, names(final_labels))
+  breaks <- intersect(master_order, intersect(names(final_labels), groups))
   labels <- final_labels[breaks]
   # Keep all values in final_map for aesthetic consistency (like colors)
 

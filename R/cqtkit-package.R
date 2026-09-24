@@ -144,7 +144,7 @@
 #' value. See \code{vignette("styling")} for the complete styling workflow.
 #' This helper adds reference lines:
 #' \itemize{
-#'   \item \code{\link{add_horizontal_references}}: Add reference lines to plots
+#'   \item \code{\link{add_horizontal_references}}: Add reference lines to plots. Deprecated in 1.2.1; use the \code{reference_threshold} argument
 #'   \item \code{\link[ggstylekit]{style_spec}}, \code{\link[ggstylekit]{legend_spec}}, \code{\link[ggstylekit]{reveal}}, \code{\link[ggstylekit]{restyle_plot}}: Re-exported from \pkg{ggstylekit}
 #'   \item \code{\link{set_style}}, \code{\link{style_plot}}: Deprecated in 1.2.0; use \code{style_spec()} and \code{restyle_plot()}
 #' }
@@ -325,7 +325,7 @@ NULL
 #'
 #' @section style:
 #' \itemize{
-#' 	\item \code{\link{add_horizontal_references}} - Adds dashed horizontal reference lines to plots
+#' 	\item \code{\link{add_horizontal_references}} - Adds dashed horizontal reference lines to plots. Deprecated in 1.2.1. Use the \code{reference_threshold} argument
 #' 	\item \code{\link[ggstylekit]{style_spec}}, \code{\link[ggstylekit]{legend_spec}}, \code{\link[ggstylekit]{reveal}}, \code{\link[ggstylekit]{restyle_plot}} - Re-exported from \pkg{ggstylekit} so plots can be styled without attaching it
 #' 	\item \code{\link{set_style}}, \code{\link{style_plot}} - Deprecated in 1.2.0. Use \code{style_spec()} and \code{restyle_plot()}
 #' }

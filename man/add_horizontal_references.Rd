@@ -15,7 +15,12 @@ add_horizontal_references(p, reference_threshold)
 A ggplot2 object with horizontal reference lines added
 }
 \description{
-Adds horizontal reference lines to plot.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+}
+\details{
+Adds horizontal reference lines to plot. Deprecated in favour of the
+\code{reference_threshold} argument of the plotting functions. A plot styled with
+\code{\link[=style_spec]{style_spec()}} cannot be revealed or restyled after lines are added to it.
 }
 \examples{
 data_proc <- cqtkit_data_verapamil |> preprocess()

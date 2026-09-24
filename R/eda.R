@@ -562,7 +562,7 @@ eda_scatter_with_regressions <- function(
   }
 
   # Add horizontal references
-  p <- p |> add_horizontal_references(reference_threshold)
+  p <- p |> add_reference_lines(reference_threshold)
 
   # Set linetype attribute for styling
   linetype_values <- c()
@@ -885,7 +885,8 @@ eda_mean_dv_over_time <- function(
     reference_dose = reference_dose,
     conf_int = conf_int,
     group_col = !!group
-  )
+  ) |>
+    carry_constant_columns(data, time, dosef, group, dv)
 
   # create same dataset if sec_col supplied
   if (!rlang::quo_is_null(sec_dv)) {
@@ -897,7 +898,8 @@ eda_mean_dv_over_time <- function(
       reference_dose = reference_dose,
       conf_int = conf_int,
       group_col = !!group
-    )
+    ) |>
+      carry_constant_columns(data, time, dosef, group, sec_dv)
   }
 
   # Check reference dose to grab correct y-value column either meanDV or mean_delta_DV
@@ -971,7 +973,7 @@ eda_mean_dv_over_time <- function(
       group = .data$grouping
     ))
 
-  p <- add_horizontal_references(p, reference_threshold)
+  p <- add_reference_lines(p, reference_threshold)
 
   p <- p +
     ggplot2::geom_point() +

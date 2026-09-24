@@ -440,7 +440,7 @@ gof_residuals_plots <- function(
       ggplot2::theme_bw()
 
     if (!is.null(residual_references)) {
-      .p <- add_horizontal_references(.p, residual_references)
+      .p <- add_reference_lines(.p, residual_references)
     }
 
     .p <- cqtkit_apply_style(
@@ -668,7 +668,7 @@ gof_residuals_time_boxplots <- function(
     }
 
     if (!is.null(residual_references)) {
-      .rbp <- add_horizontal_references(.rbp, residual_references)
+      .rbp <- add_reference_lines(.rbp, residual_references)
     }
 
     this_style <- panel_style
@@ -787,7 +787,7 @@ gof_residuals_trt_boxplots <- function(
       ggplot2::theme_bw()
 
     if (!is.null(residual_references)) {
-      .rbpt <- add_horizontal_references(.rbpt, residual_references)
+      .rbpt <- add_reference_lines(.rbpt, residual_references)
     }
 
     .rbpt <- cqtkit_apply_style(
