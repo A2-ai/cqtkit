@@ -74,3 +74,12 @@ test_that("unknown elements in existing style list emit a warning", {
   )
   expect_equal(style$title, "Bad")
 })
+
+test_that("style_plot is deprecated", {
+  withr::local_options(lifecycle_verbosity = "warning")
+
+  expect_warning(
+    style_plot(ggplot2::ggplot(), title = "x"),
+    "`style_plot\\(\\)` was deprecated in cqtkit 1.2.0"
+  )
+})

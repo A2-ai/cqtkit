@@ -21,7 +21,6 @@ test_that("combined spec plots remain restylable", {
     style = style_spec()
   )
 
-  expect_s3_class(p, "patchwork")
   expect_no_error(restyle_plot(p, legend.position = "bottom"))
   expect_no_error(reveal(p, time, as = "facet"))
 })

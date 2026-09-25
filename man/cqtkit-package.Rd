@@ -78,7 +78,7 @@ exceeding QTc thresholds
 \item \code{\link{compute_lme_slope_df}}: Extract slope from mixed-effects
 model
 \item \code{\link{compute_loess_linear_r_squared}}: Compare loess vs linear
-fit
+fit. Deprecated in 1.2.1
 \item \code{\link{compute_quantiles_obs_df}}: Compute quantile-based
 summary
 \item \code{\link{compute_potential_hysteresis}}: Detect potential

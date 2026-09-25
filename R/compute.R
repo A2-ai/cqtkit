@@ -665,9 +665,11 @@ compute_grouped_mean_sd <- function(
 
 #' Compute Loess Linear R Squared
 #'
+#' `r lifecycle::badge("deprecated")`
+#'
 #' Computes R-squared and Adjusted R-squared of loess regression
 #' compared to linear regression. Used for determining linearity
-#' of C-QT data.
+#' of C-QT data. Deprecated in 1.2.1.
 #'
 #' @param data A data frame containing C-QT analysis dataset
 #' @param deltaqtc_col An unquoted column name for dQTCF measurements
@@ -685,11 +687,16 @@ compute_loess_linear_r_squared <- function(
   conc_col,
   span = 0.99
 ) {
+  lifecycle::deprecate_warn(
+    when = "1.2.1",
+    what = "compute_loess_linear_r_squared()"
+  )
+
   dqtc <- rlang::enquo(deltaqtc_col)
   conc <- rlang::enquo(conc_col)
 
-  conc_str <- rlang::as_label(dqtc)
-  dqtc_str <- rlang::as_label(conc)
+  conc_str <- rlang::as_label(conc)
+  dqtc_str <- rlang::as_label(dqtc)
 
   f <- stats::as.formula(
     paste(dqtc_str, "~", conc_str, "+ 1")
@@ -796,13 +803,27 @@ compute_potential_hysteresis <- function(
     )
   }
 
-  if (length(qtc_conc_df$group |> unique()) != 1)
-    message("Only input single dose data")
-  stopifnot(length(qtc_conc_df$group |> unique()) == 1)
+  groups <- unique(as.character(qtc_conc_df$group))
+  if (length(groups) != 1) {
+    found <- if (length(groups) == 0) {
+      "none"
+    } else {
+      paste0('"', groups, '"', collapse = ", ")
+    }
+    stop("`group_col` must contain a single group; found ", found, ".")
+  }
 
-  if (length(qtc_conc_df$ntld |> unique()) < 3)
-    message("Three time points are needed within NTIME")
-  stopifnot(length(qtc_conc_df$ntld |> unique()) > 3)
+  n_times <- length(unique(qtc_conc_df$ntld))
+  if (n_times < 4) {
+    stop(
+      "`ntime_col` needs at least 4 time points per group to assess ",
+      "hysteresis; \"",
+      groups,
+      "\" has ",
+      n_times,
+      "."
+    )
+  }
 
   qtc_conc_df <- qtc_conc_df |>
     dplyr::group_by(.data$ntld, .groups = "keep") |>

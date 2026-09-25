@@ -7,7 +7,8 @@ test_that("compute_grouped_mean_sd errors when time grouping does not reduce siz
       QT,
       TIME_UNIQUE,
       DOSE
-    )
+    ),
+    "Grouping by ntime_col does not reduce size"
   )
 })
 
@@ -20,29 +21,30 @@ test_that("compute_grouped_mean_sd errors when dose grouping does not reduce siz
       QT,
       NTLD,
       DOSE_UNIQUE
-    )
+    ),
+    "Grouping by dosef_col does not reduce size"
   )
 })
 
-test_that('compute_grouped_mean_sd gives mean_dv column', {
-  result <- compute_grouped_mean_sd(
-    cqtkit_data_verapamil %>% preprocess(),
+test_that("compute_grouped_mean_sd means by time and dose, and deltas against the reference", {
+  plain <- compute_grouped_mean_sd(cqtkit_data_verapamil, deltaQTCF, NTLD, DOSEF)
+  ref <- compute_grouped_mean_sd(
+    cqtkit_data_verapamil,
     deltaQTCF,
     NTLD,
-    DOSE
+    DOSEF,
+    reference_dose = "0 mg"
   )
-  expect_true('mean_dv' %in% colnames(result))
-})
+  expected <- cqtkit_data_verapamil |>
+    dplyr::group_by(NTLD, DOSEF) |>
+    dplyr::summarise(mean_dv = mean(deltaQTCF), .groups = "drop")
+  placebo <- expected$mean_dv[expected$DOSEF == "0 mg"]
 
-test_that('compute_grouped_mean_sd gives mean_delta_dv when reference dose given.', {
-  result <- compute_grouped_mean_sd(
-    cqtkit_data_verapamil %>% preprocess(),
-    deltaQTCF,
-    NTLD,
-    DOSE,
-    reference_dose = 0
+  expect_equal(plain$mean_dv, expected$mean_dv)
+  expect_equal(
+    ref$mean_delta_dv,
+    expected$mean_dv - rep(placebo, each = 2)
   )
-  expect_true('mean_delta_dv' %in% colnames(result))
 })
 
 test_that("grouped summaries return ordered factor groups", {

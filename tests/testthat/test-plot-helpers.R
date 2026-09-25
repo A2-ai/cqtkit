@@ -21,3 +21,13 @@ test_that("legend order follows factor levels, not row order", {
     lv
   )
 })
+
+test_that("add_horizontal_references is deprecated", {
+  withr::local_options(lifecycle_verbosity = "warning")
+  p <- eda_scatter_with_regressions(cqtkit_data_verapamil, deltaQTCF, CONC, TRTG)
+
+  expect_warning(
+    add_horizontal_references(p, 10),
+    "`add_horizontal_references\\(\\)` was deprecated in cqtkit 1.2.1"
+  )
+})
