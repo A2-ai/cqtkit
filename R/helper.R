@@ -83,6 +83,29 @@ complete_group_values <- function(data, group) {
   values
 }
 
+#' Error if any group has too few time points to assess hysteresis
+#'
+#' `compute_potential_hysteresis()` flags hysteresis only when more than 3
+#' time points have a mean deltaQTc above 5 ms, so a group with fewer than 4
+#' time points cannot be assessed.
+#'
+#' @param n_times Named integer vector of time point counts, one per group
+#' @return `TRUE`, invisibly
+#' @keywords internal
+#' @noRd
+assert_hysteresis_time_points <- function(n_times) {
+  short <- n_times[n_times < 4]
+  if (length(short) > 0) {
+    stop(
+      "`ntime_col` needs at least 4 time points per group to assess ",
+      "hysteresis. These groups have fewer:\n",
+      paste0("  - \"", names(short), "\": ", short, collapse = "\n"),
+      call. = FALSE
+    )
+  }
+  invisible(TRUE)
+}
+
 #' Error if any model column name is non-syntactic
 #'
 #' `nlme::lme()` builds its formula from pasted column names and cannot parse

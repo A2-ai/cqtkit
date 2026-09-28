@@ -14,7 +14,11 @@ test_that("compute_potential_hysteresis needs at least 4 time points", {
   )
   expect_error(
     compute_potential_hysteresis(.test_data, NTLD, deltaQTCF, CONC, DOSEF),
-    '`ntime_col` needs at least 4 time points per group to assess hysteresis; "120 mg" has 3.',
+    paste0(
+      "`ntime_col` needs at least 4 time points per group to assess ",
+      "hysteresis. These groups have fewer:\n",
+      "  - \"120 mg\": 3"
+    ),
     fixed = TRUE
   )
 })

@@ -62,7 +62,12 @@ test_that("hysteresis_labeller names every group short of time points", {
       DOSEF,
       SEX
     ),
-    '`ntime_col` needs at least 4 time points per group to assess hysteresis; "F" has 3, "M" has 3.',
+    paste0(
+      "`ntime_col` needs at least 4 time points per group to assess ",
+      "hysteresis. These groups have fewer:\n",
+      "  - \"F\": 3\n",
+      "  - \"M\": 3"
+    ),
     fixed = TRUE
   )
 })

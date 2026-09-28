@@ -810,20 +810,17 @@ compute_potential_hysteresis <- function(
     } else {
       paste0('"', groups, '"', collapse = ", ")
     }
-    stop("`group_col` must contain a single group; found ", found, ".")
-  }
-
-  n_times <- length(unique(qtc_conc_df$ntld))
-  if (n_times < 4) {
     stop(
-      "`ntime_col` needs at least 4 time points per group to assess ",
-      "hysteresis; \"",
-      groups,
-      "\" has ",
-      n_times,
-      "."
+      "`group_col` must contain a single group; found ",
+      found,
+      ".",
+      call. = FALSE
     )
   }
+
+  assert_hysteresis_time_points(
+    stats::setNames(length(unique(qtc_conc_df$ntld)), groups)
+  )
 
   qtc_conc_df <- qtc_conc_df |>
     dplyr::group_by(.data$ntld, .groups = "keep") |>
@@ -955,15 +952,7 @@ compute_hysteresis_labeller <- function(
     function(g) length(unique(qtc_conc_df$ntld[qtc_conc_df$group == g])),
     integer(1)
   )
-  short <- n_times[n_times < 4]
-  if (length(short) > 0) {
-    stop(
-      "`ntime_col` needs at least 4 time points per group to assess ",
-      "hysteresis; ",
-      paste0('"', names(short), '" has ', short, collapse = ", "),
-      "."
-    )
-  }
+  assert_hysteresis_time_points(n_times)
 
   hysteresis <- list()
   for (dose in group_levels) {
