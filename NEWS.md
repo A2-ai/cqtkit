@@ -7,6 +7,7 @@
 ### Fixed
 * `compute_loess_linear_r_squared()` regresses `deltaqtc_col` on `conc_col`.
 * `compute_potential_hysteresis()` errors name the group when `group_col` holds more than one group or a group has fewer than 4 time points.
+  * `compute_hysteresis_labeller()` and `eda_hysteresis_loop_plot()` name every group with fewer than 4 time points in one error.
 * Reference lines, regression lines and `gof_vpc_plot()` percentile lines are named lines in the linetype legend, placed after the group legend. `reveal()` onto shapes gives a legend of the revealed column only, and `colors` and `linetypes` restyle each line by name, for example `"Reference 10"`.
   * `eda_scatter_with_regressions()` draws the linear regression solid and the LOESS regression short-dashed.
   * The linetype legend has no title. Legends placed side by side are bottom-aligned unless the theme sets `legend.box.just`.

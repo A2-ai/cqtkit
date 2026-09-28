@@ -47,3 +47,22 @@ test_that("hysteresis_labeller errors when NTLD is supplied as factor", {
     fixed = TRUE
   )
 })
+
+test_that("hysteresis_labeller names every group short of time points", {
+  .test_data <- cqtkit_data_verapamil %>%
+    dplyr::filter(DOSE > 0, NTLD %in% c(0.5, 1, 2)) %>%
+    droplevels()
+
+  expect_error(
+    compute_hysteresis_labeller(
+      .test_data,
+      NTLD,
+      deltaQTCF,
+      CONC,
+      DOSEF,
+      SEX
+    ),
+    '`ntime_col` needs at least 4 time points per group to assess hysteresis; "F" has 3, "M" has 3.',
+    fixed = TRUE
+  )
+})

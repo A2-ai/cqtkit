@@ -950,6 +950,21 @@ compute_hysteresis_labeller <- function(
     gtools::mixedsort(unique(group_values))
   }
 
+  n_times <- vapply(
+    group_levels,
+    function(g) length(unique(qtc_conc_df$ntld[qtc_conc_df$group == g])),
+    integer(1)
+  )
+  short <- n_times[n_times < 4]
+  if (length(short) > 0) {
+    stop(
+      "`ntime_col` needs at least 4 time points per group to assess ",
+      "hysteresis; ",
+      paste0('"', names(short), '" has ', short, collapse = ", "),
+      "."
+    )
+  }
+
   hysteresis <- list()
   for (dose in group_levels) {
     h <- compute_potential_hysteresis(
