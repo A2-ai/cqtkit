@@ -25,24 +25,51 @@ test_that("combined spec plots remain restylable", {
   expect_no_error(reveal(p, time, as = "facet"))
 })
 
-test_that("explicit shape legend settings survive automatic unification", {
+legend_titles <- function(p) {
+  guides <- ggplot2::ggplot_build(p)$plot$guides$params
+  unname(vapply(guides, function(x) format(x$title %||% "NULL"), ""))
+}
+
+test_that("a colour legend_spec sets the treatment legend", {
   p <- eda_scatter_with_regressions(
     cqtkit_data_verapamil,
     deltaQTCF,
     CONC,
     TRTG,
     style = style_spec(
-      legends = list(
-        legend_spec(channel = "color", title = "Treatment", order = 1),
-        legend_spec(channel = "shape", title = "Groups", order = 3)
-      )
+      legends = legend_spec(channel = "color", title = "Treatment", order = 1)
     )
   )
 
   expect_equal(p$labels$colour, "Treatment")
-  expect_equal(p$labels$shape, "Groups")
   expect_equal(p$guides$guides$colour$params$order, 1)
-  expect_equal(p$guides$guides$shape$params$order, 3)
+  expect_true("Treatment" %in% legend_titles(p))
+})
+
+test_that("hiding the colour legend removes the treatment legend", {
+  p <- eda_scatter_with_regressions(
+    cqtkit_data_verapamil,
+    deltaQTCF,
+    CONC,
+    TRTG,
+    style = style_spec(legends = legend_spec(channel = "color", hide = TRUE))
+  )
+
+  expect_false("Treatment Group" %in% legend_titles(p))
+})
+
+test_that("reveal() maps a covariate onto shapes", {
+  p <- eda_scatter_with_regressions(
+    cqtkit_data_verapamil,
+    deltaQTCF,
+    CONC,
+    TRTG,
+    style = style_spec()
+  ) |>
+    reveal(SEX, as = "shapes")
+
+  expect_true("SEX" %in% legend_titles(p))
+  expect_length(unique(ggplot2::ggplot_build(p)$data[[1]]$shape), 2)
 })
 
 test_that("color palette functions also provide mapped fill defaults", {

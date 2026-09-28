@@ -40,5 +40,5 @@ fit <- fit_prespecified_model(
   TRUE
 )
 
-compute_fit_results(data_proc, fit, deltaQTCF, CONC, NTLD)
+compute_fit_results(data_proc, fit, deltaQTCF, CONC, NTLD, TRTG)
 }

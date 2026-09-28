@@ -717,19 +717,48 @@ is_style_spec <- function(style) {
   inherits(style, "ggstylekit_style_spec")
 }
 
+# legend_location is deprecated in favour of legend.position in a style_spec().
+# NULL when the caller did not supply it.
+check_legend_location <- function(
+  legend_location,
+  fn,
+  choices,
+  user_env = rlang::caller_env(2)
+) {
+  if (!lifecycle::is_present(legend_location)) {
+    return(NULL)
+  }
+  lifecycle::deprecate_warn(
+    when = "1.2.1",
+    what = paste0(fn, "(legend_location)"),
+    details = "Set `legend.position` in `style_spec()` instead.",
+    user_env = user_env
+  )
+  match.arg(legend_location, choices)
+}
+
 # Compose styled panels without baking the spec path into grobs. The legacy
 # path stays on ggpubr so existing list-styled and default figures retain their
 # current rendering. A collected patchwork legend takes its initial position
-# from the public function argument; later restyle_plot() calls can move it.
+# from the spec's legend.position, then the deprecated legend_location; the
+# list path never read legend.position for it. Later restyle_plot() calls can
+# move it.
 compose_cqtkit_plots <- function(
   plots,
   style,
   nrow = NULL,
   ncol = NULL,
-  legend_location = "top",
+  legend_location = NULL,
   common_legend = TRUE,
   title = NULL
 ) {
+  legend_location <- legend_location %||% "top"
+  if (is_style_spec(style)) {
+    legend_location <- ggstylekit::with_defaults(
+      style,
+      ggstylekit::style_spec(legend.position = legend_location)
+    )$legend.position
+  }
   legend_position <- if (common_legend) legend_location else "none"
 
   if (is_style_spec(style)) {
@@ -761,12 +790,12 @@ compose_cqtkit_plots <- function(
   combined
 }
 
-# A GOF style title belongs to the assembled figure. Remove it from spec-styled
-# panels while preserving the class and explicit NULL field expected by
-# ggstylekit's default resolution.
+# A GOF style title belongs to the assembled figure. Remove the field from
+# spec-styled panels: with_defaults() does not add it back, so restyle_plot()
+# cannot put the figure title on every panel.
 without_panel_title <- function(style) {
   if (is_style_spec(style)) {
-    style["title"] <- list(NULL)
+    style["title"] <- NULL
   }
   style
 }
@@ -819,6 +848,33 @@ dedupe_by_name <- function(x) {
   x[!duplicated(names(x))]
 }
 
+# Plots map shape to the same column as colour so the list engine can merge
+# the two legends and apply a list `shapes`. A spec needs neither: the solid
+# point comes from point_shape, and the shape channel stays free for reveal().
+# Plots with secondary shapes (open points for secondary data) keep theirs.
+drop_shape_mapped_like_colour <- function(p) {
+  repeats <- function(mapping) {
+    !is.null(mapping$shape) &&
+      !is.null(mapping$colour) &&
+      identical(rlang::as_label(mapping$shape), rlang::as_label(mapping$colour))
+  }
+  if (repeats(p$mapping)) {
+    p$mapping$shape <- NULL
+  }
+  for (i in seq_along(p$layers)) {
+    layer_mapping <- p$layers[[i]]$mapping
+    effective <- if (isTRUE(p$layers[[i]]$inherit.aes)) {
+      utils::modifyList(as.list(p$mapping), as.list(layer_mapping))
+    } else {
+      layer_mapping
+    }
+    if (!is.null(layer_mapping$shape) && repeats(effective)) {
+      p$layers[[i]]$mapping$shape <- NULL
+    }
+  }
+  p
+}
+
 # Theme for the square gof_* panels, which set aspect.ratio = 1 at construction.
 cqtkit_square_theme <- function() {
   ggplot2::theme_bw() + ggplot2::theme(aspect.ratio = 1)
@@ -867,28 +923,38 @@ cqtkit_apply_style <- function(
   theme = NULL,
   linetype_legend = NULL
 ) {
-  style$title <- style$title %||% title
-  style$xlabel <- style$xlabel %||% xlabel
-  style$ylabel <- style$ylabel %||% ylabel
-  style$xlims <- style$xlims %||% xlims
-  style$ylims <- style$ylims %||% ylims
-  style$fill_alpha <- style$fill_alpha %||% fill_alpha
-
   if (!is_style_spec(style)) {
+    style$title <- style$title %||% title
+    style$xlabel <- style$xlabel %||% xlabel
+    style$ylabel <- style$ylabel %||% ylabel
+    style$xlims <- style$xlims %||% xlims
+    style$ylims <- style$ylims %||% ylims
+    style$fill_alpha <- style$fill_alpha %||% fill_alpha
     style$colors <- style$colors %||% colors
     style$legend <- style$legend %||% legend
     style$shape_legend <- style$shape_legend %||% shape_legend
     style$fill_legend <- style$fill_legend %||% fill_legend
     style$labels <- style$labels %||% labels
     style$color_order <- style$color_order %||% color_order
-    style$shape_order <- style$shape_order %||% shape_order
+    # The shape legend merges with the colour legend only at the same order,
+    # so it follows a caller's color_order.
+    style$shape_order <- style$shape_order %||%
+      style$color_order %||%
+      shape_order
     style$linetype_order <- style$linetype_order %||% linetype_order
     style$linetype_legend <- style$linetype_legend %||% linetype_legend
     style$fill_order <- style$fill_order %||% fill_order
     return(do.call(style_plot_impl, c(list(p = p), style)))
   }
 
+  shape_repeats_colour <- is.null(attr(p, "secondary_shapes"))
+  if (shape_repeats_colour) {
+    p <- drop_shape_mapped_like_colour(p)
+  }
   scales <- plot_scale_defaults(p)
+  if (shape_repeats_colour) {
+    scales$shapes <- NULL
+  }
   levels <- master_order(p, labels, colors, scales$shapes)
 
   legends <- list()
@@ -905,7 +971,10 @@ cqtkit_apply_style <- function(
     )
   }
   shape_title <- shape_legend %||% legend
-  if (!is.null(shape_title) || !is.null(labels) || !is.null(shape_order)) {
+  if (
+    !shape_repeats_colour &&
+      (!is.null(shape_title) || !is.null(labels) || !is.null(shape_order))
+  ) {
     legends <- c(
       legends,
       list(ggstylekit::legend_spec(
@@ -948,9 +1017,16 @@ cqtkit_apply_style <- function(
   cqtkit_style_plot(
     p,
     style,
+    title = title,
+    xlabel = xlabel,
+    ylabel = ylabel,
+    xlims = xlims,
+    ylims = ylims,
+    fill_alpha = fill_alpha,
     caption = p$labels$caption,
     colors = default_colors,
     shapes = scales$shapes,
+    point_shape = if (shape_repeats_colour) 16L else NULL,
     legends = if (length(legends) > 0) legends else NULL,
     theme = theme
   )

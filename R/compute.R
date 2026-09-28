@@ -175,7 +175,7 @@ compute_pk_parameters <- function(
   }
   if (any(is.na(pk_df$ntld))) {
     warning(
-      "Your TIME data contains NA and is removed in calculations of this function"
+      "Your TIME data contains NA values"
     )
   }
 
@@ -570,12 +570,12 @@ compute_grouped_mean_sd <- function(
   }
   if (any(is.na(df$time))) {
     warning(
-      "Your TIME data contains NA and is removed in calculations of this function"
+      "Your TIME data contains NA values"
     )
   }
   if (any(is.na(df$dose))) {
     warning(
-      "Your DOSE data contains NA and is removed in calculations of this function"
+      "Your DOSE data contains NA values"
     )
   }
   ############################ - this could be prep_data function return qc_df
@@ -1707,14 +1707,15 @@ compute_contrast_observations <- function(
         dplyr::relocate("group", "conc", "dv")
 
       if (any(is.na(observed_df$dv))) {
-        warning(
-          "Control group means contained NA, resulting in NA observations that are removed"
-        )
+        warning("Observed data contained NA and are removed in plot")
         observed_df <- observed_df |> dplyr::filter(!is.na(dv))
       }
     }
   }
 
+  observed_df <- observed_df |>
+    dplyr::ungroup() |>
+    tibble::as_tibble()
   return(observed_df)
 }
 

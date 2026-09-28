@@ -13,7 +13,7 @@ eda_qtc_comparison_plot(
   qtcp_col = NULL,
   id_col = NULL,
   trt_col = NULL,
-  legend_location = "top",
+  legend_location = lifecycle::deprecated(),
   model_type = c("lm", "lme"),
   show_model_results = TRUE,
   method = "REML",
@@ -43,7 +43,9 @@ eda_qtc_comparison_plot(
 
 \item{trt_col}{An unquoted column name for treatment group data}
 
-\item{legend_location}{String for legend position (top, bottom, left, right)}
+\item{legend_location}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} String for
+legend position (top, bottom, left, right). Set \code{legend.position} in
+\code{\link[=style_spec]{style_spec()}} instead.}
 
 \item{model_type}{Lm or lme, which model to fit for showing on plot}
 
@@ -96,6 +98,5 @@ eda_qtc_comparison_plot(
   trt_col = TRTG,
   model_type = "lme",
   show_model_results = TRUE,
-  remove_rr_iiv = TRUE,
-  legend_location = 'top')
+  remove_rr_iiv = TRUE)
 }

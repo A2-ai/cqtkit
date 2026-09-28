@@ -117,11 +117,14 @@ eda_qt_rr_plot <- function(
     )
 
     qt_rr_plot <- qt_rr_plot +
-      ggplot2::geom_smooth(
-        method = "lm",
-        se = FALSE,
-        formula = y ~ x,
-        color = "black"
+      ggstylekit::series_layer(
+        ggplot2::geom_smooth(
+          method = "lm",
+          se = FALSE,
+          formula = y ~ x,
+          color = "black"
+        ),
+        "Linear Regression"
       )
   } else if ((model_type == "lme") && show_model_results) {
     lme_mod <- fit_qtc_linear_model(
@@ -172,10 +175,13 @@ eda_qt_rr_plot <- function(
     plot_data$predictions <- stats::predict(lme_mod, level = 0)
 
     qt_rr_plot <- qt_rr_plot +
-      ggplot2::geom_line(
-        data = plot_data,
-        ggplot2::aes(y = .data$predictions),
-        color = "black"
+      ggstylekit::series_layer(
+        ggplot2::geom_line(
+          data = plot_data,
+          ggplot2::aes(y = .data$predictions),
+          color = "black"
+        ),
+        "Linear Regression"
       )
   } else {
     label <- NULL
@@ -210,7 +216,9 @@ eda_qt_rr_plot <- function(
 #' @param qtcp_col An unquoted column name for QTc measurements
 #' @param id_col An unquoted column name for subject ID
 #' @param trt_col An unquoted column name for treatment group data
-#' @param legend_location String for legend position (top, bottom, left, right)
+#' @param legend_location `r lifecycle::badge("deprecated")` String for
+#'   legend position (top, bottom, left, right). Set `legend.position` in
+#'   [style_spec()] instead.
 #' @param model_type Lm or lme, which model to fit for showing on plot
 #' @param show_model_results Logical, whether to draw the fitted line and
 #'   annotate the plot with the model results. `include_pvalue` adds to that
@@ -250,8 +258,7 @@ eda_qt_rr_plot <- function(
 #'   trt_col = TRTG,
 #'   model_type = "lme",
 #'   show_model_results = TRUE,
-#'   remove_rr_iiv = TRUE,
-#'   legend_location = 'top')
+#'   remove_rr_iiv = TRUE)
 eda_qtc_comparison_plot <- function(
   data,
   rr_col,
@@ -261,7 +268,7 @@ eda_qtc_comparison_plot <- function(
   qtcp_col = NULL,
   id_col = NULL,
   trt_col = NULL,
-  legend_location = "top",
+  legend_location = lifecycle::deprecated(),
   model_type = c("lm", "lme"),
   show_model_results = TRUE,
   method = "REML",
@@ -292,8 +299,9 @@ eda_qtc_comparison_plot <- function(
     )
   }
 
-  legend_location <- match.arg(
+  legend_location <- check_legend_location(
     legend_location,
+    "eda_qtc_comparison_plot",
     c("top", "bottom", "right", "left")
   )
   vars <- c(rr, qt, id, qtcb, qtcf, qtcp, trt)
@@ -425,7 +433,8 @@ eda_quantiles_plot <- function(
           y = !!ydata,
           color = !!trt,
         ),
-        alpha = 0.25
+        alpha = 0.25,
+        shape = 19
       )
   }
 
@@ -435,7 +444,10 @@ eda_quantiles_plot <- function(
         shape = .data$.trt_group
       )
     ) +
-    ggplot2::geom_smooth(method = "lm", formula = y ~ x, level = conf_int) +
+    ggstylekit::series_layer(
+      ggplot2::geom_smooth(method = "lm", formula = y ~ x, level = conf_int),
+      "Linear Regression"
+    ) +
     ggplot2::theme_bw()
 
   p <- add_error_bars_to_plot(obs, p, NULL, error_bars, conf_int)
@@ -785,14 +797,6 @@ eda_hysteresis_loop_plot <- function(
     bquote("Mean " ~ Delta ~ "QTc (ms)")
   }
 
-  .p <- cqtkit_apply_style(
-    .p,
-    style,
-    xlabel = "Mean Plasma Concentration (ng/mL)",
-    ylabel = default_ylabel,
-    legend = "Dose"
-  )
-
   if (show_hysteresis_warning) {
     .p <- .p +
       ggplot2::facet_wrap(~ .data$dosef_hys, scales = "free")
@@ -800,6 +804,14 @@ eda_hysteresis_loop_plot <- function(
     .p <- .p +
       ggplot2::facet_wrap(~ .data$group, scales = "free")
   }
+
+  .p <- cqtkit_apply_style(
+    .p,
+    style,
+    xlabel = "Mean Plasma Concentration (ng/mL)",
+    ylabel = default_ylabel,
+    legend = "Dose"
+  )
 
   return(.p)
 }

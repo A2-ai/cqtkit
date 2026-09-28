@@ -437,7 +437,7 @@ compute_model_fit_parameters <- function(
 #'   TRUE
 #' )
 #'
-#' compute_fit_results(data_proc, fit, deltaQTCF, CONC, NTLD)
+#' compute_fit_results(data_proc, fit, deltaQTCF, CONC, NTLD, TRTG)
 compute_fit_results <- function(
   data,
   fit,
@@ -457,8 +457,18 @@ compute_fit_results <- function(
   required_cols <- unlist(lapply(c(dv, conc, time, trt), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
+  trt_name <- name_quo_if_not_null(trt)
+  if ("TRTG" %in% names(data) && !identical(trt_name, "TRTG")) {
+    warning(
+      "`TRTG` in `data` is overwritten with ",
+      if (is.null(trt_name)) "\"\" because `trt_col` is NULL" else paste0("`", trt_name, "`"),
+      ". Rename the `TRTG` column to keep it.",
+      call. = FALSE
+    )
+  }
+
   fit_results_df <- dplyr::mutate(
-    data,
+    dplyr::ungroup(data),
     dv = !!dv,
     conc = !!conc,
     time = !!time,
@@ -488,6 +498,7 @@ compute_fit_results <- function(
       "WRES",
       "IWRES",
       "TRTG"
-    )
+    ) |>
+    tibble::as_tibble()
   return(fit_results_df)
 }

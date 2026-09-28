@@ -122,18 +122,42 @@ add_color_references <- function(p, reference_threshold) {
     yintercept = reference_threshold,
     group = paste0("Reference ", reference_threshold)
   )
-  p <- p +
-    ggplot2::geom_hline(
-      data = ref,
-      ggplot2::aes(yintercept = .data$yintercept, color = .data$group),
-      inherit.aes = FALSE,
-      linetype = "dashed"
-    )
+  # One layer per line, each named, so `linetypes` can restyle it by name.
+  for (i in seq_len(nrow(ref))) {
+    p <- p +
+      ggstylekit::series_layer(
+        ggplot2::geom_hline(
+          data = ref[i, , drop = FALSE],
+          ggplot2::aes(yintercept = .data$yintercept, color = .data$group),
+          inherit.aes = FALSE,
+          linetype = "dashed"
+        ),
+        ref$group[[i]]
+      )
+  }
   attr(p, "series_colors") <- c(
     attr(p, "series_colors"),
     stats::setNames(rep("black", nrow(ref)), ref$group)
   )
 
+  p
+}
+
+# The list styling engine merges the colour and shape legends only when every
+# colour-mapped layer also maps shape to the same column, and applies a list
+# `shapes` through that shape scale. The prediction line draws no points, so
+# its group takes the secondary (open) shape.
+map_shape_like_colour <- function(p) {
+  if (!is.null(p$mapping$colour)) {
+    p$mapping$shape <- p$mapping$colour
+  }
+  for (i in seq_along(p$layers)) {
+    colour <- p$layers[[i]]$mapping$colour
+    if (!is.null(colour)) {
+      p$layers[[i]]$mapping$shape <- colour
+    }
+  }
+  attr(p, "secondary_shapes") <- stats::setNames(1, "Predictions")
   p
 }
 
@@ -197,21 +221,43 @@ add_horizontal_references <- function(p, reference_threshold) {
     details = "Use the `reference_threshold` argument of the plotting functions."
   )
 
-  p <- add_reference_lines(p, reference_threshold)
-
-  # The plot was styled before these lines existed, so set the linetypes of
-  # all its named lines here, replacing the styled linetype scale.
-  linetypes <- line_series_linetypes(p)
-  if (length(linetypes) == 0) {
+  if (is.null(reference_threshold) || length(reference_threshold) == 0) {
     return(p)
   }
-  suppressMessages(
-    p +
-      ggplot2::scale_linetype_manual(
-        values = linetypes,
-        breaks = names(linetypes)
-      )
+
+  ref_labels <- paste0("Reference ", reference_threshold)
+
+  ref_data <- data.frame(
+    yintercept = reference_threshold,
+    group = ref_labels,
+    stringsAsFactors = FALSE
   )
+
+  p <- p +
+    suppressWarnings(
+      ggplot2::geom_hline(
+        data = ref_data,
+        ggplot2::aes(
+          yintercept = .data$yintercept,
+          color = .data$group,
+          shape = .data$group # Needed for combined color/shape legend
+        ),
+        linetype = "dashed"
+      )
+    )
+
+  attr(p, "reference_colors") <- stats::setNames(
+    rep("black", length(reference_threshold)),
+    ref_labels
+  )
+
+  # Also set reference shapes as NA so they don't appear in legend
+  attr(p, "reference_shapes") <- stats::setNames(
+    rep(NA, length(reference_threshold)),
+    ref_labels
+  )
+
+  return(p)
 }
 
 

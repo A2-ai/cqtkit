@@ -345,7 +345,8 @@ gof_concordance_plots(
   )
 ) |>
   reveal(AGE, as = "color", on = "point",
-         legends = legend_spec(channel = "color", title = "Age (y)"))
+         legends = legend_spec(channel = "color", title = "Age (y)")) |>
+  reveal(SEX, as = "facet", facet_nrow = 2)
 ```
 
 ## `gof_residuals_plots()`
@@ -386,7 +387,7 @@ gof_residuals_time_boxplots(
   cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG,
   style = style_spec(
     fill = c("Placebo" = "grey70", "Verapamil HCL" = "steelblue"),
-    fill_alpha = 0.4,
+    box_alpha = 0.4,
     legends = legend_spec(channel = "fill", title = "Treatment"),
     legend.position = "right"
   )
@@ -402,7 +403,7 @@ gof_residuals_trt_boxplots(
   cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG,
   style = style_spec(
     fill = c("Placebo" = "grey70", "Verapamil HCL" = "steelblue"),
-    fill_alpha = 0.5,
+    box_alpha = 0.5,
     legends = legend_spec(channel = "fill", title = "Treatment"),
     legend.position = "bottom"
   )

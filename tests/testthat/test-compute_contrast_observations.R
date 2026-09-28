@@ -52,7 +52,7 @@ test_that("group contrasts drop and warn about times with no control mean", {
       control_predictors = ctrl_pred,
       contrast_method = "group"
     ),
-    "Control group means contained NA"
+    "Observed data contained NA and are removed"
   )
   expect_false(1 %in% obs$NTLD)
 })

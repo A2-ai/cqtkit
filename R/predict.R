@@ -168,6 +168,10 @@ predict_with_observations_plot <- function(
   # Final styling
   style <- as_style_spec(style)
 
+  if (!is_style_spec(style)) {
+    p <- map_shape_like_colour(p)
+  }
+
   p <- cqtkit_apply_style(
     p,
     style,
@@ -181,7 +185,8 @@ predict_with_observations_plot <- function(
     fill_legend = "Confidence Interval",
     legend = "Legend",
     fill_order = 2,
-    color_order = 1
+    color_order = 1,
+    shape_order = 1
   )
 
   return(p)
@@ -373,6 +378,10 @@ predict_with_quantiles_plot <- function(
 
   # Style
   style <- as_style_spec(style)
+  if (!is_style_spec(style)) {
+    p <- map_shape_like_colour(p)
+  }
+
   p <- cqtkit_apply_style(
     p,
     style,
@@ -383,6 +392,7 @@ predict_with_quantiles_plot <- function(
     fill_legend = "Confidence Interval",
     labels = c("Predictions" = "Predictions", "Quantiles" = "Quantiles"),
     color_order = 1,
+    shape_order = 1,
     fill_order = 2
   )
 
