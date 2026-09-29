@@ -388,6 +388,7 @@ gof_concordance_plots <- function(
 #'   [style_spec()] instead.
 #' @param style A [style_spec()], or a named list of arguments passed to
 #'   `style_plot()`. The list form is deprecated.
+#' @param loess_line Logical, whether to add LOESS regression line, default FALSE
 #'
 #' @return A 4-panel plot of WRES and IWRES residuals vs predicted values and concentration
 #' @export
@@ -423,11 +424,13 @@ gof_residuals_plots <- function(
   dv_label = bquote(Delta ~ "QTc (ms)"),
   residual_references = c(-2, 2),
   legend_location = lifecycle::deprecated(),
-  style = list()
+  style = list(),
+  loess_line = FALSE
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
   checkmate::assert_numeric(residual_references, null.ok = TRUE)
+  checkmate::assert_flag(loess_line)
 
   legend_location <- check_legend_location(
     legend_location,
@@ -476,6 +479,20 @@ gof_residuals_plots <- function(
         shape = .data$.trt_group
       )) +
       ggplot2::theme_bw()
+
+    if (loess_line) {
+      .p <- .p +
+        ggstylekit::series_layer(
+          ggplot2::geom_smooth(
+            method = "loess",
+            span = 0.99,
+            color = "red",
+            formula = y ~ x,
+            se = FALSE
+          ),
+          "LOESS Regression"
+        )
+    }
 
     if (!is.null(residual_references)) {
       .p <- add_reference_lines(.p, residual_references)

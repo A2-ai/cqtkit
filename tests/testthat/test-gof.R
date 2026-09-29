@@ -104,3 +104,26 @@ test_that("gof_vpc_plot snapshot", {
 
   snapshot_plot(p, "gof-vpc")
 })
+
+test_that("gof_residuals_plots loess_line adds a LOESS line to each panel", {
+  has_smooth <- function(p) {
+    vapply(seq_len(length(p)), function(i) {
+      any(vapply(
+        p[[i]]$layers,
+        function(l) inherits(l$geom, "GeomSmooth"),
+        logical(1)
+      ))
+    }, logical(1))
+  }
+  p <- gof_residuals_plots(
+    cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG,
+    style = style_spec(), loess_line = TRUE
+  )
+  expect_true(all(has_smooth(p)))
+
+  p <- gof_residuals_plots(
+    cqtkit_data_verapamil, fit, deltaQTCF, CONC, NTLD, TRTG,
+    style = style_spec()
+  )
+  expect_false(any(has_smooth(p)))
+})

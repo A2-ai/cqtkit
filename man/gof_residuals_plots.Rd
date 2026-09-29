@@ -15,7 +15,8 @@ gof_residuals_plots(
   dv_label = bquote(Delta ~ "QTc (ms)"),
   residual_references = c(-2, 2),
   legend_location = lifecycle::deprecated(),
-  style = list()
+  style = list(),
+  loess_line = FALSE
 )
 }
 \arguments{
@@ -43,6 +44,8 @@ legend position (top, bottom, left, right). Set \code{legend.position} in
 
 \item{style}{A \code{\link[=style_spec]{style_spec()}}, or a named list of arguments passed to
 \code{style_plot()}. The list form is deprecated.}
+
+\item{loess_line}{Logical, whether to add LOESS regression line, default FALSE}
 }
 \value{
 A 4-panel plot of WRES and IWRES residuals vs predicted values and concentration

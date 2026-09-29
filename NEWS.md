@@ -1,5 +1,8 @@
 # cqtkit 1.2.1
 
+### Enhanced
+* `gof_residuals_plots()` gains `loess_line`, which adds a "LOESS Regression" line to each panel. Defaults to `FALSE`.
+
 ### Deprecated
 * `add_horizontal_references()` is deprecated and draws the same lines as in 1.1.0. Use the `reference_threshold` argument of the plotting functions.
 * The `legend_location` argument of `eda_qtc_comparison_plot()`, `gof_plots()`, `gof_concordance_plots()`, `gof_residuals_plots()`, `gof_qq_plots()`, `gof_residuals_time_boxplots()` and `gof_residuals_trt_boxplots()` is deprecated. Set `legend.position` in `style_spec()` instead. It will be removed in 2.0.0.
@@ -12,15 +15,15 @@
 * Reference lines, regression lines and `gof_vpc_plot()` percentile lines are named lines in the linetype legend, placed after the group legend. `reveal()` onto shapes gives a legend of the revealed column only, and `colors` and `linetypes` restyle each line by name, for example `"Reference 10"`.
   * `eda_scatter_with_regressions()` draws the linear regression solid and the LOESS regression short-dashed.
   * The linetype legend has no title. Legends placed side by side are bottom-aligned unless the theme sets `legend.box.just`.
-  * The regression lines of `eda_qt_rr_plot()`, `eda_quantiles_plot()` and `gof_concordance_plots()` are named "Linear Regression". `gof_plots()` names its lines "LOESS Regression", "Normal Density" and "Observed Density". The identity lines of `gof_plots()`, `gof_concordance_plots()` and `gof_qq_plots()` are named "Identity".
+  * The regression, density and identity lines of `eda_qt_rr_plot()`, `eda_quantiles_plot()` and the `gof_*()` plots are named lines.
 * `predict_with_observations_plot()` and `predict_with_quantiles_plot()` show predictions, observations and reference lines in one legend. Their points are shape 16, and a style list's `shapes` sets them.
-* On the `style_spec()` path, points map colour only and are shape 16. `style_spec(point_shape = )` sets the shape, `legend_spec(channel = "color", hide = TRUE)` hides the treatment legend, and `reveal(..., as = "shapes")` maps a covariate onto shape.
-* `restyle_plot()` sets `title`, `xlabel`, `ylabel`, `xlims`, `ylims` and `fill_alpha` on `style_spec()` plots. The title of a combined `gof_*()` figure is not a panel title; change it with `+ patchwork::plot_annotation(title = )`.
+* On the `style_spec()` path, points map colour only and are shape 16; set it with `style_spec(point_shape = )`.
+* `restyle_plot()` sets `title`, `xlabel`, `ylabel`, `xlims`, `ylims` and `fill_alpha` on `style_spec()` plots.
 * `style_spec(legend.position = )` places the combined legend of `eda_qtc_comparison_plot()` and the multi-panel `gof_*()` functions.
 * `eda_hysteresis_loop_plot()` works with `restyle_plot()` and `reveal()`, and keeps its facets when combined.
 * `gof_residuals_trt_boxplots()` shows its reference-line legend when `trt_col` is not supplied.
 * A style list that sets `color_order` without `shape_order` gives the shape legend the same order, so treatment keeps one legend.
-* `compute_grouped_mean_sd()` warns that TIME or DOSE data contains NA values and summarises those rows as their own `NA` group. `compute_pk_parameters()` warns that TIME data contains NA values; those rows still count towards N and Cmax.
+* `compute_grouped_mean_sd()` and `compute_pk_parameters()` warn that TIME or DOSE data contains NA values.
 * `compute_contrast_observations()` with `contrast_method = "group"` warns that observed data contained NA whether the missing value is in the treatment or the control group.
 * `predict_with_exposure_plot()` shows reference and Cmax lines in one "Exposure" legend. `colors` recolours a Cmax line by name, for example `"Cmax_113.59"`.
 * Requires ggstylekit >= 0.4.1. `style_spec(caption = ...)` overrides generated plot captions, including exposure predictions; `caption = ""` hides them.
