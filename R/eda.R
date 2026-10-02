@@ -689,23 +689,27 @@ eda_hysteresis_loop_plot <- function(
   checkmate::assert_factor(data |> dplyr::pull(!!dosef))
 
   ### This should be it's own compute_ function
-  mean_qtc_df <- compute_grouped_mean_sd(
-    data = data,
-    dv_col = !!deltaqtc,
-    ntime_col = !!time,
-    dose_col = !!dosef,
-    group_col = !!group,
-    reference_dose = reference_dose
-  )
+  # deltaQTc and concentration are summarised separately, so give each
+  # warning once.
+  with_unique_warnings({
+    mean_qtc_df <- compute_grouped_mean_sd(
+      data = data,
+      dv_col = !!deltaqtc,
+      ntime_col = !!time,
+      dose_col = !!dosef,
+      group_col = !!group,
+      reference_dose = reference_dose
+    )
 
-  mean_conc_df <- compute_grouped_mean_sd(
-    data = data,
-    dv_col = !!conc,
-    ntime_col = !!time,
-    dose_col = !!dosef,
-    group_col = !!group,
-    reference_dose = reference_dose
-  )
+    mean_conc_df <- compute_grouped_mean_sd(
+      data = data,
+      dv_col = !!conc,
+      ntime_col = !!time,
+      dose_col = !!dosef,
+      group_col = !!group,
+      reference_dose = reference_dose
+    )
+  })
 
   mean_qtc_conc_df <- tibble::tibble(
     time = mean_conc_df$time,
@@ -889,30 +893,34 @@ eda_mean_dv_over_time <- function(
   checkmate::assertNames(names(data), must.include = required_cols)
 
   # compute average groupped over time and group col
-  dv_time_df <- compute_grouped_mean_sd(
-    data = data,
-    dv_col = !!dv,
-    ntime_col = !!time,
-    dose_col = !!dosef,
-    reference_dose = reference_dose,
-    conf_int = conf_int,
-    group_col = !!group
-  ) |>
-    carry_constant_columns(data, time, dosef, group, dv)
-
-  # create same dataset if sec_col supplied
-  if (!rlang::quo_is_null(sec_dv)) {
-    sec_dv_time_df <- compute_grouped_mean_sd(
+  # The secondary column is summarised separately, so give each warning
+  # once.
+  with_unique_warnings({
+    dv_time_df <- compute_grouped_mean_sd(
       data = data,
-      dv_col = !!sec_dv,
+      dv_col = !!dv,
       ntime_col = !!time,
       dose_col = !!dosef,
       reference_dose = reference_dose,
       conf_int = conf_int,
       group_col = !!group
     ) |>
-      carry_constant_columns(data, time, dosef, group, sec_dv)
-  }
+      carry_constant_columns(data, time, dosef, group, dv)
+
+    # create same dataset if sec_col supplied
+    if (!rlang::quo_is_null(sec_dv)) {
+      sec_dv_time_df <- compute_grouped_mean_sd(
+        data = data,
+        dv_col = !!sec_dv,
+        ntime_col = !!time,
+        dose_col = !!dosef,
+        reference_dose = reference_dose,
+        conf_int = conf_int,
+        group_col = !!group
+      ) |>
+        carry_constant_columns(data, time, dosef, group, sec_dv)
+    }
+  })
 
   # Check reference dose to grab correct y-value column either meanDV or mean_delta_DV
   if (!is.null(reference_dose)) {

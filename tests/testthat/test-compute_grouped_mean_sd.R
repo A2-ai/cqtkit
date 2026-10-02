@@ -102,3 +102,96 @@ test_that("ECG summaries retain factor group levels", {
   expect_s3_class(result$group, "factor")
   expect_equal(levels(result$group), c("0 mg", "120 mg"))
 })
+
+collect_warnings <- function(expr) {
+  messages <- character()
+  value <- withCallingHandlers(
+    expr,
+    warning = function(w) {
+      messages <<- c(messages, conditionMessage(w))
+      invokeRestart("muffleWarning")
+    }
+  )
+  list(value = value, warnings = messages)
+}
+
+test_that("compute_grouped_mean_sd gives NA differences where the reference dose is absent", {
+  full <- compute_grouped_mean_sd(
+    cqtkit_data_verapamil,
+    deltaQTCF,
+    NTLD,
+    DOSEF,
+    reference_dose = "0 mg"
+  )
+  .test_data <- cqtkit_data_verapamil |>
+    dplyr::filter(!(NTLD == 2 & DOSEF == "0 mg"))
+
+  out <- collect_warnings(compute_grouped_mean_sd(
+    .test_data,
+    deltaQTCF,
+    NTLD,
+    DOSEF,
+    reference_dose = "0 mg"
+  ))
+
+  expect_identical(
+    out$warnings,
+    "No `reference_dose` (0 mg) observations at: 2. Differences from `reference_dose` are NA there."
+  )
+  at_2 <- dplyr::filter(out$value, time == 2)
+  expect_true(all(is.na(at_2$mean_delta_dv)))
+  expect_true(all(is.na(at_2$ci_low_delta)))
+  expect_true(all(is.na(at_2$ci_up_delta)))
+
+  expect_equal(
+    dplyr::filter(out$value, time != 2)$mean_delta_dv,
+    dplyr::filter(full, time != 2)$mean_delta_dv
+  )
+})
+
+test_that("compute_grouped_mean_sd gives NA CIs for groups with fewer than 2 observations", {
+  single <- cqtkit_data_verapamil |>
+    dplyr::filter(DOSEF == "120 mg") |>
+    dplyr::slice(1) |>
+    dplyr::mutate(NTLD = 99)
+  .test_data <- dplyr::bind_rows(cqtkit_data_verapamil, single)
+
+  out <- collect_warnings(
+    compute_grouped_mean_sd(.test_data, deltaQTCF, NTLD, DOSEF)
+  )
+
+  expect_identical(
+    out$warnings,
+    "Fewer than 2 observations at: 99 / 120 mg. Their CIs are NA."
+  )
+  at_99 <- dplyr::filter(out$value, time == 99)
+  expect_equal(at_99$n, 1L)
+  expect_equal(at_99$mean_dv, single$deltaQTCF)
+  expect_true(is.na(at_99$ci_low))
+  expect_true(is.na(at_99$ci_high))
+})
+
+test_that("compute_ecg_param_summary gives each warning once", {
+  single <- cqtkit_data_verapamil |>
+    dplyr::filter(DOSEF == "120 mg") |>
+    dplyr::slice(1) |>
+    dplyr::mutate(NTLD = 99)
+  .test_data <- dplyr::bind_rows(cqtkit_data_verapamil, single)
+
+  out <- collect_warnings(compute_ecg_param_summary(
+    .test_data,
+    NTLD,
+    DOSEF,
+    QTCF,
+    deltaQTCF,
+    reference_dose = "0 mg"
+  ))
+
+  expect_identical(
+    out$warnings,
+    c(
+      "Fewer than 2 observations at: 99 / 120 mg. Their CIs are NA.",
+      "No `reference_dose` (0 mg) observations at: 99. Differences from `reference_dose` are NA there."
+    )
+  )
+})

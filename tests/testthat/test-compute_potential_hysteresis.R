@@ -61,3 +61,24 @@ test_that("compute_potential_hysteresis warns about multiple times with max dQTC
     "Multiple times have max dQTCF"
   )
 })
+
+test_that("compute_potential_hysteresis errors when a time point has no deltaQTc values", {
+  .test_data <- tibble::tibble(
+    NTLD = 1:6,
+    deltaQTCF = c(6, 7, NA, 12, 9, 2),
+    CONC = c(10, 30, 20, 15, 10, 5),
+    DOSEN = 33
+  )
+
+  expect_error(
+    suppressWarnings(
+      compute_potential_hysteresis(.test_data, NTLD, deltaQTCF, CONC, DOSEN)
+    ),
+    paste0(
+      "Mean `deltaqtc_col` is NA at time points 3 for group \"33\", so ",
+      "hysteresis cannot be assessed. Filter these time points out of `data` ",
+      "to assess hysteresis on the remaining time points."
+    ),
+    fixed = TRUE
+  )
+})

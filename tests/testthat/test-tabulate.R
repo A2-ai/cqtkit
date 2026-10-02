@@ -109,3 +109,87 @@ test_that("tabulate_exposure_predictions snapshot", {
 
   snapshot_gt(table, "tab-exposure-pred")
 })
+
+test_that("tabulate_ecg_param_summary footnotes cells left empty", {
+  single <- cqtkit_data_verapamil |>
+    dplyr::filter(DOSEF == "120 mg") |>
+    dplyr::slice(1) |>
+    dplyr::mutate(NTLD = 99)
+  .test_data <- cqtkit_data_verapamil |>
+    dplyr::filter(!(NTLD == 2 & DOSEF == "0 mg")) |>
+    dplyr::bind_rows(single)
+
+  messages <- character()
+  table <- withCallingHandlers(
+    tabulate_ecg_param_summary(
+      .test_data,
+      NTLD,
+      DOSEF,
+      QTCF,
+      deltaQTCF,
+      "QTcF",
+      "ms",
+      reference_dose = "0 mg"
+    ),
+    warning = function(w) {
+      messages <<- c(messages, conditionMessage(w))
+      invokeRestart("muffleWarning")
+    }
+  )
+
+  expect_identical(
+    messages,
+    c(
+      "Fewer than 2 observations at: 99 / 120 mg. Their CIs are NA.",
+      "No `reference_dose` (0 mg) observations at: 2, 99. Differences from `reference_dose` are NA there."
+    )
+  )
+
+  notes <- table$`_footnotes`
+  notes$time <- table$`_data`$time[notes$rownum]
+  notes$text <- unlist(notes$footnotes)
+
+  reference_notes <- notes[notes$text == "No 0 mg observations at this time point.", ]
+  expect_setequal(unique(reference_notes$time), c(2, 99))
+  expect_setequal(unique(reference_notes$colname), c("mean_ddecg", "ddecg_low"))
+
+  single_notes <- notes[notes$text == "Fewer than 2 observations; CI not computed.", ]
+  expect_setequal(unique(single_notes$time), 99)
+  expect_setequal(single_notes$colname, c("ecg_low", "decg_low", "ddecg_low"))
+})
+
+test_that("tabulate_ecg_param_summary footnote_missing = FALSE adds no footnotes", {
+  .test_data <- cqtkit_data_verapamil |>
+    dplyr::filter(!(NTLD == 2 & DOSEF == "0 mg"))
+
+  table <- suppressWarnings(tabulate_ecg_param_summary(
+    .test_data,
+    NTLD,
+    DOSEF,
+    QTCF,
+    deltaQTCF,
+    "QTcF",
+    "ms",
+    reference_dose = "0 mg",
+    footnote_missing = FALSE
+  ))
+
+  expect_equal(nrow(table$`_footnotes`), 0)
+})
+
+test_that("tabulate_ecg_param_summary adds no footnotes or warnings on complete data", {
+  expect_no_warning(
+    table <- tabulate_ecg_param_summary(
+      cqtkit_data_verapamil,
+      NTLD,
+      DOSEF,
+      QTCF,
+      deltaQTCF,
+      "QTcF",
+      "ms",
+      reference_dose = "0 mg",
+      delta_ecg_param_conf_int = 0.9
+    )
+  )
+  expect_equal(nrow(table$`_footnotes`), 0)
+})

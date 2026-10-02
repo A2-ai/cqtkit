@@ -328,6 +328,9 @@ tabulate_model_fit_parameters <- function(
 #' @param time_label A string label for the time column (default: "Time (hr)")
 #' @param title Optional title for the table, it will be wrapped in gt::md()
 #' @param ... Optional arguments for gt::tab_options
+#' @param footnote_missing Logical, whether to footnote cells left empty: a
+#'   confidence interval from fewer than 2 observations, or a difference at a
+#'   time point with no `reference_dose` observations (default: TRUE)
 #'
 #' @return A gt table with mean ECG parameters (QTc, deltaQTc, delta-delta QTc) and confidence intervals by dose and time
 #' @export
@@ -359,9 +362,11 @@ tabulate_ecg_param_summary <- function(
   row_group_label = NULL,
   time_label = "Time (hr)",
   title = NULL,
-  ...
+  ...,
+  footnote_missing = TRUE
 ) {
   checkmate::assertDataFrame(data)
+  checkmate::assert_flag(footnote_missing)
 
   ntld <- rlang::enquo(ntime_col)
   dose <- rlang::enquo(dose_col)
@@ -377,33 +382,44 @@ tabulate_ecg_param_summary <- function(
   args <- rlang::list2(...)
   tab_option_args <- args[names(args) %in% names(formals(gt::tab_options))]
 
-  summary <- compute_ecg_param_summary(
-    data,
-    !!ntld,
-    !!dose,
-    !!ecg,
-    !!deltaecg,
-    group_col = !!group,
-    reference_dose = reference_dose,
-    conf_int = ecg_param_conf_int
-  )
-  if (delta_ecg_param_conf_int != ecg_param_conf_int) {
-    decg_summary <- compute_ecg_param_summary(
+  # A second summary runs when the confidence levels differ, so give each
+  # warning once.
+  with_unique_warnings({
+    summary <- compute_ecg_param_summary(
       data,
       !!ntld,
       !!dose,
       !!ecg,
       !!deltaecg,
-      !!group,
-      reference_dose,
-      delta_ecg_param_conf_int
+      group_col = !!group,
+      reference_dose = reference_dose,
+      conf_int = ecg_param_conf_int
     )
-    summary$decg_low <- decg_summary$decg_low
-    summary$decg_high <- decg_summary$decg_high
-    if (!is.null(reference_dose)) {
-      summary$ddecg_low <- decg_summary$ddecg_low
-      summary$ddecg_high <- decg_summary$ddecg_high
+    if (delta_ecg_param_conf_int != ecg_param_conf_int) {
+      decg_summary <- compute_ecg_param_summary(
+        data,
+        !!ntld,
+        !!dose,
+        !!ecg,
+        !!deltaecg,
+        !!group,
+        reference_dose,
+        delta_ecg_param_conf_int
+      )
+      summary$decg_low <- decg_summary$decg_low
+      summary$decg_high <- decg_summary$decg_high
+      if (!is.null(reference_dose)) {
+        summary$ddecg_low <- decg_summary$ddecg_low
+        summary$ddecg_high <- decg_summary$ddecg_high
+      }
     }
+  })
+
+  missing_reference_times <- if (!is.null(reference_dose)) {
+    setdiff(
+      unique(summary$time),
+      summary$time[summary$dose == reference_dose]
+    )
   }
 
   if (!is.null(reference_dose)) {
@@ -514,6 +530,32 @@ tabulate_ecg_param_summary <- function(
       columns = .data$n
     ) |>
     gt::sub_missing()
+
+  if (footnote_missing && length(missing_reference_times) > 0) {
+    s_gt <- s_gt |>
+      gt::tab_footnote(
+        footnote = paste0(
+          "No ",
+          reference_dose,
+          " observations at this time point."
+        ),
+        locations = gt::cells_body(
+          columns = c("mean_ddecg", "ddecg_low"),
+          rows = .data$time %in% missing_reference_times
+        )
+      )
+  }
+
+  if (footnote_missing && any(s_proc$n < 2)) {
+    s_gt <- s_gt |>
+      gt::tab_footnote(
+        footnote = "Fewer than 2 observations; CI not computed.",
+        locations = gt::cells_body(
+          columns = dplyr::any_of(c("ecg_low", "decg_low", "ddecg_low")),
+          rows = .data$n < 2
+        )
+      )
+  }
 
   tab_option_args$data <- s_gt
   s_gt <- do.call(gt::tab_options, tab_option_args)

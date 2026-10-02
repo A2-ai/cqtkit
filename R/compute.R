@@ -410,47 +410,51 @@ compute_ecg_param_summary <- function(
 
   selections <- c("dose", "time", "n", "mean_dv", "ci_low", "ci_high", "group")
 
-  ecg_summ <-
-    compute_grouped_mean_sd(
+  # The ECG parameter and its delta are summarised separately, so give each
+  # warning once.
+  with_unique_warnings({
+    ecg_summ <-
+      compute_grouped_mean_sd(
+        data,
+        !!ecg,
+        !!ntld,
+        !!dose,
+        group_col = !!group,
+        reference_dose = reference_dose,
+        conf_int = conf_int
+      ) |>
+      dplyr::arrange(dose) |>
+      dplyr::select(dplyr::all_of(selections)) |>
+      dplyr::rename(
+        mean_ecg = "mean_dv",
+        ecg_low = "ci_low",
+        ecg_high = "ci_high"
+      )
+
+    if (!is.null(reference_dose)) {
+      selections <- c(
+        selections,
+        c("mean_delta_dv", "ci_low_delta", "ci_up_delta")
+      )
+    }
+
+    decg_summ <- compute_grouped_mean_sd(
       data,
-      !!ecg,
+      !!deltaecg,
       !!ntld,
       !!dose,
-      group_col = !!group,
+      !!group,
       reference_dose = reference_dose,
       conf_int = conf_int
     ) |>
-    dplyr::arrange(dose) |>
-    dplyr::select(dplyr::all_of(selections)) |>
-    dplyr::rename(
-      mean_ecg = "mean_dv",
-      ecg_low = "ci_low",
-      ecg_high = "ci_high"
-    )
-
-  if (!is.null(reference_dose)) {
-    selections <- c(
-      selections,
-      c("mean_delta_dv", "ci_low_delta", "ci_up_delta")
-    )
-  }
-
-  decg_summ <- compute_grouped_mean_sd(
-    data,
-    !!deltaecg,
-    !!ntld,
-    !!dose,
-    !!group,
-    reference_dose = reference_dose,
-    conf_int = conf_int
-  ) |>
-    dplyr::arrange(dose) |>
-    dplyr::select(dplyr::all_of(selections)) |>
-    dplyr::rename(
-      mean_decg = "mean_dv",
-      decg_low = "ci_low",
-      decg_high = "ci_high"
-    )
+      dplyr::arrange(dose) |>
+      dplyr::select(dplyr::all_of(selections)) |>
+      dplyr::rename(
+        mean_decg = "mean_dv",
+        decg_low = "ci_low",
+        decg_high = "ci_high"
+      )
+  })
 
   if (!is.null(reference_dose)) {
     decg_summ <- decg_summ |>
@@ -481,12 +485,15 @@ compute_ecg_param_summary <- function(
 #' @param group_col An unquoted column of optional grouping column,
 #'   without missing values. Fill or filter missing values, or omit this argument
 #'   for dose-only summaries.
-#' @param reference_dose Reference dose value for comparison calculations
+#' @param reference_dose Reference dose value for comparison calculations.
+#'   At a time point with no `reference_dose` observations the differences are
+#'   NA, with a warning naming the time points.
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #'
 #' @return A tibble with mean, SD, SE, and confidence intervals for the
 #'   dependent variable, grouped by time and dose. `group` is a factor whose
-#'   levels carry the intended display order.
+#'   levels carry the intended display order. A group with fewer than 2
+#'   observations has NA confidence intervals, with a warning naming the groups.
 #' @export
 #' @importFrom rlang .data
 #' @examples
@@ -619,40 +626,63 @@ compute_grouped_mean_sd <- function(
       n = sum(!is.na(.data$dv)),
       se = .data$sd / sqrt(.data$n),
       ci_low = .data$mean_dv -
-        stats::qt((1 + conf_int) / 2, df = .data$n - 1) * .data$se,
+        qt_or_na((1 + conf_int) / 2, df = .data$n - 1) * .data$se,
       ci_high = .data$mean_dv +
-        stats::qt((1 + conf_int) / 2, df = .data$n - 1) * .data$se,
+        qt_or_na((1 + conf_int) / 2, df = .data$n - 1) * .data$se,
       group = dplyr::first(.data$grouping),
       .groups = "keep"
     )
 
+  few <- dplyr::filter(dplyr::ungroup(df), .data$n < 2)
+  if (nrow(few) > 0) {
+    warning(
+      "Fewer than 2 observations at: ",
+      paste(few$time, few$group, sep = " / ", collapse = ", "),
+      ". Their CIs are NA."
+    )
+  }
+
   if (!is.null(reference_dose)) {
+    missing_times <- setdiff(
+      unique(df$time),
+      df$time[df$dose == reference_dose]
+    )
+    if (length(missing_times) > 0) {
+      warning(
+        "No `reference_dose` (",
+        reference_dose,
+        ") observations at: ",
+        paste(missing_times, collapse = ", "),
+        ". Differences from `reference_dose` are NA there."
+      )
+    }
+
     delta_df <- df |>
       dplyr::group_by(.data$time) |>
       dplyr::mutate(
         mean_delta_dv = .data$mean_dv -
-          .data$mean_dv[.data$dose == reference_dose],
+          reference_value(.data$mean_dv, .data$dose, reference_dose),
         geomean_delta_dv = .data$geo_mean_dv -
-          .data$geo_mean_dv[.data$dose == reference_dose],
+          reference_value(.data$geo_mean_dv, .data$dose, reference_dose),
         delta_sd = sqrt(
-          (.data$sd)**2 + (.data$sd[.data$dose == reference_dose])**2
+          (.data$sd)**2 + reference_value(.data$sd, .data$dose, reference_dose)**2
         ),
         delta_se = sqrt(
           .data$sd**2 /
             .data$n +
-            .data$sd[.data$dose == reference_dose]**2 /
-              .data$n[.data$dose == reference_dose]
+            reference_value(.data$sd, .data$dose, reference_dose)**2 /
+              reference_value(.data$n, .data$dose, reference_dose)
         ),
         ci_low_delta = .data$mean_delta_dv -
-          stats::qt(
+          qt_or_na(
             (1 + conf_int) / 2,
-            df = .data$n + .data$n[.data$dose == reference_dose] - 2
+            df = .data$n + reference_value(.data$n, .data$dose, reference_dose) - 2
           ) *
             .data$delta_se,
         ci_up_delta = .data$mean_delta_dv +
-          stats::qt(
+          qt_or_na(
             (1 + conf_int) / 2,
-            df = .data$n + .data$n[.data$dose == reference_dose] - 2
+            df = .data$n + reference_value(.data$n, .data$dose, reference_dose) - 2
           ) *
             .data$delta_se
       )
@@ -832,6 +862,19 @@ compute_potential_hysteresis <- function(
     dplyr::distinct() |>
     dplyr::arrange(.data$ntld) |>
     dplyr::ungroup()
+
+  missing_times <- qtc_conc_df$ntld[is.na(qtc_conc_df$mean_dqtc)]
+  if (length(missing_times) > 0) {
+    stop(
+      "Mean `deltaqtc_col` is NA at time points ",
+      paste(missing_times, collapse = ", "),
+      " for group \"",
+      groups,
+      "\", so hysteresis cannot be assessed. Filter these time points out ",
+      "of `data` to assess hysteresis on the remaining time points.",
+      call. = FALSE
+    )
+  }
 
   high_qtc_counter <- 0
   for (dqtc in qtc_conc_df$mean_dqtc) {
