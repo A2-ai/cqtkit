@@ -101,17 +101,17 @@ test_that("decimals pads to a fixed width and NULL rounds", {
 })
 
 test_that("eda_qtc_comparison_plot forwards the caption arguments", {
-  expect_no_error(
-    eda_qtc_comparison_plot(
-      data_proc,
-      RR,
-      QT,
-      QTCB,
-      QTCF,
-      trt_col = TRTG,
-      model_type = "lm",
-      include_pvalue = TRUE,
-      scientific = TRUE
-    )
+  p <- eda_qtc_comparison_plot(
+    data_proc,
+    RR,
+    QT,
+    QTCB,
+    QTCF,
+    trt_col = TRTG,
+    model_type = "lm",
+    include_pvalue = TRUE,
+    style = style_spec()
   )
+
+  expect_match(p[[1]]$labels$caption, "Slope p-value: [0-9.]+e-[0-9]+$")
 })

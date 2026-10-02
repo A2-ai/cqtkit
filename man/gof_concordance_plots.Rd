@@ -12,7 +12,7 @@ gof_concordance_plots(
   ntime_col,
   trt_col = NULL,
   dv_label = bquote(Delta ~ "QTc (ms)"),
-  legend_location = c("top", "bottom", "left", "right", "none"),
+  legend_location = lifecycle::deprecated(),
   style = list()
 )
 }
@@ -31,7 +31,9 @@ gof_concordance_plots(
 
 \item{dv_label}{A string of dv label (default: bquote(Delta ~ 'QTc (ms)'))}
 
-\item{legend_location}{String for legend position (top, bottom, left, right)}
+\item{legend_location}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} String for
+legend position (top, bottom, left, right). Set \code{legend.position} in
+\code{\link[=style_spec]{style_spec()}} instead.}
 
 \item{style}{A \code{\link[=style_spec]{style_spec()}}, or a named list of arguments passed to
 \code{style_plot()}. The list form is deprecated.}
@@ -55,5 +57,5 @@ fit <- fit_prespecified_model(
   "REML",
   TRUE
 )
-gof_concordance_plots(data_proc, fit, deltaQTCF, CONC, NTLD, TRTG, legend_location = "top")
+gof_concordance_plots(data_proc, fit, deltaQTCF, CONC, NTLD, TRTG)
 }

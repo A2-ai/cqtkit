@@ -20,7 +20,8 @@ tabulate_ecg_param_summary(
   row_group_label = NULL,
   time_label = "Time (hr)",
   title = NULL,
-  ...
+  ...,
+  footnote_missing = TRUE
 )
 }
 \arguments{
@@ -55,6 +56,12 @@ tabulate_ecg_param_summary(
 \item{title}{Optional title for the table, it will be wrapped in gt::md()}
 
 \item{...}{Optional arguments for gt::tab_options}
+
+\item{footnote_missing}{Logical, whether to footnote cells left empty: a
+confidence interval from fewer than 2 observations, or a difference with
+no \code{reference_dose} observations to compare with. Also footnotes the
+baseline-corrected count where it differs from N, which counts
+\code{ecg_param_col} observations (default: TRUE)}
 }
 \value{
 A gt table with mean ECG parameters (QTc, deltaQTc, delta-delta QTc) and confidence intervals by dose and time

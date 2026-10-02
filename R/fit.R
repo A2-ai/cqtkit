@@ -314,8 +314,19 @@ compute_model_fit_parameters <- function(
 
   if (include_reference_levels || section) {
     model_terms <- stats::delete.response(stats::terms(fit))
+    # getData() returns the data before the fit dropped rows with missing
+    # values and unused levels; rebuild the design with the fitted levels.
+    fit_data <- nlme::getData(fit)
+    for (col in names(fit$contrasts)) {
+      fit_data[[col]] <- factor(
+        fit_data[[col]],
+        levels = rownames(fit$contrasts[[col]])
+      )
+    }
     design <- stats::model.matrix(
-      model_terms, nlme::getData(fit), contrasts.arg = fit$contrasts
+      model_terms,
+      stats::model.frame(model_terms, fit_data, na.action = stats::na.omit),
+      contrasts.arg = fit$contrasts
     )
     term_names <- c("(Intercept)", attr(model_terms, "term.labels"))
     coefficient_terms <- term_names[attr(design, "assign") + 1L]
@@ -419,7 +430,7 @@ compute_model_fit_parameters <- function(
 #'
 #' @importFrom nlme lme
 #'
-#' @return A tibble with observed DV, concentration, time, population/individual predictions (PRED/IPRED), and residuals (RES/IRES/WRES/IWRES)
+#' @return A tibble with observed DV, concentration, time, population/individual predictions (PRED/IPRED), residuals (RES/IRES/WRES/IWRES), and the remaining columns of `data`
 #' @export
 #'
 #' @examples
@@ -437,7 +448,7 @@ compute_model_fit_parameters <- function(
 #'   TRUE
 #' )
 #'
-#' compute_fit_results(data_proc, fit, deltaQTCF, CONC, NTLD)
+#' compute_fit_results(data_proc, fit, deltaQTCF, CONC, NTLD, TRTG)
 compute_fit_results <- function(
   data,
   fit,
@@ -457,17 +468,17 @@ compute_fit_results <- function(
   required_cols <- unlist(lapply(c(dv, conc, time, trt), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
-  fit_results_df <- tibble::tibble(
-    dv = data |> dplyr::pull(!!dv),
-    conc = data |> dplyr::pull(!!conc),
-    time = data |> dplyr::pull(!!time),
-    PRED = stats::fitted(fit, level = 0),
-    IPRED = stats::fitted(fit, level = 1),
-    RES = stats::residuals(fit, level = 0),
-    IRES = stats::residuals(fit, level = 1),
-    WRES = stats::residuals(fit, level = 0, type = "pearson"),
-    IWRES = stats::residuals(fit, level = 1, type = "pearson")
-  )
+  trt_name <- name_quo_if_not_null(trt)
+  if ("TRTG" %in% names(data) && !identical(trt_name, "TRTG")) {
+    warning(
+      "`TRTG` in `data` is overwritten with ",
+      if (is.null(trt_name)) "\"\" because `trt_col` is NULL" else paste0("`", trt_name, "`"),
+      ". Rename the `TRTG` column to keep it.",
+      call. = FALSE
+    )
+  }
+
+  fit_results_df <- fit_results(data, fit, dv, conc, time)
   if (!rlang::quo_is_null(trt)) {
     fit_results_df <- fit_results_df |>
       dplyr::mutate(TRTG = data |> dplyr::pull(!!trt))
@@ -475,5 +486,39 @@ compute_fit_results <- function(
     fit_results_df <- fit_results_df |>
       dplyr::mutate(TRTG = "")
   }
+  fit_results_df <- fit_results_df |>
+    dplyr::relocate("TRTG", .after = "IWRES")
   return(fit_results_df)
+}
+
+# compute_fit_results() on quosures without the TRTG column, so the gof_*()
+# plots keep the TRTG of `data` for reveal().
+fit_results <- function(data, fit, dv, conc, time) {
+  dv <- as_column_quo(dv)
+  conc <- as_column_quo(conc)
+  time <- as_column_quo(time)
+  dplyr::mutate(
+    dplyr::ungroup(data),
+    dv = !!dv,
+    conc = !!conc,
+    time = !!time,
+    PRED = stats::fitted(fit, level = 0),
+    IPRED = stats::fitted(fit, level = 1),
+    RES = stats::residuals(fit, level = 0),
+    IRES = stats::residuals(fit, level = 1),
+    WRES = stats::residuals(fit, level = 0, type = "pearson"),
+    IWRES = stats::residuals(fit, level = 1, type = "pearson")
+  ) |>
+    dplyr::relocate(
+      "dv",
+      "conc",
+      "time",
+      "PRED",
+      "IPRED",
+      "RES",
+      "IRES",
+      "WRES",
+      "IWRES"
+    ) |>
+    tibble::as_tibble()
 }

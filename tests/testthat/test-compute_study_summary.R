@@ -35,3 +35,19 @@ test_that("compute_study_summary orders numeric groups numerically", {
   expect_equal(levels(result$grouping), expected)
   expect_equal(as.character(result$grouping), expected)
 })
+
+test_that("compute_study_summary keeps groups apart where the treatment is missing", {
+  .test_data <- cqtkit_data_verapamil |>
+    dplyr::mutate(
+      GRP = ifelse(as.integer(factor(ID)) %% 2 == 0, "F", "M"),
+      TRTG = dplyr::if_else(TRTG == "Verapamil HCL", NA, TRTG)
+    )
+
+  out <- compute_study_summary(.test_data, TRTG, ID, GRP)
+
+  expect_identical(
+    as.character(out$grouping),
+    c("Total", "Placebo F", "Placebo M", "NA F", "NA M")
+  )
+  expect_equal(out$n_sub, c(22L, 11L, 11L, 11L, 11L))
+})

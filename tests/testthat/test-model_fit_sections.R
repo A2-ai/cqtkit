@@ -134,3 +134,54 @@ test_that("reference rows follow fitted contrasts rather than missing labels", {
   expect_equal(sum(params$Section == "Treatment"), 1)
   expect_false(any(grepl("Reference", params$Parameters[params$Section == "Treatment"])))
 })
+
+test_that("sections and reference levels use the levels the model was fitted with", {
+  unused <- model_data |>
+    dplyr::mutate(
+      TRTG = factor(TRTG, levels = c(levels(factor(model_data$TRTG)), "Unused"))
+    )
+  unused_fit <- fit_prespecified_model(
+    unused,
+    deltaQTCF,
+    ID,
+    CONC,
+    deltaQTCFBL,
+    TRTG,
+    TAFD,
+    remove_conc_iiv = TRUE
+  )
+  expect_equal(
+    compute_model_fit_parameters(
+      unused_fit,
+      section = TRUE,
+      include_reference_levels = TRUE
+    ),
+    compute_model_fit_parameters(
+      fit,
+      section = TRUE,
+      include_reference_levels = TRUE
+    )
+  )
+
+  missing_time <- dplyr::mutate(
+    model_data,
+    CONC = dplyr::if_else(TAFD == "24 HR", NA, CONC)
+  )
+  missing_fit <- suppressWarnings(fit_prespecified_model(
+    missing_time,
+    deltaQTCF,
+    ID,
+    CONC,
+    deltaQTCFBL,
+    TRTG,
+    TAFD,
+    remove_conc_iiv = TRUE
+  ))
+  params <- compute_model_fit_parameters(
+    missing_fit,
+    section = TRUE,
+    include_reference_levels = TRUE
+  )
+  expect_false(any(grepl("24 HR", params$Parameters)))
+  expect_true("0.5 HR (Reference)" %in% params$Parameters)
+})

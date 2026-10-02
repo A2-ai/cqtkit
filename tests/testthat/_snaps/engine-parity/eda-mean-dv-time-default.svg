@@ -194,21 +194,22 @@
 <text transform='translate(13.45,283.37) rotate(-90)' style='font-size: 11.00px; font-family: sans;' textLength='6.45px' lengthAdjust='spacingAndGlyphs'>Δ</text>
 <text transform='translate(13.45,276.92) rotate(-90)' style='font-size: 11.00px; font-family: sans;' textLength='2.75px' lengthAdjust='spacingAndGlyphs'> </text>
 <text transform='translate(13.45,274.16) rotate(-90)' style='font-size: 11.00px; font-family: sans;' textLength='45.84px' lengthAdjust='spacingAndGlyphs'>QTc (ms)</text>
-<rect x='589.33' y='233.45' width='125.19' height='78.13' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<text x='594.81' y='247.64' style='font-size: 11.00px; font-family: sans;' textLength='36.71px' lengthAdjust='spacingAndGlyphs'>Legend</text>
-<rect x='594.81' y='254.26' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<circle cx='603.45' cy='262.90' r='1.95' style='stroke-width: 0.71; stroke: none; fill: #F8766D;' />
-<line x1='596.53' y1='262.90' x2='610.36' y2='262.90' style='stroke-width: 1.07; stroke: #F8766D; stroke-linecap: butt;' />
-<line x1='596.53' y1='262.90' x2='610.36' y2='262.90' style='stroke-width: 1.07; stroke: #F8766D; stroke-linecap: butt;' />
-<rect x='594.81' y='271.54' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<circle cx='603.45' cy='280.18' r='1.95' style='stroke-width: 0.71; stroke: none; fill: #00BFC4;' />
-<line x1='596.53' y1='280.18' x2='610.36' y2='280.18' style='stroke-width: 1.07; stroke: #00BFC4; stroke-linecap: butt;' />
-<line x1='596.53' y1='280.18' x2='610.36' y2='280.18' style='stroke-width: 1.07; stroke: #00BFC4; stroke-linecap: butt;' />
-<rect x='594.81' y='288.82' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<line x1='596.53' y1='297.46' x2='610.36' y2='297.46' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
-<text x='617.57' y='265.93' style='font-size: 8.80px; font-family: sans;' textLength='53.82px' lengthAdjust='spacingAndGlyphs'>0 mg Placebo</text>
-<text x='617.57' y='283.21' style='font-size: 8.80px; font-family: sans;' textLength='91.48px' lengthAdjust='spacingAndGlyphs'>120 mg Verapamil HCL</text>
-<text x='617.57' y='300.49' style='font-size: 8.80px; font-family: sans;' textLength='52.84px' lengthAdjust='spacingAndGlyphs'>Reference 10</text>
+<rect x='589.33' y='222.49' width='125.19' height='60.85' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<text x='594.81' y='236.68' style='font-size: 11.00px; font-family: sans;' textLength='36.71px' lengthAdjust='spacingAndGlyphs'>Legend</text>
+<rect x='594.81' y='243.30' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<circle cx='603.45' cy='251.94' r='1.95' style='stroke-width: 0.71; stroke: none; fill: #F8766D;' />
+<line x1='596.53' y1='251.94' x2='610.36' y2='251.94' style='stroke-width: 1.07; stroke: #F8766D; stroke-linecap: butt;' />
+<line x1='596.53' y1='251.94' x2='610.36' y2='251.94' style='stroke-width: 1.07; stroke: #F8766D; stroke-linecap: butt;' />
+<rect x='594.81' y='260.58' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<circle cx='603.45' cy='269.22' r='1.95' style='stroke-width: 0.71; stroke: none; fill: #00BFC4;' />
+<line x1='596.53' y1='269.22' x2='610.36' y2='269.22' style='stroke-width: 1.07; stroke: #00BFC4; stroke-linecap: butt;' />
+<line x1='596.53' y1='269.22' x2='610.36' y2='269.22' style='stroke-width: 1.07; stroke: #00BFC4; stroke-linecap: butt;' />
+<text x='617.57' y='254.97' style='font-size: 8.80px; font-family: sans;' textLength='53.82px' lengthAdjust='spacingAndGlyphs'>0 mg Placebo</text>
+<text x='617.57' y='272.25' style='font-size: 8.80px; font-family: sans;' textLength='91.48px' lengthAdjust='spacingAndGlyphs'>120 mg Verapamil HCL</text>
+<rect x='589.33' y='294.30' width='86.56' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<rect x='594.81' y='299.78' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<line x1='596.53' y1='308.42' x2='610.36' y2='308.42' style='stroke-width: 1.07; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
+<text x='617.57' y='311.45' style='font-size: 8.80px; font-family: sans;' textLength='52.84px' lengthAdjust='spacingAndGlyphs'>Reference 10</text>
 <text x='38.40' y='14.56' style='font-size: 13.20px; font-family: sans;' textLength='151.15px' lengthAdjust='spacingAndGlyphs'>eda-mean-dv-time-default</text>
 <text x='578.37' y='559.19' text-anchor='end' style='font-size: 8.80px; font-family: sans;' textLength='109.08px' lengthAdjust='spacingAndGlyphs'>errorbars represent 90% CI </text>
 <text x='578.37' y='568.69' text-anchor='end' style='font-size: 8.80px; font-family: sans;' textLength='0.00px' lengthAdjust='spacingAndGlyphs'></text>

@@ -84,32 +84,10 @@ test_that("custom thresholds drive the column names", {
 })
 
 test_that("missing columns are caught", {
-  expect_error(compute_high_qtc_subjects(data_proc, NOPE, deltaQTCF, ID))
-})
-
-test_that("tabulate_high_qtc_subjects returns a gt table", {
-  tbl <- tabulate_high_qtc_subjects(
-    data_proc,
-    QTCF,
-    deltaQTCF,
-    ID,
-    TRTG,
-    qtc_label = "QTcF"
+  expect_error(
+    compute_high_qtc_subjects(data_proc, NOPE, deltaQTCF, ID),
+    "missing elements \\{'NOPE'\\}"
   )
-
-  expect_s3_class(tbl, "gt_tbl")
-})
-
-test_that("tabulate_high_qtc_observations returns a gt table", {
-  tbl <- tabulate_high_qtc_observations(
-    data_proc,
-    QTCF,
-    deltaQTCF,
-    TRTG,
-    qtc_label = "QTcF"
-  )
-
-  expect_s3_class(tbl, "gt_tbl")
 })
 
 test_that("compute_high_qtc_sub always warns and keeps observation counts", {

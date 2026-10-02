@@ -117,11 +117,14 @@ eda_qt_rr_plot <- function(
     )
 
     qt_rr_plot <- qt_rr_plot +
-      ggplot2::geom_smooth(
-        method = "lm",
-        se = FALSE,
-        formula = y ~ x,
-        color = "black"
+      ggstylekit::series_layer(
+        ggplot2::geom_smooth(
+          method = "lm",
+          se = FALSE,
+          formula = y ~ x,
+          color = "black"
+        ),
+        "Linear Regression"
       )
   } else if ((model_type == "lme") && show_model_results) {
     lme_mod <- fit_qtc_linear_model(
@@ -172,10 +175,13 @@ eda_qt_rr_plot <- function(
     plot_data$predictions <- stats::predict(lme_mod, level = 0)
 
     qt_rr_plot <- qt_rr_plot +
-      ggplot2::geom_line(
-        data = plot_data,
-        ggplot2::aes(y = .data$predictions),
-        color = "black"
+      ggstylekit::series_layer(
+        ggplot2::geom_line(
+          data = plot_data,
+          ggplot2::aes(y = .data$predictions),
+          color = "black"
+        ),
+        "Linear Regression"
       )
   } else {
     label <- NULL
@@ -210,7 +216,9 @@ eda_qt_rr_plot <- function(
 #' @param qtcp_col An unquoted column name for QTc measurements
 #' @param id_col An unquoted column name for subject ID
 #' @param trt_col An unquoted column name for treatment group data
-#' @param legend_location String for legend position (top, bottom, left, right)
+#' @param legend_location `r lifecycle::badge("deprecated")` String for
+#'   legend position (top, bottom, left, right). Set `legend.position` in
+#'   [style_spec()] instead.
 #' @param model_type Lm or lme, which model to fit for showing on plot
 #' @param show_model_results Logical, whether to draw the fitted line and
 #'   annotate the plot with the model results. `include_pvalue` adds to that
@@ -250,8 +258,7 @@ eda_qt_rr_plot <- function(
 #'   trt_col = TRTG,
 #'   model_type = "lme",
 #'   show_model_results = TRUE,
-#'   remove_rr_iiv = TRUE,
-#'   legend_location = 'top')
+#'   remove_rr_iiv = TRUE)
 eda_qtc_comparison_plot <- function(
   data,
   rr_col,
@@ -261,7 +268,7 @@ eda_qtc_comparison_plot <- function(
   qtcp_col = NULL,
   id_col = NULL,
   trt_col = NULL,
-  legend_location = "top",
+  legend_location = lifecycle::deprecated(),
   model_type = c("lm", "lme"),
   show_model_results = TRUE,
   method = "REML",
@@ -292,8 +299,9 @@ eda_qtc_comparison_plot <- function(
     )
   }
 
-  legend_location <- match.arg(
+  legend_location <- check_legend_location(
     legend_location,
+    "eda_qtc_comparison_plot",
     c("top", "bottom", "right", "left")
   )
   vars <- c(rr, qt, id, qtcb, qtcf, qtcp, trt)
@@ -304,6 +312,7 @@ eda_qtc_comparison_plot <- function(
   qtcs <- unlist(sapply(qtcs_quos, name_quo_if_not_null))
 
   style <- as_style_spec(style)
+  figure_title <- style$title
   if (is.null(style$xlabel)) style$xlabel <- "RR (ms)"
 
   plots <- lapply(qtcs, function(qtc) {
@@ -335,7 +344,8 @@ eda_qtc_comparison_plot <- function(
     style,
     ncol = 1,
     legend_location = legend_location,
-    common_legend = !rlang::quo_is_null(trt)
+    common_legend = !rlang::quo_is_null(trt),
+    title = figure_title
   )
 }
 
@@ -425,7 +435,8 @@ eda_quantiles_plot <- function(
           y = !!ydata,
           color = !!trt,
         ),
-        alpha = 0.25
+        alpha = 0.25,
+        shape = 19
       )
   }
 
@@ -435,7 +446,10 @@ eda_quantiles_plot <- function(
         shape = .data$.trt_group
       )
     ) +
-    ggplot2::geom_smooth(method = "lm", formula = y ~ x, level = conf_int) +
+    ggstylekit::series_layer(
+      ggplot2::geom_smooth(method = "lm", formula = y ~ x, level = conf_int),
+      "Linear Regression"
+    ) +
     ggplot2::theme_bw()
 
   p <- add_error_bars_to_plot(obs, p, NULL, error_bars, conf_int)
@@ -501,71 +515,73 @@ eda_scatter_with_regressions <- function(
   checkmate::assertDataFrame(data)
   checkmate::assertNumeric(conf_int, lower = 0, upper = 1)
 
-  ydata <- rlang::enquo(ydata_col)
-  xdata <- rlang::enquo(xdata_col)
-  trt <- rlang::enquo(trt_col)
+  ydata <- as_column_quo(rlang::enquo(ydata_col))
+  xdata <- as_column_quo(rlang::enquo(xdata_col))
+  trt <- as_column_quo(rlang::enquo(trt_col))
 
   required_cols <- unlist(lapply(c(ydata, xdata, trt), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
-  dqtcf_conc_df <- tibble::tibble(
-    ydata = data |> dplyr::pull(!!ydata),
-    xdata = data |> dplyr::pull(!!xdata)
-  )
-
-  if (!rlang::quo_is_null(trt)) {
-    dqtcf_conc_df$trt <- data |> dplyr::pull(!!trt)
+  plot_data <- data
+  plot_data$.trt_group <- if (!rlang::quo_is_null(trt)) {
+    rlang::eval_tidy(trt, data)
   } else {
-    dqtcf_conc_df$trt <- as.factor("Treatment")
+    as.factor("Treatment")
   }
 
-  p <- dqtcf_conc_df |>
+  p <- plot_data |>
     ggplot2::ggplot(
       ggplot2::aes(
-        x = .data$xdata,
-        y = .data$ydata,
+        x = !!xdata,
+        y = !!ydata,
       )
     ) +
     ggplot2::geom_point(
       ggplot2::aes(
-        color = .data$trt,
-        shape = .data$trt
+        color = .data$.trt_group,
+        shape = .data$.trt_group
       )
     ) +
     ggplot2::theme_bw()
 
   if (loess_line) {
     p <- p +
-      ggplot2::geom_smooth(
-        method = "loess",
-        span = span,
-        level = conf_int,
-        formula = y ~ x,
-        color = "blue",
-        fill = "lightblue",
-        ggplot2::aes(linetype = "LOESS Regression"),
-        linewidth = 0.5
+      line_series_layer(
+        ggplot2::geom_smooth(
+          method = "loess",
+          span = span,
+          level = conf_int,
+          formula = y ~ x,
+          color = "blue",
+          fill = "lightblue",
+          linetype = "22",
+          linewidth = 0.5
+        ),
+        "LOESS Regression"
       )
   }
 
   if (linear_line) {
     p <- p +
-      ggplot2::geom_smooth(
-        method = "lm",
-        ggplot2::aes(linetype = "Linear Regression"),
-        formula = y ~ x,
-        color = "black",
-        level = conf_int
+      line_series_layer(
+        ggplot2::geom_smooth(
+          method = "lm",
+          formula = y ~ x,
+          color = "black",
+          linetype = "solid",
+          level = conf_int
+        ),
+        "Linear Regression"
       )
   }
 
   # Add horizontal references
-  p <- p |> add_horizontal_references(reference_threshold)
+  p <- p |> add_reference_lines(reference_threshold)
 
   # Set linetype attribute for styling
   linetype_values <- c()
-  if (linear_line) linetype_values["Linear Regression"] <- "dashed"
-  if (loess_line) linetype_values["LOESS Regression"] <- "dashed"
+  if (linear_line) linetype_values["Linear Regression"] <- "solid"
+  if (loess_line) linetype_values["LOESS Regression"] <- "22"
 
   if (length(linetype_values) > 0) {
     attr(p, "linetype_values") <- linetype_values
@@ -675,23 +691,27 @@ eda_hysteresis_loop_plot <- function(
   checkmate::assert_factor(data |> dplyr::pull(!!dosef))
 
   ### This should be it's own compute_ function
-  mean_qtc_df <- compute_grouped_mean_sd(
-    data = data,
-    dv_col = !!deltaqtc,
-    ntime_col = !!time,
-    dose_col = !!dosef,
-    group_col = !!group,
-    reference_dose = reference_dose
-  )
+  # deltaQTc and concentration are summarised separately, so give each
+  # warning once.
+  with_unique_warnings({
+    mean_qtc_df <- compute_grouped_mean_sd(
+      data = data,
+      dv_col = !!deltaqtc,
+      ntime_col = !!time,
+      dose_col = !!dosef,
+      group_col = !!group,
+      reference_dose = reference_dose
+    )
 
-  mean_conc_df <- compute_grouped_mean_sd(
-    data = data,
-    dv_col = !!conc,
-    ntime_col = !!time,
-    dose_col = !!dosef,
-    group_col = !!group,
-    reference_dose = reference_dose
-  )
+    mean_conc_df <- compute_grouped_mean_sd(
+      data = data,
+      dv_col = !!conc,
+      ntime_col = !!time,
+      dose_col = !!dosef,
+      group_col = !!group,
+      reference_dose = reference_dose
+    )
+  })
 
   mean_qtc_conc_df <- tibble::tibble(
     time = mean_conc_df$time,
@@ -783,14 +803,6 @@ eda_hysteresis_loop_plot <- function(
     bquote("Mean " ~ Delta ~ "QTc (ms)")
   }
 
-  .p <- cqtkit_apply_style(
-    .p,
-    style,
-    xlabel = "Mean Plasma Concentration (ng/mL)",
-    ylabel = default_ylabel,
-    legend = "Dose"
-  )
-
   if (show_hysteresis_warning) {
     .p <- .p +
       ggplot2::facet_wrap(~ .data$dosef_hys, scales = "free")
@@ -798,6 +810,14 @@ eda_hysteresis_loop_plot <- function(
     .p <- .p +
       ggplot2::facet_wrap(~ .data$group, scales = "free")
   }
+
+  .p <- cqtkit_apply_style(
+    .p,
+    style,
+    xlabel = "Mean Plasma Concentration (ng/mL)",
+    ylabel = default_ylabel,
+    legend = "Dose"
+  )
 
   return(.p)
 }
@@ -875,28 +895,34 @@ eda_mean_dv_over_time <- function(
   checkmate::assertNames(names(data), must.include = required_cols)
 
   # compute average groupped over time and group col
-  dv_time_df <- compute_grouped_mean_sd(
-    data = data,
-    dv_col = !!dv,
-    ntime_col = !!time,
-    dose_col = !!dosef,
-    reference_dose = reference_dose,
-    conf_int = conf_int,
-    group_col = !!group
-  )
-
-  # create same dataset if sec_col supplied
-  if (!rlang::quo_is_null(sec_dv)) {
-    sec_dv_time_df <- compute_grouped_mean_sd(
+  # The secondary column is summarised separately, so give each warning
+  # once.
+  with_unique_warnings({
+    dv_time_df <- compute_grouped_mean_sd(
       data = data,
-      dv_col = !!sec_dv,
+      dv_col = !!dv,
       ntime_col = !!time,
       dose_col = !!dosef,
       reference_dose = reference_dose,
       conf_int = conf_int,
       group_col = !!group
-    )
-  }
+    ) |>
+      carry_constant_columns(data, time, dosef, group, dv)
+
+    # create same dataset if sec_col supplied
+    if (!rlang::quo_is_null(sec_dv)) {
+      sec_dv_time_df <- compute_grouped_mean_sd(
+        data = data,
+        dv_col = !!sec_dv,
+        ntime_col = !!time,
+        dose_col = !!dosef,
+        reference_dose = reference_dose,
+        conf_int = conf_int,
+        group_col = !!group
+      ) |>
+        carry_constant_columns(data, time, dosef, group, sec_dv)
+    }
+  })
 
   # Check reference dose to grab correct y-value column either meanDV or mean_delta_DV
   if (!is.null(reference_dose)) {
@@ -969,7 +995,7 @@ eda_mean_dv_over_time <- function(
       group = .data$grouping
     ))
 
-  p <- add_horizontal_references(p, reference_threshold)
+  p <- add_reference_lines(p, reference_threshold)
 
   p <- p +
     ggplot2::geom_point() +

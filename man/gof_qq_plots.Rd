@@ -11,7 +11,7 @@ gof_qq_plots(
   conc_col,
   ntime_col,
   trt_col = NULL,
-  legend_location = c("top", "bottom", "left", "right", "none"),
+  legend_location = lifecycle::deprecated(),
   style = list()
 )
 }
@@ -28,7 +28,9 @@ gof_qq_plots(
 
 \item{trt_col}{An unquoted column name for treatment group"}
 
-\item{legend_location}{String for legend position (top, bottom, left, right)}
+\item{legend_location}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} String for
+legend position (top, bottom, left, right). Set \code{legend.position} in
+\code{\link[=style_spec]{style_spec()}} instead.}
 
 \item{style}{A \code{\link[=style_spec]{style_spec()}}, or a named list of arguments passed to
 \code{style_plot()}. The list form is deprecated.}
@@ -53,5 +55,5 @@ fit <- fit_prespecified_model(
   TRUE
 )
 
-gof_qq_plots(data_proc, fit, deltaQTCF, CONC, NTLD, TRTG, legend_location = "top")
+gof_qq_plots(data_proc, fit, deltaQTCF, CONC, NTLD, TRTG)
 }

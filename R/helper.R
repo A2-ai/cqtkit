@@ -19,6 +19,17 @@ name_quo_if_not_null <- function(quo) {
   }
 }
 
+# A column given by name ("CONC") as a quosure of the column, so mutate() and
+# aes() read the column rather than the string. Other column expressions
+# (CONC, .data$CONC) are returned unchanged.
+as_column_quo <- function(quo) {
+  expr <- rlang::quo_get_expr(quo)
+  if (!rlang::is_string(expr)) {
+    return(quo)
+  }
+  rlang::quo(!!rlang::sym(expr))
+}
+
 
 #' Simple quadratic formula solver
 #'
@@ -48,6 +59,8 @@ quad_form <- function(a, b, c) {
 #' `paste()` returns character, which then sorts lexically in legends and in
 #' `summarise()` output. This returns a factor whose levels follow the level
 #' order of `x` (and, when `y` is a vector, of `y` within each level of `x`).
+#' A missing value is pasted as "NA", last in the order, so missing doses in
+#' different groups keep distinct labels.
 #'
 #' @param x Factor or character grouping values
 #' @param y Either a single string appended to every value, or a second
@@ -57,14 +70,14 @@ quad_form <- function(a, b, c) {
 #' @keywords internal
 #' @noRd
 paste_grouping <- function(x, y, sep = " ") {
-  x <- as.factor(x)
+  x <- addNA(as.factor(x), ifany = TRUE)
   if (length(y) == 1L) {
     return(factor(
       paste(x, y, sep = sep),
       levels = paste(levels(x), y, sep = sep)
     ))
   }
-  y <- as.factor(y)
+  y <- addNA(as.factor(y), ifany = TRUE)
   lvls <- as.vector(t(outer(levels(x), levels(y), paste, sep = sep)))
   droplevels(factor(paste(x, y, sep = sep), levels = lvls))
 }
@@ -81,6 +94,29 @@ complete_group_values <- function(data, group) {
     )
   }
   values
+}
+
+#' Error if any group has too few time points to assess hysteresis
+#'
+#' `compute_potential_hysteresis()` flags hysteresis only when more than 3
+#' time points have a mean deltaQTc above 5 ms, so a group with fewer than 4
+#' time points cannot be assessed.
+#'
+#' @param n_times Named integer vector of time point counts, one per group
+#' @return `TRUE`, invisibly
+#' @keywords internal
+#' @noRd
+assert_hysteresis_time_points <- function(n_times) {
+  short <- n_times[n_times < 4]
+  if (length(short) > 0) {
+    stop(
+      "`ntime_col` needs at least 4 time points per group to assess ",
+      "hysteresis. These groups have fewer:\n",
+      paste0("  - \"", names(short), "\": ", short, collapse = "\n"),
+      call. = FALSE
+    )
+  }
+  invisible(TRUE)
 }
 
 #' Error if any model column name is non-syntactic
@@ -559,4 +595,45 @@ names_from_quo <- function(quo, arg = rlang::caller_arg(quo)) {
   }
 
   vapply(parts, rlang::as_string, character(1))
+}
+
+#' Student t quantile, NA where there are too few degrees of freedom
+#'
+#' `stats::qt()` warns "NaNs produced" when `df` is 0, which happens when a
+#' group has fewer than 2 observations. Return NA there instead.
+#'
+#' @param p Probability
+#' @param df Degrees of freedom, one per group
+#' @return A numeric vector the length of `df`
+#' @keywords internal
+#' @noRd
+qt_or_na <- function(p, df) {
+  out <- rep(NA_real_, length(df))
+  ok <- !is.na(df) & df > 0
+  out[ok] <- stats::qt(p, df[ok])
+  out
+}
+
+#' Evaluate `expr`, giving each distinct warning once
+#'
+#' A summary that runs once per column would otherwise repeat the same
+#' warning. The first of each is raised as it happens, so an error in `expr`
+#' does not lose the warnings before it.
+#'
+#' @param expr Expression to evaluate
+#' @return The value of `expr`
+#' @keywords internal
+#' @noRd
+with_unique_warnings <- function(expr) {
+  seen <- character(0)
+  withCallingHandlers(
+    expr,
+    warning = function(w) {
+      message <- conditionMessage(w)
+      if (message %in% seen) {
+        invokeRestart("muffleWarning")
+      }
+      seen <<- c(seen, message)
+    }
+  )
 }

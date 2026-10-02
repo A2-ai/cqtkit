@@ -16,74 +16,40 @@ add_error_bars_to_plot <- function(
   error_bars,
   conf_int
 ) {
-  # no reference dose error bars here
-  if (is.null(reference_dose)) {
-    if (!is.null(error_bars)) {
-      if (error_bars == "CI") {
-        p <- p +
-          ggplot2::geom_errorbar(
-            data = data,
-            ggplot2::aes(ymin = .data$ci_low, ymax = .data$ci_high)
-          )
-        caption <- paste0("errorbars represent ", round(conf_int * 100), "% CI")
-      } else if (error_bars == "SE") {
-        p <- p +
-          ggplot2::geom_errorbar(
-            data = data,
-            ggplot2::aes(
-              ymin = .data$mean_dv - .data$se,
-              ymax = .data$mean_dv + .data$se
-            )
-          )
-        caption <- paste0("errorbars represent SE")
-      } else if (error_bars == "SD") {
-        p <- p +
-          ggplot2::geom_errorbar(
-            data = data,
-            ggplot2::aes(
-              ymin = .data$mean_dv - .data$sd,
-              ymax = .data$mean_dv + .data$sd,
-              y = .data$mean_dv
-            )
-          )
-        caption <- paste0("errorbars represent SD")
-      }
+  caption <- ""
+  if (!is.null(error_bars)) {
+    bounds <- if (is.null(reference_dose)) {
+      switch(error_bars,
+        CI = ggplot2::aes(ymin = .data$ci_low, ymax = .data$ci_high),
+        SE = ggplot2::aes(
+          ymin = .data$mean_dv - .data$se,
+          ymax = .data$mean_dv + .data$se
+        ),
+        SD = ggplot2::aes(
+          ymin = .data$mean_dv - .data$sd,
+          ymax = .data$mean_dv + .data$sd,
+          y = .data$mean_dv
+        )
+      )
     } else {
-      caption <- paste0("")
+      switch(error_bars,
+        CI = ggplot2::aes(ymin = .data$ci_low_delta, ymax = .data$ci_up_delta),
+        SE = ggplot2::aes(
+          ymin = .data$mean_delta_dv - .data$delta_se,
+          ymax = .data$mean_delta_dv + .data$delta_se
+        ),
+        SD = ggplot2::aes(
+          ymin = .data$mean_delta_dv - .data$delta_sd,
+          ymax = .data$mean_delta_dv + .data$delta_sd
+        )
+      )
     }
-  } else {
-    # reference dose error bars
-    if (!is.null(error_bars)) {
-      if (error_bars == "CI") {
-        p <- p +
-          ggplot2::geom_errorbar(
-            data = data,
-            ggplot2::aes(ymin = .data$ci_low_delta, ymax = .data$ci_up_delta)
-          )
-        caption <- paste0("errorbars represent ", round(conf_int * 100), "% CI")
-      } else if (error_bars == "SE") {
-        p <- p +
-          ggplot2::geom_errorbar(
-            data = data,
-            ggplot2::aes(
-              ymin = .data$mean_delta_dv - .data$delta_se,
-              ymax = .data$mean_delta_dv + .data$delta_se
-            )
-          )
-        caption <- paste0("errorbars represent SE")
-      } else if (error_bars == "SD") {
-        p <- p +
-          ggplot2::geom_errorbar(
-            data = data,
-            ggplot2::aes(
-              ymin = .data$mean_delta_dv - .data$delta_sd,
-              ymax = .data$mean_delta_dv + .data$delta_sd
-            )
-          )
-        caption <- paste0("errorbars represent SD")
-      }
+
+    p <- p + ggplot2::geom_errorbar(data = data, mapping = bounds)
+    caption <- if (error_bars == "CI") {
+      paste0("errorbars represent ", round(conf_int * 100), "% CI")
     } else {
-      caption <- paste0("")
+      paste("errorbars represent", error_bars)
     }
   }
 
@@ -96,9 +62,145 @@ add_error_bars_to_plot <- function(
   return(p)
 }
 
+# A named line (reference, regression, prediction or VPC percentile) keyed
+# into the linetype legend. ggstylekit styles it by name; the list path reads
+# `cqtkit_series` to apply `colors` to it, since the layer maps no colour.
+line_series_layer <- function(layer, name) {
+  linetype <- layer$aes_params$linetype %||% "solid"
+  layer <- ggstylekit::series_layer(layer, name, legend_channel = "linetypes")
+  attr(layer, "cqtkit_series") <- name
+  attr(layer, "cqtkit_linetype") <- linetype
+  layer
+}
+
+# A layer that can be changed without changing `layer`, which is shared by
+# every plot it was added to. Keeps the attributes naming the line.
+copy_layer <- function(layer) {
+  copy <- ggplot2::ggproto(NULL, layer)
+  for (name in setdiff(names(attributes(layer)), "class")) {
+    attr(copy, name) <- attr(layer, name)
+  }
+  copy
+}
+
+# Adds to a summary the columns of `data` that have one value in every summary
+# cell (a study nested in the dose groups, say), so `reveal()` can map them.
+# The summary's own columns and the time and dv columns are skipped. The dose
+# and group columns are cell keys, so they are always carried.
+carry_constant_columns <- function(summary, data, time, dose, group, dv) {
+  used <- unlist(lapply(c(time, dv), name_quo_if_not_null))
+  candidates <- setdiff(names(data), c(names(summary), used))
+  if (length(candidates) == 0) {
+    return(summary)
+  }
+
+  cells <- tibble::tibble(
+    time = dplyr::pull(data, !!time),
+    dose = dplyr::pull(data, !!dose)
+  )
+  if (!rlang::quo_is_null(group)) {
+    cells$group <- paste_grouping(cells$dose, complete_group_values(data, group))
+  }
+  keys <- names(cells)
+  cells <- dplyr::bind_cols(cells, data[candidates])
+
+  constant <- cells |>
+    dplyr::group_by(dplyr::across(dplyr::all_of(keys))) |>
+    dplyr::summarize(
+      dplyr::across(dplyr::all_of(candidates), ~ dplyr::n_distinct(.x) == 1),
+      .groups = "drop"
+    )
+  keep <- candidates[vapply(candidates, function(x) all(constant[[x]]), logical(1))]
+  if (length(keep) == 0) {
+    return(summary)
+  }
+
+  values <- dplyr::distinct(cells, dplyr::across(dplyr::all_of(c(keys, keep))))
+  dplyr::left_join(summary, values, by = keys)
+}
+
+# Reference lines on the colour channel, for plots whose points map colour
+# only, so the references join the colour legend. Sets the default colours
+# (predictions and references black) the styling reads from `series_colors`.
+add_color_references <- function(p, reference_threshold) {
+  attr(p, "series_colors") <- c("Predictions" = "black")
+  if (length(reference_threshold) == 0) {
+    return(p)
+  }
+
+  ref <- data.frame(
+    yintercept = reference_threshold,
+    group = paste0("Reference ", reference_threshold)
+  )
+  # One layer per line, each named, so `linetypes` can restyle it by name.
+  for (i in seq_len(nrow(ref))) {
+    p <- p +
+      ggstylekit::series_layer(
+        ggplot2::geom_hline(
+          data = ref[i, , drop = FALSE],
+          ggplot2::aes(yintercept = .data$yintercept, color = .data$group),
+          inherit.aes = FALSE,
+          linetype = "dashed"
+        ),
+        ref$group[[i]]
+      )
+  }
+  attr(p, "series_colors") <- c(
+    attr(p, "series_colors"),
+    stats::setNames(rep("black", nrow(ref)), ref$group)
+  )
+
+  p
+}
+
+# The list styling engine merges the colour and shape legends only when every
+# colour-mapped layer also maps shape to the same column, and applies a list
+# `shapes` through that shape scale. The prediction line draws no points, so
+# its group takes the secondary (open) shape.
+map_shape_like_colour <- function(p) {
+  if (!is.null(p$mapping$colour)) {
+    p$mapping$shape <- p$mapping$colour
+  }
+  for (i in seq_along(p$layers)) {
+    colour <- p$layers[[i]]$mapping$colour
+    if (!is.null(colour)) {
+      p$layers[[i]]$mapping$shape <- colour
+    }
+  }
+  attr(p, "secondary_shapes") <- stats::setNames(1, "Predictions")
+  p
+}
+
+# Reference lines as named black dashed lines in the linetype legend.
+add_reference_lines <- function(p, reference_threshold) {
+  if (is.null(reference_threshold) || length(reference_threshold) == 0) {
+    return(p)
+  }
+
+  ref_labels <- paste0("Reference ", reference_threshold)
+
+  for (i in seq_along(reference_threshold)) {
+    p <- p +
+      line_series_layer(
+        ggplot2::geom_hline(
+          yintercept = reference_threshold[[i]],
+          color = "black",
+          linetype = "dashed"
+        ),
+        ref_labels[[i]]
+      )
+  }
+
+  return(p)
+}
+
 #' Add Horizontal References
 #'
-#' Adds horizontal reference lines to plot.
+#' `r lifecycle::badge("deprecated")`
+#'
+#' Adds horizontal reference lines to plot. Deprecated in favour of the
+#' `reference_threshold` argument of the plotting functions. A plot styled with
+#' [style_spec()] cannot be revealed or restyled after lines are added to it.
 #'
 #' @param p A ggplot object
 #' @param reference_threshold Numeric/vector of numerics for horizontal lines
@@ -123,6 +225,12 @@ add_error_bars_to_plot <- function(
 #'     reference_threshold = c(-10, 10)
 #'   )
 add_horizontal_references <- function(p, reference_threshold) {
+  lifecycle::deprecate_warn(
+    when = "1.2.1",
+    what = "add_horizontal_references()",
+    details = "Use the `reference_threshold` argument of the plotting functions."
+  )
+
   if (is.null(reference_threshold) || length(reference_threshold) == 0) {
     return(p)
   }
@@ -148,9 +256,9 @@ add_horizontal_references <- function(p, reference_threshold) {
       )
     )
 
-  attr(p, "reference_colors") <- stats::setNames(
-    rep("black", length(reference_threshold)),
-    ref_labels
+  attr(p, "series_colors") <- c(
+    attr(p, "series_colors"),
+    stats::setNames(rep("black", length(reference_threshold)), ref_labels)
   )
 
   # Also set reference shapes as NA so they don't appear in legend
@@ -333,6 +441,15 @@ extract_groups <- function(p, aesthetic) {
 }
 
 extract_from_mapping <- function(mapping_entry, data) {
+  # A constant mapping, e.g. from ggstylekit::series_layer(), is one group.
+  expr <- if (rlang::is_quosure(mapping_entry)) {
+    rlang::quo_get_expr(mapping_entry)
+  } else {
+    mapping_entry
+  }
+  if (is.character(expr) && length(expr) == 1) {
+    return(expr)
+  }
   var <- rlang::as_label(mapping_entry)
   if (startsWith(var, ".data$")) {
     var <- sub("^\\.data\\$", "", var)
@@ -472,8 +589,10 @@ apply_manual_scale <- function(
   # Keep all colors in final_map, don't filter by valid_groups
 
   # Use master order from style_plot (colors → labels → shapes → remaining)
+  # Only mapped groups get legend keys: a `colors` entry for a named line
+  # (line_series_layer()) is applied to the layer, not the scale.
   master_order <- attr(p, "master_order")
-  breaks <- intersect(master_order, names(final_labels))
+  breaks <- intersect(master_order, intersect(names(final_labels), groups))
   labels <- final_labels[breaks]
   # Keep all values in final_map for aesthetic consistency (like colors)
 

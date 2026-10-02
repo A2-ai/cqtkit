@@ -37,7 +37,9 @@ for dose-only summaries.}
 \value{
 A tibble with mean QTc, deltaQTc, and optionally delta-delta QTc
 values with confidence intervals, stratified by dose and time. \code{group}
-is a factor whose levels carry the intended display order.
+is a factor whose levels carry the intended display order. \code{n} counts the
+\code{ecg_param_col} observations and \code{n_decg} the \code{deltaecg_param_col}
+observations.
 }
 \description{
 Generates a tibble of summary of QTc, dQTc and ddQTc over time stratified by dose.

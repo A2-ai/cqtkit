@@ -27,14 +27,24 @@ compute_grouped_mean_sd(
 without missing values. Fill or filter missing values, or omit this argument
 for dose-only summaries.}
 
-\item{reference_dose}{Reference dose value for comparison calculations}
+\item{reference_dose}{Reference dose value for comparison calculations.
+Each dose is compared with \code{reference_dose} at the same time point. With
+\code{group_col}, it is compared with \code{reference_dose} in the same group,
+unless each dose belongs to exactly one group (a treatment group column,
+say). Then every group is compared with the one \code{reference_dose} group,
+as without \code{group_col}, so a study with its own doses and no
+\code{reference_dose} observations is compared with another study's
+\code{reference_dose}. Where there are no \code{reference_dose} observations to
+compare with, the differences are NA, with a warning naming the time
+points, or the time points and groups.}
 
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
 }
 \value{
 A tibble with mean, SD, SE, and confidence intervals for the
 dependent variable, grouped by time and dose. \code{group} is a factor whose
-levels carry the intended display order.
+levels carry the intended display order. A group with fewer than 2
+observations has NA confidence intervals, with a warning naming the groups.
 }
 \description{
 Computes the mean and standard deviation of the dependent variable data

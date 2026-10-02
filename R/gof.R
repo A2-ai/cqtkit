@@ -10,7 +10,9 @@
 #' @param trt_col An unquoted column name for treatment group"
 #' @param conc_xlabel A string for concentration plot xlabel
 #' @param dv_label A string of dv label (default: bquote(Delta ~ 'QTc (ms)'))
-#' @param legend_location String for legend position (top, bottom, left, right)
+#' @param legend_location `r lifecycle::badge("deprecated")` String for
+#'   legend position (top, bottom, left, right). Set `legend.position` in
+#'   [style_spec()] instead.
 #' @param style A [style_spec()], or a named list of arguments passed to
 #'   `style_plot()`. The list form is deprecated.
 #'
@@ -49,13 +51,17 @@ gof_plots <- function(
   trt_col = NULL,
   conc_xlabel = "Concentration ng/mL",
   dv_label = bquote(Delta ~ "QTc (ms)"),
-  legend_location = c("top", "bottom", "left", "right", "none"),
+  legend_location = lifecycle::deprecated(),
   style = list()
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
 
-  legend_location <- match.arg(legend_location)
+  legend_location <- check_legend_location(
+    legend_location,
+    "gof_plots",
+    c("top", "bottom", "left", "right", "none")
+  )
 
   dv <- rlang::enquo(dv_col)
   conc <- rlang::enquo(conc_col)
@@ -65,11 +71,11 @@ gof_plots <- function(
   required_cols <- unlist(lapply(c(dv, conc, time, trt), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
-  fit_results_df <- compute_fit_results(data, fit, !!dv, !!conc, !!time, !!trt)
+  fit_results_df <- fit_results(data, fit, dv, conc, time)
 
   # Add .trt_group for shape aesthetic
   fit_results_df$.trt_group <- if (!rlang::quo_is_null(trt)) {
-    fit_results_df$TRTG
+    dplyr::pull(data, !!trt)
   } else {
     "All"
   }
@@ -95,13 +101,19 @@ gof_plots <- function(
       )
     ) +
     ggplot2::theme_bw() +
-    ggplot2::geom_abline(slope = 1, color = "black") +
-    ggplot2::geom_smooth(
-      method = "loess",
-      span = 0.99,
-      color = "red",
-      formula = y ~ x,
-      se = FALSE
+    ggstylekit::series_layer(
+      ggplot2::geom_abline(slope = 1, color = "black"),
+      "Identity"
+    ) +
+    ggstylekit::series_layer(
+      ggplot2::geom_smooth(
+        method = "loess",
+        span = 0.99,
+        color = "red",
+        formula = y ~ x,
+        se = FALSE
+      ),
+      "LOESS Regression"
     ) +
     ggplot2::labs(
       x = bquote("Predicted " ~ .(dv_label)),
@@ -135,7 +147,10 @@ gof_plots <- function(
     ggplot2::theme_bw() +
     ggplot2::labs(x = "Theoretical Quantiles", y = "Standardized Residuals") +
     ggplot2::theme(aspect.ratio = 1) +
-    ggplot2::geom_abline(slope = 1, color = "black") +
+    ggstylekit::series_layer(
+      ggplot2::geom_abline(slope = 1, color = "black"),
+      "Identity"
+    ) +
     ggplot2::coord_equal(xlim = p2_axis_limits, ylim = p2_axis_limits)
 
   p2 <- cqtkit_apply_style(
@@ -157,12 +172,15 @@ gof_plots <- function(
       shape = .data$.trt_group,
       color = .data$.trt_group
     )) +
-    ggplot2::geom_smooth(
-      method = "loess",
-      span = 0.99,
-      color = "red",
-      formula = y ~ x,
-      se = FALSE
+    ggstylekit::series_layer(
+      ggplot2::geom_smooth(
+        method = "loess",
+        span = 0.99,
+        color = "red",
+        formula = y ~ x,
+        se = FALSE
+      ),
+      "LOESS Regression"
     ) +
     ggplot2::theme_bw() +
     ggplot2::labs(x = conc_xlabel, y = "Standardized Residuals") +
@@ -183,12 +201,18 @@ gof_plots <- function(
       fill = "grey",
       color = "black"
     ) +
-    ggplot2::stat_function(
-      fun = stats::dnorm,
-      args = list(mean = 0, sd = 1),
-      color = "black"
+    ggstylekit::series_layer(
+      ggplot2::stat_function(
+        fun = stats::dnorm,
+        args = list(mean = 0, sd = 1),
+        color = "black"
+      ),
+      "Normal Density"
     ) +
-    ggplot2::stat_density(geom = "line", color = "red") +
+    ggstylekit::series_layer(
+      ggplot2::stat_density(geom = "line", color = "red"),
+      "Observed Density"
+    ) +
     ggplot2::labs(x = "Standardized residuals", y = "Density") +
     ggplot2::theme_bw() +
     ggplot2::theme(aspect.ratio = 1)
@@ -224,7 +248,9 @@ gof_plots <- function(
 #' @param ntime_col An unquoted column name for nominal time since dose
 #' @param trt_col An unquoted column name for treatment group"
 #' @param dv_label A string of dv label (default: bquote(Delta ~ 'QTc (ms)'))
-#' @param legend_location String for legend position (top, bottom, left, right)
+#' @param legend_location `r lifecycle::badge("deprecated")` String for
+#'   legend position (top, bottom, left, right). Set `legend.position` in
+#'   [style_spec()] instead.
 #' @param style A [style_spec()], or a named list of arguments passed to
 #'   `style_plot()`. The list form is deprecated.
 #'
@@ -246,7 +272,7 @@ gof_plots <- function(
 #'   "REML",
 #'   TRUE
 #' )
-#' gof_concordance_plots(data_proc, fit, deltaQTCF, CONC, NTLD, TRTG, legend_location = "top")
+#' gof_concordance_plots(data_proc, fit, deltaQTCF, CONC, NTLD, TRTG)
 gof_concordance_plots <- function(
   data,
   fit,
@@ -255,13 +281,17 @@ gof_concordance_plots <- function(
   ntime_col,
   trt_col = NULL,
   dv_label = bquote(Delta ~ "QTc (ms)"),
-  legend_location = c("top", "bottom", "left", "right", "none"),
+  legend_location = lifecycle::deprecated(),
   style = list()
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
 
-  legend_location <- match.arg(legend_location)
+  legend_location <- check_legend_location(
+    legend_location,
+    "gof_concordance_plots",
+    c("top", "bottom", "left", "right", "none")
+  )
   dv <- rlang::enquo(dv_col)
   conc <- rlang::enquo(conc_col)
   time <- rlang::enquo(ntime_col)
@@ -270,11 +300,11 @@ gof_concordance_plots <- function(
   required_cols <- unlist(lapply(c(dv, conc, time, trt), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
-  fit_results_df <- compute_fit_results(data, fit, !!dv, !!conc, !!time, !!trt)
+  fit_results_df <- fit_results(data, fit, dv, conc, time)
 
   # Add .trt_group for shape aesthetic
   fit_results_df$.trt_group <- if (!rlang::quo_is_null(trt)) {
-    fit_results_df$TRTG
+    dplyr::pull(data, !!trt)
   } else {
     "All"
   }
@@ -308,13 +338,16 @@ gof_concordance_plots <- function(
       )) +
       ggplot2::theme_bw() +
       ggplot2::theme(aspect.ratio = 1) +
-      ggplot2::geom_abline(slope = 1) +
-      ggplot2::geom_smooth(
-        method = "lm",
-        se = FALSE,
-        formula = y ~ x,
-        color = "red",
-        linetype = "dashed"
+      ggstylekit::series_layer(ggplot2::geom_abline(slope = 1), "Identity") +
+      ggstylekit::series_layer(
+        ggplot2::geom_smooth(
+          method = "lm",
+          se = FALSE,
+          formula = y ~ x,
+          color = "red",
+          linetype = "dashed"
+        ),
+        "Linear Regression"
       )
 
     .p <- cqtkit_apply_style(
@@ -350,9 +383,12 @@ gof_concordance_plots <- function(
 #' @param conc_xlabel A string of concentration xlabel
 #' @param dv_label A string of dv label (default: bquote(Delta ~ 'QTc (ms)'))
 #' @param residual_references Numeric vector of reference residual lines to add, default -2 and 2
-#' @param legend_location String for legend position (top, bottom, left, right)
+#' @param legend_location `r lifecycle::badge("deprecated")` String for
+#'   legend position (top, bottom, left, right). Set `legend.position` in
+#'   [style_spec()] instead.
 #' @param style A [style_spec()], or a named list of arguments passed to
 #'   `style_plot()`. The list form is deprecated.
+#' @param loess_line Logical, whether to add LOESS regression line, default FALSE
 #'
 #' @return A 4-panel plot of WRES and IWRES residuals vs predicted values and concentration
 #' @export
@@ -376,8 +412,7 @@ gof_concordance_plots <- function(
 #'   deltaQTCF,
 #'   CONC,
 #'   NTLD,
-#'   TRTG,
-#'   legend_location = "top")
+#'   TRTG)
 gof_residuals_plots <- function(
   data,
   fit,
@@ -388,14 +423,20 @@ gof_residuals_plots <- function(
   conc_xlabel = "Concentration (ng/mL)",
   dv_label = bquote(Delta ~ "QTc (ms)"),
   residual_references = c(-2, 2),
-  legend_location = c("top", "bottom", "left", "right", "none"),
-  style = list()
+  legend_location = lifecycle::deprecated(),
+  style = list(),
+  loess_line = FALSE
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
   checkmate::assert_numeric(residual_references, null.ok = TRUE)
+  checkmate::assert_flag(loess_line)
 
-  legend_location <- match.arg(legend_location)
+  legend_location <- check_legend_location(
+    legend_location,
+    "gof_residuals_plots",
+    c("top", "bottom", "left", "right", "none")
+  )
 
   dv <- rlang::enquo(dv_col)
   conc <- rlang::enquo(conc_col)
@@ -405,11 +446,11 @@ gof_residuals_plots <- function(
   required_cols <- unlist(lapply(c(dv, conc, time, trt), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
-  fit_results_df <- compute_fit_results(data, fit, !!dv, !!conc, !!time, !!trt)
+  fit_results_df <- fit_results(data, fit, dv, conc, time)
 
   # Add .trt_group for shape aesthetic
   fit_results_df$.trt_group <- if (!rlang::quo_is_null(trt)) {
-    fit_results_df$TRTG
+    dplyr::pull(data, !!trt)
   } else {
     "All"
   }
@@ -439,8 +480,22 @@ gof_residuals_plots <- function(
       )) +
       ggplot2::theme_bw()
 
+    if (loess_line) {
+      .p <- .p +
+        line_series_layer(
+          ggplot2::geom_smooth(
+            method = "loess",
+            span = 0.99,
+            color = "red",
+            formula = y ~ x,
+            se = FALSE
+          ),
+          "LOESS Regression"
+        )
+    }
+
     if (!is.null(residual_references)) {
-      .p <- add_horizontal_references(.p, residual_references)
+      .p <- add_reference_lines(.p, residual_references)
     }
 
     .p <- cqtkit_apply_style(
@@ -449,6 +504,9 @@ gof_residuals_plots <- function(
       xlabel = xlabel[[i]],
       ylabel = ydata[[i]],
       legend = "Treatment Group",
+      color_order = 1,
+      shape_order = 1,
+      linetype_order = 2,
       theme = ggplot2::theme_bw()
     )
   })
@@ -457,7 +515,7 @@ gof_residuals_plots <- function(
     plots,
     style,
     legend_location = legend_location,
-    common_legend = !rlang::quo_is_null(trt),
+    common_legend = !rlang::quo_is_null(trt) || loess_line,
     title = figure_title
   )
 
@@ -474,7 +532,9 @@ gof_residuals_plots <- function(
 #' @param conc_col An unquoted column name for drug concentration measurements
 #' @param ntime_col An unquoted column name for nominal time since dose
 #' @param trt_col An unquoted column name for treatment group"
-#' @param legend_location String for legend position (top, bottom, left, right)
+#' @param legend_location `r lifecycle::badge("deprecated")` String for
+#'   legend position (top, bottom, left, right). Set `legend.position` in
+#'   [style_spec()] instead.
 #' @param style A [style_spec()], or a named list of arguments passed to
 #'   `style_plot()`. The list form is deprecated.
 #'
@@ -495,7 +555,7 @@ gof_residuals_plots <- function(
 #'   TRUE
 #' )
 #'
-#' gof_qq_plots(data_proc, fit, deltaQTCF, CONC, NTLD, TRTG, legend_location = "top")
+#' gof_qq_plots(data_proc, fit, deltaQTCF, CONC, NTLD, TRTG)
 gof_qq_plots <- function(
   data,
   fit,
@@ -503,12 +563,16 @@ gof_qq_plots <- function(
   conc_col,
   ntime_col,
   trt_col = NULL,
-  legend_location = c("top", "bottom", "left", "right", "none"),
+  legend_location = lifecycle::deprecated(),
   style = list()
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
-  legend_location <- match.arg(legend_location)
+  legend_location <- check_legend_location(
+    legend_location,
+    "gof_qq_plots",
+    c("top", "bottom", "left", "right", "none")
+  )
 
   dv <- rlang::enquo(dv_col)
   conc <- rlang::enquo(conc_col)
@@ -518,11 +582,11 @@ gof_qq_plots <- function(
   required_cols <- unlist(lapply(c(dv, conc, time, trt), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
-  fit_results_df <- compute_fit_results(data, fit, !!dv, !!conc, !!time, !!trt)
+  fit_results_df <- fit_results(data, fit, dv, conc, time)
 
   # Add .trt_group for shape aesthetic
   fit_results_df$.trt_group <- if (!rlang::quo_is_null(trt)) {
-    fit_results_df$TRTG
+    dplyr::pull(data, !!trt)
   } else {
     "All"
   }
@@ -546,7 +610,10 @@ gof_qq_plots <- function(
         color = .data$.trt_group,
         shape = .data$.trt_group
       )) +
-      ggplot2::geom_abline(slope = 1, linetype = "dashed") +
+      ggstylekit::series_layer(
+        ggplot2::geom_abline(slope = 1, linetype = "dashed"),
+        "Identity"
+      ) +
       ggplot2::theme_bw()
 
     .qqp <- cqtkit_apply_style(
@@ -583,7 +650,9 @@ gof_qq_plots <- function(
 #' @param ntime_col An unquoted column name for nominal time since dose
 #' @param trt_col An unquoted column name for treatment group" will use for filling boxplots
 #' @param residual_references Numeric vector of reference residual lines to add, default -2 and 2
-#' @param legend_location String for legend position (top, bottom, left, right)
+#' @param legend_location `r lifecycle::badge("deprecated")` String for
+#'   legend position (top, bottom, left, right). Set `legend.position` in
+#'   [style_spec()] instead.
 #' @param style A [style_spec()], or a named list of arguments passed to
 #'   `style_plot()`. The list form is deprecated.
 #'
@@ -610,8 +679,7 @@ gof_qq_plots <- function(
 #'   deltaQTCF,
 #'   CONC,
 #'   NTLD,
-#'   TRTG,
-#'   legend_location = "top")
+#'   TRTG)
 gof_residuals_time_boxplots <- function(
   data,
   fit,
@@ -620,14 +688,18 @@ gof_residuals_time_boxplots <- function(
   ntime_col,
   trt_col = NULL,
   residual_references = c(-2, 2),
-  legend_location = c("top", "bottom", "left", "right", "none"),
+  legend_location = lifecycle::deprecated(),
   style = list()
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
   checkmate::assert_numeric(residual_references, null.ok = TRUE)
 
-  legend_location <- match.arg(legend_location)
+  legend_location <- check_legend_location(
+    legend_location,
+    "gof_residuals_time_boxplots",
+    c("top", "bottom", "left", "right", "none")
+  )
 
   dv <- rlang::enquo(dv_col)
   conc <- rlang::enquo(conc_col)
@@ -637,7 +709,10 @@ gof_residuals_time_boxplots <- function(
   required_cols <- unlist(lapply(c(dv, conc, time, trt), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
-  fit_results_df <- compute_fit_results(data, fit, !!dv, !!conc, !!time, !!trt)
+  fit_results_df <- fit_results(data, fit, dv, conc, time)
+  if (!rlang::quo_is_null(trt)) {
+    fit_results_df$.trt_group <- dplyr::pull(data, !!trt)
+  }
 
   time_plots <- list()
   ydata <- c("WRES", "IWRES")
@@ -658,14 +733,14 @@ gof_residuals_time_boxplots <- function(
 
     if (!rlang::quo_is_null(trt)) {
       .rbp <- .rbp +
-        ggplot2::geom_boxplot(ggplot2::aes(fill = .data$TRTG))
+        ggplot2::geom_boxplot(ggplot2::aes(fill = .data$.trt_group))
     } else {
       .rbp <- .rbp +
         ggplot2::geom_boxplot()
     }
 
     if (!is.null(residual_references)) {
-      .rbp <- add_horizontal_references(.rbp, residual_references)
+      .rbp <- add_reference_lines(.rbp, residual_references)
     }
 
     this_style <- panel_style
@@ -681,8 +756,9 @@ gof_residuals_time_boxplots <- function(
       ylabel = ydata[[i]],
       legend = "",
       fill_legend = "Treatment Group",
-      color_order = 2,
-      fill_order = 1
+      color_order = 3,
+      fill_order = 1,
+      linetype_order = 2
     )
 
     time_plots[[i]] <- .rbp
@@ -711,7 +787,9 @@ gof_residuals_time_boxplots <- function(
 #' @param ntime_col An unquoted column name for nominal time since dose
 #' @param trt_col An unquoted column name for treatment group"
 #' @param residual_references Numeric vector of reference residual lines to add, default -2 and 2
-#' @param legend_location String for legend position (top, bottom, left, right)
+#' @param legend_location `r lifecycle::badge("deprecated")` String for
+#'   legend position (top, bottom, left, right). Set `legend.position` in
+#'   [style_spec()] instead.
 #' @param style A [style_spec()], or a named list of arguments passed to
 #'   `style_plot()`. The list form is deprecated.
 #'
@@ -740,14 +818,18 @@ gof_residuals_trt_boxplots <- function(
   ntime_col,
   trt_col = NULL,
   residual_references = c(-2, 2),
-  legend_location = c("top", "bottom", "left", "right", "none"),
+  legend_location = lifecycle::deprecated(),
   style = list()
 ) {
   checkmate::assertDataFrame(data)
   checkmate::assert(checkmate::check_class(fit, "lme"))
   checkmate::assert_numeric(residual_references, null.ok = TRUE)
 
-  legend_location <- match.arg(legend_location)
+  legend_location <- check_legend_location(
+    legend_location,
+    "gof_residuals_trt_boxplots",
+    c("top", "bottom", "left", "right", "none")
+  )
 
   dv <- rlang::enquo(dv_col)
   conc <- rlang::enquo(conc_col)
@@ -757,7 +839,10 @@ gof_residuals_trt_boxplots <- function(
   required_cols <- unlist(lapply(c(dv, conc, time, trt), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
-  fit_results_df <- compute_fit_results(data, fit, !!dv, !!conc, !!time, !!trt)
+  fit_results_df <- fit_results(data, fit, dv, conc, time)
+  if (!rlang::quo_is_null(trt)) {
+    fit_results_df$.trt_group <- dplyr::pull(data, !!trt)
+  }
 
   trtg_plots <- list()
   ydata <- c("WRES", "IWRES")
@@ -771,9 +856,9 @@ gof_residuals_trt_boxplots <- function(
       ggplot2::ggplot(
         if (!rlang::quo_is_null(trt)) {
           ggplot2::aes(
-            x = .data$TRTG,
+            x = .data$.trt_group,
             y = .data[[ydata[[i]]]],
-            fill = .data$TRTG
+            fill = .data$.trt_group
           )
         } else {
           ggplot2::aes(y = .data[[ydata[[i]]]])
@@ -783,7 +868,7 @@ gof_residuals_trt_boxplots <- function(
       ggplot2::theme_bw()
 
     if (!is.null(residual_references)) {
-      .rbpt <- add_horizontal_references(.rbpt, residual_references)
+      .rbpt <- add_reference_lines(.rbpt, residual_references)
     }
 
     .rbpt <- cqtkit_apply_style(
@@ -793,8 +878,9 @@ gof_residuals_trt_boxplots <- function(
       ylabel = ydata[[i]],
       fill_legend = "Treatment Group",
       legend = "",
-      color_order = 2,
-      fill_order = 1
+      color_order = 3,
+      fill_order = 1,
+      linetype_order = 2
     )
 
     trtg_plots[[i]] <- .rbpt
@@ -805,7 +891,7 @@ gof_residuals_trt_boxplots <- function(
     style,
     ncol = 1,
     legend_location = legend_location,
-    common_legend = !rlang::quo_is_null(trt),
+    common_legend = TRUE,
     title = figure_title
   )
 
@@ -959,16 +1045,35 @@ gof_vpc_plot <- function(
       ),
       alpha = 0.5
     ) +
-    suppressWarnings(
+    line_series_layer(
       ggplot2::geom_line(
-        data = obs_long,
-        ggplot2::aes(
-          x = .data$xdata,
-          y = .data$ydata,
-          color = .data$.group,
-          shape = .data$.group
-        )
-      )
+        data = obs_long[obs_long$.group == upper_caption, ],
+        ggplot2::aes(x = .data$xdata, y = .data$ydata),
+        inherit.aes = FALSE,
+        color = "darkseagreen",
+        linetype = "solid"
+      ),
+      upper_caption
+    ) +
+    line_series_layer(
+      ggplot2::geom_line(
+        data = obs_long[obs_long$.group == "Median", ],
+        ggplot2::aes(x = .data$xdata, y = .data$ydata),
+        inherit.aes = FALSE,
+        color = "cornflowerblue",
+        linetype = "solid"
+      ),
+      "Median"
+    ) +
+    line_series_layer(
+      ggplot2::geom_line(
+        data = obs_long[obs_long$.group == lower_caption, ],
+        ggplot2::aes(x = .data$xdata, y = .data$ydata),
+        inherit.aes = FALSE,
+        color = "darkseagreen",
+        linetype = "solid"
+      ),
+      lower_caption
     ) +
 
     ggplot2::theme_bw()
@@ -990,7 +1095,8 @@ gof_vpc_plot <- function(
     ),
     color_order = 1,
     shape_order = 1,
-    fill_order = 2,
+    linetype_order = 2,
+    fill_order = 3,
     fill_alpha = 0.5
   )
   return(.p)

@@ -19,9 +19,12 @@ compute_loess_linear_r_squared(data, deltaqtc_col, conc_col, span = 0.99)
 A tibble with R-squared, adjusted R-squared, and partial coefficient of determination comparing loess to linear fit
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+}
+\details{
 Computes R-squared and Adjusted R-squared of loess regression
 compared to linear regression. Used for determining linearity
-of C-QT data.
+of C-QT data. Deprecated in 1.2.1.
 }
 \examples{
 compute_loess_linear_r_squared(cqtkit_data_verapamil |> preprocess(), deltaQTCF, CONC)

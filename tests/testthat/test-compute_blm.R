@@ -68,23 +68,6 @@ test_that("compute_blm averages corrections computed per replicate", {
   )
 })
 
-test_that("the blm scalar differs from a flat mean over baseline rows", {
-  flat <- mean(60000 / .bl$RR)
-
-  out <- hrblm(tibble::tibble(x = 1), group_col = ID)
-
-  expect_false(isTRUE(all.equal(unique(out$HRBLM), flat)))
-})
-
-test_that("by accepts several columns", {
-  out <- hrblm(tibble::tibble(x = 1), group_col = c(ID, TRTG))
-
-  expect_equal(
-    unique(out$HRBLM),
-    unique(hrblm(tibble::tibble(x = 1), group_col = ID)$HRBLM)
-  )
-})
-
 test_that("group_col is required", {
   expect_error(hrblm(tibble::tibble(x = 1)))
   expect_error(

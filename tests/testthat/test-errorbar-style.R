@@ -8,48 +8,56 @@ errorbar_layer_data <- function(p) {
   ggplot2::ggplot_build(p)$data[[indices[[1]]]]
 }
 
+styled_spec <- style_spec(
+  errorbar_width = 0.12,
+  errorbar_linewidth = 1.2,
+  errorbar_alpha = 0.4,
+  errorbar_linetype = "dotted",
+  line_linewidth = 0.8
+)
+
+mean_dv_plot <- function(style, interval = "CI", reference = NULL) {
+  eda_mean_dv_over_time(
+    cqtkit_data_verapamil, deltaQTCF, NTLD, DOSEF,
+    reference_dose = reference,
+    error_bars = interval,
+    style = style
+  )
+}
+
 test_that("error bar styling preserves CI, SE and SD calculations", {
   for (interval in c("CI", "SE", "SD")) {
     for (reference in list(NULL, "0 mg")) {
-      make_plot <- function(style) {
-        eda_mean_dv_over_time(
-          cqtkit_data_verapamil, deltaQTCF, NTLD, DOSEF,
-          reference_dose = reference,
-          error_bars = interval,
-          style = style
-        )
-      }
-      baseline <- errorbar_layer_data(make_plot(style_spec()))
-      p <- make_plot(style_spec(
-        errorbar_width = 0.12,
-        errorbar_linewidth = 1.2,
-        errorbar_alpha = 0.4,
-        errorbar_linetype = "dotted",
-        line_linewidth = 0.8
-      ))
-      bars <- errorbar_layer_data(p)
+      baseline <- errorbar_layer_data(mean_dv_plot(style_spec(), interval, reference))
+      bars <- errorbar_layer_data(mean_dv_plot(styled_spec, interval, reference))
       expect_equal(bars[c("ymin", "ymax")], baseline[c("ymin", "ymax")])
-      expect_equal(bars$colour, baseline$colour)
-      expect_equal(bars$xmax - bars$xmin, rep(0.12, nrow(bars)))
-      expect_true(all(bars$linewidth == 1.2))
-      expect_true(all(bars$alpha == 0.4))
-      expect_true(all(bars$linetype == "dotted"))
-
-      lines <- which(vapply(
-        p$layers, function(layer) inherits(layer$geom, "GeomLine"), logical(1)
-      ))
-      expect_true(all(ggplot2::ggplot_build(p)$data[[lines[[1]]]]$linewidth == 0.8))
-      line_only <- errorbar_layer_data(make_plot(style_spec(line_linewidth = 2)))
-      expect_equal(line_only$linewidth, baseline$linewidth)
-
-      updated <- errorbar_layer_data(restyle_plot(
-        p, errorbar_width = 0.25, errorbar_linewidth = 0.7
-      ))
-      expect_equal(updated$xmax - updated$xmin, rep(0.25, nrow(updated)))
-      expect_true(all(updated$linewidth == 0.7))
-      expect_equal(updated[c("ymin", "ymax")], baseline[c("ymin", "ymax")])
     }
   }
+})
+
+test_that("error bar styling sets the bar aesthetics and restyles", {
+  baseline <- errorbar_layer_data(mean_dv_plot(style_spec()))
+  p <- mean_dv_plot(styled_spec)
+  bars <- errorbar_layer_data(p)
+  expect_equal(bars$colour, baseline$colour)
+  expect_equal(bars$xmax - bars$xmin, rep(0.12, nrow(bars)))
+  expect_true(all(bars$linewidth == 1.2))
+  expect_true(all(bars$alpha == 0.4))
+  expect_true(all(bars$linetype == "dotted"))
+
+  lines <- which(vapply(
+    p$layers, function(layer) inherits(layer$geom, "GeomLine"), logical(1)
+  ))
+  expect_true(all(ggplot2::ggplot_build(p)$data[[lines[[1]]]]$linewidth == 0.8))
+  line_only <- errorbar_layer_data(mean_dv_plot(style_spec(line_linewidth = 2)))
+  expect_equal(line_only$linewidth, baseline$linewidth)
+
+  updated <- errorbar_layer_data(restyle_plot(
+    p, errorbar_width = 0.25, errorbar_linewidth = 0.7
+  ))
+  expect_equal(updated$xmax - updated$xmin, rep(0.25, nrow(updated)))
+  expect_true(all(updated$linewidth == 0.7))
+  expect_equal(updated[c("ymin", "ymax")], baseline[c("ymin", "ymax")])
 })
 
 test_that("quantile plots pass error bar settings to ggstylekit", {
