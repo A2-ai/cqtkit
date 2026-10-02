@@ -100,3 +100,24 @@ test_that("color palette functions also provide mapped fill defaults", {
 
   expect_no_error(ggplot2::ggplot_build(p))
 })
+
+panel_titles <- function(p) {
+  vapply(
+    seq_len(length(p$patches$plots) + 1),
+    function(i) format(p[[i]]$labels$title %||% ""),
+    character(1)
+  )
+}
+
+test_that("eda_qtc_comparison_plot() puts a style_spec() title on the figure", {
+  p <- eda_qtc_comparison_plot(
+    cqtkit_data_verapamil,
+    RR,
+    QT,
+    QTCB,
+    QTCF,
+    style = style_spec(title = "QTc comparison")
+  )
+  expect_equal(p$patches$annotation$title, "QTc comparison")
+  expect_equal(panel_titles(p), c("QT", "QTCB", "QTCF"))
+})

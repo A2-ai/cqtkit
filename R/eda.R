@@ -312,6 +312,7 @@ eda_qtc_comparison_plot <- function(
   qtcs <- unlist(sapply(qtcs_quos, name_quo_if_not_null))
 
   style <- as_style_spec(style)
+  figure_title <- style$title
   if (is.null(style$xlabel)) style$xlabel <- "RR (ms)"
 
   plots <- lapply(qtcs, function(qtc) {
@@ -343,7 +344,8 @@ eda_qtc_comparison_plot <- function(
     style,
     ncol = 1,
     legend_location = legend_location,
-    common_legend = !rlang::quo_is_null(trt)
+    common_legend = !rlang::quo_is_null(trt),
+    title = figure_title
   )
 }
 

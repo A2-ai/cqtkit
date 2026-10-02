@@ -21,6 +21,7 @@
 * `predict_with_observations_plot()` and `predict_with_quantiles_plot()` show predictions, observations and reference lines in one legend. Their points are shape 16, and a style list's `shapes` sets them.
 * On the `style_spec()` path, points map colour only and are shape 16; set it with `style_spec(point_shape = )`.
 * `restyle_plot()` sets `title`, `xlabel`, `ylabel`, `xlims`, `ylims` and `fill_alpha` on `style_spec()` plots.
+* A `style_spec()` title on `eda_qtc_comparison_plot()` is the figure title. The panels keep their column-name titles.
 * `style_spec(legend.position = )` places the combined legend of `eda_qtc_comparison_plot()` and the multi-panel `gof_*()` functions.
 * `eda_hysteresis_loop_plot()` works with `restyle_plot()` and `reveal()`, and keeps its facets when combined.
 * `gof_residuals_trt_boxplots()` shows its reference-line legend when `trt_col` is not supplied.
