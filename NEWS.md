@@ -2,6 +2,7 @@
 
 ### Enhanced
 * `gof_residuals_plots()` gains `loess_line`, which adds a "LOESS Regression" line to each panel. Defaults to `FALSE`.
+* `tabulate_ecg_param_summary()` gains `footnote_missing`, which footnotes cells left empty by fewer than 2 observations or by a time point with no `reference_dose` observations. Defaults to `TRUE`.
 
 ### Deprecated
 * `add_horizontal_references()` is deprecated and draws the same lines as in 1.1.0. Use the `reference_threshold` argument of the plotting functions.
@@ -12,6 +13,7 @@
 * `compute_loess_linear_r_squared()` regresses `deltaqtc_col` on `conc_col`.
 * `compute_potential_hysteresis()` errors name the group when `group_col` holds more than one group or a group has fewer than 4 time points.
   * `compute_hysteresis_labeller()` and `eda_hysteresis_loop_plot()` name every group with fewer than 4 time points in one error.
+  * `compute_potential_hysteresis()` and `eda_hysteresis_loop_plot()` error, naming the time points, when a time point's mean `deltaqtc_col` is NA, such as a time point with no `reference_dose` observations.
 * Reference lines, regression lines and `gof_vpc_plot()` percentile lines are named lines in the linetype legend, placed after the group legend. `reveal()` onto shapes gives a legend of the revealed column only, and `colors` and `linetypes` restyle each line by name, for example `"Reference 10"`.
   * `eda_scatter_with_regressions()` draws the linear regression solid and the LOESS regression short-dashed.
   * The linetype legend has no title. Legends placed side by side are bottom-aligned unless the theme sets `legend.box.just`.
@@ -24,6 +26,8 @@
 * `gof_residuals_trt_boxplots()` shows its reference-line legend when `trt_col` is not supplied.
 * A style list that sets `color_order` without `shape_order` gives the shape legend the same order, so treatment keeps one legend.
 * `compute_grouped_mean_sd()` and `compute_pk_parameters()` warn that TIME or DOSE data contains NA values.
+* `compute_grouped_mean_sd()` gives NA differences at time points with no `reference_dose` observations, with a warning naming them, instead of an error. A group with fewer than 2 observations has NA confidence intervals, with a warning naming it.
+  * `compute_ecg_param_summary()`, `tabulate_ecg_param_summary()` and `eda_mean_dv_over_time()` give each of these warnings once.
 * `compute_contrast_observations()` with `contrast_method = "group"` warns that observed data contained NA whether the missing value is in the treatment or the control group.
 * `predict_with_exposure_plot()` shows reference and Cmax lines in one "Exposure" legend. `colors` recolours a Cmax line by name, for example `"Cmax_113.59"`.
 * Requires ggstylekit >= 0.4.1. `style_spec(caption = ...)` overrides generated plot captions, including exposure predictions; `caption = ""` hides them.

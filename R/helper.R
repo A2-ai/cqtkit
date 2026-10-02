@@ -583,3 +583,58 @@ names_from_quo <- function(quo, arg = rlang::caller_arg(quo)) {
 
   vapply(parts, rlang::as_string, character(1))
 }
+
+#' Student t quantile, NA where there are too few degrees of freedom
+#'
+#' `stats::qt()` warns "NaNs produced" when `df` is 0, which happens when a
+#' group has fewer than 2 observations. Return NA there instead.
+#'
+#' @param p Probability
+#' @param df Degrees of freedom, one per group
+#' @return A numeric vector the length of `df`
+#' @keywords internal
+#' @noRd
+qt_or_na <- function(p, df) {
+  out <- rep(NA_real_, length(df))
+  ok <- !is.na(df) & df > 0
+  out[ok] <- stats::qt(p, df[ok])
+  out
+}
+
+#' Value of `x` at the reference dose, NA when the reference dose is absent
+#'
+#' @param x Values within one time point
+#' @param dose Dose values within that time point
+#' @param reference_dose Reference dose value
+#' @return The value of `x` where `dose == reference_dose`, or NA
+#' @keywords internal
+#' @noRd
+reference_value <- function(x, dose, reference_dose) {
+  value <- x[dose == reference_dose]
+  if (length(value) == 0) NA else value
+}
+
+#' Evaluate `expr`, giving each distinct warning once
+#'
+#' A summary that runs once per column would otherwise repeat the same
+#' warning.
+#'
+#' @param expr Expression to evaluate
+#' @return The value of `expr`
+#' @keywords internal
+#' @noRd
+with_unique_warnings <- function(expr) {
+  seen <- list()
+  out <- withCallingHandlers(
+    expr,
+    warning = function(w) {
+      seen[[length(seen) + 1]] <<- w
+      invokeRestart("muffleWarning")
+    }
+  )
+  messages <- vapply(seen, conditionMessage, character(1))
+  for (w in seen[!duplicated(messages)]) {
+    warning(w)
+  }
+  out
+}
