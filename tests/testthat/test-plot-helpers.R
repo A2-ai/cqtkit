@@ -31,3 +31,37 @@ test_that("add_horizontal_references is deprecated", {
     "`add_horizontal_references\\(\\)` was deprecated in cqtkit 1.2.1"
   )
 })
+
+test_that("add_horizontal_references lines are black after style_plot()", {
+  p <- ggplot2::ggplot(data.frame(x = 1:3, y = 1:3), ggplot2::aes(x, y)) +
+    ggplot2::geom_point()
+  p <- suppressWarnings(add_horizontal_references(p, 10))
+  reference_colour <- function(p) {
+    unique(ggplot2::ggplot_build(p)$data[[2]]$colour)
+  }
+
+  styled <- suppressWarnings(style_plot(p))
+  expect_identical(reference_colour(styled), "black")
+
+  styled <- suppressWarnings(style_plot(p, colors = c("Reference 10" = "red")))
+  expect_identical(reference_colour(styled), "red")
+})
+
+test_that("style_plot() recolours a named line without changing the plot passed in", {
+  p <- eda_scatter_with_regressions(
+    cqtkit_data_verapamil,
+    deltaQTCF,
+    CONC,
+    TRTG,
+    reference_threshold = 10
+  )
+  reference_colour <- function(p) {
+    unique(ggplot2::ggplot_build(p)$data[[length(p$layers)]]$colour)
+  }
+  before <- reference_colour(p)
+
+  styled <- suppressWarnings(style_plot(p, colors = c("Reference 10" = "red")))
+
+  expect_identical(reference_colour(styled), "red")
+  expect_identical(reference_colour(p), before)
+})

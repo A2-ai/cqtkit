@@ -1,40 +1,35 @@
 # cqtkit 1.2.1
 
+Requires ggstylekit >= 0.4.1.
+
 ### Enhanced
-* `gof_residuals_plots()` gains `loess_line`, which adds a "LOESS Regression" line to each panel. Defaults to `FALSE`.
-* `tabulate_ecg_param_summary()` gains `footnote_missing`, which footnotes cells left empty by fewer than 2 observations or by a time point with no `reference_dose` observations. Defaults to `TRUE`.
+
+* `gof_residuals_plots()` gains `loess_line = FALSE` to optionally add LOESS curves to each panel.
+* `tabulate_ecg_param_summary()` gains `footnote_missing = TRUE` to explain missing confidence intervals, missing reference observations, and differing baseline-corrected counts.
 
 ### Deprecated
-* `add_horizontal_references()` is deprecated and draws the same lines as in 1.1.0. Use the `reference_threshold` argument of the plotting functions.
-* The `legend_location` argument of `eda_qtc_comparison_plot()`, `gof_plots()`, `gof_concordance_plots()`, `gof_residuals_plots()`, `gof_qq_plots()`, `gof_residuals_time_boxplots()` and `gof_residuals_trt_boxplots()` is deprecated. Set `legend.position` in `style_spec()` instead. It will be removed in 2.0.0.
+
+* `add_horizontal_references()` is deprecated. Use the plotting functions' `reference_threshold` argument.
+* The plotting argument `legend_location` is deprecated and will be removed in 2.0.0. Use `style_spec(legend.position = )`.
 * `compute_loess_linear_r_squared()` is deprecated.
 
 ### Fixed
-* `compute_loess_linear_r_squared()` regresses `deltaqtc_col` on `conc_col`.
-* `compute_potential_hysteresis()` errors name the group when `group_col` holds more than one group or a group has fewer than 4 time points.
-  * `compute_hysteresis_labeller()` and `eda_hysteresis_loop_plot()` name every group with fewer than 4 time points in one error.
-  * `compute_potential_hysteresis()` and `eda_hysteresis_loop_plot()` error, naming the time points, when a time point's mean `deltaqtc_col` is NA, such as a time point with no `reference_dose` observations.
-* Reference lines, regression lines and `gof_vpc_plot()` percentile lines are named lines in the linetype legend, placed after the group legend. `reveal()` onto shapes gives a legend of the revealed column only, and `colors` and `linetypes` restyle each line by name, for example `"Reference 10"`.
-  * `eda_scatter_with_regressions()` draws the linear regression solid and the LOESS regression short-dashed.
-  * The linetype legend has no title. Legends placed side by side are bottom-aligned unless the theme sets `legend.box.just`.
-  * The regression, density and identity lines of `eda_qt_rr_plot()`, `eda_quantiles_plot()` and the `gof_*()` plots are named lines.
-* `predict_with_observations_plot()` and `predict_with_quantiles_plot()` show predictions, observations and reference lines in one legend. Their points are shape 16, and a style list's `shapes` sets them.
-* On the `style_spec()` path, points map colour only and are shape 16; set it with `style_spec(point_shape = )`.
-* `restyle_plot()` sets `title`, `xlabel`, `ylabel`, `xlims`, `ylims` and `fill_alpha` on `style_spec()` plots.
-* A `style_spec()` title on `eda_qtc_comparison_plot()` is the figure title. The panels keep their column-name titles.
-* `style_spec(legend.position = )` places the combined legend of `eda_qtc_comparison_plot()` and the multi-panel `gof_*()` functions.
-* `eda_hysteresis_loop_plot()` works with `restyle_plot()` and `reveal()`, and keeps its facets when combined.
-* `gof_residuals_trt_boxplots()` shows its reference-line legend when `trt_col` is not supplied.
-* A style list that sets `color_order` without `shape_order` gives the shape legend the same order, so treatment keeps one legend.
-* `compute_grouped_mean_sd()` and `compute_pk_parameters()` warn that TIME or DOSE data contains NA values.
-* `compute_grouped_mean_sd()` gives NA differences at time points with no `reference_dose` observations, with a warning naming them, instead of an error. A group with fewer than 2 observations has NA confidence intervals, with a warning naming it.
-  * `compute_ecg_param_summary()`, `tabulate_ecg_param_summary()` and `eda_mean_dv_over_time()` give each of these warnings once.
-* `compute_contrast_observations()` with `contrast_method = "group"` warns that observed data contained NA whether the missing value is in the treatment or the control group.
-* `predict_with_exposure_plot()` shows reference and Cmax lines in one "Exposure" legend. `colors` recolours a Cmax line by name, for example `"Cmax_113.59"`.
-* Requires ggstylekit >= 0.4.1. `style_spec(caption = ...)` overrides generated plot captions, including exposure predictions; `caption = ""` hides them.
-* `eda_scatter_with_regressions()`, the `gof_*()` residual plots and `predict_with_observations_plot()` keep the remaining columns of `data` in the plot data, so `reveal()` can map a covariate on them.
-  * `compute_fit_results()` and `compute_contrast_observations()` return an ungrouped tibble with the remaining columns of `data` after their computed columns.
-  * `compute_fit_results()` warns when its `TRTG` column overwrites a `TRTG` column in `data`, which happens when `trt_col` is not `TRTG`.
+
+* `compute_grouped_mean_sd()` returns NA differences when reference observations are missing and NA confidence intervals for groups with fewer than two observations. Warnings identify affected groups and time points without repeating across summary columns.
+* With `group_col`, reference-dose comparisons match within each group. When each dose belongs to exactly one group, groups share the reference dose.
+* `compute_ecg_param_summary()` retains baseline-corrected summaries when their observation counts differ from the ECG counts, returning the separate count as `n_decg`.
+* Grouped summaries keep groups with missing doses or treatments separate, labelled as, for example, `"NA F"` and `"NA M"`.
+* Model parameter tables support `section = TRUE` and `include_reference_levels = TRUE` when fitting drops factor levels.
+* Hysteresis checks identify groups with fewer than four time points or missing mean deltaQTc values.
+* `compute_loess_linear_r_squared()` correctly regresses deltaQTc on concentration.
+* Scatter, residual, and observation-prediction plots retain covariates for `reveal()`. `compute_fit_results()` and `compute_contrast_observations()` retain input columns in an ungrouped tibble; `compute_fit_results()` warns when overwriting `TRTG`.
+* Reference, regression, density, identity, VPC percentile, and Cmax lines can be styled by name. Shape legends from `reveal()` describe only the revealed variable.
+* Prediction plots combine predictions, observations, and references in one legend; exposure plots combine reference and Cmax lines in an "Exposure" legend. Treatment legends remain combined when a style list sets `color_order`.
+* With `style_spec()`, points default to shape 16, adjustable with `point_shape`. `caption` overrides generated captions; `caption = ""` hides them.
+* `restyle_plot()` updates titles, axis labels, limits, and ribbon transparency. Combined plots respect `style_spec(legend.position = )`, and `eda_qtc_comparison_plot()` keeps figure and panel titles separate.
+* `eda_hysteresis_loop_plot()` supports `restyle_plot()` and `reveal()` and retains its facets when combined.
+* `eda_scatter_with_regressions()` draws linear fits solid and LOESS fits short-dashed. `gof_residuals_trt_boxplots()` retains its reference legend without `trt_col`.
+* Missing-data warnings accurately describe retained TIME/DOSE values and missing observations in group contrasts.
 
 # cqtkit 1.2.0
 

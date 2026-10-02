@@ -263,3 +263,18 @@ test_that("eda_hysteresis_loop_plot snapshot", {
 
   snapshot_plot(p, "eda-hysteresis-loop")
 })
+
+test_that("eda_scatter_with_regressions reads quoted column names as columns", {
+  plain <- eda_scatter_with_regressions(cqtkit_data_verapamil, deltaQTCF, CONC, TRTG)
+  quoted <- eda_scatter_with_regressions(
+    cqtkit_data_verapamil,
+    "deltaQTCF",
+    "CONC",
+    "TRTG"
+  )
+
+  expect_equal(
+    ggplot2::ggplot_build(quoted)$data,
+    ggplot2::ggplot_build(plain)$data
+  )
+})

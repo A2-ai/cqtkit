@@ -73,6 +73,16 @@ line_series_layer <- function(layer, name) {
   layer
 }
 
+# A layer that can be changed without changing `layer`, which is shared by
+# every plot it was added to. Keeps the attributes naming the line.
+copy_layer <- function(layer) {
+  copy <- ggplot2::ggproto(NULL, layer)
+  for (name in setdiff(names(attributes(layer)), "class")) {
+    attr(copy, name) <- attr(layer, name)
+  }
+  copy
+}
+
 # Adds to a summary the columns of `data` that have one value in every summary
 # cell (a study nested in the dose groups, say), so `reveal()` can map them.
 # The summary's own columns and the time and dv columns are skipped. The dose
@@ -246,9 +256,9 @@ add_horizontal_references <- function(p, reference_threshold) {
       )
     )
 
-  attr(p, "reference_colors") <- stats::setNames(
-    rep("black", length(reference_threshold)),
-    ref_labels
+  attr(p, "series_colors") <- c(
+    attr(p, "series_colors"),
+    stats::setNames(rep("black", length(reference_threshold)), ref_labels)
   )
 
   # Also set reference shapes as NA so they don't appear in legend

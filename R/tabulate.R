@@ -329,8 +329,10 @@ tabulate_model_fit_parameters <- function(
 #' @param title Optional title for the table, it will be wrapped in gt::md()
 #' @param ... Optional arguments for gt::tab_options
 #' @param footnote_missing Logical, whether to footnote cells left empty: a
-#'   confidence interval from fewer than 2 observations, or a difference at a
-#'   time point with no `reference_dose` observations (default: TRUE)
+#'   confidence interval from fewer than 2 observations, or a difference with
+#'   no `reference_dose` observations to compare with. Also footnotes the
+#'   baseline-corrected count where it differs from N, which counts
+#'   `ecg_param_col` observations (default: TRUE)
 #'
 #' @return A gt table with mean ECG parameters (QTc, deltaQTc, delta-delta QTc) and confidence intervals by dose and time
 #' @export
@@ -385,15 +387,15 @@ tabulate_ecg_param_summary <- function(
   # A second summary runs when the confidence levels differ, so give each
   # warning once.
   with_unique_warnings({
-    summary <- compute_ecg_param_summary(
+    summary <- ecg_param_summary(
       data,
-      !!ntld,
-      !!dose,
-      !!ecg,
-      !!deltaecg,
-      group_col = !!group,
-      reference_dose = reference_dose,
-      conf_int = ecg_param_conf_int
+      ntld,
+      dose,
+      ecg,
+      deltaecg,
+      group,
+      reference_dose,
+      ecg_param_conf_int
     )
     if (delta_ecg_param_conf_int != ecg_param_conf_int) {
       decg_summary <- compute_ecg_param_summary(
@@ -414,13 +416,6 @@ tabulate_ecg_param_summary <- function(
       }
     }
   })
-
-  missing_reference_times <- if (!is.null(reference_dose)) {
-    setdiff(
-      unique(summary$time),
-      summary$time[summary$dose == reference_dose]
-    )
-  }
 
   if (!is.null(reference_dose)) {
     s_proc <- summary |>
@@ -444,7 +439,21 @@ tabulate_ecg_param_summary <- function(
   } else {
     s_proc <- summary
   }
-  s_proc <- s_proc |> dplyr::select(-"dose")
+  displayed <- c(
+    "time",
+    "n",
+    "mean_ecg",
+    "ecg_low",
+    "ecg_high",
+    "group",
+    "mean_decg",
+    "decg_low",
+    "decg_high"
+  )
+  if (!is.null(reference_dose)) {
+    displayed <- c(displayed, "mean_ddecg", "ddecg_low", "ddecg_high")
+  }
+  s_proc <- s_proc |> dplyr::select(dplyr::all_of(displayed))
 
   s_gt <- s_proc |>
     dplyr::group_by(group) |>
@@ -531,36 +540,79 @@ tabulate_ecg_param_summary <- function(
     ) |>
     gt::sub_missing()
 
-  if (footnote_missing && length(missing_reference_times) > 0) {
-    s_gt <- s_gt |>
-      gt::tab_footnote(
-        footnote = paste0(
-          "No ",
-          reference_dose,
-          " observations at this time point."
-        ),
-        locations = gt::cells_body(
-          columns = c("mean_ddecg", "ddecg_low"),
-          rows = .data$time %in% missing_reference_times
-        )
-      )
-  }
-
-  if (footnote_missing && any(s_proc$n < 2)) {
-    s_gt <- s_gt |>
-      gt::tab_footnote(
-        footnote = "Fewer than 2 observations; CI not computed.",
-        locations = gt::cells_body(
-          columns = dplyr::any_of(c("ecg_low", "decg_low", "ddecg_low")),
-          rows = .data$n < 2
-        )
-      )
+  if (footnote_missing) {
+    s_gt <- footnote_ecg_param_summary(s_gt, summary, reference_dose)
   }
 
   tab_option_args$data <- s_gt
   s_gt <- do.call(gt::tab_options, tab_option_args)
 
   return(s_gt)
+}
+
+# Footnotes the empty and the differently counted cells of a
+# tabulate_ecg_param_summary() table, from the counts of `summary`, the
+# ecg_param_summary() it displays. A delta-delta cell gets one reason: no
+# reference_dose observations to compare with, or fewer than 2 observations.
+footnote_ecg_param_summary <- function(s_gt, summary, reference_dose) {
+  few <- "Fewer than 2 observations; CI not computed."
+  s_gt <- footnote_rows(s_gt, few, "ecg_low", summary$n < 2)
+  s_gt <- footnote_rows(s_gt, few, "decg_low", summary$n_decg < 2)
+
+  if (!is.null(reference_dose)) {
+    compared <- !(summary$dose %in% reference_dose)
+    no_reference <- compared &
+      (is.na(summary$.reference_n) | summary$.reference_n == 0)
+    few_reference <- compared &
+      !no_reference &
+      (summary$n_decg < 2 | summary$.reference_n < 2)
+
+    s_gt <- footnote_rows(
+      s_gt,
+      paste0(
+        "No ",
+        reference_dose,
+        " observations ",
+        if (any(summary$.reference_by_group)) "for this group ",
+        "at this time point."
+      ),
+      c("mean_ddecg", "ddecg_low"),
+      no_reference
+    )
+    s_gt <- footnote_rows(
+      s_gt,
+      paste0(
+        "Fewer than 2 observations in this group or at ",
+        reference_dose,
+        "; CI not computed."
+      ),
+      "ddecg_low",
+      few_reference
+    )
+  }
+
+  recounted <- summary$n_decg != summary$n
+  for (n_decg in unique(summary$n_decg[recounted])) {
+    s_gt <- footnote_rows(
+      s_gt,
+      paste0("Baseline-corrected N = ", n_decg, "."),
+      "mean_decg",
+      recounted & summary$n_decg == n_decg
+    )
+  }
+
+  s_gt
+}
+
+footnote_rows <- function(s_gt, footnote, columns, rows) {
+  if (!any(rows)) {
+    return(s_gt)
+  }
+  gt::tab_footnote(
+    s_gt,
+    footnote = footnote,
+    locations = gt::cells_body(columns = columns, rows = which(rows))
+  )
 }
 
 #' Tabulate High QTc Subjects

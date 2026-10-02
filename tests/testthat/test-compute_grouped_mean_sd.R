@@ -195,3 +195,172 @@ test_that("compute_ecg_param_summary gives each warning once", {
     )
   )
 })
+
+study_data <- function() {
+  cqtkit_data_verapamil |>
+    dplyr::mutate(
+      STUDY = ifelse(dplyr::dense_rank(ID) %% 2 == 0, "A", "B")
+    )
+}
+
+test_that("compute_grouped_mean_sd matches a study's reference dose by hand", {
+  .test_data <- study_data()
+
+  out <- dplyr::ungroup(compute_grouped_mean_sd(
+    .test_data,
+    deltaQTCF,
+    NTLD,
+    DOSEF,
+    STUDY,
+    reference_dose = "0 mg"
+  ))
+  expected <- .test_data |>
+    dplyr::group_by(NTLD, STUDY, DOSEF) |>
+    dplyr::summarise(mean_dv = mean(deltaQTCF), .groups = "drop_last") |>
+    dplyr::mutate(mean_delta_dv = mean_dv - mean_dv[DOSEF == "0 mg"]) |>
+    dplyr::ungroup() |>
+    dplyr::mutate(group = paste(DOSEF, STUDY))
+  matched <- dplyr::left_join(
+    dplyr::mutate(out, group = as.character(group)),
+    expected,
+    by = c(time = "NTLD", group = "group"),
+    suffix = c("", ".expected")
+  )
+
+  expect_equal(matched$mean_delta_dv, matched$mean_delta_dv.expected)
+  expect_false(any(c(".group", ".reference_n", ".reference_by_group") %in% names(out)))
+})
+
+test_that("compute_grouped_mean_sd gives NA where a study has no reference dose at a time point", {
+  .test_data <- study_data()
+  full <- compute_grouped_mean_sd(
+    .test_data,
+    deltaQTCF,
+    NTLD,
+    DOSEF,
+    STUDY,
+    reference_dose = "0 mg"
+  )
+  .test_data <- dplyr::filter(
+    .test_data,
+    !(NTLD == 2 & DOSEF == "0 mg" & STUDY == "B")
+  )
+
+  out <- collect_warnings(compute_grouped_mean_sd(
+    .test_data,
+    deltaQTCF,
+    NTLD,
+    DOSEF,
+    STUDY,
+    reference_dose = "0 mg"
+  ))
+
+  expect_identical(
+    out$warnings,
+    "No `reference_dose` (0 mg) observations at time / group: 2 / B. Differences from `reference_dose` are NA there."
+  )
+  b_at_2 <- dplyr::filter(out$value, time == 2, group == "120 mg B")
+  expect_true(is.na(b_at_2$mean_delta_dv))
+  expect_true(is.na(b_at_2$ci_low_delta))
+  expect_true(is.na(b_at_2$ci_up_delta))
+
+  a_at_2 <- dplyr::filter(out$value, time == 2, group == "120 mg A")
+  expect_equal(
+    a_at_2$mean_delta_dv,
+    dplyr::filter(full, time == 2, group == "120 mg A")$mean_delta_dv
+  )
+})
+
+test_that("compute_grouped_mean_sd gives NA where a study has no reference dose", {
+  .test_data <- study_data() |>
+    dplyr::filter(!(DOSEF == "0 mg" & STUDY == "B"))
+  times <- sort(unique(.test_data$NTLD))
+
+  out <- collect_warnings(compute_grouped_mean_sd(
+    .test_data,
+    deltaQTCF,
+    NTLD,
+    DOSEF,
+    STUDY,
+    reference_dose = "0 mg"
+  ))
+
+  expect_identical(
+    out$warnings,
+    paste0(
+      "No `reference_dose` (0 mg) observations at time / group: ",
+      paste(times, "B", sep = " / ", collapse = ", "),
+      ". Differences from `reference_dose` are NA there."
+    )
+  )
+  b <- dplyr::filter(out$value, group == "120 mg B")
+  expect_equal(nrow(b), length(times))
+  expect_true(all(is.na(b$mean_delta_dv)))
+  expect_true(all(is.na(b$ci_low_delta)))
+  a <- dplyr::filter(out$value, group == "120 mg A")
+  expect_false(anyNA(a$mean_delta_dv))
+})
+
+test_that("compute_grouped_mean_sd shares the reference dose when each dose has one group", {
+  plain <- compute_grouped_mean_sd(
+    cqtkit_data_verapamil,
+    deltaQTCF,
+    NTLD,
+    DOSEF,
+    reference_dose = "0 mg"
+  )
+  grouped <- compute_grouped_mean_sd(
+    cqtkit_data_verapamil,
+    deltaQTCF,
+    NTLD,
+    DOSEF,
+    TRTG,
+    reference_dose = "0 mg"
+  )
+
+  delta_cols <- c(
+    "mean_delta_dv",
+    "geomean_delta_dv",
+    "delta_sd",
+    "delta_se",
+    "ci_low_delta",
+    "ci_up_delta"
+  )
+  expect_equal(
+    as.data.frame(dplyr::ungroup(grouped)[delta_cols]),
+    as.data.frame(dplyr::ungroup(plain)[delta_cols])
+  )
+})
+
+test_that("compute_ecg_param_summary keeps groups apart where the dose is missing", {
+  .test_data <- cqtkit_data_verapamil |>
+    dplyr::mutate(
+      GRP = ifelse(as.integer(factor(ID)) %% 2 == 0, "F", "M"),
+      DOSEF = dplyr::if_else(NTLD == 2 & DOSEF == "120 mg", NA, DOSEF)
+    )
+
+  out <- suppressWarnings(compute_ecg_param_summary(
+    .test_data,
+    NTLD,
+    DOSEF,
+    QTCF,
+    deltaQTCF,
+    GRP
+  ))
+  at_2 <- dplyr::filter(out, time == 2)
+  expected <- .test_data |>
+    dplyr::filter(NTLD == 2) |>
+    dplyr::group_by(DOSEF, GRP) |>
+    dplyr::summarise(
+      mean_ecg = mean(QTCF),
+      mean_decg = mean(deltaQTCF),
+      .groups = "drop"
+    )
+
+  expect_identical(
+    as.character(at_2$group),
+    c("0 mg F", "0 mg M", "NA F", "NA M")
+  )
+  expect_equal(at_2$mean_ecg, expected$mean_ecg)
+  expect_equal(at_2$mean_decg, expected$mean_decg)
+})

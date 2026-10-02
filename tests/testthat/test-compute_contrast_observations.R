@@ -56,3 +56,76 @@ test_that("group contrasts drop and warn about times with no control mean", {
   )
   expect_false(1 %in% obs$NTLD)
 })
+
+test_that("compute_contrast_observations reads quoted column names as columns", {
+  plain <- compute_contrast_observations(cqtkit_data_verapamil, CONC, deltaQTCF)
+  quoted <- compute_contrast_observations(cqtkit_data_verapamil, "CONC", "deltaQTCF")
+  expect_identical(quoted, plain)
+
+  for (method in c("matched", "group")) {
+    plain <- compute_contrast_observations(
+      cqtkit_data_verapamil,
+      CONC,
+      deltaQTCF,
+      id_col = ID,
+      ntime_col = NTLD,
+      trt_col = TRTG,
+      treatment_predictors = trt_pred,
+      control_predictors = ctrl_pred,
+      contrast_method = method
+    )
+    quoted <- compute_contrast_observations(
+      cqtkit_data_verapamil,
+      "CONC",
+      "deltaQTCF",
+      id_col = "ID",
+      ntime_col = "NTLD",
+      trt_col = "TRTG",
+      treatment_predictors = trt_pred,
+      control_predictors = ctrl_pred,
+      contrast_method = method
+    )
+    expect_identical(quoted, plain)
+  }
+})
+
+test_that("compute_contrast_observations reads .data columns", {
+  plain <- compute_contrast_observations(cqtkit_data_verapamil, CONC, deltaQTCF)
+  pronoun <- compute_contrast_observations(
+    cqtkit_data_verapamil,
+    .data$CONC,
+    .data$deltaQTCF
+  )
+  expect_identical(pronoun, plain)
+})
+
+test_that("compute_contrast_observations keeps a control_dv column of data", {
+  .test_data <- dplyr::mutate(cqtkit_data_verapamil, control_dv = 0)
+
+  for (method in c("matched", "group")) {
+    plain <- compute_contrast_observations(
+      cqtkit_data_verapamil,
+      CONC,
+      deltaQTCF,
+      id_col = ID,
+      ntime_col = NTLD,
+      trt_col = TRTG,
+      treatment_predictors = trt_pred,
+      control_predictors = ctrl_pred,
+      contrast_method = method
+    )
+    out <- compute_contrast_observations(
+      .test_data,
+      CONC,
+      deltaQTCF,
+      id_col = ID,
+      ntime_col = NTLD,
+      trt_col = TRTG,
+      treatment_predictors = trt_pred,
+      control_predictors = ctrl_pred,
+      contrast_method = method
+    )
+    expect_equal(out$dv, plain$dv)
+    expect_equal(out$control_dv, rep(0, nrow(out)))
+  }
+})

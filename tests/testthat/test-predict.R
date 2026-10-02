@@ -146,3 +146,16 @@ test_that("predict_with_exposure_plot ddQTcF snapshot", {
 
   snapshot_plot(p, "predict-exposure-ddqtcf")
 })
+
+test_that("predict_with_exposure_plot keeps the Exposure legend title with legend_nrow", {
+  p <- suppressWarnings(predict_with_exposure_plot(
+    cqtkit_data_verapamil,
+    fit,
+    CONC,
+    treatment_predictors = trt_pred_single,
+    cmaxes = pk_df[[1, "Cmax_gm"]],
+    style = list(legend_nrow = 2)
+  ))
+
+  expect_identical(p$guides$guides$linetype$params$title, "Exposure")
+})

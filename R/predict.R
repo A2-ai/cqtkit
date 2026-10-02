@@ -599,7 +599,7 @@ predict_with_exposure_plot <- function(
     fill_legend = "Confidence Interval",
     fill_order = 3,
     linetype_order = 2,
-    linetype_legend = style$legend %||% "Exposure"
+    linetype_legend = style[["legend"]] %||% "Exposure"
   )
 
   return(p)

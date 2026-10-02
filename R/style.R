@@ -403,10 +403,12 @@ style_plot_impl <- function(
     )
   }
 
-  # Named line series map no colour, so `colors` reaches them directly.
+  # Named line series map no colour, so `colors` reaches them directly. Layers
+  # are shared with the plot passed in, so recolour a copy.
   for (i in seq_along(p$layers)) {
     series <- attr(p$layers[[i]], "cqtkit_series")
     if (!is.null(series) && series %in% names(colors)) {
+      p$layers[[i]] <- copy_layer(p$layers[[i]])
       p$layers[[i]]$aes_params$colour <- colors[[series]]
     }
   }

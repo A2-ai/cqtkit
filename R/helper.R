@@ -19,6 +19,17 @@ name_quo_if_not_null <- function(quo) {
   }
 }
 
+# A column given by name ("CONC") as a quosure of the column, so mutate() and
+# aes() read the column rather than the string. Other column expressions
+# (CONC, .data$CONC) are returned unchanged.
+as_column_quo <- function(quo) {
+  expr <- rlang::quo_get_expr(quo)
+  if (!rlang::is_string(expr)) {
+    return(quo)
+  }
+  rlang::quo(!!rlang::sym(expr))
+}
+
 
 #' Simple quadratic formula solver
 #'
@@ -48,6 +59,8 @@ quad_form <- function(a, b, c) {
 #' `paste()` returns character, which then sorts lexically in legends and in
 #' `summarise()` output. This returns a factor whose levels follow the level
 #' order of `x` (and, when `y` is a vector, of `y` within each level of `x`).
+#' A missing value is pasted as "NA", last in the order, so missing doses in
+#' different groups keep distinct labels.
 #'
 #' @param x Factor or character grouping values
 #' @param y Either a single string appended to every value, or a second
@@ -57,14 +70,14 @@ quad_form <- function(a, b, c) {
 #' @keywords internal
 #' @noRd
 paste_grouping <- function(x, y, sep = " ") {
-  x <- as.factor(x)
+  x <- addNA(as.factor(x), ifany = TRUE)
   if (length(y) == 1L) {
     return(factor(
       paste(x, y, sep = sep),
       levels = paste(levels(x), y, sep = sep)
     ))
   }
-  y <- as.factor(y)
+  y <- addNA(as.factor(y), ifany = TRUE)
   lvls <- as.vector(t(outer(levels(x), levels(y), paste, sep = sep)))
   droplevels(factor(paste(x, y, sep = sep), levels = lvls))
 }
@@ -601,40 +614,26 @@ qt_or_na <- function(p, df) {
   out
 }
 
-#' Value of `x` at the reference dose, NA when the reference dose is absent
-#'
-#' @param x Values within one time point
-#' @param dose Dose values within that time point
-#' @param reference_dose Reference dose value
-#' @return The value of `x` where `dose == reference_dose`, or NA
-#' @keywords internal
-#' @noRd
-reference_value <- function(x, dose, reference_dose) {
-  value <- x[dose == reference_dose]
-  if (length(value) == 0) NA else value
-}
-
 #' Evaluate `expr`, giving each distinct warning once
 #'
 #' A summary that runs once per column would otherwise repeat the same
-#' warning.
+#' warning. The first of each is raised as it happens, so an error in `expr`
+#' does not lose the warnings before it.
 #'
 #' @param expr Expression to evaluate
 #' @return The value of `expr`
 #' @keywords internal
 #' @noRd
 with_unique_warnings <- function(expr) {
-  seen <- list()
-  out <- withCallingHandlers(
+  seen <- character(0)
+  withCallingHandlers(
     expr,
     warning = function(w) {
-      seen[[length(seen) + 1]] <<- w
-      invokeRestart("muffleWarning")
+      message <- conditionMessage(w)
+      if (message %in% seen) {
+        invokeRestart("muffleWarning")
+      }
+      seen <<- c(seen, message)
     }
   )
-  messages <- vapply(seen, conditionMessage, character(1))
-  for (w in seen[!duplicated(messages)]) {
-    warning(w)
-  }
-  out
 }

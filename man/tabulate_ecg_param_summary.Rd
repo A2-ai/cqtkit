@@ -58,8 +58,10 @@ tabulate_ecg_param_summary(
 \item{...}{Optional arguments for gt::tab_options}
 
 \item{footnote_missing}{Logical, whether to footnote cells left empty: a
-confidence interval from fewer than 2 observations, or a difference at a
-time point with no \code{reference_dose} observations (default: TRUE)}
+confidence interval from fewer than 2 observations, or a difference with
+no \code{reference_dose} observations to compare with. Also footnotes the
+baseline-corrected count where it differs from N, which counts
+\code{ecg_param_col} observations (default: TRUE)}
 }
 \value{
 A gt table with mean ECG parameters (QTc, deltaQTc, delta-delta QTc) and confidence intervals by dose and time

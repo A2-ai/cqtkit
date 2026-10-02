@@ -515,9 +515,9 @@ eda_scatter_with_regressions <- function(
   checkmate::assertDataFrame(data)
   checkmate::assertNumeric(conf_int, lower = 0, upper = 1)
 
-  ydata <- rlang::enquo(ydata_col)
-  xdata <- rlang::enquo(xdata_col)
-  trt <- rlang::enquo(trt_col)
+  ydata <- as_column_quo(rlang::enquo(ydata_col))
+  xdata <- as_column_quo(rlang::enquo(xdata_col))
+  trt <- as_column_quo(rlang::enquo(trt_col))
 
   required_cols <- unlist(lapply(c(ydata, xdata, trt), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)

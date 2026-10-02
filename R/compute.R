@@ -376,7 +376,9 @@ compute_study_summary <- function(data, trt_col, id_col, group_col = NULL) {
 #'
 #' @return A tibble with mean QTc, deltaQTc, and optionally delta-delta QTc
 #'   values with confidence intervals, stratified by dose and time. `group`
-#'   is a factor whose levels carry the intended display order.
+#'   is a factor whose levels carry the intended display order. `n` counts the
+#'   `ecg_param_col` observations and `n_decg` the `deltaecg_param_col`
+#'   observations.
 #' @export
 #'
 #' @examples
@@ -408,23 +410,48 @@ compute_ecg_param_summary <- function(
   )) #helper.R
   checkmate::assertNames(names(data), must.include = required_cols)
 
+  ecg_param_summary(
+    data,
+    ntld,
+    dose,
+    ecg,
+    deltaecg,
+    group,
+    reference_dose,
+    conf_int
+  ) |>
+    dplyr::select(-dplyr::any_of(reference_match_columns))
+}
+
+# compute_ecg_param_summary(), keeping the reference match columns of the
+# deltaecg summary for tabulate_ecg_param_summary() footnotes.
+ecg_param_summary <- function(
+  data,
+  ntld,
+  dose,
+  ecg,
+  deltaecg,
+  group,
+  reference_dose,
+  conf_int
+) {
   selections <- c("dose", "time", "n", "mean_dv", "ci_low", "ci_high", "group")
 
   # The ECG parameter and its delta are summarised separately, so give each
   # warning once.
   with_unique_warnings({
     ecg_summ <-
-      compute_grouped_mean_sd(
+      grouped_mean_sd(
         data,
-        !!ecg,
-        !!ntld,
-        !!dose,
-        group_col = !!group,
-        reference_dose = reference_dose,
-        conf_int = conf_int
+        ecg,
+        ntld,
+        dose,
+        group,
+        reference_dose,
+        conf_int
       ) |>
       dplyr::arrange(dose) |>
-      dplyr::select(dplyr::all_of(selections)) |>
+      dplyr::select(dplyr::all_of(selections), dplyr::any_of(".group")) |>
       dplyr::rename(
         mean_ecg = "mean_dv",
         ecg_low = "ci_low",
@@ -438,18 +465,22 @@ compute_ecg_param_summary <- function(
       )
     }
 
-    decg_summ <- compute_grouped_mean_sd(
+    decg_summ <- grouped_mean_sd(
       data,
-      !!deltaecg,
-      !!ntld,
-      !!dose,
-      !!group,
-      reference_dose = reference_dose,
-      conf_int = conf_int
+      deltaecg,
+      ntld,
+      dose,
+      group,
+      reference_dose,
+      conf_int
     ) |>
       dplyr::arrange(dose) |>
-      dplyr::select(dplyr::all_of(selections)) |>
+      dplyr::select(
+        dplyr::all_of(selections),
+        dplyr::any_of(reference_match_columns)
+      ) |>
       dplyr::rename(
+        n_decg = "n",
         mean_decg = "mean_dv",
         decg_low = "ci_low",
         decg_high = "ci_high"
@@ -465,10 +496,11 @@ compute_ecg_param_summary <- function(
       )
   }
 
+  # Join on the raw group, not only its display label.
   summ <- dplyr::left_join(
     ecg_summ,
     decg_summ,
-    by = c("dose", "time", "n", "group")
+    by = c("dose", "time", "group", if (!rlang::quo_is_null(group)) ".group")
   )
   return(tibble::as_tibble(summ))
 }
@@ -486,8 +518,15 @@ compute_ecg_param_summary <- function(
 #'   without missing values. Fill or filter missing values, or omit this argument
 #'   for dose-only summaries.
 #' @param reference_dose Reference dose value for comparison calculations.
-#'   At a time point with no `reference_dose` observations the differences are
-#'   NA, with a warning naming the time points.
+#'   Each dose is compared with `reference_dose` at the same time point. With
+#'   `group_col`, it is compared with `reference_dose` in the same group,
+#'   unless each dose belongs to exactly one group (a treatment group column,
+#'   say). Then every group is compared with the one `reference_dose` group,
+#'   as without `group_col`, so a study with its own doses and no
+#'   `reference_dose` observations is compared with another study's
+#'   `reference_dose`. Where there are no `reference_dose` observations to
+#'   compare with, the differences are NA, with a warning naming the time
+#'   points, or the time points and groups.
 #' @param conf_int Numeric confidence interval level (default: 0.9)
 #'
 #' @return A tibble with mean, SD, SE, and confidence intervals for the
@@ -512,13 +551,35 @@ compute_grouped_mean_sd <- function(
   reference_dose = NULL,
   conf_int = 0.95
 ) {
+  grouped_mean_sd(
+    data,
+    rlang::enquo(dv_col),
+    rlang::enquo(ntime_col),
+    rlang::enquo(dose_col),
+    rlang::enquo(group_col),
+    reference_dose,
+    conf_int
+  ) |>
+    dplyr::select(-dplyr::any_of(reference_match_columns))
+}
+
+# Columns grouped_mean_sd() adds for the reference match: the raw group
+# value, the reference observation count (NA where there is no reference
+# summary to compare with) and whether the reference is matched within group.
+reference_match_columns <- c(".group", ".reference_n", ".reference_by_group")
+
+# compute_grouped_mean_sd() on quosures, keeping reference_match_columns.
+grouped_mean_sd <- function(
+  data,
+  dv,
+  time,
+  dose,
+  group,
+  reference_dose,
+  conf_int
+) {
   checkmate::assertDataFrame(data)
   checkmate::assertNumeric(conf_int, lower = 0, upper = 1)
-
-  dv <- rlang::enquo(dv_col)
-  time <- rlang::enquo(ntime_col)
-  dose <- rlang::enquo(dose_col)
-  group <- rlang::enquo(group_col)
 
   required_cols <- unlist(lapply(
     c(dv, time, dose, group),
@@ -534,6 +595,7 @@ compute_grouped_mean_sd <- function(
   )
   if (!rlang::quo_is_null(group)) {
     df$group <- complete_group_values(data, group)
+    df$.group <- df$group
   }
 
   if (!is.null(reference_dose)) {
@@ -549,13 +611,15 @@ compute_grouped_mean_sd <- function(
 
   if (nrow_df == nrow_time_grouped_df) {
     stop(
-      "Grouping by ntime_col does not reduce size. Ensure correct data is supplied."
+      "Grouping by ntime_col does not reduce size. Ensure correct data is supplied.",
+      call. = FALSE
     )
   }
 
   if (nrow_df == nrow_dose_grouped_df) {
     stop(
-      "Grouping by dosef_col does not reduce size. Ensure correct data is supplied."
+      "Grouping by dosef_col does not reduce size. Ensure correct data is supplied.",
+      call. = FALSE
     )
   }
 
@@ -564,28 +628,38 @@ compute_grouped_mean_sd <- function(
 
     if (nrow_df == nrow_group_grouped_df) {
       stop(
-        "Grouping by group_col does not reduce size. Ensure correct data is supplied."
+        "Grouping by group_col does not reduce size. Ensure correct data is supplied.",
+        call. = FALSE
       )
     }
   }
 
   if (any(is.na(df$dv))) {
     warning(
-      "Your DV data contains NA and is removed in calculations of this function"
+      "Your DV data contains NA and is removed in calculations of this function",
+      call. = FALSE
     )
     #give rows that were filtered out
   }
   if (any(is.na(df$time))) {
     warning(
-      "Your TIME data contains NA values"
+      "Your TIME data contains NA values",
+      call. = FALSE
     )
   }
   if (any(is.na(df$dose))) {
     warning(
-      "Your DOSE data contains NA values"
+      "Your DOSE data contains NA values",
+      call. = FALSE
     )
   }
   ############################ - this could be prep_data function return qc_df
+
+  # A group that subdivides a dose (a study, say) has its own reference. When
+  # each dose belongs to exactly one group (a treatment group), the groups
+  # share the one reference, as without group_col.
+  reference_by_group <- !rlang::quo_is_null(group) &&
+    any(tapply(df$group, as.character(df$dose), dplyr::n_distinct) > 1)
 
   if (!rlang::quo_is_null(group)) {
     df <- df |>
@@ -599,6 +673,10 @@ compute_grouped_mean_sd <- function(
         grouping = as.factor(.data$dose)
       ) |>
       dplyr::group_by(.data$time, .data$dose)
+  }
+
+  raw_group <- if (!rlang::quo_is_null(group)) {
+    rlang::exprs(.group = dplyr::first(.data$.group))
   }
 
   df <- df |>
@@ -629,6 +707,7 @@ compute_grouped_mean_sd <- function(
         qt_or_na((1 + conf_int) / 2, df = .data$n - 1) * .data$se,
       ci_high = .data$mean_dv +
         qt_or_na((1 + conf_int) / 2, df = .data$n - 1) * .data$se,
+      !!!raw_group,
       group = dplyr::first(.data$grouping),
       .groups = "keep"
     )
@@ -638,56 +717,83 @@ compute_grouped_mean_sd <- function(
     warning(
       "Fewer than 2 observations at: ",
       paste(few$time, few$group, sep = " / ", collapse = ", "),
-      ". Their CIs are NA."
+      ". Their CIs are NA.",
+      call. = FALSE
     )
   }
 
   if (!is.null(reference_dose)) {
-    missing_times <- setdiff(
-      unique(df$time),
-      df$time[df$dose == reference_dose]
-    )
-    if (length(missing_times) > 0) {
-      warning(
-        "No `reference_dose` (",
-        reference_dose,
-        ") observations at: ",
-        paste(missing_times, collapse = ", "),
-        ". Differences from `reference_dose` are NA there."
+    keys <- if (reference_by_group) c("time", ".group") else "time"
+    df <- dplyr::ungroup(df)
+    reference <- df |>
+      dplyr::filter(.data$dose == reference_dose) |>
+      dplyr::select(
+        dplyr::all_of(keys),
+        .reference_mean = "mean_dv",
+        .reference_geo_mean = "geo_mean_dv",
+        .reference_sd = "sd",
+        .reference_n = "n"
       )
-    }
 
     delta_df <- df |>
-      dplyr::group_by(.data$time) |>
+      dplyr::left_join(reference, by = keys) |>
       dplyr::mutate(
-        mean_delta_dv = .data$mean_dv -
-          reference_value(.data$mean_dv, .data$dose, reference_dose),
-        geomean_delta_dv = .data$geo_mean_dv -
-          reference_value(.data$geo_mean_dv, .data$dose, reference_dose),
-        delta_sd = sqrt(
-          (.data$sd)**2 + reference_value(.data$sd, .data$dose, reference_dose)**2
-        ),
+        mean_delta_dv = .data$mean_dv - .data$.reference_mean,
+        geomean_delta_dv = .data$geo_mean_dv - .data$.reference_geo_mean,
+        delta_sd = sqrt((.data$sd)**2 + .data$.reference_sd**2),
         delta_se = sqrt(
           .data$sd**2 /
             .data$n +
-            reference_value(.data$sd, .data$dose, reference_dose)**2 /
-              reference_value(.data$n, .data$dose, reference_dose)
+            .data$.reference_sd**2 / .data$.reference_n
         ),
         ci_low_delta = .data$mean_delta_dv -
           qt_or_na(
             (1 + conf_int) / 2,
-            df = .data$n + reference_value(.data$n, .data$dose, reference_dose) - 2
+            df = .data$n + .data$.reference_n - 2
           ) *
             .data$delta_se,
         ci_up_delta = .data$mean_delta_dv +
           qt_or_na(
             (1 + conf_int) / 2,
-            df = .data$n + reference_value(.data$n, .data$dose, reference_dose) - 2
+            df = .data$n + .data$.reference_n - 2
           ) *
-            .data$delta_se
+            .data$delta_se,
+        .reference_by_group = reference_by_group
+      ) |>
+      dplyr::select(
+        -".reference_mean",
+        -".reference_geo_mean",
+        -".reference_sd"
+      ) |>
+      dplyr::relocate(
+        dplyr::any_of(reference_match_columns),
+        .after = dplyr::last_col()
       )
 
-    return(delta_df)
+    unmatched <- dplyr::filter(delta_df, is.na(.data$.reference_n))
+    if (nrow(unmatched) > 0) {
+      at <- if (reference_by_group) {
+        paste0(
+          "at time / group: ",
+          paste(
+            unique(paste(unmatched$time, unmatched$.group, sep = " / ")),
+            collapse = ", "
+          )
+        )
+      } else {
+        paste0("at: ", paste(unique(unmatched$time), collapse = ", "))
+      }
+      warning(
+        "No `reference_dose` (",
+        reference_dose,
+        ") observations ",
+        at,
+        ". Differences from `reference_dose` are NA there.",
+        call. = FALSE
+      )
+    }
+
+    return(dplyr::group_by(delta_df, .data$time))
   } else {
     return(df)
   }
@@ -1648,11 +1754,11 @@ compute_contrast_observations <- function(
   control_predictors = NULL,
   contrast_method = c("matched", "group")
 ) {
-  conc <- rlang::enquo(conc_col)
-  dv <- rlang::enquo(dv_col)
-  id <- rlang::enquo(id_col)
-  ntime <- rlang::enquo(ntime_col)
-  trt <- rlang::enquo(trt_col)
+  conc <- as_column_quo(rlang::enquo(conc_col))
+  dv <- as_column_quo(rlang::enquo(dv_col))
+  id <- as_column_quo(rlang::enquo(id_col))
+  ntime <- as_column_quo(rlang::enquo(ntime_col))
+  trt <- as_column_quo(rlang::enquo(trt_col))
 
   if (!is.null(control_predictors)) {
     contrast_method <- match.arg(contrast_method)
@@ -1699,6 +1805,9 @@ compute_contrast_observations <- function(
   } else {
     # Control group subtraction case
     trt_str <- rlang::as_name(trt)
+    # The control values join onto the columns of `data`, so take a name
+    # `data` does not use.
+    control <- utils::tail(make.unique(c(names(data), "control_dv")), 1)
     treatment_value <- treatment_predictors[[trt_str]]
     control_value <- control_predictors[[trt_str]]
 
@@ -1709,7 +1818,7 @@ compute_contrast_observations <- function(
 
       control_df <- data |>
         dplyr::filter(!!rlang::sym(trt_str) == !!control_value) |>
-        dplyr::select(!!id, !!ntime, control_dv = !!dv)
+        dplyr::select(!!id, !!ntime, !!control := !!dv)
 
       observed_df <- treatment_df |>
         dplyr::left_join(
@@ -1719,9 +1828,9 @@ compute_contrast_observations <- function(
         dplyr::mutate(
           group = !!trt,
           conc = !!conc,
-          dv = !!dv - .data$control_dv
+          dv = !!dv - .data[[control]]
         ) |>
-        dplyr::select(-"control_dv") |>
+        dplyr::select(-dplyr::all_of(control)) |>
         dplyr::relocate("group", "conc", "dv")
 
       if (any(is.na(observed_df$dv))) {
@@ -1734,7 +1843,7 @@ compute_contrast_observations <- function(
         dplyr::filter(!!rlang::sym(trt_str) == !!control_value) |>
         dplyr::group_by(!!ntime) |>
         dplyr::summarise(
-          control_mean_dv = mean(!!dv, na.rm = TRUE),
+          !!control := mean(!!dv, na.rm = TRUE),
           .groups = "drop"
         )
 
@@ -1744,9 +1853,9 @@ compute_contrast_observations <- function(
         dplyr::mutate(
           group = !!trt,
           conc = !!conc,
-          dv = !!dv - .data$control_mean_dv
+          dv = !!dv - .data[[control]]
         ) |>
-        dplyr::select(-"control_mean_dv") |>
+        dplyr::select(-dplyr::all_of(control)) |>
         dplyr::relocate("group", "conc", "dv")
 
       if (any(is.na(observed_df$dv))) {

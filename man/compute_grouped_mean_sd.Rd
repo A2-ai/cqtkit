@@ -28,8 +28,15 @@ without missing values. Fill or filter missing values, or omit this argument
 for dose-only summaries.}
 
 \item{reference_dose}{Reference dose value for comparison calculations.
-At a time point with no \code{reference_dose} observations the differences are
-NA, with a warning naming the time points.}
+Each dose is compared with \code{reference_dose} at the same time point. With
+\code{group_col}, it is compared with \code{reference_dose} in the same group,
+unless each dose belongs to exactly one group (a treatment group column,
+say). Then every group is compared with the one \code{reference_dose} group,
+as without \code{group_col}, so a study with its own doses and no
+\code{reference_dose} observations is compared with another study's
+\code{reference_dose}. Where there are no \code{reference_dose} observations to
+compare with, the differences are NA, with a warning naming the time
+points, or the time points and groups.}
 
 \item{conf_int}{Numeric confidence interval level (default: 0.9)}
 }

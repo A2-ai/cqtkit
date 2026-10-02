@@ -71,11 +71,11 @@ gof_plots <- function(
   required_cols <- unlist(lapply(c(dv, conc, time, trt), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
-  fit_results_df <- compute_fit_results(data, fit, !!dv, !!conc, !!time, !!trt)
+  fit_results_df <- fit_results(data, fit, dv, conc, time)
 
   # Add .trt_group for shape aesthetic
   fit_results_df$.trt_group <- if (!rlang::quo_is_null(trt)) {
-    fit_results_df$TRTG
+    dplyr::pull(data, !!trt)
   } else {
     "All"
   }
@@ -300,11 +300,11 @@ gof_concordance_plots <- function(
   required_cols <- unlist(lapply(c(dv, conc, time, trt), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
-  fit_results_df <- compute_fit_results(data, fit, !!dv, !!conc, !!time, !!trt)
+  fit_results_df <- fit_results(data, fit, dv, conc, time)
 
   # Add .trt_group for shape aesthetic
   fit_results_df$.trt_group <- if (!rlang::quo_is_null(trt)) {
-    fit_results_df$TRTG
+    dplyr::pull(data, !!trt)
   } else {
     "All"
   }
@@ -446,11 +446,11 @@ gof_residuals_plots <- function(
   required_cols <- unlist(lapply(c(dv, conc, time, trt), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
-  fit_results_df <- compute_fit_results(data, fit, !!dv, !!conc, !!time, !!trt)
+  fit_results_df <- fit_results(data, fit, dv, conc, time)
 
   # Add .trt_group for shape aesthetic
   fit_results_df$.trt_group <- if (!rlang::quo_is_null(trt)) {
-    fit_results_df$TRTG
+    dplyr::pull(data, !!trt)
   } else {
     "All"
   }
@@ -482,7 +482,7 @@ gof_residuals_plots <- function(
 
     if (loess_line) {
       .p <- .p +
-        ggstylekit::series_layer(
+        line_series_layer(
           ggplot2::geom_smooth(
             method = "loess",
             span = 0.99,
@@ -515,7 +515,7 @@ gof_residuals_plots <- function(
     plots,
     style,
     legend_location = legend_location,
-    common_legend = !rlang::quo_is_null(trt),
+    common_legend = !rlang::quo_is_null(trt) || loess_line,
     title = figure_title
   )
 
@@ -582,11 +582,11 @@ gof_qq_plots <- function(
   required_cols <- unlist(lapply(c(dv, conc, time, trt), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
-  fit_results_df <- compute_fit_results(data, fit, !!dv, !!conc, !!time, !!trt)
+  fit_results_df <- fit_results(data, fit, dv, conc, time)
 
   # Add .trt_group for shape aesthetic
   fit_results_df$.trt_group <- if (!rlang::quo_is_null(trt)) {
-    fit_results_df$TRTG
+    dplyr::pull(data, !!trt)
   } else {
     "All"
   }
@@ -709,7 +709,10 @@ gof_residuals_time_boxplots <- function(
   required_cols <- unlist(lapply(c(dv, conc, time, trt), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
-  fit_results_df <- compute_fit_results(data, fit, !!dv, !!conc, !!time, !!trt)
+  fit_results_df <- fit_results(data, fit, dv, conc, time)
+  if (!rlang::quo_is_null(trt)) {
+    fit_results_df$.trt_group <- dplyr::pull(data, !!trt)
+  }
 
   time_plots <- list()
   ydata <- c("WRES", "IWRES")
@@ -730,7 +733,7 @@ gof_residuals_time_boxplots <- function(
 
     if (!rlang::quo_is_null(trt)) {
       .rbp <- .rbp +
-        ggplot2::geom_boxplot(ggplot2::aes(fill = .data$TRTG))
+        ggplot2::geom_boxplot(ggplot2::aes(fill = .data$.trt_group))
     } else {
       .rbp <- .rbp +
         ggplot2::geom_boxplot()
@@ -836,7 +839,10 @@ gof_residuals_trt_boxplots <- function(
   required_cols <- unlist(lapply(c(dv, conc, time, trt), name_quo_if_not_null))
   checkmate::assertNames(names(data), must.include = required_cols)
 
-  fit_results_df <- compute_fit_results(data, fit, !!dv, !!conc, !!time, !!trt)
+  fit_results_df <- fit_results(data, fit, dv, conc, time)
+  if (!rlang::quo_is_null(trt)) {
+    fit_results_df$.trt_group <- dplyr::pull(data, !!trt)
+  }
 
   trtg_plots <- list()
   ydata <- c("WRES", "IWRES")
@@ -850,9 +856,9 @@ gof_residuals_trt_boxplots <- function(
       ggplot2::ggplot(
         if (!rlang::quo_is_null(trt)) {
           ggplot2::aes(
-            x = .data$TRTG,
+            x = .data$.trt_group,
             y = .data[[ydata[[i]]]],
-            fill = .data$TRTG
+            fill = .data$.trt_group
           )
         } else {
           ggplot2::aes(y = .data[[ydata[[i]]]])
